@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='iso-8859-1' ?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:cim="http://iec.ch/TC57/2008/CIM-schema-cim13#">
+    <cim:EnergySource rdf:ID="A G">
+        <cim:IdentifiedObject.name>Power Generator </cim:IdentifiedObject.name>
+        <cim:EnergySource.activePower>400</cim:EnergySource.activePower>
+    </cim:EnergySource>
+    <cim:Terminal rdf:ID="A Te1">
+        <cim:Terminal.ConductingEquipment rdf:resource="#A G" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#A CN1" />        
+    </cim:Terminal>
+    <cim:ConnectivityNode rdf:ID="A CN1">
+    	<cim:ConnectivityNode.TopologicalNode rdf:resource="#Test" />
+    </cim:ConnectivityNode>
+    <cim:Terminal rdf:ID="A Te2">
+        <cim:Terminal.ConductingEquipment rdf:resource="#A B1" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#A CN1" />
+    </cim:Terminal>
+    <cim:BusbarSection rdf:ID="A B1">
+        <cim:IdentifiedObject.name>Busbar 1 </cim:IdentifiedObject.name>
+    </cim:BusbarSection>
+    <cim:Terminal rdf:ID="A Te3">
+        <cim:Terminal.ConductingEquipment rdf:resource="#A A1" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#A CN1" />
+    </cim:Terminal>
+    <cim:ACLineSegment rdf:ID="A A1">
+        <cim:Conductor.length>2500</cim:Conductor.length>
+        <cim:Conductor.r>0.3125</cim:Conductor.r>
+        <cim:Conductor.x>0.28</cim:Conductor.x>
+        <cim:Conductor.bch>235.45</cim:Conductor.bch>
+        <cim:IdentifiedObject.name>Line A
+        </cim:IdentifiedObject.name>
+        <cim:ConductingEquipment.phases>ABCN</cim:ConductingEquipment.phases>
+    </cim:ACLineSegment>
+    <cim:Terminal rdf:ID="A Te8">
+        <cim:Terminal.ConductingEquipment rdf:resource="#A A1" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#A CN3" />
+    </cim:Terminal>
+    <cim:ConnectivityNode rdf:ID="A CN3">
+        <cim:ConnectivityNode.TopologicalNode rdf:resource="#Test" />
+    </cim:ConnectivityNode>
+    <cim:Terminal rdf:ID="A T7">
+        <cim:Terminal.ConductingEquipment rdf:resource="#A B2" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#A CN3" />
+    </cim:Terminal>
+    <cim:BusbarSection rdf:ID="A B2">
+        <cim:IdentifiedObject.name>Busbar 2 </cim:IdentifiedObject.name>
+    </cim:BusbarSection>
+	<cim:TopologicalNode rdf:ID="Test">
+	</cim:TopologicalNode>
+    
+</rdf:RDF>

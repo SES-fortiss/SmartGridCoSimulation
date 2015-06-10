@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding='iso-8859-1' ?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:cim="http://iec.ch/TC57/2008/CIM-schema-cim15#">
+    <cim:EnergySource rdf:ID="MainInput">
+    	<cim:EnergySource.BaseVoltage rdf:resource="#VoL1"  />
+        <cim:IdentifiedObject.name>Power Generator </cim:IdentifiedObject.name>
+        <cim:EnergySource.activePower>400</cim:EnergySource.activePower>
+    </cim:EnergySource>
+
+    <cim:Terminal rdf:ID="MainInputTerminal">
+        <cim:Terminal.ConductingEquipment rdf:resource="#MainInput" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#InputNode" />        
+        <cim:Terminal.phases>ABCN</cim:Terminal.phases>
+    </cim:Terminal>
+
+    <cim:ConnectivityNode rdf:ID="InputNode">
+    </cim:ConnectivityNode>
+
+    <cim:Terminal rdf:ID="MainOutputTerminal">
+        <cim:Terminal.ConductingEquipment rdf:resource="#LinePart1" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#InputNode" />        
+        <cim:Terminal.phases>ABCN</cim:Terminal.phases>
+    </cim:Terminal>
+
+    <cim:ACLineSegment rdf:ID="LinePart1">
+        <cim:ACLineSegment.BaseVoltage rdf:resource="#VoL1" />
+        <cim:Conductor.length>2500</cim:Conductor.length>
+        <cim:Conductor.r>0.3125</cim:Conductor.r>
+        <cim:Conductor.x>0.28</cim:Conductor.x>
+        <cim:Conductor.bch>235.45</cim:Conductor.bch>
+        <cim:ConductingEquipment.phases>ABCN</cim:ConductingEquipment.phases>
+    </cim:ACLineSegment>
+
+    <cim:Terminal rdf:ID="LinePart1Terminal">
+        <cim:Terminal.ConductingEquipment rdf:resource="#LinePart1" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#LinePart1EndNode" />        
+        <cim:Terminal.phases>ABCN</cim:Terminal.phases>
+    </cim:Terminal>
+
+    <cim:ConnectivityNode rdf:ID="LinePart1EndNode">
+    </cim:ConnectivityNode>
+
+    <cim:Terminal rdf:ID="Load1Terminal">
+        <cim:Terminal.ConductingEquipment rdf:resource="#Load1" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#LinePart1EndNode" />        
+        <cim:Terminal.phases>ABCN</cim:Terminal.phases>
+    </cim:Terminal>
+
+    <cim:EnergyConsumer rdf:ID="Load1">
+        <cim:EnergyConsumer.BaseVoltage rdf:resource="#VoL1" />
+        <cim:EnergyConsumer.Pfixed>1000.0</cim:EnergyConsumer.Pfixed>
+        <cim:EnergyConsumer.Qfixed>1000.0</cim:EnergyConsumer.Qfixed>
+    </cim:EnergyConsumer>
+
+        
+    <cim:Terminal rdf:ID="LinePart2InputTerminal">
+        <cim:Terminal.ConductingEquipment rdf:resource="#LinePart2" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#LinePart1EndNode" />        
+        <cim:Terminal.phases>ABCN</cim:Terminal.phases>
+    </cim:Terminal>
+
+
+
+
+    <cim:ACLineSegment rdf:ID="LinePart2">
+        <cim:ACLineSegment.BaseVoltage rdf:resource="#VoL1" />
+        <cim:Conductor.length>2500</cim:Conductor.length>
+        <cim:Conductor.r>0.3125</cim:Conductor.r>
+        <cim:Conductor.x>0.28</cim:Conductor.x>
+        <cim:Conductor.bch>235.45</cim:Conductor.bch>
+        <cim:ConductingEquipment.phases>ABCN</cim:ConductingEquipment.phases>
+    </cim:ACLineSegment>
+
+    <cim:Terminal rdf:ID="LinePart2Terminal">
+        <cim:Terminal.ConductingEquipment rdf:resource="#LinePart2" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#LinePart2EndNode" />        
+        <cim:Terminal.phases>ABCN</cim:Terminal.phases>
+    </cim:Terminal>
+
+    <cim:ConnectivityNode rdf:ID="LinePart2EndNode">
+    </cim:ConnectivityNode>
+
+    <cim:Terminal rdf:ID="Load2Terminal">
+        <cim:Terminal.ConductingEquipment rdf:resource="#Load2" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#LinePart2EndNode" />        
+        <cim:Terminal.phases>ABCN</cim:Terminal.phases>
+    </cim:Terminal>
+
+    <cim:EnergyConsumer rdf:ID="Load2">
+        <cim:EnergyConsumer.BaseVoltage rdf:resource="#VoL1" />
+        <cim:EnergyConsumer.Pfixed>1000.0</cim:EnergyConsumer.Pfixed>
+        <cim:EnergyConsumer.Qfixed>1000.0</cim:EnergyConsumer.Qfixed>
+    </cim:EnergyConsumer>
+
+
+
+
+
+
+    <cim:Terminal rdf:ID="LinePart3InputTerminal">
+        <cim:Terminal.ConductingEquipment rdf:resource="#LinePart3" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#LinePart2EndNode" />        
+        <cim:Terminal.phases>ABCN</cim:Terminal.phases>
+    </cim:Terminal>
+
+
+    <cim:ACLineSegment rdf:ID="LinePart3">
+        <cim:ACLineSegment.BaseVoltage rdf:resource="#VoL1" />
+        <cim:Conductor.length>2500</cim:Conductor.length>
+        <cim:Conductor.r>0.3125</cim:Conductor.r>
+        <cim:Conductor.x>0.28</cim:Conductor.x>
+        <cim:Conductor.bch>235.45</cim:Conductor.bch>
+        <cim:ConductingEquipment.phases>ABCN</cim:ConductingEquipment.phases>
+    </cim:ACLineSegment>
+
+    <cim:Terminal rdf:ID="LinePart3Terminal">
+        <cim:Terminal.ConductingEquipment rdf:resource="#LinePart3" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#LinePart3EndNode" />        
+        <cim:Terminal.phases>ABCN</cim:Terminal.phases>
+    </cim:Terminal>
+
+    <cim:ConnectivityNode rdf:ID="LinePart3EndNode">
+    </cim:ConnectivityNode>
+
+    <cim:Terminal rdf:ID="Load3Terminal">
+        <cim:Terminal.ConductingEquipment rdf:resource="#Load3" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#LinePart3EndNode" />        
+        <cim:Terminal.phases>ABCN</cim:Terminal.phases>
+    </cim:Terminal>
+
+    <cim:EnergyConsumer rdf:ID="Load3">
+        <cim:EnergyConsumer.BaseVoltage rdf:resource="#VoL1" />
+        <cim:EnergyConsumer.Pfixed>1000.0</cim:EnergyConsumer.Pfixed>
+        <cim:EnergyConsumer.Qfixed>1000.0</cim:EnergyConsumer.Qfixed>
+    </cim:EnergyConsumer>
+
+
+
+
+    <cim:Terminal rdf:ID="LinePart4InputTerminal">
+        <cim:Terminal.ConductingEquipment rdf:resource="#LinePart4" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#LinePart3EndNode" />        
+        <cim:Terminal.phases>ABCN</cim:Terminal.phases>
+    </cim:Terminal>
+
+
+    <cim:ACLineSegment rdf:ID="LinePart4">
+        <cim:ACLineSegment.BaseVoltage rdf:resource="#VoL1" />
+        <cim:Conductor.length>2500</cim:Conductor.length>
+        <cim:Conductor.r>0.3125</cim:Conductor.r>
+        <cim:Conductor.x>0.28</cim:Conductor.x>
+        <cim:Conductor.bch>235.45</cim:Conductor.bch>
+        <cim:ConductingEquipment.phases>ABCN</cim:ConductingEquipment.phases>
+    </cim:ACLineSegment>
+
+    <cim:Terminal rdf:ID="LinePart4Terminal">
+        <cim:Terminal.ConductingEquipment rdf:resource="#LinePart4" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#LinePart4EndNode" />        
+        <cim:Terminal.phases>ABCN</cim:Terminal.phases>
+    </cim:Terminal>
+
+    <cim:ConnectivityNode rdf:ID="LinePart4EndNode">
+    </cim:ConnectivityNode>
+
+    <cim:Terminal rdf:ID="Load4Terminal">
+        <cim:Terminal.ConductingEquipment rdf:resource="#Load4" />
+        <cim:Terminal.ConnectivityNode rdf:resource="#LinePart4EndNode" />        
+        <cim:Terminal.phases>ABCN</cim:Terminal.phases>
+    </cim:Terminal>
+
+    <cim:EnergyConsumer rdf:ID="Load4">
+        <cim:EnergyConsumer.BaseVoltage rdf:resource="#VoL1" />
+        <cim:EnergyConsumer.Pfixed>1000.0</cim:EnergyConsumer.Pfixed>
+        <cim:EnergyConsumer.Qfixed>1000.0</cim:EnergyConsumer.Qfixed>
+    </cim:EnergyConsumer>
+
+
+    <cim:BaseVoltage rdf:ID="VoL1">
+    	<cim:BaseVoltage.NominalVoltage>220.0</cim:BaseVoltage.NominalVoltage>
+    </cim:BaseVoltage>
+
+</rdf:RDF>

@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--/***************************************************************
+*  Copyright notice
+*
+*  (c) 2008 Power Info LLC
+*  All rights reserved
+*
+*  This CIMSpy file is under the terms of the GNU General Public License 
+*  as published by the Free Software Foundation.
+*
+*  The GNU General Public License can be found at
+*  http://www.gnu.org/copyleft/gpl.html.
+*
+*  This file is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*  This copyright notice MUST APPEAR in all copies of the derived work!
+***************************************************************-->
+<xs:schema targetNamespace="http://iec.ch/TC57/2008/CIM-schema-cim13#" elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://iec.ch/TC57/2008/CIM-schema-cim13#" xmlns:xsd="undefined">
+	<xs:simpleType name="RDFID">
+	    <xs:restriction base="xs:string">
+	        <xs:annotation>
+	            <xs:documentation>RDF ID</xs:documentation>
+	        </xs:annotation>
+	        <xs:maxLength value="60"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Name">
+		<xs:restriction base="xs:string">
+			<xs:annotation>
+			    <xs:documentation>Default name type</xs:documentation>
+			</xs:annotation>
+			<xs:maxLength value="32"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AliasName">
+	    <xs:restriction base="xs:string">
+	        <xs:maxLength value="40"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Resistance">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>Resistance (real part of impedance), in ohms</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="0"/>
+	        <xs:maxInclusive value="99999.99"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Reactance">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>Reactance (imaginary part of impedance), in ohms, at rated frequency</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="-99999.99"/>
+	        <xs:maxInclusive value="99999.99"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Susceptance">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>Imaginary part of admittance</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="-99999.99"/>
+	        <xs:maxInclusive value="99999.99"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Conductance">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>Factor by which voltage must be multiplied to give corresponding power lost from a circuit. Real part of admittance</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="0"/>
+	        <xs:maxInclusive value="99999.99"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Voltage">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>Value representing kV</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="0"/>
+	        <xs:maxInclusive value="9999.99"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TransformerType">
+	    <xs:annotation>
+	        <xs:documentation>Transformer control type</xs:documentation>
+	    </xs:annotation>
+	    <xs:restriction base="xs:string">
+	        <xs:enumeration value="http://iec.ch/TC57/2008/CIM-schema-cim13#TransformerType.fix"/>
+	        <xs:enumeration value="http://iec.ch/TC57/2008/CIM-schema-cim13#TransformerType.voltageControl"/>
+	        <xs:enumeration value="http://iec.ch/TC57/2008/CIM-schema-cim13#TransformerType.phaseControl"/>
+	        <xs:enumeration value="http://iec.ch/TC57/2008/CIM-schema-cim13#TransformerType.voltageAndPhaseControl"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Boolean">
+	    <xs:annotation>
+	        <xs:documentation>A type with the value space of 'true' or 'false'</xs:documentation>
+	    </xs:annotation>
+	    <xs:restriction base="xs:string">
+	        <xs:maxLength value="5"/>
+	        <xs:minLength value="1"/>
+	        <xs:enumeration value="true"/>
+	        <xs:enumeration value="false"/>
+	        <xs:enumeration value="1"/>
+	        <xs:enumeration value="0"/>
+	        <xs:enumeration value="False"/>
+	        <xs:enumeration value="True"/>
+	        <xs:enumeration value="TRUE"/>
+	        <xs:enumeration value="FALSE"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TapStep">
+	    <xs:restriction base="xs:integer">
+	        <xs:annotation>
+	            <xs:documentation>Transformer tap step position. Positions are always numbered sequentially starting with "1" at the lowest tap position and progressing through the highest tap position</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="-64"/>
+	        <xs:maxInclusive value="+64"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Percent">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>Percent</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="-99999.99"/>
+	        <xs:maxInclusive value="99999.99"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AngleDegrees">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>Phase angle in radians</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="-9999.99"/>
+	        <xs:maxInclusive value="9999.99"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Float">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>A type defined by IEEE 754-1985 as double (OBSERVE, not as the IEEE 754-1985 float). The value range is m*2**e where the range of m is -2**52..2**52 -1 and the range of e is -1075..970.</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="-999999.99"/>
+	        <xs:maxInclusive value="999999.99"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Integer">
+	    <xs:restriction base="xs:integer">
+	        <xs:annotation>
+	            <xs:documentation>A type with the value range -2**-31..2**31 -1</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="-999999"/>
+	        <xs:maxInclusive value="999999"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ReactivePower">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>Product of RMS value of the voltage and the RMS value of the quadrature component of the current (Megavoltamperes Reactive)</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="-99999.99"/>
+	        <xs:maxInclusive value="99999.99"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ActivePower">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>Product of RMS value of the voltage and the RMS value of the in-phase component of the current (Megawatt)</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="-99999.99"/>
+	        <xs:maxInclusive value="99999.99"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VoltagePerReactivePower">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>Voltage variation with reactive power.</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="0"/>
+	        <xs:maxInclusive value="99999.99"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PowerFactor">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>Voltage variation with reactive power.</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="-1.0"/>
+	        <xs:maxInclusive value="1.0"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AbsoluteDateTime">
+	    <xs:restriction base="xs:string">
+	        <xs:annotation>
+	            <xs:documentation>Absolute Date Time</xs:documentation>
+	        </xs:annotation>
+	        <xs:maxLength value="80"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DoubleFloat">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>A type defined by IEEE 754-1985 as double (OBSERVE, not as the IEEE 754-1985 float). The value range is m*2**e where the range of m is -2**52..2**52 -1 and the range of e is -1075..970.</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="-999999.99"/>
+	        <xs:maxInclusive value="999999.99"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="UnitName">
+	    <xs:restriction base="xs:string">
+	        <xs:enumeration value="MW"/>
+	        <xs:enumeration value="Degrees"/>
+	        <xs:enumeration value="MVA"/>
+	        <xs:enumeration value="Count"/>
+	        <xs:enumeration value="Amperes"/>
+	        <xs:enumeration value="PerCent"/>
+	        <xs:enumeration value="Ratio"/>
+	        <xs:enumeration value="MVAr"/>
+	        <xs:enumeration value="kV"/>
+	        <xs:enumeration value="TapPosition"/>
+	        <xs:enumeration value="SwitchPosition"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CurrentFlow">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>Value representing kV</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="0"/>
+	        <xs:maxInclusive value="99999.99"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ApparentPower">
+	    <xs:restriction base="xs:float">
+	        <xs:minInclusive value="0"/>
+	        <xs:maxInclusive value="99999.99"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Seconds">
+	    <xs:restriction base="xs:float">
+	        <xs:minInclusive value="0"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NonNegativeFloat">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>A type defined by IEEE 754-1985 as double (OBSERVE, not as the IEEE 754-1985 float). The value range is m*2**e where the range of m is -2**52..2**52 -1 and the range of e is -1075..970.</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="0.000000"/>
+	        <xs:maxInclusive value="999999.99"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NonPositiveFloat">
+	    <xs:restriction base="xs:float">
+	        <xs:annotation>
+	            <xs:documentation>A type defined by IEEE 754-1985 as double (OBSERVE, not as the IEEE 754-1985 float). The value range is m*2**e where the range of m is -2**52..2**52 -1 and the range of e is -1075..970.</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="-999999.99"/>
+	        <xs:maxInclusive value="0.000000"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DayTypeName">
+	    <xs:restriction base="xs:string">
+	        <xs:enumeration value="Monday"/>
+	        <xs:enumeration value="Tuesday"/>
+	        <xs:enumeration value="Wednesday"/>
+	        <xs:enumeration value="Thursday"/>
+	        <xs:enumeration value="Friday"/>
+	        <xs:enumeration value="Saturday"/>
+	        <xs:enumeration value="Sunday"/>
+	        <xs:enumeration value="Weekday"/>
+	        <xs:enumeration value="Weekend"/>
+	        <xs:enumeration value="All"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MeasurementTypeName">
+	    <xs:restriction base="xs:string">
+	        <xs:enumeration value="ThreePhasePower"/>
+	        <xs:enumeration value="ThreePhaseActivePower"/>
+	        <xs:enumeration value="ThreePhaseReactivePower"/>
+	        <xs:enumeration value="LineCurrent"/>
+	        <xs:enumeration value="PhaseVoltage"/>
+	        <xs:enumeration value="LineToLineVoltage"/>
+	        <xs:enumeration value="Angle"/>
+	        <xs:enumeration value="TapPosition"/>
+	        <xs:enumeration value="SwitchPosition"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="OperationalLimitType">
+	    <xs:restriction base="xs:string">
+	        <xs:enumeration value="High1"/>
+	        <xs:enumeration value="High2"/>
+	        <xs:enumeration value="High3"/>
+	        <xs:enumeration value="High4"/>
+	        <xs:enumeration value="High5"/>
+	        <xs:enumeration value="Low1"/>
+	        <xs:enumeration value="Low2"/>
+	        <xs:enumeration value="Low3"/>
+	        <xs:enumeration value="Low4"/>
+	        <xs:enumeration value="Low5"/>
+	        <xs:enumeration value="Normal"/>
+	        <xs:enumeration value="Emergency"/>
+	        <xs:enumeration value="Short Term"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MeasurementValueSourceName">
+	    <xs:restriction base="xs:string">
+	        <xs:enumeration value="ICCP"/>
+	        <xs:enumeration value="SCADA"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DescriptionType">
+	    <xs:restriction base="xs:string">
+	        <xs:annotation>
+	            <xs:documentation>Default name type</xs:documentation>
+	        </xs:annotation>
+	        <xs:maxLength value="256"/>
+	    </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SequenceNumberType">
+	    <xs:restriction base="xs:integer">
+	        <xs:annotation>
+	            <xs:documentation>A type with the value range -2**-31..2**31 -1</xs:documentation>
+	        </xs:annotation>
+	        <xs:minInclusive value="1"/>
+	        <xs:maxInclusive value="999999"/>
+	    </xs:restriction>
+	</xs:simpleType>
+</xs:schema>
