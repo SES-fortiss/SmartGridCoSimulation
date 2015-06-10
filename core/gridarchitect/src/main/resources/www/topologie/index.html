@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+
+<head>
+    <title>STRAtEGy</title>        
+    <link rel="icon" type="image/ico" href="../favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="../visualization.css">
+    <script type="text/javascript" src="../d3/d3.v3.js"></script>
+    
+    <style>
+        .node {
+            cursor: pointer;
+        }
+
+        .node circle {
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 1.5px;
+        }
+
+        .node text {
+            font: 10px sans-serif;
+        }
+
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 1.5px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div id="header-background" style= "height: 105px"> 
+</div>
+
+<div id="site-container">
+    <div id="header">
+        <img src="../pics/fortissLogo.png" width="150" height="45" style="padding:5px;" alt="fortiss">
+        <img src="../pics/SWMLogo.svg" height="100px" alt="SWM">        
+    </div>
+    
+    <div id="Navigation">
+        <ul id="Navigation">            
+            <a href="../"> ÜBERSICHT </a>
+            <span> TOPOLOGIE </span>
+            <a href="../simulation"> SIMULATION </a>
+        </ul>
+    </div>
+</div> 
+
+<script src="gridtopology.js"> </script>
+
+</body>
+</html>

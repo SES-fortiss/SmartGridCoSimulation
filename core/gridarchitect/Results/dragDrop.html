@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <style>
+        #drop {
+            min-height: 150px;
+            width: 250px;
+            border: 1px solid blue;
+            margin: 10px;
+            padding: 10px;
+        }
+        body {
+            font: 10px sans-serif;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .x.axis path {
+            display: none;
+        }
+
+        .line {
+            fill: none;
+            stroke: steelblue;
+            stroke-width: 1.5px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Drag/Drop</a>
+        </div>
+        <div class="collapse navbar-collapse">
+
+        </div><!--/.nav-collapse -->
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="starter-template">
+        <h1 align=center style="margin-top: 100px;">Drag/Drop a csv to plot</h1>
+        <DIV id="status">Drag a .csv File, works in Firefox</DIV>
+        <DIV id="drop">Drop files here.</DIV>
+
+        <DIV id="list"></DIV>
+    </div>
+
+</div>
+
+
+
+</body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+    if(window.FileReader) {
+        var drop;
+        addEventHandler(window, 'load', function() {
+            var status = document.getElementById('status');
+            drop   = document.getElementById('drop');
+            var list   = document.getElementById('list');
+
+            function cancel(e) {
+                if (e.preventDefault) { e.preventDefault(); }
+                return false;
+            }
+
+            // Tells the browser that we *can* drop on this target
+            addEventHandler(drop, 'dragover', cancel);
+            addEventHandler(drop, 'dragenter', cancel);
+
+            addEventHandler(drop, 'drop', function (e) {
+                e = e || window.event; // get window.event if e argument missing (in IE)
+                if (e.preventDefault) { e.preventDefault(); } // stops the browser from redirecting off to the image.
+
+                var dt    = e.dataTransfer;
+                var files = dt.files;
+                for (var i=0; i<files.length; i++) {
+                    var file = files[i];
+                    var reader = new FileReader();
+
+                    //attach event handlers here...
+
+                    reader.readAsDataURL(file);
+                    addEventHandler(reader, 'loadend', function(e, file) {
+                        var bin           = this.result;
+                        var newFile       = document.createElement('div');
+                        newFile.innerHTML = 'Loaded : '+file.name+' size '+file.size+' B';
+                        list.appendChild(newFile);
+                        var fileNumber = list.getElementsByTagName('div').length;
+                        status.innerHTML = fileNumber < files.length
+                                ? 'Loaded 100% of file '+fileNumber+' of '+files.length+'...'
+                                : 'Done loading. processed '+fileNumber+' files.';
+
+                        var img = document.createElement("img");
+                        img.file = file;
+                        img.src = bin;
+                        list.appendChild(img);
+
+
+                        //d3 start
+
+
+
+
+
+
+                        d3.csv(bin, function(error, data) {
+                            color.domain(d3.keys(data[0]).filter(function(key) { return key !== "timeStep"; }));
+
+                            var physicalProperty = color.domain().map(function(name) {
+                                return {
+                                    name: name,
+                                    values: data.map(function(d) {
+                                        return {timeStep: d.timeStep, givenValue: +d[name]};
+                                    })
+                                };
+                            });
+
+                            x.domain(d3.extent(data, function(d) { return d.timeStep; }));
+
+                            y.domain([
+                                d3.min(physicalProperty, function(c) { return d3.min(c.values, function(v) { return v.givenValue; }); }),
+                                d3.max(physicalProperty, function(c) { return d3.max(c.values, function(v) { return v.givenValue; }); })
+                            ]);
+
+                            svg.append("g")
+                                    .attr("class", "x axis")
+                                    .attr("transform", "translate(0," + height + ")")
+                                    .call(xAxis);
+
+                            svg.append("g")
+                                    .attr("class", "y axis")
+                                    .call(yAxis)
+                                    .append("text")
+                                    .attr("transform", "rotate(-90)")
+                                    .attr("y", 6)
+                                    .attr("dy", ".71em")
+                                    .style("text-anchor", "end")
+                                    .text("Power [W]");
+
+                            var property = svg.selectAll(".property")
+                                    .data(physicalProperty)
+                                    .enter().append("g")
+                                    .attr("class", "property");
+
+                            property.append("path")
+                                    .attr("class", "line")
+                                    .attr("d", function(d) { return line(d.values); })
+                                    .style("stroke", function(d) { return color(d.name); });
+
+                            property.append("text")
+                                    .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
+                                    .attr("transform", function(d) { return "translate(" + x(d.value.timeStep) + "," + y(d.value.givenValue) + ")"; })
+                                    .attr("x", 3)
+                                    .attr("dy", ".35em")
+                                    .text(function(d) { return d.name; });
+                        });
+
+
+
+
+
+                        //d3 end
+
+                    }.bindToEventHandler(file));
+                }
+                return false;
+            });
+            Function.prototype.bindToEventHandler = function bindToEventHandler() {
+                var handler = this;
+                var boundParameters = Array.prototype.slice.call(arguments);
+                //create closure
+                return function(e) {
+                    e = e || window.event; // get window.event if e argument missing (in IE)
+                    boundParameters.unshift(e);
+                    handler.apply(this, boundParameters);
+                }
+            };
+        });
+    } else {
+        document.getElementById('status').innerHTML = 'Your browser does not support the HTML5 FileReader.';
+    }
+    function addEventHandler(obj, evt, handler) {
+        if(obj.addEventListener) {
+            // W3C method
+            obj.addEventListener(evt, handler, false);
+        } else if(obj.attachEvent) {
+            // IE method.
+            obj.attachEvent('on'+evt, handler);
+        } else {
+            // Old school method.
+            obj['on'+evt] = handler;
+        }
+    }
+
+    var margin = {top: 20, right: 80, bottom: 30, left: 50},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+    var x = d3.scale.linear()
+            .range([0, width]);
+
+    var y = d3.scale.linear()
+            .range([height, 0]);
+
+    var color = d3.scale.category10();
+
+    var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
+    var line = d3.svg.line()
+            .interpolate("basis")
+            .x(function(d) { return x(d.timeStep); })
+            .y(function(d) { return y(d.givenValue); });
+
+    var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+</script>
+</html>

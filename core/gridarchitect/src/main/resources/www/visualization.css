@@ -1,0 +1,141 @@
+body {
+  font: 12px sans-serif;
+}
+
+path {
+    stroke: steelblue;
+    stroke-width: 1;
+    fill: none;
+}
+
+circle {
+  fill: #fff;
+  stroke: #000;
+}
+
+img { vertical-align: middle ; }
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axisGrid path,
+.axisGrid line {
+    fill: none;
+    stroke: lightgrey;
+    shape-rendering: crispEdges;
+    stroke-dasharray: 3
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+.focus circle {
+    fill: orange;
+}
+.focus text {
+    font-family: sans-serif;
+    font-size: 16px;
+    text-anchor: start;
+    fill: green;
+}
+.bar rect {
+    fill: green;
+}
+.area {
+    fill: green;
+    stroke-width: 0;
+    opacity: 0.5;
+}
+
+#textNumbers {
+    font-size: 11px;
+    fill: blue;
+    text-anchor: middle;
+}
+
+#textNames {
+    font-size: 11px;
+    fill: black;
+    text-anchor: end;
+}
+
+#header-background{
+    position:absolute;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+    background: linear-gradient(to bottom, #CDC9C9 0%,#8B8989 100%);
+    z-index: -1;
+}
+
+#site-container{
+    margin-left:auto;
+    margin-right:auto;
+    width: 1240px
+}
+
+#header{
+    height:105px
+}
+
+#chart1{
+    width: 940px; 
+    float:right;
+}
+
+#chart2{
+    width: 940px;
+    float:right;
+}
+
+#properties {
+    background: linear-gradient(to bottom, #CDC9C9 0%,#8B8989 100%);
+    font: 16px sans-serif;
+    width: 280px; 
+    float:left;
+    color:white;
+}
+
+#Navigation {
+    width: 290px;
+    padding:0px;
+    margin:0px;
+    float:left;    
+}
+
+ul#Navigation a {
+    display:block;
+    margin-bottom: 5px;
+    padding-left: 5px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    font: 16px sans-serif;
+    font-weight: bold; 
+    background: linear-gradient(to bottom, #6D9AFF 0%,#2166FF 100%);
+    text-decoration: none;
+    color: white;
+}
+
+ul#Navigation span {
+    display:block;
+    margin-bottom: 5px;
+    padding-left: 5px;
+    padding-top: 18px;
+    padding-bottom: 18px;    
+    font: 16px sans-serif;
+    font-weight: bold; 
+    background: linear-gradient(to bottom, #2166FF 0%,#0033A0 100%);
+    text-decoration: none;
+    color: white;
+}
+
+ul#Navigation a:hover {
+    background: linear-gradient(to bottom, #2166FF 0%,#0033A0 100%);
+    color: white;
+}

@@ -1,0 +1,103 @@
+{
+  "name" : "ActorSupervisor",
+  "children" : [ {
+    "name" : "DEMS",
+    "children" : [ {
+      "name" : "DachMTZ",
+      "children" : null
+    }, {
+      "name" : "DachIsar2",
+      "children" : null
+    }, {
+      "name" : "DachMoosburgBetriebshof",
+      "children" : null
+    }, {
+      "name" : "DachSchulungszentrum",
+      "children" : null
+    }, {
+      "name" : "DachGEWOFAG",
+      "children" : null
+    }, {
+      "name" : "FassadeHeizwerkFreiham",
+      "children" : null
+    }, {
+      "name" : "DachGewerbehofGiesing",
+      "children" : null
+    }, {
+      "name" : "DachMesseRiemParkhaus",
+      "children" : null
+    }, {
+      "name" : "DachRiemersee",
+      "children" : null
+    }, {
+      "name" : "DachMesseMuenchen",
+      "children" : null
+    }, {
+      "name" : "DachHansJensenWeg10",
+      "children" : null
+    }, {
+      "name" : "DachPasingerFabrik",
+      "children" : null
+    }, {
+      "name" : "DachTramWerkstaette",
+      "children" : null
+    }, {
+      "name" : "DachMGS",
+      "children" : null
+    }, {
+      "name" : "U-BahnhofNeuperlachSued",
+      "children" : null
+    }, {
+      "name" : "DachHeizwerkRiem",
+      "children" : null
+    }, {
+      "name" : "DachSchuleDroste-Huelshoff-Str",
+      "children" : null
+    }, {
+      "name" : "DachSWMZentrale",
+      "children" : null
+    }, {
+      "name" : "WindFroettmaning",
+      "children" : null
+    }, {
+      "name" : "BioMass1",
+      "children" : null
+    }, {
+      "name" : "BioMass2",
+      "children" : null
+    }, {
+      "name" : "BioMass3",
+      "children" : null
+    }, {
+      "name" : "BioMass4",
+      "children" : null
+    }, {
+      "name" : "BioMass5",
+      "children" : null
+    }, {
+      "name" : "BioMass6",
+      "children" : null
+    }, {
+      "name" : "BioMass7",
+      "children" : null
+    }, {
+      "name" : "BioMass8",
+      "children" : null
+    }, {
+      "name" : "BioMass9",
+      "children" : null
+    }, {
+      "name" : "BioMass10",
+      "children" : null
+    }, {
+      "name" : "BioGasTierparkHellabrunn",
+      "children" : null
+    }, {
+      "name" : "BioGasMichaelibad",
+      "children" : null
+    }, {
+      "name" : "BioGas---Unzuverlaessig",
+      "children" : null
+    } ]
+  } ]
+}
