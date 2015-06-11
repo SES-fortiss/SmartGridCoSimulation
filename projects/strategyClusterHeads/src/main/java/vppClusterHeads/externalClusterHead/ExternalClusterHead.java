@@ -1,0 +1,123 @@
+/*
+ * Copyright (c) 2011-2015, fortiss GmbH.
+ * Licensed under the Apache License, Version 2.0.
+ *
+ * Use, modification and distribution are subject to the terms specified
+ * in the accompanying license file LICENSE.txt located at the root directory
+ * of this software distribution.
+ */
+
+package vppClusterHeads.externalClusterHead;
+
+import java.util.LinkedList;
+
+import vppClusterHeads.clusterHead.ClusterHeadAnswerContent;
+import vppClusterHeads.genericStuff.GenericRequestContent;
+import akka.advancedMessages.ErrorAnswerContent;
+import akka.basicMessages.AnswerContent;
+import akka.basicMessages.RequestContent;
+import behavior.BehaviorModel;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+/**
+ * 
+ * @author bytschkow
+ */
+
+public class ExternalClusterHead extends BehaviorModel{
+	
+    public ClusterHeadAnswerContent answerContentToSend = new ClusterHeadAnswerContent();
+    public GenericRequestContent requestContentToSend = new GenericRequestContent();
+    
+    public double actualAggregatedPowerProduction = 0.0;
+    public double expectedAggregatedPowerProduction = 0.0;
+    
+    public String message;
+    public Gson gson = new Gson();
+    
+    public ClusterHeadConnection connection;
+            
+    /*
+     * Constructor
+     */
+    public ExternalClusterHead() {
+    	actorName = this.fullActorPath;
+    	answerContentToSend.name = actorName;
+    	
+    	try {
+			connection = new ClusterHeadConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+			connection = null;
+		}
+    	
+    }
+	
+	@Override
+	public void handleRequest() {}
+
+    @Override
+    public void makeDecision() {
+    	    	
+    	double solarPower = 0.0;
+    	
+    	actualAggregatedPowerProduction = 0.0;
+    	expectedAggregatedPowerProduction = 0.0;    	
+    	
+    	if (connection != null){
+    		
+    		try {
+    			message = connection.readValues();
+    			System.out.println(this.actorName + ": ReceivedMessage: " + message);    			     			
+			} catch (Exception e) {
+				//e.printStackTrace();
+				System.out.println(this.actorName + ": No connection to Ardino - all values will be set to 0"); 
+				message = "{\"SetPoint\": 0, \"PV\": 0, \"PVFortiss\":0, \"Wind\": 0, \"BHKW\": 0, \"RequestPower\": 0}";
+			}
+    	}
+
+		JsonObject json = (JsonObject) new JsonParser().parse(message);
+    	
+    	//System.out.println(message);
+		//System.out.println(json.get("PV"));
+		
+		actualAggregatedPowerProduction = json.get("PV").getAsDouble();
+		solarPower = json.get("PV").getAsDouble();
+		
+		if (json.get("PVFortiss") != null){
+			actualAggregatedPowerProduction += json.get("PVFortiss").getAsDouble();
+			solarPower += json.get("PVFortiss").getAsDouble();
+		}
+		
+		answerContentToSend.solar = solarPower;
+		
+		actualAggregatedPowerProduction += json.get("Wind").getAsDouble();
+		answerContentToSend.wind = json.get("Wind").getAsDouble();
+		
+		actualAggregatedPowerProduction += json.get("BHKW").getAsDouble();
+		answerContentToSend.bioGas = json.get("BHKW").getAsDouble();
+    	
+    	answerContentToSend.scheduled = json.get("SetPoint").getAsDouble();
+    	answerContentToSend.requestedPower = json.get("RequestPower").getAsDouble();
+    	
+    	answerContentToSend.total = actualAggregatedPowerProduction;
+    	answerContentToSend.name = actorName;
+    }
+
+	@Override
+	public AnswerContent returnAnswerContentToSend() {
+		return answerContentToSend;
+	}
+	
+	@Override
+	public RequestContent returnRequestContentToSend() {
+		return requestContentToSend;
+	}
+
+	@Override
+	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
+	
+}

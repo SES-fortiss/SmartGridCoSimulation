@@ -1,0 +1,73 @@
+/*
+ * Copyright (c) 2011-2015, fortiss GmbH.
+ * Licensed under the Apache License, Version 2.0.
+ *
+ * Use, modification and distribution are subject to the terms specified
+ * in the accompanying license file LICENSE.txt located at the root directory
+ * of this software distribution.
+ */
+
+package vppClusterHeads.genericStuff;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
+import akka.basicMessages.AnswerContent;
+
+/**
+ * 
+ * This is a specific AnswerContent
+ * 
+ * @author bytschkow
+ *
+ */
+
+public class GenericAnswerContent implements AnswerContent {
+
+	public VPPPlantType plantType;
+	public double installedPower;
+	public double currentPower;
+	public double scheduledProduction;
+	public double forecastPower;
+	public double costs;
+	public String IN;
+	public String OUT;
+	public double positiveFlexibility;
+	public double negativeFlexibility;
+
+	public double flexibilityFactorConformation;
+
+	final static DecimalFormatSymbols format = new DecimalFormatSymbols(
+			Locale.ENGLISH);
+	protected final static DecimalFormat df =
+			new DecimalFormat("#0.00", format);
+
+	public GenericAnswerContent() {
+
+	}
+
+	public String toString() {
+		return "currentProducton: " + df.format(currentPower)
+				+ "  forecastPower: " + df.format(forecastPower)
+				+ "  installedPower: " + df.format(installedPower)
+				+ "  positiveFlexibility: " + df.format(positiveFlexibility)
+				+ "  negativeFlexibility: " + df.format(negativeFlexibility)
+				+ "  flexibilityFactorConformation: "
+				+ df.format(flexibilityFactorConformation) + "  costs: "
+				+ df.format(costs);
+	}
+
+	public String toHTML() {
+		return "currentProducton: " + df.format(currentPower) + "<br>"
+				+ "expectedProduction: " + df.format(forecastPower) + "<br>"
+				+ "installedPower: " + df.format(installedPower) + "<br>"
+				+ "flexibilityFactorConformation: "
+				+ df.format(flexibilityFactorConformation) + "<br>" + "costs: "
+				+ df.format(costs);
+	}
+
+	public boolean simpleEquals(Object o) {
+		return false;
+	}
+}
