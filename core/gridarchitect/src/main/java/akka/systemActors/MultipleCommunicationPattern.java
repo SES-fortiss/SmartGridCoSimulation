@@ -65,12 +65,14 @@ public class MultipleCommunicationPattern {
 	public static void askChildren(BasicActor gridActor) throws Exception {
 		if (gridActor.getContext().getChildren().iterator().hasNext())
 		{
+			
 			BasicRequest request;
+			RequestContent requestContent = gridActor.returnRequestContentToSend();
 
 			// check if it is a MultiRequestContainer
-			if (gridActor.returnRequestContentToSend() instanceof MultiRequestContainer)
+			if (requestContent instanceof MultiRequestContainer)
 			{
-				MultiRequestContainer mrequest = (MultiRequestContainer) gridActor.returnRequestContentToSend();
+				MultiRequestContainer mrequest = (MultiRequestContainer) requestContent;
 				
 				// send the current message to the children
 				if (mrequest.getCurrentRequestContent() instanceof SingleReceiverRequestContainer)
@@ -85,7 +87,7 @@ public class MultipleCommunicationPattern {
 			}
 			else
 			{
-				request = new BasicRequest(gridActor.getCurrentTimeStep(), gridActor.downStreamTrace, gridActor.returnRequestContentToSend());
+				request = new BasicRequest(gridActor.getCurrentTimeStep(), gridActor.downStreamTrace, requestContent);
 				executeAskChildrenLogic(gridActor, request);
 			}
 
@@ -164,8 +166,11 @@ public class MultipleCommunicationPattern {
 	public static void doSomeWork(BasicActor gridActor, BasicRequest message) {
 		// check if Map needs some initialization
 		initHashMap();
+		
 		// check first if the given Message is a MultiMessage
-		handleMultiRequest(gridActor.returnRequestContentToSend());
+		// FIXME isnt that a bug, that the actor checks it own request, instead of the received request?
+		handleMultiRequest(message.requestContent);
+		//handleMultiRequest(gridActor.returnRequestContentToSend());
 
 		// if the current gridActor has send a MultiMessage, all the messages inside the MultiMessage have to be processed
 		if (checkIfMultiMessage(gridActor))
@@ -223,8 +228,8 @@ public class MultipleCommunicationPattern {
 		// If the actor didn't replyed yet, then do reply
 		if (gridActor.reportToParentEnabled)
 		{
-			BasicAnswer answer = new BasicAnswer(gridActor.getCurrentTimeStep(), gridActor.upStreamTrace, true, false, gridActor
-					.getSelf().path().toString(), gridActor.returnAnswerContentToSend());
+			BasicAnswer answer = new BasicAnswer(gridActor.getCurrentTimeStep(), gridActor.upStreamTrace, true, false, 
+					gridActor.getSelf().path().toString(), gridActor.returnAnswerContentToSend());
 
 			gridActor.getSender().tell(answer, gridActor.getSelf());
 			// REMINDER warum wird ein upStreamTrace benötigt (evtl. gehts auch ohne?)

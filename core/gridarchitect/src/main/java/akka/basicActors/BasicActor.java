@@ -453,7 +453,6 @@ public class BasicActor extends UntypedActor {
 	}
 
 	public RequestContent returnRequestContentToSend() {
-
 		return this.actorOptions.behaviorModel.returnRequestContentToSend();
 	}
 
