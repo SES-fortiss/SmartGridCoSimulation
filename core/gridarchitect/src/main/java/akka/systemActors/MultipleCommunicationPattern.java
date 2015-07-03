@@ -42,7 +42,16 @@ import configuration.GridArchitectConfiguration;
  * Helper Class containing all akka specific Communication.
  */
 public class MultipleCommunicationPattern {
+	
+	private static HashMap<String, RequestContent> senderToMultipleRequestMapping;
+	private static boolean debugging = false;
 
+	/*****************************************************************************
+	 * BEGIN: Methods to handle specificActor communication 
+	 * 
+	 * taken from original communication pattern from Alex
+	 *****************************************************************************/
+	
 	public static void answerSpecificActor(BasicActor gridActor, ActorRef sender) {
 		if (!gridActor.detectCircle())
 		{
@@ -52,49 +61,18 @@ public class MultipleCommunicationPattern {
 		else
 		{
 			gridActor.reportToParentEnabled = true;
-
-			sender.tell(new DirectAnswerMessage(gridActor.getCurrentTimeStep(), gridActor.upStreamTrace, 0.0), gridActor.getSelf());
-
-			gridActor
-					.getContext()
-					.parent()
-					.tell(new BasicAnswer(gridActor.getCurrentTimeStep(), gridActor.upStreamTrace, true, false,
-							gridActor.getSelf().path().toString(), gridActor.answerContent), gridActor.getSelf());
-		}
-	}
-	public static void askChildren(BasicActor gridActor) throws Exception {
-		if (gridActor.getContext().getChildren().iterator().hasNext())
-		{
 			
-			BasicRequest request;
-			RequestContent requestContent = gridActor.returnRequestContentToSend();
-
-			// check if it is a MultiRequestContainer
-			if (requestContent instanceof MultiRequestContainer)
-			{
-				MultiRequestContainer mrequest = (MultiRequestContainer) requestContent;
-				
-				// send the current message to the children
-				if (mrequest.getCurrentRequestContent() instanceof SingleReceiverRequestContainer)
-				{
-					executeAskSpecificChildrenLogic(gridActor, (SingleReceiverRequestContainer) mrequest.getCurrentRequestContent());
-				}
-				else
-				{
-					request = new BasicRequest(gridActor.getCurrentTimeStep(), gridActor.downStreamTrace, mrequest.getCurrentRequestContent());
-					executeAskChildrenLogic(gridActor, request);
-				}
-			}
-			else
-			{
-				request = new BasicRequest(gridActor.getCurrentTimeStep(), gridActor.downStreamTrace, requestContent);
-				executeAskChildrenLogic(gridActor, request);
-			}
-
+			sender.tell(new DirectAnswerMessage(gridActor.getCurrentTimeStep(), gridActor.upStreamTrace, 0.0), gridActor.getSelf());
+			
+			BasicAnswer basicAnswer = new BasicAnswer(
+					gridActor.getCurrentTimeStep(), 
+					gridActor.upStreamTrace, true, false,
+					gridActor.getSelf().path().toString(), gridActor.answerContent);
+			
+			gridActor.getContext().parent().tell(basicAnswer, gridActor.getSelf());
 		}
-		gridActor.upStreamTrace.add(gridActor.getSelf());
 	}
-
+	
 	public static void askSpecificActor(BasicActor gridActor) {
 		if (!gridActor.actorOptions.directConnectionsPathList.isEmpty() && !gridActor.detectCircle())
 		{
@@ -125,6 +103,47 @@ public class MultipleCommunicationPattern {
 			}
 		}
 	}
+	
+	/*****************************************************************************
+	 * END: Methods to handle specificActor communication 
+	 *****************************************************************************/
+
+	/*****************************************************************************
+	 * Begin: Methods to handle children communication 
+	 *****************************************************************************/
+	
+	public static void askChildren(BasicActor gridActor) throws Exception {		
+		
+		// If there are children, then ...
+		if (gridActor.getContext().getChildren().iterator().hasNext())
+		{			
+			BasicRequest request;
+			RequestContent requestContent = gridActor.returnRequestContentToSend();
+
+			// check if it is a MultiRequestContainer
+			if (requestContent instanceof MultiRequestContainer)
+			{
+				MultiRequestContainer mrequest = (MultiRequestContainer) requestContent;
+				
+				// send the current message to the children
+				if (mrequest.getCurrentRequestContent() instanceof SingleReceiverRequestContainer)
+				{
+					executeAskSpecificChildrenLogic(gridActor, (SingleReceiverRequestContainer) mrequest.getCurrentRequestContent());
+				}
+				else
+				{
+					request = new BasicRequest(gridActor.getCurrentTimeStep(), gridActor.downStreamTrace, mrequest.getCurrentRequestContent());
+					executeAskChildrenLogic(gridActor, request);
+				}
+			}
+			else // normal execution without MultiRequestContainer
+			{
+				request = new BasicRequest(gridActor.getCurrentTimeStep(), gridActor.downStreamTrace, requestContent);
+				executeAskChildrenLogic(gridActor, request);
+			}
+		}
+		gridActor.upStreamTrace.add(gridActor.getSelf());
+	}
 
 	/**
 	 * Check if the given BasicActor has an entry in the HashMap.
@@ -146,13 +165,12 @@ public class MultipleCommunicationPattern {
 	private static boolean checkIfMultiMessage(BehaviorModel gridActorModel) {
 		if (senderToMultipleRequestMapping == null)
 		{
-			initHashMap();
+			senderToMultipleRequestMapping = new HashMap<>();
 			return false;
 		}
 		else
 		{
 			String path = gridActorModel.fullActorPath;
-
 			return senderToMultipleRequestMapping.containsKey(path);
 		}
 	}
@@ -164,13 +182,11 @@ public class MultipleCommunicationPattern {
 	 * @param message
 	 */
 	public static void doSomeWork(BasicActor gridActor, BasicRequest message) {
-		// check if Map needs some initialization
-		initHashMap();
+		// check if Map needs some initialization		
+		if (senderToMultipleRequestMapping == null)	senderToMultipleRequestMapping = new HashMap<>();
 		
-		// check first if the given Message is a MultiMessage
-		// FIXME isnt that a bug, that the actor checks it own request, instead of the received request?
-		handleMultiRequest(message.requestContent);
-		//handleMultiRequest(gridActor.returnRequestContentToSend());
+		// check first if the given Message is a MultiMessage		
+		handleMultiRequest(message.requestContent);		
 
 		// if the current gridActor has send a MultiMessage, all the messages inside the MultiMessage have to be processed
 		if (checkIfMultiMessage(gridActor))
@@ -247,11 +263,14 @@ public class MultipleCommunicationPattern {
 
 	}
 
-	private static void executeAskChildrenLogic(BasicActor gridActor, BasicRequest request) throws Exception {
+	private static void executeAskChildrenLogic(BasicActor gridActor, BasicRequest request) throws Exception {		
+		
 		// Patterns.ask() returns a Future<Object>
 		List<Future<Object>> childrenResponseList = new ArrayList<Future<Object>>();
 
-		for (ActorRef child : gridActor.getContext().getChildren())
+		Iterable<ActorRef> children = gridActor.getContext().getChildren();
+		
+		for (ActorRef child : children)
 		{
 			ConstantLogger.logMessageSendCounter(request);
 			// wait x ms for response
@@ -259,23 +278,26 @@ public class MultipleCommunicationPattern {
 		}
 
 		Future<Iterable<Object>> childrenFuturesIterable = sequence(childrenResponseList, gridActor.getContext().system().dispatcher());
-		Iterable<Object> childrenResponsesIterable = Await.result(childrenFuturesIterable, Duration.create((GridArchitectConfiguration.childrenResponseTime), TimeUnit.MILLISECONDS)); // childrenResponsesIterableTimeOut
-
+		Iterable<Object> childrenResponsesIterable = Await.result(childrenFuturesIterable, Duration.create((GridArchitectConfiguration.childrenResponseTime), TimeUnit.MILLISECONDS)); // childrenResponsesIterableTimeOut		
+		
 		gridActor.answerListReceived = new ArrayList<BasicAnswer>();
-		for (Object receivedAnswer : childrenResponsesIterable)
+		for (Object iteratorResponses : childrenResponsesIterable)
 		{
-			gridActor.answerListReceived.add((BasicAnswer) receivedAnswer);
-			ConstantLogger.logMessageSendCounter((BasicAnswer) receivedAnswer);
-			if (((BasicAnswer) receivedAnswer).overrideReportToParent)
+			BasicAnswer receivedAnswer = (BasicAnswer) iteratorResponses;
+			
+			gridActor.answerListReceived.add( receivedAnswer);
+			ConstantLogger.logMessageSendCounter(receivedAnswer);
+			if (receivedAnswer.overrideReportToParent)
 			{
 				gridActor.reportToParentEnabled = true;
 				gridActor.overrideReportToParent = true;
 			}
 
-			for (ActorRef actor : ((BasicAnswer) receivedAnswer).upstreamActorTrace)
+			// if multiple levels of hierarchie exist all actors will be included in the list 
+			for (ActorRef actor : receivedAnswer.upstreamActorTrace)
 			{
 				gridActor.upStreamTrace.add(actor);
-			}
+			}			
 		}
 	}
 
@@ -288,20 +310,21 @@ public class MultipleCommunicationPattern {
 		gridActor.prepareRequest();
 		if (debugging)
 		{
-			System.out.println("		---- Loop " + " Message type " + mrequest.getCurrentRequestContent() + " --------");
+			System.out.println("---- Loop " + " Message type " + mrequest.getCurrentRequestContent() + " --------");
 		}
 		executeAskLogic(gridActor, mrequest.getCurrentRequestContent());
 	}
 
 	private static void executeAskLogic(BasicActor gridActor, RequestContent request) {
-
+		
+		// FIXME the check if the request is a ping or not shall be part of the errorHandling mechanism, not the normal execution
 		if (request instanceof PingRequestContent)
 		{
 			gridActor.makeDecision();
 		}
 		else
 		{
-			gridActor.askChildren();
+			gridActor.askChildren();			
 			gridActor.makeDecision();
 		}
 	}
@@ -372,27 +395,12 @@ public class MultipleCommunicationPattern {
 	public static void handleMultiRequest(RequestContent message) {
 		if (message instanceof MultiRequestContainer)
 		{
-			MultiRequestContainer mrequest = ((MultiRequestContainer) message);
-
-			if (senderToMultipleRequestMapping == null)
-			{
-				initHashMap();
-			}
-
+			MultiRequestContainer mrequest = ((MultiRequestContainer) message);			
 			String path = mrequest.sender.fullActorPath;
 
 			// add the sender and the message to the HashMap. Needs to be available in the next loops
+			if (senderToMultipleRequestMapping == null) senderToMultipleRequestMapping = new HashMap<>();
 			senderToMultipleRequestMapping.put(path, mrequest);
-		}
-	}
-
-	/**
-	 * Initialize the HashMap, but only if the HashMap is still null
-	 */
-	private static void initHashMap() {
-		if (senderToMultipleRequestMapping == null)
-		{
-			senderToMultipleRequestMapping = new HashMap<>();
 		}
 	}
 
@@ -403,10 +411,7 @@ public class MultipleCommunicationPattern {
 	 *            the BasicActor which should be checked
 	 */
 	private static void removeMultiMessageValue(BasicActor gridActor) {
-		if (senderToMultipleRequestMapping == null)
-		{
-			initHashMap();
-		}
+		if (senderToMultipleRequestMapping == null) senderToMultipleRequestMapping = new HashMap<>();
 		else
 		{
 			String path = gridActor.actorOptions.behaviorModel.fullActorPath;
@@ -414,12 +419,6 @@ public class MultipleCommunicationPattern {
 			{
 				senderToMultipleRequestMapping.remove(path);
 			}
-
 		}
 	}
-
-	// actorPath to request mapping
-	private static HashMap<String, RequestContent> senderToMultipleRequestMapping;
-
-	private static boolean debugging = false;
 }

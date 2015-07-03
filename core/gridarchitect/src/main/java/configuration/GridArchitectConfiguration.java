@@ -11,15 +11,20 @@ package configuration;
 
 public abstract class GridArchitectConfiguration {
 	
-	public static final boolean printErrorStatistic = false;
-	public static final boolean unitTestingEnable = false;
-	public static final boolean logResults = true;
+	// configuration for the module of error handling by Luc --> MultiCommunication
+	public static boolean errorHandlerActive = false;
+	public static boolean printErrorStatistic = false;
+	public static boolean unitTestingEnable = false;
+	public static boolean logResults = false;
 	
-	public static final int rootActorResponseTime = 200000;
-	public static final int childrenResponseTime = 200000;
+	// Configuration of the time for a response
+	public static int rootActorResponseTime = 200000;
+	public static int childrenResponseTime = 200000;
 
-	public static long demoDelay = 0;
+	// Delay if the simulation is to quick 
+	public static long demoDelay = 0;	
 	
-	public static final boolean showPowerFlowDetails = true;
-	public static final boolean exportCIMFile = false;
+	// PowerFlowDetails
+	public static boolean showPowerFlowDetails = true;
+	public static boolean exportCIMFile = false;
 }

@@ -16,8 +16,30 @@ import org.junit.Test;
 public class StandardLastProfilTest {
 
 	@Test
-	public void test() {
-		StandardLastProfil.getH0Demand(5000, LocalDateTime.now());
+	public void testReadings() {		
+		System.out.println();
+		System.out.println("testReadings");
+		System.out.println(StandardLastProfil.getH0Demand(5000, LocalDateTime.now()));
+	}
+	
+	@Test
+	public void testSeason(){
+		System.out.println();
+		System.out.println("testSeasons");
+		System.out.println(StandardLastProfil.getH0Demand(5000, LocalDateTime.of(2015, 1, 1, 1, 0)));
+		System.out.println(StandardLastProfil.getH0Demand(5000, LocalDateTime.of(2015, 4, 1, 1, 0)));
+		System.out.println(StandardLastProfil.getH0Demand(5000, LocalDateTime.of(2015, 8, 1, 1, 0)));
+		System.out.println(StandardLastProfil.getH0Demand(5000, LocalDateTime.of(2015, 11, 1, 1, 0)));
+	}
+	
+	@Test
+	public void testInterpolation(){
+		System.out.println();
+		System.out.println("testInterpolation");
+		System.out.println(StandardLastProfil.getH0Demand(5000, LocalDateTime.of(2015, 11, 1, 1, 0)));
+		System.out.println(StandardLastProfil.getH0Demand(5000, LocalDateTime.of(2015, 11, 1, 1, 15)));
+		System.out.println(StandardLastProfil.getH0DemandInterpolated(5000, LocalDateTime.of(2015, 11, 1, 1, 7)));
+		System.out.println(StandardLastProfil.getH0DemandInterpolated(5000, LocalDateTime.of(2015, 11, 1, 1, 15)));
 	}
 
 }

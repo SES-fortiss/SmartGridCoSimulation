@@ -217,13 +217,12 @@ public class BasicActor extends UntypedActor {
 			{
 				BasicRequest request = (BasicRequest) message;
 				this.timeValue = request.timeValue;
-
 				this.downStreamTrace = new ArrayList<ActorRef>();
 				this.downStreamTrace.addAll(request.actorTrace);
 				this.downStreamTrace.add(getSelf());
 
 				doSomeWork((BasicRequest) message);
-
+				
 			}
 			catch (Exception e)
 			{
@@ -351,98 +350,102 @@ public class BasicActor extends UntypedActor {
 	 * Wrapper method for all defined Behaviors.
 	 ******************************************/
 	public void makeDecision() {
+		
 		this.actorOptions.behaviorModel.actualTimeValue = timeValue;
 		this.actorOptions.behaviorModel.answerListReceived = this.answerListReceived;
-
-		// if a child replied with null it should be interpreted as if the child did not reply at all
-		LinkedList<ErrorAnswerContent> errorAnswers = new LinkedList<ErrorAnswerContent>();
-		for (BasicAnswer msg : this.actorOptions.behaviorModel.answerListReceived)
-		{
-			
-			// the actor received a faulty message
-			if (msg.answerContent instanceof ErrorAnswerContent)
-			{
-				if (GridArchitectConfiguration.printErrorStatistic)
-					NumberOfErrors++;
-				//System.out.println("Error "+msg.answerContent);
-				ErrorAnswerContent tmp = (ErrorAnswerContent) msg.answerContent;
-				// fill the answer with aditional information
-				tmp.setReciever(this);
-				tmp.setRequest(this.returnRequestContentToSend());
-				tmp.setSender(msg.senderPath);
-				tmp.setBasicAnswer(msg);
-
-				ConstantLogger.logError(tmp);
-				errorAnswers.add(tmp);
-				if (debugging)
-					System.out.println("in error?");
-				
-			}
-			else
-			{
-				if (GridArchitectConfiguration.printErrorStatistic)
+		
+		// if errorHandler is not Active, all ErrorCode stuff shall not be executed
+		if (GridArchitectConfiguration.errorHandlerActive == false) {
+			this.actorOptions.behaviorModel.makeDecision();
+		} else {			
+			// if a child replied with null it should be interpreted as if the child did not reply at all
+			LinkedList<ErrorAnswerContent> errorAnswers = new LinkedList<ErrorAnswerContent>();
+			for (BasicAnswer msg : this.actorOptions.behaviorModel.answerListReceived)
+			{	
+				// the actor received a faulty message
+				if (msg.answerContent instanceof ErrorAnswerContent)
 				{
-					long starttime = System.currentTimeMillis();
-					// add the healthy messages to the history
-					this.messageHistory.addHistoryEntry(msg.timeStep, msg);
-					long endtime = System.currentTimeMillis();
+					if (GridArchitectConfiguration.printErrorStatistic)
+						NumberOfErrors++;
+					//System.out.println("Error "+msg.answerContent);
+					ErrorAnswerContent tmp = (ErrorAnswerContent) msg.answerContent;
+					// fill the answer with aditional information
+					tmp.setReciever(this);
+					tmp.setRequest(this.returnRequestContentToSend());
+					tmp.setSender(msg.senderPath);
+					tmp.setBasicAnswer(msg);
 
-					long tmp = endtime - starttime;
-
-					InsertTime += tmp;
+					ConstantLogger.logError(tmp);
+					errorAnswers.add(tmp);
+					if (debugging)
+						System.out.println("in error?");				
 				}
 				else
 				{
-					// add the healthy messages to the history
-					if (msg.answerContent==null)
+					if (GridArchitectConfiguration.printErrorStatistic)
 					{
-						System.out.println(this.actorOptions.behaviorModel.actorName+" "+requestContentReceived);
-						System.out.println("sender is "+msg.senderPath);
+						long starttime = System.currentTimeMillis();
+						// add the healthy messages to the history
+						this.messageHistory.addHistoryEntry(msg.timeStep, msg);
+						long endtime = System.currentTimeMillis();
+
+						long tmp = endtime - starttime;
+
+						InsertTime += tmp;
 					}
-					this.messageHistory.addHistoryEntry(msg.timeStep, msg);
+					else
+					{
+						// add the healthy messages to the history
+						if (msg.answerContent==null)
+						{
+							System.out.println(this.actorOptions.behaviorModel.actorName+" "+requestContentReceived);
+							System.out.println("sender is "+msg.senderPath);
+						}
+						this.messageHistory.addHistoryEntry(msg.timeStep, msg);
+					}
 				}
 			}
-		}
-		// remove all the null messages from the list
-		for (ErrorAnswerContent message : errorAnswers)
-		{
-			// System.out.println("Error found "+message);
-			this.actorOptions.behaviorModel.answerListReceived.remove(message.getBasicAnswer());
-		}
-
-		// check if all children replied to the request
-		if (errorAnswers.isEmpty())
-		{
-			// all children replied
-			this.actorOptions.behaviorModel.makeDecision();
-		}
-		else
-		{
-			// some children did not reply
-			this.actorOptions.behaviorModel.handleError(errorAnswers);
-
-			this.actorOptions.behaviorModel.makeDecision();
-		}
-
-		if (GridArchitectConfiguration.unitTestingEnable)
-		{
-			// Add answers to the list, to check later in the tests,
-			if (actorOptions.behaviorModel.getCurrentStrategy() != null)
+			// remove all the null messages from the list
+			for (ErrorAnswerContent message : errorAnswers)
 			{
-				BasicFaultStrategy strategy = actorOptions.behaviorModel.getCurrentStrategy();
-				if (strategy != null && strategy.isFinished())
+				// System.out.println("Error found "+message);
+				this.actorOptions.behaviorModel.answerListReceived.remove(message.getBasicAnswer());
+			}
+
+			// check if all children replied to the request
+			if (errorAnswers.isEmpty())
+			{
+				// all children replied
+				this.actorOptions.behaviorModel.makeDecision();
+			}
+			else
+			{
+				// some children did not reply
+				this.actorOptions.behaviorModel.handleError(errorAnswers);
+
+				this.actorOptions.behaviorModel.makeDecision();
+			}
+
+			if (GridArchitectConfiguration.unitTestingEnable)
+			{
+				// Add answers to the list, to check later in the tests,
+				if (actorOptions.behaviorModel.getCurrentStrategy() != null)
 				{
-					AnswerContent answer = this.actorOptions.behaviorModel.returnAnswerContentToSend();
-					// System.out.println(this.actorOptions.behaviorModel.actorName+" added "+answer+" to test");
-					insertAnswerContent(answer);
+					BasicFaultStrategy strategy = actorOptions.behaviorModel.getCurrentStrategy();
+					if (strategy != null && strategy.isFinished())
+					{
+						AnswerContent answer = this.actorOptions.behaviorModel.returnAnswerContentToSend();
+						// System.out.println(this.actorOptions.behaviorModel.actorName+" added "+answer+" to test");
+						insertAnswerContent(answer);
+					}
+				}
+				// Add answers to the list, to check later in the tests
+				if (actorOptions.behaviorModel.actorName.equals("SimpleCommunication"))
+				{
+					insertAnswerContent(this.actorOptions.behaviorModel.returnAnswerContentToSend());
 				}
 			}
-			// Add answers to the list, to check later in the tests
-			if (actorOptions.behaviorModel.actorName.equals("SimpleCommunication"))
-			{
-				insertAnswerContent(this.actorOptions.behaviorModel.returnAnswerContentToSend());
-			}
-		}
+		}// end of else code from errorHandling		
 	}
 
 	/*
