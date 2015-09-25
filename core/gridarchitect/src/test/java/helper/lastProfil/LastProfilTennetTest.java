@@ -9,11 +9,16 @@
 
 package helper.lastProfil;
 
+import static helper.lastProfil.LastProfilTennet.getLoadCommercial;
+import static helper.lastProfil.LastProfilTennet.getLoadDomestic;
+import static helper.lastProfil.LastProfilTennet.getLoadStreetLights;
+import static helper.lastProfil.LastProfilTennet.readFile;
+import static helper.lastProfil.LastProfilTennet.updateTimeIndex;
+
 import java.time.LocalDateTime;
 
 import org.junit.Assert;
 import org.junit.Test;
-import static helper.lastProfil.LastProfilTennet.*;
 
 /**
  * 
@@ -35,10 +40,11 @@ public class LastProfilTennetTest {
 	}
 	
 	@Test
-	public void testLoadCommercial(){		
+	public void testLoads(){		
 		System.out.println(LocalDateTime.now());
 		System.out.println(getLoadCommercial(50000, LocalDateTime.now()));
 		System.out.println(getLoadDomestic(50000, LocalDateTime.now()));
+		System.out.println(getLoadStreetLights(50000, LocalDateTime.now()));
 	}
 
 }

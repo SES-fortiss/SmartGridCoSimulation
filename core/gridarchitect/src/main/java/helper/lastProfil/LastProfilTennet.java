@@ -44,8 +44,8 @@ public class LastProfilTennet {
 	 * @param inputTime Zeitpunkt der Leistung
 	 * @return Last in kWh
 	 */
-	public static double getLoadCommercial(double jahresVerbrauch, LocalDateTime inputTime){
-		updateTimeIndex(inputTime);
+	public static double getLoadCommercial(double jahresVerbrauch, LocalDateTime inputTime){		
+		updateTimeIndex(inputTime);		
 		return loadCommercial[timeIndex]*scalingFactor*jahresVerbrauch;
 	}
 	
@@ -64,8 +64,8 @@ public class LastProfilTennet {
 		return loadStreetLights[timeIndex]*scalingFactor*jahresVerbrauch;
 	}
 	
-	public static boolean updateTimeIndex(LocalDateTime inputTime) {
-		if (!isDataThere) {
+	public static synchronized boolean updateTimeIndex(LocalDateTime inputTime) {
+		if (!isDataThere) {						
 			readFile();
 		}
 		
@@ -97,19 +97,27 @@ public class LastProfilTennet {
 	public static boolean readFile(){
 		try {
 			String source = "src/main/resources/lastProfiles/StandardlastprofileTenneT.csv";
-		    BufferedReader br = new BufferedReader(new FileReader(source)); 
-		    read(br);
+			
+			String location = LastProfilTennet.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			location = location.replace("%20", " ");
+			location = location.substring(0, location.length()-15);
+			location = location + source;
+			
+			FileReader fr = new FileReader(location);
+			BufferedReader br = new BufferedReader(fr);
+		    read(br);			
 		} catch (IOException | ParseException e) {
-				try {
-					String source = "/resources/lastProfiles/StandardlastprofileTenneT.csv";
-					InputStreamReader isr = new InputStreamReader(LastProfilTennet.class.getResourceAsStream(source));					
-					BufferedReader br2 = new BufferedReader(isr);					
-					read(br2);					
-				} catch (IOException | ParseException e1) {
-					e1.printStackTrace();
-					SimulationStarter.stopSimulation();
-					return false;
-				}
+			e.printStackTrace();
+			try {
+				String source = "/resources/lastProfiles/StandardlastprofileTenneT.csv";
+				InputStreamReader isr = new InputStreamReader(LastProfilTennet.class.getResourceAsStream(source));					
+				BufferedReader br2 = new BufferedReader(isr);					
+				read(br2);		
+			} catch (IOException | ParseException e1) {
+				e1.printStackTrace();
+				SimulationStarter.stopSimulation();
+				return false;
+			}
 		}		
 		isDataThere = true;		
 		return true;
@@ -128,7 +136,10 @@ public class LastProfilTennet {
     	
     	// Skip first two lines
     	zeile = br.readLine();
-    	zeile = br.readLine();    
+    	
+    	System.out.println(zeile);
+    	
+    	zeile = br.readLine();
     	
     	while ((zeile = br.readLine()) != null){		    			
 				buffer = zeile.split(";");				
@@ -138,7 +149,7 @@ public class LastProfilTennet {
 				loadCommercial[i] = nf.parse(buffer[4]).doubleValue();
 				loadDomestic[i]= nf.parse(buffer[5]).doubleValue();
 				loadAgriculture[i] = nf.parse(buffer[6]).doubleValue();
-				loadStreetLights[i] = nf.parse(buffer[8]).doubleValue();								
+				loadStreetLights[i] = nf.parse(buffer[9]).doubleValue();								
 				i++;
 		}
     	

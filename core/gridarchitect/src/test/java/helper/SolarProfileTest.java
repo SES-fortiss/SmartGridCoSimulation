@@ -27,4 +27,14 @@ public class SolarProfileTest {
 		Assert.assertTrue(result < 0.6 && result > 0.3);
 	}
 	
+	@Test
+	public void getSumOverDay(){
+		double sum = 0.0;
+		
+		for (int i = 0; i < 96; i++) {
+			sum += SolarProfile.getNormalizedSolarProfileSummer(i);
+		}					
+		Assert.assertTrue(sum > 0.99 && sum < 1.01);
+	}
+	
 }

@@ -17,7 +17,7 @@ package helper;
  */
 
 public class SolarProfile {
-
+		
 	private static double[] solarSummer = {
 			0,0,0,0,
 			0,0,0,0,
@@ -45,6 +45,7 @@ public class SolarProfile {
 			0,0,0,0};
 	
 	private final static double maxValue = getMax(solarSummer);
+	private final static double normFactor = getNormFactor(solarSummer);
 	
 	private static double getMax(double[] array){
 		double result = array[0];
@@ -54,6 +55,15 @@ public class SolarProfile {
 		return result;
 	}
 	
+	private static double getNormFactor(double[] array) {
+		
+		double sum = 0;
+		for (int i = 0; i < array.length; i++) {
+			sum += array[i];
+		}		
+		return 1 / sum;
+	}
+
 	/**
 	 * returns a solar radiation (0..100%) for the given timeStep
 	 * based on a 96 timeStep resolution
@@ -64,5 +74,9 @@ public class SolarProfile {
 	
 	public static double getAvgSolarProfileSummer(int timeStep){
 		return solarSummer[(timeStep % 96)];
+	}
+	
+	public static double getNormalizedSolarProfileSummer(int timeStep){
+		return solarSummer[(timeStep % 96)] * normFactor;
 	}
 }
