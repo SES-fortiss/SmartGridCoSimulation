@@ -1,0 +1,164 @@
+package vppClusterHeads.behaviorModels;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+
+import vppClusterHeads.messageContents.DEMSAggregatorAnswerContent;
+import vppClusterHeads.messageContents.GenericAnswerContent;
+import vppClusterHeads.messageContents.GenericRequestContent;
+import akka.advancedMessages.ErrorAnswerContent;
+import akka.basicMessages.AnswerContent;
+import akka.basicMessages.BasicAnswer;
+import akka.basicMessages.RequestContent;
+import akka.systemActors.GlobalTime;
+import behavior.BehaviorModel;
+
+import com.google.gson.Gson;
+
+/**
+ * DEMSAggregator bekommt alle Nachrichten und kann diese Verarbeiten
+ * 
+ * @author bytschkow
+ */
+
+public class DEMSAggregator extends BehaviorModel{
+	
+    public DEMSAggregatorAnswerContent answerContentToSend = new DEMSAggregatorAnswerContent(0.0,0.0);
+    public GenericRequestContent requestContentToSend = new GenericRequestContent(1.0);
+    
+    public double actualAggregatedPowerProduction = 0.0;
+    public double expectedAggregatedPowerProduction = 0.0;
+            
+    /*
+     * Constructor
+     */
+    public DEMSAggregator() {
+    	this.actorName = "DEMS";
+    }
+	
+	@Override
+	public void handleRequest() {
+    	// requestContentToSend.reductionFactor = decideReductionFactor();
+	}
+
+    @Override
+    public void makeDecision() {
+    	actualAggregatedPowerProduction = 0.0;
+    	expectedAggregatedPowerProduction = 0.0;
+    	
+    	double childProduction = 0.0;
+    	double childPlannedProduction = 0.0;
+    	
+    	//System.out.println(answerListReceived);
+    	
+      	for (BasicAnswer message : super.answerListReceived){
+    		if (message.answerContent instanceof GenericAnswerContent) {
+    			GenericAnswerContent answer = (GenericAnswerContent) message.answerContent;
+				childProduction = answer.currentProduction;
+				childPlannedProduction = answer.expectedProduction;
+    		}
+    		actualAggregatedPowerProduction += childProduction;
+    		expectedAggregatedPowerProduction += childPlannedProduction;
+    	}
+      	
+    	answerContentToSend.currentProduction = actualAggregatedPowerProduction;
+    	answerContentToSend.expectedProduction = expectedAggregatedPowerProduction;
+    	answerContentToSend.time = GlobalTime.currentTimeStep;
+    	
+    	if(true){
+    		System.out.println(actorName + ": " + answerContentToSend);
+    		System.out.println(actorName + ": " + requestContentToSend);
+    	}
+    	
+    	if(true){
+    		createJsonStrings();
+    		addDatatoJson();
+    	}
+    }
+	
+	Gson gson = new Gson();
+    ArrayList<String> jsonStringsList = new ArrayList<String>();
+    boolean jsonStringsNotInitiated = true;
+    String jsonDEMS = "";    
+    
+	private void addDatatoJson() {
+		jsonDEMS = jsonDEMS + gson.toJson(answerContentToSend)+ ",\n";		
+		
+		int i = 0;
+		for (BasicAnswer message : super.answerListReceived){			
+			String string = jsonStringsList.get(i);
+			string = string + gson.toJson(message.answerContent) + ",\n";
+			jsonStringsList.set(i, string);	
+			i++;
+		}
+		
+		if (GlobalTime.currentTimeStep == GlobalTime.lastTimeStep){
+			jsonDEMS = jsonDEMS.substring(0, jsonDEMS.length()-2) +"], \n\"children\" : [";
+			for (int j = 0; j < super.answerListReceived.size(); j++){
+				String string = jsonStringsList.get(j);
+				string = "{" + string.substring(0, string.length()-2) + "]}";				
+				jsonDEMS = jsonDEMS + string + ",";				
+			}
+			jsonDEMS = jsonDEMS.substring(0, jsonDEMS.length()-1) + "]}";
+			printJsonFile();
+		}
+	}
+    
+	private void createJsonStrings() {
+		if (jsonStringsNotInitiated){
+			
+			jsonDEMS = "{\"name\" : \"DEMS\" ,\n \"data\": [\n";
+			
+			for (BasicAnswer message : super.answerListReceived){
+				String sender = message.senderPath;
+			    sender = sender.substring(sender.lastIndexOf('/')+1, sender.length());
+				jsonStringsList.add("\"name\" : \""+ sender + "\" ,\n "
+						+ "\"data\": [\n" );
+				
+			}
+			
+			jsonStringsNotInitiated = false;
+		}
+	}
+
+	/**
+	 * This method prints the Results as a JSON file
+	 */
+	private void printJsonFile() {		
+		
+		try {
+			FileWriter writer = new FileWriter("/Sessim/VPP-Grid-Simulation/Input/DEMSResults.json");
+			writer.write(jsonDEMS);
+			writer.close();
+			writer = new FileWriter("/xampp/htdocs/root/simulation/DEMSResults.json");
+			writer.write(jsonDEMS);
+			writer.close();
+	 
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}	    
+    
+	// Convert aus JSON
+	@Override
+	public DEMSAggregator convertJsonToBehaviorModel(LinkedHashMap<String, Object> jsonMap) {        
+        return new DEMSAggregator();
+	}
+
+	@Override
+	public AnswerContent returnAnswerContentToSend() {
+		return answerContentToSend;
+	}
+	
+	@Override
+	public RequestContent returnRequestContentToSend() {
+		return requestContentToSend;
+	}
+
+	@Override
+	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
+}

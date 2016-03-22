@@ -1,0 +1,94 @@
+package vppClusterHeads.solar;
+
+import java.util.LinkedList;
+
+import helper.SolarProfile;
+import vppClusterHeads.genericStuff.GenericAnswerContent;
+import vppClusterHeads.genericStuff.GenericRequestContent;
+import vppClusterHeads.genericStuff.VPPPlantType;
+import akka.advancedMessages.ErrorAnswerContent;
+import akka.basicMessages.AnswerContent;
+import akka.basicMessages.RequestContent;
+import akka.systemActors.GlobalTime;
+import behavior.BehaviorModel;
+
+/**
+ * Modell vom SolarPanel Verhalten (inkl. aller Parameter)
+ * 
+ * @author bytschkow
+ */
+
+public class SolarBehaviorModel extends BehaviorModel{
+	
+	final VPPPlantType type = VPPPlantType.SOLAR;
+	public double installedPower;
+	public double factor;
+
+	// Answer Content
+    public double actualPower;
+    public double plannedPower;    
+    public GenericAnswerContent answerContentToSend = new GenericAnswerContent(0.0, 0.0);
+    
+    GenericRequestContent request;
+       
+    /*
+     * Constructor
+     */
+    public SolarBehaviorModel() {
+        this.installedPower = 0.0;
+    }    
+    public SolarBehaviorModel(double installedPower) {
+        if (installedPower < 0.0) throw new IllegalArgumentException("installedPower has to be > 0.0: " + installedPower);
+        this.installedPower = installedPower;
+    }
+    public SolarBehaviorModel(String name, double installedPower) {
+        if (installedPower < 0.0) throw new IllegalArgumentException("installedPower has to be > 0.0: " + installedPower);
+        this.installedPower = installedPower;
+        this.actorName = name;
+    }
+	
+	@Override
+	public void handleRequest() {		
+		request = (GenericRequestContent) requestContentReceived;
+		factor = request.reductionFactor;
+	}
+
+    // Entscheidung
+    @Override
+    public void makeDecision() {
+    	    	
+//    	actualPower = installedPower * Swmcsv.getSWMProfileSolar(actualTimeStep);
+//    	plannedPower = installedPower * Swmcsv.getSWMProfileSolar(actualTimeStep+1);
+    	
+    	actualPower = installedPower*SolarProfile.getSolarProfileSummer(GlobalTime.currentTimeStep);
+    	plannedPower = installedPower*SolarProfile.getSolarProfileSummer(GlobalTime.currentTimeStep+1);
+    	
+    	actualPower = actualPower*factor;
+    	
+    	answerContentToSend.time = GlobalTime.currentTimeStep;
+    	answerContentToSend.currentPower = actualPower;
+    	answerContentToSend.scheduledProduction = actualPower;
+    	answerContentToSend.expectedProduction = plannedPower;
+    	answerContentToSend.installedPower = this.installedPower;
+		answerContentToSend.IN = request.toHTML();
+		answerContentToSend.OUT = answerContentToSend.toHTML();
+		answerContentToSend.plantType = type;
+    	
+    	if (this.actorName != "unknown") {
+    		//System.out.println(actorName + ": " + answerContentToSend);
+    	}
+    }
+	
+	@Override
+	public AnswerContent returnAnswerContentToSend() {
+		return answerContentToSend;
+	}
+
+	@Override
+	public RequestContent returnRequestContentToSend() {
+		return null;
+	}
+	
+	@Override
+	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
+}

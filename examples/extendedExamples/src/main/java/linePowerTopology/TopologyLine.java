@@ -9,7 +9,7 @@
 
 package linePowerTopology;
 
-import powerflowApi.PowerflowModel;
+import powerflowApi.PowerflowTopology;
 import topology.ActorTopology;
 
 public class TopologyLine {
@@ -32,7 +32,7 @@ public class TopologyLine {
 			top.addActorAsChild(nodeName, BFactory.createActor(nodeName, 100*i));
 		}
 
-		PowerflowModel pfModel = new PowerflowModel();
+		PowerflowTopology pfModel = new PowerflowTopology();
 
 		for (int i = 1; i <= consumerNum; i++) {
 			nodeName = "/user/ActorSupervisor/SolverAggregator/Node"+i;

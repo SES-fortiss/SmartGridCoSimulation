@@ -12,14 +12,22 @@ package powerflowApi;
 
 /**
  * ActorResults are used to store the results for each timeStep.
- * Currently 
+ * The following properties are available:
+ * 
+ * activePower, reactivePower, voltage and nodeType
+ * 
+ * @author denis
+ * 
  */
 
 public class ActorResults {
 	
-    public final String actorPath; // An ActorResult Object belongs to a specific Actor
-    public Double setPointActivePower = 0.0;
-    public Double setPointReactivePower = 0.0;
+    public final String actorPath; 			// An ActorResult Object belongs to a specific Actor
+    public NodeType nodeType = NodeType.PQ; // default value, should be specified if necessary
+    public Double activePower = 0.0;
+    public Double reactivePower = 0.0;
+    public Double voltage = 0.0;
+    public Double angle = 0.0;
 
     
     public ActorResults(String actorPath) {
@@ -28,21 +36,21 @@ public class ActorResults {
     
     public ActorResults(String actorPath, double setPointActivePower) {
         this.actorPath = actorPath;
-        this.setPointActivePower = setPointActivePower;
+        this.activePower = setPointActivePower;
     }
     
     public ActorResults(String actorPath, Double setPointActivePower, Double setPointReactivePower) {
         this.actorPath = actorPath;
-        this.setPointActivePower = setPointActivePower;
-        this.setPointReactivePower = setPointReactivePower;
+        this.activePower = setPointActivePower;
+        this.reactivePower = setPointReactivePower;
     }
     
     @Override
     public String toString() {
         return "Results{" +
                 "actorPath='" + actorPath + "\', " +
-                "setPointActivePower='" + setPointActivePower + "\', " +
-                "setPointReactivePower='" + setPointReactivePower + "\' " +
+                "activePower='" + activePower + "\', " +
+                "reactivePower='" + reactivePower + "\' " +
                 '}';
     }
 }

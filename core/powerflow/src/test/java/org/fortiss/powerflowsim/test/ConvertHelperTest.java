@@ -9,7 +9,7 @@
 
 package org.fortiss.powerflowsim.test;
 
-import org.fortiss.powerflowsim.simulation.internal.ConvertHelper;
+import org.fortiss.powerflowsim.simulation.helper.ConvertHelper;
 import org.jblas.ComplexDoubleMatrix;
 import org.jblas.DoubleMatrix;
 import org.junit.Test;

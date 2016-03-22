@@ -1,0 +1,17 @@
+package vppClusterHeads.clusterHead;
+
+/**
+ * IndividualRequest
+ * 11.06.2014
+ * @author bytschkow
+ *
+ */
+public class IndividualRequest {
+	public String id;
+	public double setPointPower;
+	
+	public IndividualRequest(String id, double setPoint){
+		this.id = id;
+		this.setPointPower = setPoint;
+	}
+}

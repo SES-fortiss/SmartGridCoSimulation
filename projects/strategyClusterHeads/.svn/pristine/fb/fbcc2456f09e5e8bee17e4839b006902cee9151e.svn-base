@@ -1,0 +1,37 @@
+package vppClusterHeads.dems;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
+import akka.basicMessages.AnswerContent;
+
+/**
+ * DEMSAggregatorAnswerContent
+ * 
+ * @author bytschkow
+ * 
+ * created on 07.05.2014
+ */
+public class DEMSAnswerContent implements AnswerContent  {
+	
+	final static DecimalFormatSymbols format = new DecimalFormatSymbols(Locale.ENGLISH);
+	final static DecimalFormat df = new DecimalFormat("#0.00", format);
+	
+	public String name;
+	
+	public double totalPower;
+	public double scheduledPower;
+	public double solarPower;
+	public double waterPower;
+	public double windPower;
+	public double bioGasPower;
+	public double bioMassPower;	
+		
+	public String toString(){		 
+		return ("AggregatorAnswerContent={" +
+                "totalConsumption: " + df.format(totalPower) + 
+                "  scheduledConsumption: " + df.format(scheduledPower) +
+				"}");
+	}
+}

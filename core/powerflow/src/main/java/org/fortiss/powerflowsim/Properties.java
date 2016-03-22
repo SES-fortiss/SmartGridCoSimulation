@@ -23,8 +23,9 @@ import CIM15.IEC61970.Wires.PowerTransformerEnd;
 public abstract class Properties {
 	@SuppressWarnings("rawtypes")
 	public static Class[] primaryEquipmentClasses = { PowerTransformerEnd.class, EnergySource.class, EnergyConsumer.class, ACLineSegment.class };
-	public static double solverTolerance = 1.0e-5;
-	public static int solverMaxIterations = 30;
-	// change this to "gridlab" to use gridlab bridge
+	public static double solverTolerance = 1.0e-7;
+	public static int solverMaxIterations = 10;
+	
+	// change between "gridlab" and "internal", used only in the PowerFlowSim.class
 	public static String solverEngine = "internal";
 }

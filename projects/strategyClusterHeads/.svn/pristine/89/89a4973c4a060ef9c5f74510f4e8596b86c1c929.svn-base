@@ -1,0 +1,108 @@
+package vppClusterHeads.dems;
+
+import java.io.IOException;
+import java.util.LinkedList;
+
+import vppClusterHeads.clusterHead.ClusterHeadAnswerContent;
+import vppClusterHeads.genericStuff.GenericRequestContent;
+import vppClusterHeads.helper.FileToLocalDiskHelper;
+import vppClusterHeads.helper.SenderToLivingLab;
+import akka.advancedMessages.ErrorAnswerContent;
+import akka.basicMessages.AnswerContent;
+import akka.basicMessages.BasicAnswer;
+import akka.basicMessages.RequestContent;
+import behavior.BehaviorModel;
+
+import com.google.gson.Gson;
+
+/**
+ * DEMSAggregator bekommt alle Nachrichten und kann diese Verarbeiten
+ * 
+ * @author bytschkow
+ */
+
+public class DEMS extends BehaviorModel{
+	
+    public DEMSAnswerContent answerContentToSend = new DEMSAnswerContent();
+    public GenericRequestContent requestContentToSend = new GenericRequestContent(1.0);
+    
+    private boolean connectionToLLdesired = false;
+    
+    Gson gson = new Gson();
+            
+    /*
+     * Constructor
+     */
+    public DEMS() {
+    	this.actorName = "DEMS";
+    }
+	
+	@Override
+	public void handleRequest() {
+    	// requestContentToSend.reductionFactor = decideReductionFactor();
+	}
+
+    @Override
+    public void makeDecision() {
+    	
+    	double childTotalPower = 0.0;
+    	double childSolarPower = 0.0;
+    	double childWindPower = 0.0;
+    	double childWaterPower = 0.0;
+    	double childBioGasPower = 0.0;
+    	double childBioMassPower = 0.0;
+    	
+    	System.out.println("DEMS AnswerList - " + answerListReceived.size());
+    	
+      	for (BasicAnswer message : super.answerListReceived){
+    		if (message.answerContent instanceof ClusterHeadAnswerContent) {
+    			ClusterHeadAnswerContent answer = (ClusterHeadAnswerContent) message.answerContent;
+    			childTotalPower += answer.totalPower;
+    			childSolarPower += answer.solarPower;
+    			childWindPower += answer.windPower;
+    			childWaterPower += answer.waterPower;
+    			childBioGasPower += answer.bioGasPower;
+    			childBioMassPower += answer.bioMassPower;    			
+    		} 		    	
+    	}
+      	
+    	answerContentToSend.totalPower = childTotalPower;
+    	answerContentToSend.solarPower = childSolarPower;
+    	answerContentToSend.windPower = childWindPower;
+    	answerContentToSend.waterPower = childWaterPower;
+    	answerContentToSend.bioGasPower = childBioGasPower;
+    	answerContentToSend.bioMassPower = childBioMassPower;
+    	answerContentToSend.name = this.actorName;
+    	
+    	String answerAsJson = gson.toJson(answerContentToSend);
+    	
+    	if(true){
+    		System.out.println(actorName + ": " + answerAsJson);
+    		//System.out.println(actorName + ": " + requestContentToSend);
+    	}
+    	
+    	FileToLocalDiskHelper.printFileToWWW(answerAsJson);
+    	
+    	if (connectionToLLdesired){
+    		try {
+    			SenderToLivingLab.writeValues(answerAsJson);
+    		} catch (IOException e) {
+    			System.out.println("DEMS could not connect to LivingLab Site to update data");
+    			e.printStackTrace();
+    		}
+    	}    	    	
+    }
+
+	@Override
+	public AnswerContent returnAnswerContentToSend() {
+		return answerContentToSend;
+	}
+	
+	@Override
+	public RequestContent returnRequestContentToSend() {
+		return requestContentToSend;
+	}
+
+	@Override
+	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
+}

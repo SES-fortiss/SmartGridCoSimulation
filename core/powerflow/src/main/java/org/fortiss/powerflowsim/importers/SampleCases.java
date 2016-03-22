@@ -9,7 +9,7 @@
 
 package org.fortiss.powerflowsim.importers;
 
-import org.fortiss.powerflowsim.model.Model;
+import org.fortiss.powerflowsim.model.CimModel;
 import org.fortiss.powerflowsim.model.ModelUtils;
 
 import CIM15.IEC61970.Core.BaseVoltage;
@@ -27,8 +27,8 @@ import CIM15.IEC61970.Wires.WiresFactory;
 
 public abstract class SampleCases {
 
-	public static Model create9BusExample() {
-		Model model = new Model();
+	public static CimModel create9BusExample() {
+		CimModel model = new CimModel();
 
 		// base Voltage
 		BaseVoltage baseVoltage = ModelUtils.createBaseVoltage(model, 240.0);
@@ -55,33 +55,33 @@ public abstract class SampleCases {
 		model.add(bus9);
 
 		// branches
-		ACLineSegment branch1 = ModelUtils.createLine(model, bus1, bus4, 0, 0.0576);
+		ACLineSegment branch1 = ModelUtils.createLine(model, bus1, bus4, 0, 0.0576, 0);
 		model.add(branch1);
-		ACLineSegment branch2 = ModelUtils.createLine(model, bus4, bus5, 0.017, 0.092);
+		ACLineSegment branch2 = ModelUtils.createLine(model, bus4, bus5, 0.017, 0.092, 0);
 		model.add(branch2);
-		ACLineSegment branch3 = ModelUtils.createLine(model, bus5, bus6, 0.039, 0.17);
+		ACLineSegment branch3 = ModelUtils.createLine(model, bus5, bus6, 0.039, 0.17, 0);
 		model.add(branch3);
-		ACLineSegment branch4 = ModelUtils.createLine(model, bus3, bus6, 0, 0.0586);
+		ACLineSegment branch4 = ModelUtils.createLine(model, bus3, bus6, 0, 0.0586, 0);
 		model.add(branch4);
-		ACLineSegment branch5 = ModelUtils.createLine(model, bus6, bus7, 0.0119, 0.1008);
+		ACLineSegment branch5 = ModelUtils.createLine(model, bus6, bus7, 0.0119, 0.1008, 0);
 		model.add(branch5);
-		ACLineSegment branch6 = ModelUtils.createLine(model, bus7, bus8, 0.0085, 0.072);
+		ACLineSegment branch6 = ModelUtils.createLine(model, bus7, bus8, 0.0085, 0.072, 0);
 		model.add(branch6);
-		ACLineSegment branch7 = ModelUtils.createLine(model, bus8, bus2, 0, 0.0625);
+		ACLineSegment branch7 = ModelUtils.createLine(model, bus8, bus2, 0, 0.0625, 0);
 		model.add(branch7);
-		ACLineSegment branch8 = ModelUtils.createLine(model, bus8, bus9, 0.032, 0.161);
+		ACLineSegment branch8 = ModelUtils.createLine(model, bus8, bus9, 0.032, 0.161, 0);
 		model.add(branch8);
-		ACLineSegment branch9 = ModelUtils.createLine(model, bus9, bus4, 0.01, 0.085);
+		ACLineSegment branch9 = ModelUtils.createLine(model, bus9, bus4, 0.01, 0.085, 0);
 		model.add(branch9);
 
 		model.setSWINGNode(bus1);
 		return model;
 	}
 
-	public static Model basicSample() {
+	public static CimModel basicSample() {
 		Importer.initPackages();
 
-		Model model = new Model();
+		CimModel model = new CimModel();
 
 		CoreFactory coreFactory = CIM15.IEC61970.Core.CoreFactory.eINSTANCE;
 		TopologyFactory topologyFactory = CIM15.IEC61970.Topology.TopologyFactory.eINSTANCE;

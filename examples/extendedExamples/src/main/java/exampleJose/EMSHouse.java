@@ -47,7 +47,7 @@ public class EMSHouse extends BehaviorModel {
 		
 		if (PowerflowMapping.isMapped()){
     		actorResults = PowerflowMapping.actorResultsMap.get(fullActorPath);
-        	actorResults.setPointActivePower = ans.currentPower;
+        	actorResults.activePower = ans.currentPower;
         	PowerflowMapping.actorResultsMap.put(fullActorPath, actorResults);
     	}
 	}

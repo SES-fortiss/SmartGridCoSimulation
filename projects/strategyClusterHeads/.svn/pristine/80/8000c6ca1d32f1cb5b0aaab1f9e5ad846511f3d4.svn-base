@@ -1,0 +1,75 @@
+package vppClusterHeads.behaviorModels;
+
+import java.util.LinkedList;
+
+import helper.Swmcsv;
+import vppClusterHeads.messageContents.GenericAnswerContent;
+import vppClusterHeads.messageContents.GenericRequestContent;
+import akka.advancedMessages.ErrorAnswerContent;
+import akka.basicMessages.AnswerContent;
+import akka.basicMessages.RequestContent;
+import akka.systemActors.GlobalTime;
+import behavior.BehaviorModel;
+
+/**
+ * 
+ * This is a specific behavior
+ * 
+ * @author bytschkow
+ *
+ */
+
+public class WindBehaviorModel extends BehaviorModel {
+
+	public double installedPower;
+
+	// Answer Content
+    public double actualPower;
+    public double plannedPower;    
+    public GenericAnswerContent answerContentToSend = new GenericAnswerContent(0.0, 0.0);
+    
+    /*
+     * Constructor
+     */
+    public WindBehaviorModel() {
+        this.installedPower = 0.0;
+    }    
+    public WindBehaviorModel(double installedPower) {
+        this.installedPower = installedPower;
+    }
+    public WindBehaviorModel(String path, double installedPower) {
+        this.installedPower = installedPower;
+        this.actorName = path;
+    }
+	
+	@Override
+	public void handleRequest() {
+	}
+
+	public void makeDecision() {		
+		GenericRequestContent request = (GenericRequestContent) requestContentReceived;
+		double factor = request.reductionFactor;
+		
+		actualPower = installedPower*Swmcsv.getSWMProfileWind(GlobalTime.currentTimeStep)*factor;
+		plannedPower = installedPower*Swmcsv.getSWMProfileWind(GlobalTime.currentTimeStep+1);
+		
+		answerContentToSend.currentProduction = actualPower;
+		answerContentToSend.scheduledProduction = actualPower;
+		answerContentToSend.expectedProduction = plannedPower;
+		answerContentToSend.time = GlobalTime.currentTimeStep;
+		answerContentToSend.installedPower = this.installedPower;
+		answerContentToSend.IN = request.toString();
+		answerContentToSend.OUT = answerContentToSend.toString();
+	}
+
+	public AnswerContent returnAnswerContentToSend() {
+		return answerContentToSend;
+	}
+
+	public RequestContent returnRequestContentToSend() {
+		return null;
+	}
+
+	@Override
+	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
+}

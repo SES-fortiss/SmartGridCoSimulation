@@ -11,7 +11,7 @@ package georg;
 
 import powerflowApi.ActorResults;
 import powerflowApi.PowerflowMapping;
-import powerflowApi.PowerflowModel;
+import powerflowApi.PowerflowTopology;
 import powerflowApi.PowerflowType;
 import topology.ActorTopology;
 
@@ -35,7 +35,7 @@ public class GeorgPowerflowTopology {
 		// Kommentar von Denis:
 		// die genaue Anzahl ist noch nicht klar wg. Swing bus und Aggregator
 		// Komponenten
-		PowerflowModel pfModel = new PowerflowModel();
+		PowerflowTopology pfModel = new PowerflowTopology();
 		pfModel.generatePowerFlowModel(top
 				.getActorTopology().size() - 2, PowerflowType.LINE);
 		

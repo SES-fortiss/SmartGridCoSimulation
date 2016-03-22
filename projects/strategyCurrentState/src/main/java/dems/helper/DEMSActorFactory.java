@@ -11,6 +11,8 @@ package dems.helper;
 
 import java.util.HashSet;
 
+import akka.basicActors.ActorOptions;
+import akka.basicActors.LoggingMode;
 import dems.behaviorModels.TradingBehaviorModel;
 import dems.behaviorModels.DEMS.DEMSNoControl;
 import dems.behaviorModels.DEMS.DEMSPriorityControl;
@@ -21,9 +23,6 @@ import dems.behaviorModels.plants.UnreliableCommunicationWater;
 import dems.behaviorModels.plants.UnreliablePlantBioGas;
 import dems.behaviorModels.plants.WaterBehaviorModel;
 import dems.behaviorModels.plants.WindBehaviorModel;
-import resultSaving.NoSave;
-import akka.basicActors.ActorOptions;
-import akka.basicActors.LoggingMode;
 
 /**
  * 
@@ -38,7 +37,7 @@ public abstract class DEMSActorFactory {
 	public static ActorOptions createSolarActor(double installedPower){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new SolarBehaviorModel(installedPower),new NoSave());		
+				new SolarBehaviorModel(installedPower));		
 		return result;		
 	}
 
@@ -46,7 +45,7 @@ public abstract class DEMSActorFactory {
 	public static ActorOptions createWaterActor(double installedPower){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new WaterBehaviorModel(installedPower),new NoSave());		
+				new WaterBehaviorModel(installedPower));		
 		return result;
 	}
 
@@ -54,7 +53,7 @@ public abstract class DEMSActorFactory {
 	public static ActorOptions createWindActor(double installedPower){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new WindBehaviorModel(installedPower),new NoSave());		
+				new WindBehaviorModel(installedPower));		
 		return result;
 	}
 
@@ -62,7 +61,7 @@ public abstract class DEMSActorFactory {
 	public static ActorOptions createBioGasActor(double installedPower){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new BioGasBehaviorModel(installedPower),new NoSave());		
+				new BioGasBehaviorModel(installedPower));		
 		return result;
 	}	
 
@@ -70,7 +69,7 @@ public abstract class DEMSActorFactory {
 	public static ActorOptions createBioMassActor(double installedPower){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new BioMassBehaviorModel(installedPower),new NoSave());		
+				new BioMassBehaviorModel(installedPower));		
 		return result;
 	}
 	
@@ -78,7 +77,7 @@ public abstract class DEMSActorFactory {
 	public static ActorOptions createDEMSNoSchedule(){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new DEMSNoControl(),new NoSave());		
+				new DEMSNoControl());		
 		return result;		
 	}
 	
@@ -86,7 +85,7 @@ public abstract class DEMSActorFactory {
 	public static ActorOptions createDEMSPriority(){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new DEMSPriorityControl(),new NoSave());		
+				new DEMSPriorityControl());		
 		return result;		
 	}
 	
@@ -94,7 +93,7 @@ public abstract class DEMSActorFactory {
 	public static ActorOptions createTradingActor(){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new TradingBehaviorModel(),new NoSave());		
+				new TradingBehaviorModel());		
 		return result;		
 	}
 	
@@ -102,7 +101,7 @@ public abstract class DEMSActorFactory {
 	public static ActorOptions createComOutWaterActor(double installedPower){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new UnreliableCommunicationWater(installedPower),new NoSave());		
+				new UnreliableCommunicationWater(installedPower));		
 		return result;
 	}
 	
@@ -110,7 +109,7 @@ public abstract class DEMSActorFactory {
 	public static ActorOptions createUnreliableBioGas(double installedPower){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new UnreliablePlantBioGas(installedPower),new NoSave());		
+				new UnreliablePlantBioGas(installedPower));		
 		return result;
 	}
 	

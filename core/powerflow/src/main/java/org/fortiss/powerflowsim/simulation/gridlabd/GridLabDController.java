@@ -22,7 +22,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
-import org.fortiss.powerflowsim.model.Model;
+import org.fortiss.powerflowsim.model.CimModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -46,10 +46,10 @@ import CIM15.IEC61970.Wires.PowerTransformerEnd;
 public class GridLabDController {
 	
 	private static Process gridlab_daemon;
-	private Model model;
+	private CimModel model;
 	private static Logger log = Logger.getRootLogger();
 	
-	public GridLabDController(Model model) {
+	public GridLabDController(CimModel model) {
 		this.model = model;
 	}
 	
@@ -321,7 +321,7 @@ public class GridLabDController {
 	 * 
 	 * @return the model
 	 */
-	public Model getModel() {
+	public CimModel getModel() {
 		return this.model;
 	}
 }

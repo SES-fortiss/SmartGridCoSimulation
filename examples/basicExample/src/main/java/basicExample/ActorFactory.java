@@ -11,11 +11,10 @@ package basicExample;
 
 import java.util.HashSet;
 
-import basicExample.aggregator.AggregatorModel;
-import basicExample.child.ChildModel;
-import resultSaving.NoSave;
 import akka.basicActors.ActorOptions;
 import akka.basicActors.LoggingMode;
+import basicExample.aggregator.AggregatorModel;
+import basicExample.child.ChildModel;
 
 /**
  * 
@@ -29,14 +28,14 @@ public abstract class ActorFactory {
 	public static ActorOptions createChild(){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new ChildModel(),new NoSave());		
+				new ChildModel());		
 		return result;
 	}
 	
 	public static ActorOptions createAggregator(){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new AggregatorModel(),new NoSave());		
+				new AggregatorModel());		
 		return result;		
 	}
 }

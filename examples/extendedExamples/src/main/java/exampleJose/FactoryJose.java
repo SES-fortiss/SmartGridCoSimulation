@@ -11,7 +11,6 @@ package exampleJose;
 
 import java.util.HashSet;
 
-import resultSaving.NoSave;
 import akka.ActorFactory;
 import akka.basicActors.ActorOptions;
 import akka.basicActors.LoggingMode;
@@ -21,14 +20,14 @@ public class FactoryJose extends ActorFactory{
 	public static ActorOptions createEMSHouse(){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new EMSHouse(),new NoSave());		
+				new EMSHouse());		
 		return result;		
 	}
 	
 	public static ActorOptions createKoordinator(){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new Koordinator(),new NoSave());		
+				new Koordinator());		
 		return result;		
 	}	 
 

@@ -17,8 +17,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.fortiss.powerflowsim.importers.SampleCases;
 import org.fortiss.powerflowsim.importers.TopologyGenerator;
-import org.fortiss.powerflowsim.model.Model;
-import org.fortiss.powerflowsim.simulation.internal.SimulationUtils;
+import org.fortiss.powerflowsim.model.CimModel;
+import org.fortiss.powerflowsim.simulation.internal.CalculationUtils;
 import org.fortiss.powerflowsim.simulation.internal.Solver;
 import org.jblas.ComplexDoubleMatrix;
 import org.jblas.DoubleMatrix;
@@ -27,8 +27,8 @@ import org.junit.Test;
 
 public class SolverTest {
 	private static Logger log = Logger.getRootLogger();
-	private Model model9bus;
-	private Model model1000bus;
+	private CimModel model9bus;
+	private CimModel model1000bus;
 
 	@Before
 	public void createLogger() {
@@ -51,7 +51,7 @@ public class SolverTest {
 
 		Solver.solve_model(this.model9bus);
 		model9bus.toString();
-		double[] lineLoss = SimulationUtils.calculateTotalLineLosses(model9bus);
+		double[] lineLoss = CalculationUtils.calculateTotalLineLosses(model9bus);
 		log.info("Total line loss: " + lineLoss[0] + " + j " + lineLoss[1]);
 	}
 

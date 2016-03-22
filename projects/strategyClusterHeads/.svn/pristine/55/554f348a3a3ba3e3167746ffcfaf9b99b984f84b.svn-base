@@ -1,0 +1,38 @@
+{
+	"type": "Energy Management System",
+	"name": "NEW_0",
+	"children": [
+		{
+			"type": "ClusterHead",
+			"name": "NEW_1",
+			"value": "NoControl",
+			"children": [
+				{
+					"type": "Water",
+					"name": "WaterStation2",
+					"value": "89",
+					"children": []
+				},
+				{
+					"type": "Water",
+					"name": "WaterStation",
+					"value": "77",
+					"children": []
+				}
+			]
+		},
+		{
+			"type": "ClusterHead",
+			"name": "NEW_2",
+			"value": "NoControl",
+			"children": [
+				{
+					"type": "Solar",
+					"name": "PhotoVoltaic",
+					"value": "45",
+					"children": []
+				}
+			]
+		}
+	]
+}

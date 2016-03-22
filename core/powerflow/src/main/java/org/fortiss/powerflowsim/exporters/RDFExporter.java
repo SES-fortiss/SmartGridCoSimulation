@@ -24,7 +24,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.emf.common.util.EList;
-import org.fortiss.powerflowsim.model.Model;
+import org.fortiss.powerflowsim.model.CimModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -46,7 +46,7 @@ public abstract class RDFExporter extends Exporter {
 	 * @param model
 	 *            the Model that should be exported
 	 */
-	public static void export(File outputFile, Model model) {
+	public static void export(File outputFile, CimModel model) {
 
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		docFactory.setNamespaceAware(true);

@@ -11,7 +11,6 @@ package akka;
 
 import java.util.HashSet;
 
-import resultSaving.NoSave;
 import akka.basicActors.ActorOptions;
 import akka.basicActors.LoggingMode;
 
@@ -28,7 +27,7 @@ public abstract class ActorFactory {
 	public static ActorOptions createPlainActor(){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new BlankActorBehavior(),new NoSave());		
+				new BlankActorBehavior());		
 		return result;		
 	}
 	

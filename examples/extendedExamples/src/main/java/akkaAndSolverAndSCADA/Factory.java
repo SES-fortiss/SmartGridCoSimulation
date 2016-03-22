@@ -11,7 +11,6 @@ package akkaAndSolverAndSCADA;
 
 import java.util.HashSet;
 
-import resultSaving.NoSave;
 import akka.ActorFactory;
 import akka.basicActors.ActorOptions;
 import akka.basicActors.LoggingMode;
@@ -24,7 +23,7 @@ public class Factory extends ActorFactory{
 	public static ActorOptions createAggregatorActor(String name){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new Aggregator(name),new NoSave());		
+				new Aggregator(name));		
 		return result;		
 	}
 	
@@ -32,7 +31,7 @@ public class Factory extends ActorFactory{
 	public static ActorOptions createComponentActor(String name, double installedProduction){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new Component(name, installedProduction),new NoSave());		
+				new Component(name, installedProduction));		
 		return result;
 	}	 
 

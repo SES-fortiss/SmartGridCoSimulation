@@ -12,7 +12,7 @@ package org.fortiss.powerflowsim.test;
 import static org.junit.Assert.assertEquals;
 
 import org.fortiss.powerflowsim.importers.SampleCases;
-import org.fortiss.powerflowsim.model.Model;
+import org.fortiss.powerflowsim.model.CimModel;
 import org.junit.Test;
 
 public class SampleImporterTest {
@@ -22,7 +22,7 @@ public class SampleImporterTest {
 	 * Tests if the importer returns a model
 	 */
 	public void testImportSample() {
-		assertEquals(Model.class, SampleCases.basicSample().getClass());
+		assertEquals(CimModel.class, SampleCases.basicSample().getClass());
 	}
 
 }

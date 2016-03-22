@@ -11,7 +11,7 @@ package eCarStreet;
 
 import java.util.HashSet;
 
-import powerflowApi.PowerflowModel;
+import powerflowApi.PowerflowTopology;
 import topology.ActorTopology;
 import eCarStreet.eCar.helper.configurations.*;
 import eCarStreet.eCar.helper.decisions.*;
@@ -93,7 +93,7 @@ public class ECarStreetTopology{
 		HashSet<String> children = top.getActorOptions("Coordinator").childrenPathList;
 		System.out.println(children.size());
 		
-		PowerflowModel model = new PowerflowModel();
+		PowerflowTopology model = new PowerflowTopology();
 		model.setStandardVoltage(1000);
 		for (String childName : children) {
 			model.addNodeBelow(childName);

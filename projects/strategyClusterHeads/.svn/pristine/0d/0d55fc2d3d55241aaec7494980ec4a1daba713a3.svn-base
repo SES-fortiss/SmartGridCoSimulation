@@ -1,0 +1,99 @@
+{
+    "metamodel": "Virtual-Power-Plant",
+    "description": "html-text - this will be added later",
+    "components": [
+        {
+            "identifier": "Energy Management System",
+            "connectionUP": "EMS",
+            "connectionDOWN": [
+                "ClusterHead",
+                "EMS"
+            ],
+            "properties": {
+                "name": "String"
+            }
+        },
+        {
+            "identifier": "ClusterHead",
+            "connectionUP": "ClusterHead",
+            "connectionDOWN": [
+                "Water",
+                "Wind",
+                "Solar",
+                "BioGas",
+                "BioMass"
+            ],
+            "properties": {
+                "name": "String",
+                "behaviorModel": {
+                    "type": "select",
+                    "options": [
+                        "NoControl",
+                        "PrioControl",
+                        "EasyControl"
+                    ]
+                }
+            }
+        },
+        {
+            "identifier": "Water",
+            "connectionUP": "Water",
+            "connectionDOWN": [],
+            "properties": {
+                "name": "String",
+                "installedPower": {
+                    "type": "number",
+                    "unit": "kWh"
+                }
+            }
+        },
+        {
+            "identifier": "Wind",
+            "connectionUP": "Wind",
+            "connectionDOWN": [],
+            "properties": {
+                "name": "String",
+                "installedPower": {
+                    "type": "number",
+                    "unit": "kWh"
+                }
+            }
+        },
+        {
+            "identifier": "Solar",
+            "connectionUP": "Solar",
+            "connectionDOWN": [],
+            "properties": {
+                "name": "String",
+                "installedPower": {
+                    "type": "number",
+                    "unit": "kWh"
+                }
+            }
+        },
+        {
+            "identifier": "BioGas",
+            "connectionUP": "BioGas",
+            "connectionDOWN": [],
+            "properties": {
+                "name": "String",
+                "installedPower": {
+                    "type": "number",
+                    "unit": "kWh"
+                }
+            }
+        },
+        {
+            "identifier": "BioMass",
+            "connectionUP": "BioMass",
+            "connectionDOWN": [],
+            "properties": {
+                "name": "String",
+                "installedPower": {
+                    "type": "number",
+                    "unit": "kWh"
+                }
+            }
+        }
+    ]
+}

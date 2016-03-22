@@ -1,0 +1,72 @@
+package vppClusterHeads.bioMass;
+
+import java.util.LinkedList;
+
+import helper.Swmcsv;
+import vppClusterHeads.genericStuff.GenericAnswerContent;
+import vppClusterHeads.genericStuff.GenericRequestContent;
+import vppClusterHeads.genericStuff.VPPPlantType;
+import akka.advancedMessages.ErrorAnswerContent;
+import akka.basicMessages.AnswerContent;
+import akka.basicMessages.RequestContent;
+import akka.systemActors.GlobalTime;
+import behavior.BehaviorModel;
+
+/**
+ * 
+ * This is a specific behavior
+ * 
+ * @author bytschkow
+ *
+ */
+
+public class BioMassBehaviorModel extends BehaviorModel {
+
+	final VPPPlantType type = VPPPlantType.BIOMASS;
+	public double installedPower;
+
+	// Answer Content
+    public double actualPower;
+    public double plannedPower;    
+    public GenericAnswerContent answerContentToSend = new GenericAnswerContent();
+    
+    /*
+     * Constructor
+     */    
+    public BioMassBehaviorModel(double installedPower) {
+        this.installedPower = installedPower;
+		answerContentToSend.plantType = type;
+		answerContentToSend.installedPower = this.installedPower;
+    }
+	
+	@Override
+	public void handleRequest() {
+	}
+
+	public void makeDecision() {
+		
+		GenericRequestContent request = (GenericRequestContent) requestContentReceived;
+		double factor = request.reductionFactor;
+		
+		actualPower = installedPower*Swmcsv.getSWMProfileBioMass(GlobalTime.currentTime)*factor;
+		plannedPower = installedPower*Swmcsv.getSWMProfileBioMass(GlobalTime.nextTime);
+		
+		answerContentToSend.currentPower = actualPower;
+		answerContentToSend.scheduledProduction = actualPower;
+		answerContentToSend.expectedProduction = plannedPower;
+		answerContentToSend.dateTime = GlobalTime.currentTime.toString();
+//		answerContentToSend.IN = request.toString();
+//		answerContentToSend.OUT = answerContentToSend.toString();
+	}
+
+	public AnswerContent returnAnswerContentToSend() {
+		return answerContentToSend;
+	}
+
+	public RequestContent returnRequestContentToSend() {
+		return null;
+	}
+
+	@Override
+	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
+}

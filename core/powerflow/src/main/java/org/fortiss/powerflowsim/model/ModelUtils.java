@@ -31,28 +31,47 @@ import CIM15.IEC61970.Wires.WiresFactory;
 
 /**
  * 
+ * This class helps to build the Powerflow model. The powerflowAPI actually
+ * abstracts from this class, but there might be some functionality that is
+ * still helpful!
+ * 
  * @author murphy
  *
  */
 public abstract class ModelUtils {
 
-	public static TopologicalNode createPVBus(Model model, BaseVoltage baseVoltage, double Pq, double voltage_magnitude, double voltage_angle) {
+	/**
+	 * Every PQ node will be created and assumed, that it is a source. 
+	 * The solver will consider it by not multiplying it with -1.
+	 * 
+	 * @param model
+	 * @param baseVoltage
+	 * @param Pq
+	 * @param voltage_magnitude
+	 * @param voltage_angle
+	 * @return
+	 */
+	public static TopologicalNode createPVBus(CimModel model,
+			BaseVoltage baseVoltage, double Pq, double voltage_magnitude,
+			double voltage_angle) {
+		
 		TopologicalNode topologicalNode = TopologyFactory.eINSTANCE.createTopologicalNode();
 		topologicalNode.setMRID("ID-" + RandomStringUtils.random(8, true, true));
 		topologicalNode.setBaseVoltage(baseVoltage);
 		model.add(topologicalNode);
 
 		ConnectivityNode connectivityNode = CoreFactory.eINSTANCE.createConnectivityNode();
-		connectivityNode.setMRID("ID-" + RandomStringUtils.random(8, true, true));
+		connectivityNode.setMRID("ID-"+ RandomStringUtils.random(8, true, true));
 		connectivityNode.setTopologicalNode(topologicalNode);
 		model.add(connectivityNode);
 
 		EnergySource source = WiresFactory.eINSTANCE.createEnergySource();
-		source.setMRID("ID-" + RandomStringUtils.random(8, true, true));
+		source.setMRID("ID-" + RandomStringUtils.random(8, true, true));		
 		source.setActivePower((float) Pq);
 		source.setVoltageAngle((float) voltage_angle);
 		source.setVoltageMagnitude((float) voltage_magnitude);
 		source.setBaseVoltage(baseVoltage);
+		
 		model.add(source);
 
 		Terminal sourceTerminal = CoreFactory.eINSTANCE.createTerminal();
@@ -66,14 +85,25 @@ public abstract class ModelUtils {
 		return topologicalNode;
 	}
 
-	public static TopologicalNode createPQBus(Model model, BaseVoltage baseVoltage, double Pd, double Qd) {
+	/**
+	 * 
+	 * Every PQ node will be created and assumed, that it is a consumer. 
+	 * The solver will consider it by multiplying it with -1.
+	 * 
+	 * @param model
+	 * @param baseVoltage
+	 * @param Pd
+	 * @param Qd
+	 * @return
+	 */
+	public static TopologicalNode createPQBus(CimModel model,BaseVoltage baseVoltage, double Pd, double Qd) {
 		TopologicalNode topologicalNode = TopologyFactory.eINSTANCE.createTopologicalNode();
 		topologicalNode.setMRID("ID-" + RandomStringUtils.random(8, true, true));
 		topologicalNode.setBaseVoltage(baseVoltage);
 		model.add(topologicalNode);
 
 		ConnectivityNode connectivityNode = CoreFactory.eINSTANCE.createConnectivityNode();
-		connectivityNode.setMRID("ID-" + RandomStringUtils.random(8, true, true));
+		connectivityNode.setMRID("ID-"+ RandomStringUtils.random(8, true, true));
 		connectivityNode.setTopologicalNode(topologicalNode);
 		model.add(connectivityNode);
 
@@ -85,7 +115,7 @@ public abstract class ModelUtils {
 		model.add(consumer);
 
 		Terminal consumerTerminal = CoreFactory.eINSTANCE.createTerminal();
-		consumerTerminal.setMRID("ID-" + RandomStringUtils.random(8, true, true));
+		consumerTerminal.setMRID("ID-"+ RandomStringUtils.random(8, true, true));
 		consumerTerminal.setConductingEquipment(consumer);
 		consumerTerminal.setConnectivityNode(connectivityNode);
 		consumerTerminal.setTopologicalNode(connectivityNode.getTopologicalNode());
@@ -96,52 +126,68 @@ public abstract class ModelUtils {
 
 	}
 
-	public static TopologicalNode createSlackBus(Model model, BaseVoltage baseVoltage) {
+	public static TopologicalNode createSlackBus(CimModel model,BaseVoltage baseVoltage) {
 		TopologicalNode topologicalNode = TopologyFactory.eINSTANCE.createTopologicalNode();
 		topologicalNode.setMRID("ID-" + RandomStringUtils.random(8, true, true));
 		topologicalNode.setBaseVoltage(baseVoltage);
 		model.add(topologicalNode);
 
 		ConnectivityNode connectivityNode = CoreFactory.eINSTANCE.createConnectivityNode();
-		connectivityNode.setMRID("ID-" + RandomStringUtils.random(8, true, true));
+		connectivityNode.setMRID("ID-"+ RandomStringUtils.random(8, true, true));
 		connectivityNode.setTopologicalNode(topologicalNode);
 		model.add(connectivityNode);
 
 		return topologicalNode;
 
 	}
-	
+
 	/**
 	 * the method creates a default line with R=0.1 and X=0.01
 	 * 
 	 * @param powerflowModel
 	 * @param sourceNode
 	 * @param destNode
-	 * @return
+	 * @return an AClineSegment with R=0.1 and X=0.01
 	 */
-	public static ACLineSegment createDefaultLine(Model powerflowModel,
+	public static ACLineSegment createDefaultLine(CimModel powerflowModel,
 			TopologicalNode sourceNode, TopologicalNode destNode) {
-		
-		double R = 0.1;
-		double X = 0.01;
-		
-		return createLine(powerflowModel, sourceNode, destNode, R, X);
-	}
 
-	public static ACLineSegment createLine(Model model, TopologicalNode sourceNode, TopologicalNode destNode, double R, double X) {
+		double R = 0.1;
+		double X = 0.1;
+		double B = 0.0;
+
+		ACLineSegment line = createLine(powerflowModel, sourceNode, destNode, R, X, B);
+
+		return line;
+	}
+	
+	/**
+	 * The method creates a line with a specified R and X. This function will create a one phase line currently.
+	 * 
+	 * @param powerflowModel
+	 * @param sourceNode
+	 * @param destNode
+	 * @return an AClineSegment
+	 */
+	public static ACLineSegment createLine(CimModel model,
+			TopologicalNode sourceNode, TopologicalNode destNode, 
+			double R,	double X, double B) {
 
 		ACLineSegment acLineSegment = WiresFactory.eINSTANCE.createACLineSegment();
+		
 		acLineSegment.setMRID("ID-" + RandomStringUtils.random(8, true, true));
 		acLineSegment.setLength(2);
 		acLineSegment.setR((float) R);
 		acLineSegment.setX((float) X);
-		acLineSegment.setGch((float) 0);
-		acLineSegment.setBch((float) 0);
+		acLineSegment.setBch((float) B);
+		acLineSegment.setGch((float) 0.0);
+		// Gch is currently always 0.0, adapt this code if necessary
+		
 		model.add(acLineSegment);
 
 		Terminal sourceTerminal = CoreFactory.eINSTANCE.createTerminal();
 		sourceTerminal.setMRID("ID-" + RandomStringUtils.random(8, true, true));
-		sourceTerminal.setConductingEquipment(acLineSegment);
+		sourceTerminal.setConductingEquipment(acLineSegment);		
 		sourceTerminal.setConnectivityNode(sourceNode.getConnectivityNodes().get(0));
 		sourceTerminal.setTopologicalNode(sourceNode);
 		sourceTerminal.setPhases(PhaseCode.ABCN);
@@ -153,12 +199,13 @@ public abstract class ModelUtils {
 		destTerminal.setConnectivityNode(sourceNode.getConnectivityNodes().get(0));
 		destTerminal.setTopologicalNode(destNode);
 		destTerminal.setPhases(PhaseCode.ABCN);
+		
 		model.add(destTerminal);
 
 		return acLineSegment;
 	}
 
-	public static BaseVoltage createBaseVoltage(Model model, double voltage) {
+	public static BaseVoltage createBaseVoltage(CimModel model, double voltage) {
 		BaseVoltage baseVoltage1 = CoreFactory.eINSTANCE.createBaseVoltage();
 		baseVoltage1.setNominalVoltage((float) voltage);
 		baseVoltage1.setIsDC(false);
@@ -177,11 +224,12 @@ public abstract class ModelUtils {
 					Object attributeValue = currentGetter.invoke(object);
 
 					if (!(attributeValue instanceof IdentifiedObject)) {
-						resultMap.put(currentGetter.getName().substring(3), attributeValue.toString());
+						resultMap.put(currentGetter.getName().substring(3),
+								attributeValue.toString());
 					}
-				} catch (NullPointerException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					// log.error("Could not execute getter " +
-					// currentGetter.getName());
+				} catch (NullPointerException | IllegalAccessException
+						| IllegalArgumentException | InvocationTargetException e) {
+					e.printStackTrace();
 				}
 
 			}

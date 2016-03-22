@@ -1,0 +1,46 @@
+/**
+ * 
+ */
+package vppClusterHeads.helper;
+
+import topology.ActorTopology;
+import vppClusterHeads.ClusterHeadActorFactory;
+
+/**
+ * @author Denis Bytschkow
+ *
+ */
+public class JsonElement {
+	
+	public String type;
+	public String name;
+	public String value;
+	public JsonElement[] children;
+	/**
+	 * @param top
+	 */
+	public void makeModel(ActorTopology top, String path) {
+				
+		// CLusterHEADExternal
+		String newPath = path + "/"+ this.name;		
+		
+		if(this.type.equals("ClusterHead"))
+			top.addActorAsChild(newPath, ClusterHeadActorFactory.createExternalClusterHeadActor());
+		
+		// FIXME numbers
+		if(this.type.equals("Solar"))
+			top.addActorAsChild(newPath, ClusterHeadActorFactory.createSolarActor(100));
+		
+		if(this.type.equals("Water"))
+			top.addActorAsChild(newPath, ClusterHeadActorFactory.createWaterActor(50));
+		
+		if (children != null){
+			for (JsonElement jsonElement : children) {
+				jsonElement.makeModel(top, this.name);				
+			}
+		}
+
+		
+	}
+
+}

@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.fortiss.powerflowsim.exporters.GLMExporter;
 import org.fortiss.powerflowsim.importers.SampleCases;
-import org.fortiss.powerflowsim.model.Model;
+import org.fortiss.powerflowsim.model.CimModel;
 import org.fortiss.powerflowsim.simulation.gridlabd.GridLabDController;
 import org.fortiss.powerflowsim.simulation.gridlabd.Timestep;
 import org.junit.Before;
@@ -25,7 +25,7 @@ import org.junit.Test;
 
 public class GridLabDTest {
 	private static Logger log = Logger.getRootLogger();
-	private Model model9bus;
+	private CimModel model9bus;
 
 	@Before
 	public void createLogger() {

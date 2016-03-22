@@ -11,7 +11,6 @@ package vppClusterHeads;
 
 import java.util.HashSet;
 
-import resultSaving.NoSave;
 import vppClusterHeads.bioGas.BioGasBehaviorModel;
 import vppClusterHeads.bioMass.BioMassBehaviorModel;
 import vppClusterHeads.clusterHead.ClusterHead;
@@ -37,7 +36,7 @@ public abstract class ClusterHeadActorFactory {
 		ActorOptions result =
 				new ActorOptions(LoggingMode.MINIMAL, new HashSet<String>(),
 						new HashSet<String>(), new HashSet<String>(),
-						new SolarBehaviorModel(installedPower), new NoSave());
+						new SolarBehaviorModel(installedPower));
 		return result;
 	}
 
@@ -45,7 +44,7 @@ public abstract class ClusterHeadActorFactory {
 		ActorOptions result =
 				new ActorOptions(LoggingMode.MINIMAL, new HashSet<String>(),
 						new HashSet<String>(), new HashSet<String>(),
-						new WaterBehaviorModel(installedPower), new NoSave());
+						new WaterBehaviorModel(installedPower));
 		return result;
 	}
 
@@ -53,7 +52,7 @@ public abstract class ClusterHeadActorFactory {
 		ActorOptions result =
 				new ActorOptions(LoggingMode.MINIMAL, new HashSet<String>(),
 						new HashSet<String>(), new HashSet<String>(),
-						new WindBehaviorModel(installedPower), new NoSave());
+						new WindBehaviorModel(installedPower));
 		return result;
 	}
 
@@ -61,7 +60,7 @@ public abstract class ClusterHeadActorFactory {
 		ActorOptions result =
 				new ActorOptions(LoggingMode.MINIMAL, new HashSet<String>(),
 						new HashSet<String>(), new HashSet<String>(),
-						new BioGasBehaviorModel(installedPower), new NoSave());
+						new BioGasBehaviorModel(installedPower));
 		return result;
 	}
 
@@ -69,7 +68,7 @@ public abstract class ClusterHeadActorFactory {
 		ActorOptions result =
 				new ActorOptions(LoggingMode.MINIMAL, new HashSet<String>(),
 						new HashSet<String>(), new HashSet<String>(),
-						new BioMassBehaviorModel(installedPower), new NoSave());
+						new BioMassBehaviorModel(installedPower));
 		return result;
 	}
 
@@ -78,7 +77,7 @@ public abstract class ClusterHeadActorFactory {
 		ActorOptions result =
 				new ActorOptions(LoggingMode.MINIMAL, new HashSet<String>(),
 						new HashSet<String>(), new HashSet<String>(),
-						new ClusterHead(), new NoSave());
+						new ClusterHead());
 		return result;
 	}
 
@@ -87,7 +86,7 @@ public abstract class ClusterHeadActorFactory {
 		ActorOptions result =
 				new ActorOptions(LoggingMode.MINIMAL, new HashSet<String>(),
 						new HashSet<String>(), new HashSet<String>(),
-						new ExternalClusterHead(), new NoSave());
+						new ExternalClusterHead());
 		return result;
 	}
 
@@ -96,7 +95,7 @@ public abstract class ClusterHeadActorFactory {
 		ActorOptions result =
 				new ActorOptions(LoggingMode.MINIMAL, new HashSet<String>(),
 						new HashSet<String>(), new HashSet<String>(),
-						new DEMS(), new NoSave());
+						new DEMS());
 		return result;
 	}
 
@@ -105,7 +104,7 @@ public abstract class ClusterHeadActorFactory {
 		ActorOptions result =
 				new ActorOptions(LoggingMode.MINIMAL, new HashSet<String>(),
 						new HashSet<String>(), new HashSet<String>(),
-						new EmptyBehavior(), new NoSave());
+						new EmptyBehavior());
 		return result;
 	}
 

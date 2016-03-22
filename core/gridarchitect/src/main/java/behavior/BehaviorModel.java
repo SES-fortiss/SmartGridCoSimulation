@@ -11,7 +11,6 @@ package behavior;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import akka.advancedMessages.ErrorAnswerContent;
@@ -23,7 +22,8 @@ import akka.systemActors.GlobalTime;
 import faultStrategy.backEnd.BasicFaultStrategy;
 
 /**
- * This class represents the basic Parameter of an Actor Behavior. The extension, e.g. SolarPanelBehaviorParameter, shall include the expected
+ * This class represents the basic Parameter of an Actor Behavior. 
+ * The extension, i.e. a concrete BegaviorModel, shall include the expected
  * parameters such as installed capacity, etc.
  * 
  * @author bytschkow
@@ -32,7 +32,6 @@ import faultStrategy.backEnd.BasicFaultStrategy;
 public abstract class BehaviorModel {
 
 	public static String defaultActorName = "unknown";
-	public static boolean debugging = false;
 
 	/**
 	 * Basis Variablen
@@ -40,26 +39,20 @@ public abstract class BehaviorModel {
 	public BehaviorType behaviorType;
 	public String actorName = defaultActorName;
 	public String fullActorPath = null;
+	
 	public RequestContent requestContentReceived;
 	public ArrayList<BasicAnswer> answerListReceived;
+	
 	public BasicActor actor;
-
-	// public int actualTimeStep = 0;
 	public LocalDateTime actualTimeValue;
-	private BasicFaultStrategy currentStrategy;
-
-	public Object convertJsonToBehaviorModel(LinkedHashMap<String, Object> jsonMap) {
-		return null;
-	}
+	public BasicFaultStrategy currentStrategy;
 
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof BehaviorModel)
 		{
 			BehaviorModel tmp = (BehaviorModel) o;
-
 			return tmp.fullActorPath.equals(fullActorPath);
-
 		}
 		else
 			return false;

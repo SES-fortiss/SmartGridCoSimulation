@@ -9,6 +9,8 @@
 
 package org.fortiss.powerflowsim.simulation.internal;
 
+import org.jblas.ComplexDouble;
+
 import CIM15.IEC61970.Topology.TopologicalNode;
 
 /**
@@ -17,16 +19,22 @@ import CIM15.IEC61970.Topology.TopologicalNode;
  */
 public class NodeLineInformation {
 
-	public double power;
+	public ComplexDouble power;
+	public double realLosses;
 	public TopologicalNode connectedNode;
 
-	public NodeLineInformation(double power, TopologicalNode connectedNode) {
-		this.power = power;
+	public NodeLineInformation(ComplexDouble power, double losses, TopologicalNode connectedNode) {
+		this.power = power;	
+		this.realLosses = losses;
 		this.connectedNode = connectedNode;
 	}
 
-	public String toString() {
-		String result = String.format("%.3f", power) + " to " + connectedNode.getMRID();
+	public String toString() {		
+		
+		String imagA = (power.imag() > 0.0) ? "+"+String.format("%.3f", power.imag()) : String.format("%.3f", power.imag());		
+		String result = String.format("%.3f", power.real()) +" "+ imagA + "i "+
+				"connected to " + connectedNode.getMRID();
+		
 		return result;
 	}
 }

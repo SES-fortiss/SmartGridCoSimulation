@@ -12,7 +12,7 @@ package org.fortiss.powerflowsim.importers;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.fortiss.powerflowsim.model.Model;
+import org.fortiss.powerflowsim.model.CimModel;
 import org.fortiss.powerflowsim.model.ModelUtils;
 
 import CIM15.IEC61970.Core.BaseVoltage;
@@ -20,8 +20,8 @@ import CIM15.IEC61970.Topology.TopologicalNode;
 
 public class TopologyGenerator extends Importer {
 
-	public Model generateLineDistributionSystem(Integer consumers) {
-		Model model = new Model();
+	public CimModel generateLineDistributionSystem(Integer consumers) {
+		CimModel model = new CimModel();
 		initPackages();
 
 		// create swing bus
@@ -34,8 +34,8 @@ public class TopologyGenerator extends Importer {
 		return model;
 	}
 
-	public Model generateRadialDistributionSystem(Integer consumers_per_star_line, Integer star_lines) {
-		Model model = new Model();
+	public CimModel generateRadialDistributionSystem(Integer consumers_per_star_line, Integer star_lines) {
+		CimModel model = new CimModel();
 		initPackages();
 
 		// create swing bus
@@ -48,8 +48,8 @@ public class TopologyGenerator extends Importer {
 		return model;
 	}
 
-	public Model generateMixedFullMeshDistributionSystem(Integer consumers) {
-		Model model = new Model();
+	public CimModel generateMixedFullMeshDistributionSystem(Integer consumers) {
+		CimModel model = new CimModel();
 		initPackages();
 
 		// create swing bus
@@ -70,18 +70,18 @@ public class TopologyGenerator extends Importer {
 		for (TopologicalNode house : houses) {
 			for (TopologicalNode destHouse : houses) {
 				if (!house.equals(destHouse)) {
-					ModelUtils.createLine(model, house, destHouse, 0.05403, 0.22304);
+					ModelUtils.createLine(model, house, destHouse, 0.05403, 0.22304, 0);
 				}
 			}
 		}
 
-		ModelUtils.createLine(model, swingNode, (TopologicalNode) houses.toArray()[0], 0.05403, 0.22304);
+		ModelUtils.createLine(model, swingNode, (TopologicalNode) houses.toArray()[0], 0.05403, 0.22304, 0);
 
 		return model;
 	}
 
-	public Model generateConsumerFullMeshDistributionSystem(Integer consumers) {
-		Model model = new Model();
+	public CimModel generateConsumerFullMeshDistributionSystem(Integer consumers) {
+		CimModel model = new CimModel();
 		initPackages();
 
 		// create swing bus
@@ -100,24 +100,24 @@ public class TopologyGenerator extends Importer {
 		for (TopologicalNode house : houses) {
 			for (TopologicalNode destHouse : houses) {
 				if (!house.equals(destHouse)) {
-					ModelUtils.createLine(model, house, destHouse, 0.05403, 0.22304);
+					ModelUtils.createLine(model, house, destHouse, 0.05403, 0.22304, 0);
 				}
 			}
 		}
 
-		ModelUtils.createLine(model, swingNode, (TopologicalNode) houses.toArray()[0], 0.05403, 0.22304);
+		ModelUtils.createLine(model, swingNode, (TopologicalNode) houses.toArray()[0], 0.05403, 0.22304, 0);
 
 		return model;
 	}
 
-	private Model createLineWithHouses(Model model, TopologicalNode startNode, Integer houses, BaseVoltage baseVoltage) {
+	private CimModel createLineWithHouses(CimModel model, TopologicalNode startNode, Integer houses, BaseVoltage baseVoltage) {
 
 		TopologicalNode lastNode = startNode;
 
 		for (int i = 0; i < houses; i++) {
 
 			TopologicalNode newNode = ModelUtils.createPQBus(model, baseVoltage, -300, 0);
-			ModelUtils.createLine(model, lastNode, newNode, (float) 0.05403, (float) 0.22304);
+			ModelUtils.createLine(model, lastNode, newNode, 0.05403, 0.22304, 0);
 
 			lastNode = newNode;
 		}
@@ -126,8 +126,8 @@ public class TopologyGenerator extends Importer {
 
 	}
 
-	public Model generateMeshDistributionSystem(Integer consumers) {
-		Model model = new Model();
+	public CimModel generateMeshDistributionSystem(Integer consumers) {
+		CimModel model = new CimModel();
 		return model;
 	}
 

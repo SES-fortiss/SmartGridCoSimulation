@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.fortiss.powerflowsim.model.Model;
+import org.fortiss.powerflowsim.model.CimModel;
 import org.fortiss.powerflowsim.simulation.gridlabd.Timestep;
 
 import CIM15.IEC61970.Topology.TopologicalNode;
@@ -37,7 +37,7 @@ public class GLMExporter extends Exporter {
 	 * @param model
 	 * @param timestep
 	 */
-	public void export(File file, Model model, Timestep timestep) {
+	public void export(File file, CimModel model, Timestep timestep) {
 
 		String content = "";
 		if (model.getSWINGNode() != null) {

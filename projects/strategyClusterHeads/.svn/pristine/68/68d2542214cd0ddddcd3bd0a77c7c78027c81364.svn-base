@@ -1,0 +1,181 @@
+package vppClusterHeads;
+
+import java.util.HashSet;
+
+import resultSaving.NoSave;
+import vppClusterHeads.bioGas.BioGasBehaviorModel;
+import vppClusterHeads.bioGas.UnreliableBioGasBehaviorModel;
+import vppClusterHeads.bioMass.BioMassBehaviorModel;
+import vppClusterHeads.clusterHead.ClusterHead;
+import vppClusterHeads.dems.DEMS;
+import vppClusterHeads.externalClusterHead.ExternalClusterHead;
+import vppClusterHeads.solar.SolarBehaviorModel;
+import vppClusterHeads.water.WaterBehaviorModel;
+import vppClusterHeads.wind.WindBehaviorModel;
+import akka.basicActors.ActorOptions;
+import akka.basicActors.LoggingMode;
+
+/**
+ * 
+ * The ActorFactory initializes the Actors with the corresponding BehaviorModels
+ * 
+ * @author bytschkow
+ * 
+ */
+public abstract class ClusterHeadActorFactory {
+
+	// SolarBehavior without parameters
+	public static ActorOptions createSolarActor(){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new SolarBehaviorModel(),new NoSave());		
+		return result;		
+	}
+
+	// SolarBehavior with installed Power
+	public static ActorOptions createSolarActor(double installedPower){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new SolarBehaviorModel(installedPower),new NoSave());		
+		return result;		
+	}
+	
+	// SolarBehavior with name and installedPower
+	public static ActorOptions createSolarActor(String name, double installedPower){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new SolarBehaviorModel(name, installedPower),new NoSave());		
+		return result;		
+	}	
+		
+	// WaterOptions witout parameters
+	public static ActorOptions createWaterActor(){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new WaterBehaviorModel(),new NoSave());		
+		return result;
+	}
+
+	// WaterOptions with installed Power
+	public static ActorOptions createWaterActor(double installedPower){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new WaterBehaviorModel(installedPower),new NoSave());		
+		return result;
+	}
+
+	// WaterOptions with name and installed Power
+	public static ActorOptions createWaterActor(String name, double installedPower){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new WaterBehaviorModel(name,installedPower),new NoSave());		
+		return result;
+	}
+	
+	
+	// WindOptions witout parameters
+	public static ActorOptions createWindActor(){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new WindBehaviorModel(),new NoSave());		
+		return result;
+	}
+
+	// WindOptions with installed Power
+	public static ActorOptions createWindActor(double installedPower){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new WindBehaviorModel(installedPower),new NoSave());		
+		return result;
+	}
+
+	// WindOptions with name and installed Power
+	public static ActorOptions createWindActor(String name, double installedPower){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new WindBehaviorModel(name,installedPower),new NoSave());		
+		return result;
+	}
+
+	// BioGasOptions witout parameters
+	public static ActorOptions createBioGasActor(){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new BioGasBehaviorModel(),new NoSave());		
+		return result;
+	}
+
+	// BioGasOptions with installed Power
+	public static ActorOptions createBioGasActor(double installedPower){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new BioGasBehaviorModel(installedPower),new NoSave());		
+		return result;
+	}
+
+	// BioGasOptions with name and installed Power
+	public static ActorOptions createBioGasActor(String name, double installedPower){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new BioGasBehaviorModel(name,installedPower),new NoSave());		
+		return result;
+	}
+	
+	// Unreliable BioGasOptions with name and installed Power
+	public static ActorOptions createUnreliableBioGasActor(String name, double installedPower){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new UnreliableBioGasBehaviorModel(name,installedPower),new NoSave());		
+		return result;
+	}
+	
+	
+	// BioMassOptions witout parameters
+	public static ActorOptions createBioMassActor(){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new BioMassBehaviorModel(),new NoSave());		
+		return result;
+	}
+
+	// BioMassOptions with installed Power
+	public static ActorOptions createBioMassActor(double installedPower){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new BioMassBehaviorModel(installedPower),new NoSave());		
+		return result;
+	}
+
+	// BioMassOptions with name and installed Power
+	public static ActorOptions createBioMassActor(String name, double installedPower){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new BioMassBehaviorModel(name,installedPower),new NoSave());		
+		return result;
+	}
+	
+	// ClusterHead
+	public static ActorOptions createClusterHeadActor(){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new ClusterHead(),new NoSave());		
+		return result;		
+	}
+	
+	// External ClusterHead
+	public static ActorOptions createExternalClusterHeadActor(){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new ExternalClusterHead(),new NoSave());		
+		return result;		
+	}
+	
+	// DEMS
+	public static ActorOptions createDEMSActor(){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new DEMS(),new NoSave());		
+		return result;		
+	}
+	
+}

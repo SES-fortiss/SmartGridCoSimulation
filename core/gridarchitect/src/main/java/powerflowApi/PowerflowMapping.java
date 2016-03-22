@@ -29,21 +29,22 @@ import topology.ActorTopology;
 public abstract class PowerflowMapping {
  
 	/* Topologies */
-	public static PowerflowModel powerflowModel;
+	public static PowerflowTopology powerflowTopology;
 	public static ActorTopology actorTopology;
 
 	/* Mappings */
+	
 	public static HashMap<String, String> pathMridMap =
 			new HashMap<String, String>(); // actor path -> mrid
+	
 	public static HashMap<String, String> mridPathMap =
 			new HashMap<String, String>(); // mrid -> actor path
+	
 	private static boolean mappingAvailable = false;
 
 	/* Results */
 	public static HashMap<String, ActorResults> actorResultsMap =
 			new HashMap<String, ActorResults>();
-	public static HashMap<String, SolverResults> solverResultsMap =
-			new HashMap<String, SolverResults>();
 
 	public static boolean isMapped() {
 		return mappingAvailable;
@@ -53,8 +54,8 @@ public abstract class PowerflowMapping {
 		mappingAvailable = b;
 	}
 	
-	public static PowerflowModel getPowerflowModel(){
-		return powerflowModel;
+	public static PowerflowTopology getPowerflowTopology(){
+		return powerflowTopology;
 	}
 
 	/**
@@ -65,16 +66,15 @@ public abstract class PowerflowMapping {
 	 * @param aTopology
 	 * @param pfTopology
 	 */
-	public static void autoMap(ActorTopology aTopology, PowerflowModel pfModel) throws AutoMapException {
+	public static void autoMap(ActorTopology aTopology, PowerflowTopology pfModel) throws AutoMapException {
 		
-		powerflowModel = pfModel; 
+		powerflowTopology = pfModel; 
 		actorTopology = aTopology;
 		
 		for (String name : actorTopology.getActorTopology().keySet()) {			
 			pathMridMap.put(name, name);
 			mridPathMap.put(name, name);
 			actorResultsMap.put(name, new ActorResults(name));
-			solverResultsMap.put(name, new SolverResults(name));
 		}
 		setIsMapped(true);
 	}

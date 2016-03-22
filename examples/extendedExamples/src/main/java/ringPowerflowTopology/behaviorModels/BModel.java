@@ -56,7 +56,7 @@ public class BModel extends BehaviorModel{
 
     	if (PowerflowMapping.isMapped()){
     		actorResults = PowerflowMapping.actorResultsMap.get(fullActorPath);
-        	actorResults.setPointActivePower = actualPower;
+        	actorResults.activePower = actualPower;
         	//actorResults.setPointReactivePower = -actualPower*0.5;
     	}
     }

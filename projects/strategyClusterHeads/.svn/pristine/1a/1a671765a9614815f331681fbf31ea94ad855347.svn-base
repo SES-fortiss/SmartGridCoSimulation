@@ -1,0 +1,67 @@
+package vppClusterHeads;
+
+import grid.GridTopology;
+
+/**
+ * 
+ * This is the topology for the vpp simulation
+ * 
+ * @author bytschkow
+ *
+ */
+
+public class VppTopology {
+	
+	/**
+	 * ACHTUNG Name der Simulation muss ohne Leerzeichen sein! (wg. AKKA)
+	 */
+	private static String simulationName = "VPP-Grid-Simulation";
+	
+	public static GridTopology createTopology(){
+		GridTopology top = new GridTopology(simulationName);
+		String path;
+		
+		/*
+		 *  Actor Topology
+		 */
+		
+		// Solar
+		top.addActor("SolarAggregator", ClusterHeadActorFactory.createDEMSAggregatorActor());
+		for (int i = 1; i <= 10; i++) {
+			path = "/Solar"+i;
+			top.addActorAsChild("SolarAggregator"+path, ClusterHeadActorFactory.createSolarActor(10.0*Math.random())); 
+		}
+
+		// Water
+		top.addActor("WaterAggregator", ClusterHeadActorFactory.createDEMSAggregatorActor());
+		for (int i = 1; i <= 10; i++) {
+			path = "/Water"+i;
+			top.addActorAsChild("WaterAggregator"+path, ClusterHeadActorFactory.createWaterActor(100.0));
+		}
+
+		// Wind
+		top.addActor("WindAggregator", ClusterHeadActorFactory.createDEMSAggregatorActor());
+		for (int i = 1; i <= 10; i++) {
+			path = "/Wind"+i;
+			top.addActorAsChild("WindAggregator"+path, ClusterHeadActorFactory.createWindActor(50.0));
+		}
+
+		// BioMass
+		top.addActor("BioMassAggregator", ClusterHeadActorFactory.createDEMSAggregatorActor());
+		for (int i = 1; i <= 10; i++) {
+			path = "/BioMass"+i;
+			top.addActorAsChild("BioMassAggregator"+path, ClusterHeadActorFactory.createBioMassActor(50.0));
+		}
+		
+		// BioGas
+		top.addActor("BioGasAggregator", ClusterHeadActorFactory.createDEMSAggregatorActor());
+		path = "/Bio1";
+		top.addActorAsChild("BioGasAggregator"+path, ClusterHeadActorFactory.createBioGasActor("BioGas1", 30.0));
+		path = "/Bio2";
+		top.addActorAsChild("BioGasAggregator"+path, ClusterHeadActorFactory.createBioGasActor("BioGas2", 5.0));
+		path = "/BioUnreliable";
+		top.addActorAsChild("BioGasAggregator"+path, ClusterHeadActorFactory.createUnreliableBioGasActor("BioGasUnreliable", 15.0));
+		
+		return top;
+	}
+}

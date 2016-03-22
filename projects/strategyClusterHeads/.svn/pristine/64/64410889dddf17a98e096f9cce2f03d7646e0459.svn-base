@@ -1,0 +1,35 @@
+package vppClusterHeads.helper;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import vppClusterHeads.Topology;
+
+public class MyFileHelper {
+	
+	/**
+	 * This method prints the Results as a JSON file
+	 */
+	public static void printJsonFile(String input, String fileName) {
+		
+		String fs = System.getProperty("file.separator");				
+		File homedir = new File(System.getProperty("user.home"));
+		File filedir = new File(homedir, "sessim" + fs + Topology.simulationName + fs);
+		File file = new File(filedir, fileName);
+		
+		try {
+			
+			filedir.mkdirs();
+			FileWriter writer = new FileWriter(file);
+			writer.write(input);
+			writer.close();
+			
+			System.out.println("File created: " + file);
+	 
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+}

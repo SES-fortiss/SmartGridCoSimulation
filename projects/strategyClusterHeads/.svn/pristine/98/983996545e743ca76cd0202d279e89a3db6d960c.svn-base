@@ -1,0 +1,80 @@
+package vppClusterHeads;
+
+import grid.GridTopology;
+
+/**
+ * 
+ * This is the topology for the vpp simulation
+ * 
+ * @author bytschkow
+ *
+ */
+
+public class Topology {
+	
+	/**
+	 * ACHTUNG Name der Simulation muss ohne Leerzeichen sein! (wg. AKKA)
+	 */
+	public static String simulationName = "ClusterHeads";
+	
+	public static GridTopology createTopology(){
+		GridTopology top = new GridTopology(simulationName);
+		
+		/*
+		 *  Actor Topology
+		 */
+		String root = "DEMS";
+		top.addActor(root, ClusterHeadActorFactory.createDEMSActor());
+		
+		// CLusterHEADExternal
+		String clusterExternal = root + "/ClusterHeadExternal";
+		top.addActorAsChild(clusterExternal, ClusterHeadActorFactory.createExternalClusterHeadActor());
+		
+		// CLusterHEAD1
+		String cluster1;
+		cluster1 = root + "/SimulatedClusterHead_1";
+		top.addActorAsChild(cluster1, ClusterHeadActorFactory.createClusterHeadActor());
+		
+		// Child Actors
+		top.addActorAsChild(cluster1 + "/Solar1", ClusterHeadActorFactory.createWaterActor(100.0*Math.random())); 
+		top.addActorAsChild(cluster1 + "/Solar2", ClusterHeadActorFactory.createWaterActor(100.0*Math.random())); 
+		top.addActorAsChild(cluster1 + "/Water1", ClusterHeadActorFactory.createWaterActor(100.0*Math.random())); 
+		top.addActorAsChild(cluster1 + "/Water2", ClusterHeadActorFactory.createWaterActor(100.0*Math.random())); 
+		top.addActorAsChild(cluster1 + "/Water3", ClusterHeadActorFactory.createWaterActor(100.0*Math.random())); 
+		top.addActorAsChild(cluster1 + "/BioGas1", ClusterHeadActorFactory.createWaterActor(100.0*Math.random())); 		
+		
+		
+		String child;
+		// CLusterHEAD2
+		String cluster2;
+		cluster2 = root + "/SimulatedClusterHead_2";
+		top.addActorAsChild(cluster2, ClusterHeadActorFactory.createClusterHeadActor());
+		// Child Actors
+		for (int i = 1; i <= 10; i++) {
+			child = "/Child"+i;
+			top.addActorAsChild(cluster2 + child, ClusterHeadActorFactory.createWaterActor(10.0*Math.random())); 
+		}
+
+		// CLusterHEAD3
+		String cluster3;
+		cluster3 = root + "/SimulatedClusterHead_3";
+		top.addActorAsChild(cluster3, ClusterHeadActorFactory.createClusterHeadActor());
+		// Child Actors
+		for (int i = 1; i <= 10; i++) {
+			child = "/Child"+i;
+			top.addActorAsChild(cluster3 + child, ClusterHeadActorFactory.createWaterActor(10.0*Math.random())); 
+		}
+		
+		// CLusterHEAD4
+		String cluster4;
+		cluster4 = root + "/SimulatedClusterHead_4";
+		top.addActorAsChild(cluster4, ClusterHeadActorFactory.createClusterHeadActor());
+		// Child Actors
+		for (int i = 1; i <= 10; i++) {
+			child = "/Child"+i;
+			top.addActorAsChild(cluster4 + child, ClusterHeadActorFactory.createWaterActor(10.0*Math.random())); 
+		}		
+		
+		return top;
+	}
+}

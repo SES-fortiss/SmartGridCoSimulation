@@ -1,0 +1,28 @@
+package vppClusterHeads.bioGas;
+
+import vppClusterHeads.genericStuff.GenericAnswerContent;
+
+/**
+ * UnreliableAnswerContent
+ * 04.06.2014
+ * @author bytschkow
+ *
+ */
+public class UnreliableAnswerContent extends GenericAnswerContent {
+	
+	public UnreliableAnswerContent() {
+		super();
+	}
+	
+	public boolean availability;
+	
+	public String toHTML() {
+		return 		
+		"currentProducton: " + df.format(currentPower) + "<br>" +
+        "forecastPower: " + df.format(forecastPower) + "<br>" +
+        "installedPower: " + df.format(installedPower) + "<br>" +
+        "reductionFactorConformation: " + df.format(flexibilityFactorConformation) + "<br>" +
+        "costs: " + df.format(costs) + "<br>" + 
+        "availability: " + availability;
+	}
+}

@@ -1,0 +1,67 @@
+package vppClusterHeads;
+
+import grid.GridTopology;
+
+/**
+ * 
+ * This is the topology for the vpp simulation
+ * 
+ * @author bytschkow
+ *
+ */
+
+public class VppTopologyForTest {
+	
+	/**
+	 * ACHTUNG Name der Simulation muss ohne Leerzeichen sein! (wg. AKKA)
+	 */
+	private static String simulationName = "VPP-Grid-Simulation";
+	
+	public static GridTopology createTopology(){
+		GridTopology top = new GridTopology(simulationName);
+		String path;
+		
+		/*
+		 *  Actor Topology
+		 */
+		
+		// Solar
+		top.addActor("SolarAggregator", CLusterHeadActorFactory.createDEMSAggregatorActor());
+		for (int i = 1; i <= 10000; i++) {
+			path = "/Solar"+i;
+			top.addActorAsChild("SolarAggregator"+path, CLusterHeadActorFactory.createSolarActor(10.0*Math.random())); 
+		}
+
+		// Water
+		top.addActor("WaterAggregator", CLusterHeadActorFactory.createDEMSAggregatorActor());
+		for (int i = 1; i <= 10; i++) {
+			path = "/Water"+i;
+			top.addActorAsChild("WaterAggregator"+path, CLusterHeadActorFactory.createWaterActor(100.0));
+		}
+
+		// Wind
+		top.addActor("WindAggregator", CLusterHeadActorFactory.createDEMSAggregatorActor());
+		for (int i = 1; i <= 10; i++) {
+			path = "/Wind"+i;
+			top.addActorAsChild("WindAggregator"+path, CLusterHeadActorFactory.createWindActor(50.0));
+		}
+
+		// BioMass
+		top.addActor("BioMassAggregator", CLusterHeadActorFactory.createDEMSAggregatorActor());
+		for (int i = 1; i <= 10; i++) {
+			path = "/BioMass"+i;
+			top.addActorAsChild("BioMassAggregator"+path, CLusterHeadActorFactory.createBioMassActor(50.0));
+		}
+		
+		// BioGas
+		top.addActor("BioGasAggregator", CLusterHeadActorFactory.createDEMSAggregatorActor());
+		path = "/Bio1";
+		top.addActorAsChild("BioGasAggregator"+path, CLusterHeadActorFactory.createBioGasActor(30.0));
+		path = "/Bio2";
+		top.addActorAsChild("BioGasAggregator"+path, CLusterHeadActorFactory.createBioGasActor(5.0));
+		path = "/BioUnreliable";
+		top.addActorAsChild("BioGasAggregator"+path, CLusterHeadActorFactory.createUnreliableBioGasActor("unknown",15.0));
+		
+		return top;
+	}
+}

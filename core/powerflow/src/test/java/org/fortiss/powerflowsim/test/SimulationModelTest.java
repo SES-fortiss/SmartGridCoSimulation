@@ -14,8 +14,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.fortiss.powerflowsim.importers.SampleCases;
-import org.fortiss.powerflowsim.model.Model;
-import org.fortiss.powerflowsim.simulation.internal.SimulationModel;
+import org.fortiss.powerflowsim.model.CimModel;
+import org.fortiss.powerflowsim.simulation.internal.BusBranchModel;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,9 +33,9 @@ public class SimulationModelTest {
 
 	@Test
 	public void ThreeBusSimulationModelTest() {
-		Model model = SampleCases.create9BusExample();
+		CimModel model = SampleCases.create9BusExample();
 		@SuppressWarnings("unused")
-		SimulationModel simModel = new SimulationModel(model);
+		BusBranchModel simModel = new BusBranchModel(model);
 	}
 
 }

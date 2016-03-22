@@ -12,7 +12,7 @@ package org.fortiss.powerflowsim.test;
 import static org.junit.Assert.assertEquals;
 
 import org.fortiss.powerflowsim.importers.TopologyGenerator;
-import org.fortiss.powerflowsim.model.Model;
+import org.fortiss.powerflowsim.model.CimModel;
 import org.junit.Test;
 
 public class TopologyGeneratorTest {
@@ -20,7 +20,7 @@ public class TopologyGeneratorTest {
 	@Test
 	public void testLineDistribution() {
 		TopologyGenerator topologyGenerator = new TopologyGenerator();
-		Model model = topologyGenerator.generateLineDistributionSystem(100);
+		CimModel model = topologyGenerator.generateLineDistributionSystem(100);
 
 		assertEquals(101, model.getTopologicalNodes().size());
 	}

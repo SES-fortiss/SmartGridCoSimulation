@@ -1,0 +1,82 @@
+package vppClusterHeads.water;
+
+import java.util.LinkedList;
+
+import helper.Swmcsv;
+import vppClusterHeads.genericStuff.GenericAnswerContent;
+import vppClusterHeads.genericStuff.GenericRequestContent;
+import vppClusterHeads.genericStuff.VPPPlantType;
+import akka.advancedMessages.ErrorAnswerContent;
+import akka.basicMessages.AnswerContent;
+import akka.basicMessages.RequestContent;
+import akka.systemActors.GlobalTime;
+import behavior.BehaviorModel;
+
+/**
+ * 
+ * This is a specific behavior
+ * 
+ * @author bytschkow
+ *
+ */
+
+public class WaterBehaviorModel extends BehaviorModel {
+
+	final VPPPlantType type = VPPPlantType.WATER;
+	public double installedPower;
+
+	// Answer Content
+    public double actualPower;
+    public double plannedPower;    
+    public GenericAnswerContent answerContentToSend = new GenericAnswerContent();
+    
+    /*
+     * Constructor - use the ActorFactory to create an Actor with 
+     * corresponding BehaviorModel
+     */    
+    public WaterBehaviorModel(double installedPower) {
+        if (installedPower < 0.0) throw new IllegalArgumentException("WaterPowerPlantBehaviorModel.installedPower has to be > 0.0: " + installedPower);
+        this.installedPower = installedPower;
+        
+		answerContentToSend.plantType = type;
+		answerContentToSend.installedPower = this.installedPower;
+    }
+	
+	@Override
+	public void handleRequest() {
+	}
+
+	@Override
+	public void makeDecision() {		
+		actualPower = installedPower*Swmcsv.getSWMProfileWater(GlobalTime.currentTime);
+		plannedPower = installedPower*Swmcsv.getSWMProfileWater(GlobalTime.nextTime);
+		
+		GenericRequestContent request = (GenericRequestContent) requestContentReceived;
+		double factor = request.reductionFactor;
+		
+		actualPower *=factor;
+		
+		answerContentToSend.currentPower = actualPower;
+		answerContentToSend.scheduledProduction = actualPower;
+		answerContentToSend.expectedProduction = plannedPower;		
+		answerContentToSend.dateTime = GlobalTime.currentTime.toString();
+
+//		answerContentToSend.IN = request.toString();
+//		answerContentToSend.OUT = answerContentToSend.toString();
+
+	}
+
+	@Override
+	public AnswerContent returnAnswerContentToSend() {
+		return answerContentToSend;
+	}
+
+	@Override
+	public RequestContent returnRequestContentToSend() {
+		return null;
+	}
+
+	@Override
+	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
+
+}

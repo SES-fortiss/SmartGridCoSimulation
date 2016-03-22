@@ -17,8 +17,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import resultSaving.NoSave;
-import topology.ActorTopology;
 import akka.basicActors.ActorOptions;
 import akka.basicActors.LoggingMode;
 import behavior.InactiveBehaviorModel;
@@ -37,7 +35,7 @@ public class ActorTopologyTest {
     public void testAddActorValid() {
         ActorTopology topology =  new ActorTopology("GridTopologyTest");
         ActorOptions options = new ActorOptions(LoggingMode.DEBUG, new HashSet<String>(), new HashSet<String>(),new HashSet<String>(),
-                new InactiveBehaviorModel(), new NoSave());
+                new InactiveBehaviorModel());
         topology.addActor("/some/Actor", options);
         Assert.assertEquals(topology.getActorOptions("/some/Actor").loggingMode, LoggingMode.DEBUG);
     }
@@ -47,7 +45,7 @@ public class ActorTopologyTest {
         ActorTopology topology =  new ActorTopology("GridTopologyTest");
 
         ActorOptions options = new ActorOptions(LoggingMode.DEBUG, null, new HashSet<String>(),new HashSet<String>(),
-                new InactiveBehaviorModel(), new NoSave());
+                new InactiveBehaviorModel());
         topology.addActor("/some/Actor", options);
         topology.getActorOptions("/unknown/Actor");
     }
@@ -77,7 +75,7 @@ public class ActorTopologyTest {
     public void testAppendChildrenList() {
 		HashSet<String> childrenList = new HashSet<String>();
         childrenList.add("SomeChild");
-        ActorOptions options = new ActorOptions(null, childrenList, new HashSet<String>(), null, null,null);
+        ActorOptions options = new ActorOptions(null, childrenList, new HashSet<String>(), null, null);
         ActorTopology topology = new ActorTopology("");
         List<String> toAdd = new ArrayList<String>();
         toAdd.add("New1");
@@ -92,7 +90,7 @@ public class ActorTopologyTest {
     public void testAppendChildrenListChildAlreadyExists() {
 		HashSet<String> childrenList = new HashSet<String>();
         childrenList.add("New1");
-        ActorOptions options = new ActorOptions(null, childrenList, new HashSet<String>(), null,null, null);
+        ActorOptions options = new ActorOptions(null, childrenList, new HashSet<String>(), null,null);
         ActorTopology topology = new ActorTopology("");
         List<String> toAdd = new ArrayList<String>();
         toAdd.add("New1");

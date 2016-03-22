@@ -68,7 +68,6 @@ public class SolarProduction {
 		production = production * installedPower;
 		
 		return production;
-
 	}
 	
 	public static double getSolarProductionPower(double installedPower, LocalDateTime inputTime){		

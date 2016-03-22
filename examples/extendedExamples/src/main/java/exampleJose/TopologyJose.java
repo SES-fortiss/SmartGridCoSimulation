@@ -9,7 +9,7 @@
 
 package exampleJose;
 
-import powerflowApi.PowerflowModel;
+import powerflowApi.PowerflowTopology;
 import topology.ActorTopology;
 
 public class TopologyJose {
@@ -30,7 +30,7 @@ public class TopologyJose {
 			top.addActorAsChild(name, FactoryJose.createEMSHouse());
 		}
 		
-		PowerflowModel pf = new PowerflowModel();
+		PowerflowTopology pf = new PowerflowTopology();
 		pf.addNodeBelow("Koordinator/House1");
 		pf.addNodeBelow("Koordinator/House2");
 		pf.addNodeBelow("Koordinator/House3");

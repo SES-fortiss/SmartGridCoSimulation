@@ -1,0 +1,37 @@
+package vppClusterHeads.messageContents;
+
+import akka.basicMessages.RequestContent;
+
+/**
+ * 
+ * This is a generic RequestContent
+ * 
+ * @author bytschkow
+ *
+ */
+
+public class GenericRequestContent implements RequestContent{
+
+	public double reductionFactor;
+	
+	public GenericRequestContent(double d) {
+		this.reductionFactor = d;
+	}
+	
+	public String toString(){
+		return ("GenericRequestContent={" +
+                "reductionFactor: " + reductionFactor + 
+				"}");
+	}
+
+	/**
+	 * @return
+	 */
+	public String toHTML() {
+		return "reductionFactor: " + reductionFactor;
+	}
+	
+	public boolean simpleEquals(Object o) {
+		return false;
+	}
+}

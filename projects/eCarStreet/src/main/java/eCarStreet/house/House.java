@@ -110,7 +110,7 @@ public class House extends BehaviorModel {
 		
 		if (PowerflowMapping.isMapped()){
 			actorResults = PowerflowMapping.actorResultsMap.get(fullActorPath);
-			actorResults.setPointActivePower = answer.demandTotal * (-1000);
+			actorResults.activePower = answer.demandTotal * (-1000);
 		}
 
 		answer.price = PriceHack.price[GlobalTime.currentTimeStep];

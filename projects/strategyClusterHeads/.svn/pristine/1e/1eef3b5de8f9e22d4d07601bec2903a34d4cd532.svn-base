@@ -1,0 +1,10 @@
+package vppClusterHeads.genericStuff;
+
+public enum VPPPlantType {
+
+	SOLAR,
+	WIND,
+	WATER,
+	BIOGAS,
+	BIOMASS
+}

@@ -62,8 +62,8 @@ public class GeorgComponents extends BehaviorModel{
     	// TODO actorPath is null
     	if (PowerflowMapping.isMapped()){
     		actorResults = PowerflowMapping.actorResultsMap.get(fullActorPath);
-        	actorResults.setPointActivePower = actualPower;
-        	actorResults.setPointReactivePower = 0.0;
+        	actorResults.activePower = actualPower;
+        	actorResults.reactivePower = 0.0;
         	PowerflowMapping.actorResultsMap.put(fullActorPath, actorResults);
     	}
     	

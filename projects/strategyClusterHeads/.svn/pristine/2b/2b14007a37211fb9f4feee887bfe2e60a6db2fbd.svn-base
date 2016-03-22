@@ -1,0 +1,85 @@
+package vppClusterHeads.bioGas;
+
+import java.util.LinkedList;
+
+import helper.Swmcsv;
+import vppClusterHeads.genericStuff.GenericAnswerContent;
+import vppClusterHeads.genericStuff.GenericRequestContent;
+import vppClusterHeads.genericStuff.VPPPlantType;
+import akka.advancedMessages.ErrorAnswerContent;
+import akka.basicMessages.AnswerContent;
+import akka.basicMessages.RequestContent;
+import akka.systemActors.GlobalTime;
+import behavior.BehaviorModel;
+
+/**
+ * 
+ * This is a specific behavior
+ * 
+ * @author bytschkow
+ *
+ */
+
+public class BioGasBehaviorModel extends BehaviorModel {
+
+	final VPPPlantType type = VPPPlantType.BIOGAS;
+	public double installedPower;
+
+	// Answer Content
+    public double actualPower;
+    public double plannedPower;    
+    public GenericAnswerContent answerContentToSend = new GenericAnswerContent(0.0, 0.0);
+    
+	public GenericRequestContent request;
+	public double factor;
+    
+    /*
+     * Constructor
+     */
+    public BioGasBehaviorModel() {
+        this.installedPower = 0.0;
+    }    
+    public BioGasBehaviorModel(double installedPower) {
+        this.installedPower = installedPower;
+    }
+    public BioGasBehaviorModel(String path, double installedPower) {
+        this.installedPower = installedPower;
+        this.actorName = path;
+    }
+	
+	@Override
+	public void handleRequest() {		
+		request = (GenericRequestContent) requestContentReceived;
+		factor = request.reductionFactor;
+	}
+
+	public void makeDecision() {		
+		
+		actualPower = installedPower*Swmcsv.getSWMProfileBioGas(GlobalTime.currentTimeStep)*factor;
+		plannedPower = installedPower*Swmcsv.getSWMProfileBioGas(GlobalTime.currentTimeStep+1);
+		
+		answerContentToSend.currentPower = actualPower;
+		answerContentToSend.scheduledProduction = actualPower;
+		answerContentToSend.expectedProduction = plannedPower;
+		answerContentToSend.time = GlobalTime.currentTimeStep;
+		answerContentToSend.installedPower = this.installedPower;
+		answerContentToSend.IN = request.toHTML();
+		answerContentToSend.OUT = answerContentToSend.toHTML();
+		answerContentToSend.plantType = type;
+		
+		if(this.actorName != "unknown"){
+			//System.out.println(actorName + ": " + answerContentToSend);
+    	}
+	}
+
+	public AnswerContent returnAnswerContentToSend() {
+		return answerContentToSend;
+	}
+
+	public RequestContent returnRequestContentToSend() {
+		return null;
+	}
+
+	@Override
+	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
+}

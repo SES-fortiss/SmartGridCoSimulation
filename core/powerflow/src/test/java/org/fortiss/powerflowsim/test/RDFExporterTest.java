@@ -20,7 +20,7 @@ import org.apache.log4j.SimpleLayout;
 import org.fortiss.powerflowsim.exporters.RDFExporter;
 import org.fortiss.powerflowsim.importers.RDFImporter;
 import org.fortiss.powerflowsim.importers.TopologyGenerator;
-import org.fortiss.powerflowsim.model.Model;
+import org.fortiss.powerflowsim.model.CimModel;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,12 +44,12 @@ public class RDFExporterTest {
 	@Test
 	public void testXMLExport() {
 		TopologyGenerator generator = new TopologyGenerator();
-		Model model = generator.generateLineDistributionSystem(2);
+		CimModel model = generator.generateLineDistributionSystem(2);
 		File file = new File("file.xml");
 		RDFExporter.export(file, model);
 
 		RDFImporter importer = new RDFImporter();
-		Model model2 = importer.importRDF(file);
+		CimModel model2 = importer.importRDF(file);
 
 		for (Object obj : model2.getAllObjects()) {
 			if (obj instanceof IdentifiedObject) {

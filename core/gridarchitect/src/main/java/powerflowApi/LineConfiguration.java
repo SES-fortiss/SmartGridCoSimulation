@@ -11,17 +11,17 @@ package powerflowApi;
 
 /**
  * This class allows the specification of a line configuration to create adapted
- * power flow models. The class can be extended if required to create more
- * dedicated line configurations, e.g. for three phase systems, or including
- * shunt parameters
+ * power flow models.
  * 
  * @author Denis Bytschkow
  *
  */
 public class LineConfiguration {
-
-	public double R;
-	public double X;
+	
+	protected double R;
+	protected double X;
+	protected double B = 0;
+	// note add G if necessary!
 
 	/**
 	 * The impedance Z = R + jX. The admittance is the inverse of the impedance.
@@ -36,4 +36,22 @@ public class LineConfiguration {
 		this.R = R;
 		this.X = X;
 	}
+	
+	public LineConfiguration(double R, double X, double B) {
+		this.R = R;
+		this.X = X;
+		this.B = B;
+	}
+	
+	public double getR(){
+		return R;
+	}
+	
+	public double getX(){
+		return X;
+	}
+	
+	public double getB(){
+		return B;
+	}	
 }

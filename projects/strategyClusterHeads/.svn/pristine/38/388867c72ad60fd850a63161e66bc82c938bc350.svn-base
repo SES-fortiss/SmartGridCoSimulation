@@ -1,0 +1,44 @@
+package vppClusterHeads.clusterHeads;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
+import akka.basicMessages.AnswerContent;
+
+/**
+ * DEMSAggregatorAnswerContent
+ * 
+ * @author bytschkow
+ * 
+ * created on 07.05.2014
+ */
+public class DEMSAggregatorAnswerContent implements AnswerContent  {
+	
+	final static DecimalFormatSymbols format = new DecimalFormatSymbols(Locale.ENGLISH);
+	final static DecimalFormat df = new DecimalFormat("#0.00", format);
+	
+	public double time;
+	public String dateTime;
+	
+	public double currentProduction;
+	public double expectedProduction;
+	public double scheduledProduction;
+	
+	public DEMSAggregatorAnswerContent(double currentProduction, double expectedProduction){
+		this.currentProduction = currentProduction;
+		this.expectedProduction = expectedProduction;
+	}
+		
+	public String toString(){		 
+		return ("DEMSAggregatorAnswerContent={" +
+                "currentProducton: " + df.format(currentProduction) + 
+                "  expectedProduction: " + df.format(expectedProduction) +
+                "  scheduledProduction: " + df.format(scheduledProduction) +
+				"}");
+	}
+
+	public boolean simpleEquals(Object o) {
+		return false;
+	}
+}

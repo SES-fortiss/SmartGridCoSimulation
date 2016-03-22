@@ -1,0 +1,98 @@
+package vppClusterHeads.bioGas;
+
+import helper.Swmcsv;
+
+import java.util.LinkedList;
+
+import vppClusterHeads.genericMessages.GenericRequestContent;
+import akka.advancedMessages.ErrorAnswerContent;
+import akka.basicMessages.AnswerContent;
+import akka.basicMessages.RequestContent;
+import akka.systemActors.GlobalTime;
+import behavior.BehaviorModel;
+
+/**
+ * 
+ * This is a specific behavior
+ * 
+ * @author bytschkow
+ *
+ */
+
+public class UnreliableBioGasBehaviorModel extends BehaviorModel {
+
+	public double installedPower;
+
+	// Answer Content
+    public double actualPower;
+    public double plannedPower;    
+    public UnreliableAnswerContent answerContentToSend = new UnreliableAnswerContent(0.0, 0.0);
+    
+    // Behavior Variables
+    public double timeBroken;
+    public boolean availability;
+    
+    /*
+     * Constructor
+     */
+    public UnreliableBioGasBehaviorModel() {
+        this.installedPower = 0.0;
+    }
+    
+    public UnreliableBioGasBehaviorModel(double installedPower) {
+        this.installedPower = installedPower;
+    }
+    public UnreliableBioGasBehaviorModel(String name, double installedPower) {
+        this.installedPower = installedPower;
+    }
+	
+	@Override
+	public void handleRequest() {
+	}
+
+	public void makeDecision() {
+		
+		GenericRequestContent request = (GenericRequestContent) requestContentReceived;
+		double factor = request.reductionFactor;
+		
+		actualPower = installedPower*Swmcsv.getSWMProfileBioGas(GlobalTime.currentTimeStep)*factor;
+		answerContentToSend.scheduledProduction = actualPower;		
+		availability = true;
+		
+		if (Math.random() < 0.1 ){
+			timeBroken = 3;
+		}
+		
+		if (timeBroken > 0){
+			actualPower = 0;
+			availability = false;
+			timeBroken--;
+		}
+				
+		plannedPower = installedPower*Swmcsv.getSWMProfileBioGas(GlobalTime.currentTimeStep+1);
+		
+		answerContentToSend.currentProduction = actualPower;
+		answerContentToSend.expectedProduction = plannedPower;
+		answerContentToSend.time = GlobalTime.currentTimeStep;
+		answerContentToSend.installedPower = this.installedPower;
+		answerContentToSend.IN = request.toString();
+		answerContentToSend.OUT = answerContentToSend.toString();
+		answerContentToSend.availability = availability;
+		
+		if(this.actorName != "unknown"){
+			System.out.println(actorName + ": " + answerContentToSend);
+			System.out.println(actorName + ": " + request);
+    	}
+	}
+
+	public AnswerContent returnAnswerContentToSend() {
+		return answerContentToSend;
+	}
+
+	public RequestContent returnRequestContentToSend() {
+		return null;
+	}
+
+	@Override
+	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
+}

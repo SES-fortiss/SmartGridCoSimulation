@@ -10,7 +10,6 @@
 package georg.models;
 
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import akka.advancedMessages.ErrorAnswerContent;
@@ -61,13 +60,7 @@ public class GeorgAggregator extends BehaviorModel{
     	if(this.actorName != "unknown"){
     		System.out.println(actorName + ": " + answerContentToSend);
     	}
-    }	    
-    
-	// Convert aus JSON
-	@Override
-	public GeorgAggregator convertJsonToBehaviorModel(LinkedHashMap<String, Object> jsonMap) {        
-        return new GeorgAggregator();
-	}
+    }
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {

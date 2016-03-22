@@ -1,0 +1,42 @@
+{
+	"type": "Energy Management System",
+	"properties": {
+		"name": "NEW_0"
+	},
+	"children": [
+		{
+			"type": "ClusterHead",
+			"properties": {
+				"name": "NEW_1",
+				"value": "NoControl"
+			},
+			"children": [
+				{
+					"type": "BioMass",
+					"properties": {
+						"name": "biomass",
+						"value": "79"
+					},
+					"children": []
+				}
+			]
+		},
+		{
+			"type": "ClusterHead",
+			"properties": {
+				"name": "NEW_2",
+				"value": "NoControl"
+			},
+			"children": [
+				{
+					"type": "Water",
+					"properties": {
+						"name": "water",
+						"value": "89"
+					},
+					"children": []
+				}
+			]
+		}
+	]
+}

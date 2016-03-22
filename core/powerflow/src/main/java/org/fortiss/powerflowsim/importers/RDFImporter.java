@@ -17,7 +17,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.fortiss.powerflowsim.model.Model;
+import org.fortiss.powerflowsim.model.CimModel;
 import org.fortiss.powerflowsim.util.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -29,7 +29,7 @@ import CIM15.IEC61970.Core.IdentifiedObject;
 
 public class RDFImporter extends Importer {
 
-	public Model importRDF(File rdfFile) {
+	public CimModel importRDF(File rdfFile) {
 		initPackages();
 
 		try {
@@ -54,9 +54,9 @@ public class RDFImporter extends Importer {
 		return null;
 	}
 
-	private Model parseXML(Document doc) {
+	private CimModel parseXML(Document doc) {
 		// create a new model
-		Model model = new Model();
+		CimModel model = new CimModel();
 
 		Element rootElement = doc.getDocumentElement();
 		NodeList nodeList = rootElement.getChildNodes();
@@ -76,7 +76,7 @@ public class RDFImporter extends Importer {
 	 * @param model
 	 * @param nodeList
 	 */
-	private void createObjects(Model model, NodeList nodeList) {
+	private void createObjects(CimModel model, NodeList nodeList) {
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);
 
@@ -121,7 +121,7 @@ public class RDFImporter extends Importer {
 	 * @param model
 	 * @param nodeList
 	 */
-	private void setResourceLinks(Model model, NodeList nodeList) {
+	private void setResourceLinks(CimModel model, NodeList nodeList) {
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);
 			if (node.getNodeName().contains("cim")) {
@@ -158,7 +158,7 @@ public class RDFImporter extends Importer {
 	 * @throws InvocationTargetException
 	 * @throws NoSuchMethodException
 	 */
-	private void setRessourceLink(Model model, Object sourceObject, String propertyName, String destinationMRID) {
+	private void setRessourceLink(CimModel model, Object sourceObject, String propertyName, String destinationMRID) {
 		Object obj = model.getObjectWithMRID(destinationMRID);
 		if (obj == null) {
 			log.error("Could not resolve RessourceLink for MRID " + ((IdentifiedObject) sourceObject).getMRID() + " and Class of destination Object " + propertyName);

@@ -14,7 +14,6 @@ import georg.models.GeorgComponents;
 
 import java.util.HashSet;
 
-import resultSaving.NoSave;
 import akka.basicActors.ActorOptions;
 import akka.basicActors.LoggingMode;
 
@@ -33,7 +32,7 @@ public abstract class GeorgActorFactory {
 	public static ActorOptions createGeorgsComponent(String name, String path){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new GeorgComponents(name, path),new NoSave());		
+				new GeorgComponents(name, path));		
 		return result;		
 	}
 
@@ -41,7 +40,7 @@ public abstract class GeorgActorFactory {
 	public static ActorOptions createGeorgsAggregator(String name){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new GeorgAggregator(name),new NoSave());		
+				new GeorgAggregator(name));		
 		return result;		
 	}
 

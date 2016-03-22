@@ -9,7 +9,6 @@
 
 package akkaAndSolverAndSCADA.behaviorModels;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import akka.advancedMessages.ErrorAnswerContent;
@@ -92,13 +91,6 @@ public class Aggregator extends BehaviorModel{
         }    	
 		return reductionFactorToSend;
 	}
-    
-    
-	// Convert aus JSON
-	@Override
-	public Aggregator convertJsonToBehaviorModel(LinkedHashMap<String, Object> jsonMap) {        
-        return new Aggregator();
-	}
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
@@ -111,8 +103,5 @@ public class Aggregator extends BehaviorModel{
 	}
 
 	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 }

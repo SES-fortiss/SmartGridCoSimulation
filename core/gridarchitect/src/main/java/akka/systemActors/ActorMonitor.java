@@ -285,7 +285,7 @@ public class ActorMonitor extends UntypedActor {
 			
 			if (GridArchitectConfiguration.exportCIMFile){
 				File file = new File("CIM-Data-Timestep-" + GlobalTime.currentTimeStep + ".xml");
-				RDFExporter.export(file,PowerflowMapping.getPowerflowModel().CIMmodel);
+				RDFExporter.export(file,PowerflowMapping.getPowerflowTopology().CIMmodel);
 				System.out.println("ActorMonitor.powerflowMapping(): export CIM to " + file.getAbsolutePath());
 			}
 		}

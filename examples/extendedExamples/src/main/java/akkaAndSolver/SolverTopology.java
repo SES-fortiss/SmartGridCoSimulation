@@ -9,7 +9,7 @@
 
 package akkaAndSolver;
 
-import powerflowApi.PowerflowModel;
+import powerflowApi.PowerflowTopology;
 import topology.ActorTopology;
 
 public class SolverTopology {
@@ -38,7 +38,7 @@ public class SolverTopology {
 		//System.out.println("*********************");
 		//System.out.println(PowerflowMapping.akkaTopology);
 		
-		PowerflowModel pfModel = new PowerflowModel();
+		PowerflowTopology pfModel = new PowerflowTopology();
 		
 		for (int i = 0; i <= consumerNum; i++) {
 			topologyPath = "/user/ActorSupervisor/SolverAggregator/Solar"+i;

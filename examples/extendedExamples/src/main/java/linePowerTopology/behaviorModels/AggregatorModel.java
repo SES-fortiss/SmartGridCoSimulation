@@ -9,7 +9,6 @@
 
 package linePowerTopology.behaviorModels;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import akka.advancedMessages.ErrorAnswerContent;
@@ -91,13 +90,6 @@ public class AggregatorModel extends BehaviorModel{
         	reductionFactorToSend = scheduledPowerProduction / expectedAggregatedPowerProduction;
         }    	
 		return reductionFactorToSend;
-	}
-    
-    
-	// Convert aus JSON
-	@Override
-	public AggregatorModel convertJsonToBehaviorModel(LinkedHashMap<String, Object> jsonMap) {        
-        return new AggregatorModel();
 	}
 
 	@Override

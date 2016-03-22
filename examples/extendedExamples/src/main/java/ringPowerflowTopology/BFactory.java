@@ -11,7 +11,6 @@ package ringPowerflowTopology;
 
 import java.util.HashSet;
 
-import resultSaving.NoSave;
 import ringPowerflowTopology.behaviorModels.AggregatorModel;
 import ringPowerflowTopology.behaviorModels.BModel;
 import akka.ActorFactory;
@@ -24,7 +23,7 @@ public class BFactory extends ActorFactory{
 	public static ActorOptions createAggregatorActor(String name){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new AggregatorModel(name),new NoSave());		
+				new AggregatorModel(name));		
 		return result;		
 	}
 	
@@ -32,7 +31,7 @@ public class BFactory extends ActorFactory{
 	public static ActorOptions createActor(String name, double installedProduction){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new BModel(name, installedProduction),new NoSave());		
+				new BModel(name, installedProduction));		
 		return result;		
 	}	 
 

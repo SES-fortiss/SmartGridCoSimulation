@@ -1,0 +1,46 @@
+package vppClusterHeads;
+
+import grid.GridTopology;
+
+import java.time.Duration;
+import java.time.LocalDate;
+
+import simulation.SimulationStarter;
+import akka.actor.ActorSystem;
+
+/**
+ * 
+ * This is the main class for the VPP simulation.
+ * It is executed with Eclipse.
+ * 
+ * @author bytschkow
+ *
+ */
+
+public class Simulation {
+	
+	private GridTopology vppgrid;
+	
+	/****************************
+	 * SETTINGS
+	 ****************************/	
+	
+	public static LocalDate referenceDay = LocalDate.of(2013,8,2);			
+	public static Duration desiredTimeInterval = Duration.ofSeconds(0);
+	
+	/****************************
+	 * START
+	 ****************************/
+	
+	public void run(){		
+		vppgrid = Topology.createTopology();				
+		SimulationStarter.saveGridTopologyPlot(vppgrid);		
+        
+		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(vppgrid);
+        SimulationStarter.startSimulation(actorSystem, referenceDay, desiredTimeInterval);
+	}
+	
+	public static void main(String[] args){
+		new Simulation().run();
+	}
+}

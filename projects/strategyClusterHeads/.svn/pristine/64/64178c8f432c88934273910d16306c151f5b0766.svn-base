@@ -1,0 +1,34 @@
+package vppClusterHeads.externalClusterHead;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+public class ClusterHeadConnection {
+	
+    URL connection;
+    
+    public ClusterHeadConnection() throws MalformedURLException{
+    	connection = new URL("http://192.168.1.22:8080/");
+    }
+	
+	public String readValues() throws IOException {
+		
+        InputStreamReader isr = new InputStreamReader(connection.openStream());
+            
+        String inputLine;
+        String result = null; 
+         
+        BufferedReader in = new BufferedReader(isr);
+        	
+        while ((inputLine = in.readLine()) != null) {
+        		result = inputLine;
+        }
+        	
+        in.close();
+        
+		return result;        
+    }	
+}

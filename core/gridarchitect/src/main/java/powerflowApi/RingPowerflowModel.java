@@ -20,7 +20,7 @@ import CIM15.IEC61970.Topology.TopologicalNode;
  * @author Denis Bytschkow
  *
  */
-public class RingPowerflowModel extends PowerflowModel{
+public class RingPowerflowModel extends PowerflowTopology{
 	
 	private TopologicalNode lastNodeLeft;
 	private TopologicalNode lastNodeRight;
@@ -32,13 +32,13 @@ public class RingPowerflowModel extends PowerflowModel{
 	}	
 
 	public void addLeft(String actorName) {
-		TopologicalNode newNode = createNode(actorName);
+		TopologicalNode newNode = createPQNode(actorName);
 		ModelUtils.createDefaultLine(CIMmodel, lastNodeLeft, newNode);
 		lastNodeLeft = newNode;
 	}
 	
 	public void addRight(String actorName) {		
-		TopologicalNode newNode = createNode(actorName);
+		TopologicalNode newNode = createPQNode(actorName);
 		ModelUtils.createDefaultLine(CIMmodel, lastNodeRight, newNode);
 		lastNodeRight = newNode;
 	}
@@ -49,7 +49,7 @@ public class RingPowerflowModel extends PowerflowModel{
 	 * @param actorName
 	 */
 	public void addBelow(String actorName) {
-		TopologicalNode newNode = createNode(actorName);
+		TopologicalNode newNode = createPQNode(actorName);
 		ModelUtils.createDefaultLine(CIMmodel, lastNodeRight, newNode);
 		lastNodeRight = newNode;
 		lastNodeLeft = newNode;

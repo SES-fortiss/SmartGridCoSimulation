@@ -45,7 +45,7 @@ public class AggregatorModel extends BehaviorModel {
 		ActorResults ar =
 				(ActorResults) PowerflowMapping.actorResultsMap
 						.get("/user/ActorSupervisor/SolverAggregator/Node1");
-		double test = ar.setPointActivePower;
+		double test = ar.activePower;
 		System.out.println("ringPowerflowTopology.behaviorModels.AggregatorModel: Accessed ActorResult Data - " + test);
 		
 		

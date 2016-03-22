@@ -1,0 +1,19 @@
+package helper;
+
+import java.io.IOException;
+
+import org.junit.Test;
+
+import vppClusterHeads.helper.SenderToLivingLabWebsite;
+
+public class MySenderToLivingLabTest {
+	
+	@Test
+	public void testSend() throws IOException{
+		
+		String string = "{\"name\":\"DEMS\",\"totalPower\":test}";		
+		SenderToLivingLabWebsite.writeValues(string);
+		
+	}
+
+}
