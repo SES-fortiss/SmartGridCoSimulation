@@ -11,13 +11,13 @@ package vppClusterHeads.clusterHead;
 
 import java.util.LinkedList;
 
-import vppClusterHeads.genericStuff.GenericAnswerContent;
-import vppClusterHeads.genericStuff.GenericRequestContent;
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
+import vppClusterHeads.genericStuff.GenericAnswerContent;
+import vppClusterHeads.genericStuff.GenericRequestContent;
 
 /**
  * DEMSAggregator bekommt alle Nachrichten und kann diese Verarbeiten
@@ -47,8 +47,7 @@ public class ClusterHead extends BehaviorModel{
 	}
 
     @Override
-    public void makeDecision() {
-    	
+    public void makeDecision() {     	
     	double childTotalPower = 0.0;
     	double childSolarPower = 0.0;
     	double childWindPower = 0.0;
@@ -59,8 +58,6 @@ public class ClusterHead extends BehaviorModel{
     	double childPlannedProduction = 0.0;
     	double childNegativeFlexibility = 0.0;
     	double childPositiveFlexibility = 0.0;
-    	
-    	//System.out.println(answerListReceived);
     	
       	for (BasicAnswer message : super.answerListReceived){
     		if (message.answerContent instanceof GenericAnswerContent) {    			
@@ -93,8 +90,7 @@ public class ClusterHead extends BehaviorModel{
     	}
       	
     	answerContentToSend.total = childTotalPower;
-    	answerContentToSend.scheduled = childPlannedProduction;
-    	
+    	answerContentToSend.scheduled = childPlannedProduction;    	
     	answerContentToSend.solar = childSolarPower;
     	answerContentToSend.wind = childWindPower;
     	answerContentToSend.water = childWaterPower;

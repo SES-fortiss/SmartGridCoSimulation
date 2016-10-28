@@ -25,7 +25,7 @@ import akka.basicMessages.AnswerContent;
 public class ClusterHeadAnswerContent implements AnswerContent  {
 	
 	final static DecimalFormatSymbols format = new DecimalFormatSymbols(Locale.ENGLISH);
-	final static DecimalFormat df = new DecimalFormat("#0.00", format);
+	final static DecimalFormat df = new DecimalFormat("#0.0", format);
 	
 	public String name;
 	
@@ -41,17 +41,17 @@ public class ClusterHeadAnswerContent implements AnswerContent  {
 	public double nF;	
 		
 	public String toString(){		 
-		return ("AggregatorAnswerContent={" +
-                "totalConsumption: " + df.format(total) + 
-                "  scheduledConsumption: " + df.format(scheduled) +
-                "  solarPower: " + df.format(solar) +
-                "  waterPower: " + df.format(water) +
-                "  windPower: " + df.format(wind) +
-                "  bioGasPower: " + df.format(bioGas) +
-                "  bioMassPower: " + df.format(bioMass) +
-                "  requestedPower: " + df.format(requestedPower) +      
-                "  positiveFlexibility: " + df.format(pF) +      
-                "  negativeFlexibility: " + df.format(nF) +      
+		return ("Status={" +
+                "total: " + df.format(total) + 
+                "  scheduled: " + df.format(scheduled) +
+                "  solar: " + df.format(solar) +
+                "  water: " + df.format(water) +
+                "  wind: " + df.format(wind) +
+                "  bioGas: " + df.format(bioGas) +
+                "  bioMass: " + df.format(bioMass) +
+                "  requests: " + df.format(requestedPower) +      
+                "  posFlex.: " + df.format(pF) +      
+                "  negFlex.: " + df.format(nF) +      
 				"}");
 	}
 }

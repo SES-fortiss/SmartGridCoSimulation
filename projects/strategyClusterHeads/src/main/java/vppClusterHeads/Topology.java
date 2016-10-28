@@ -55,13 +55,14 @@ public class Topology {
 		 *  - x Wind
 		 *  
 		 *****************************************/
+		
 		String cluster1  = root + "/Cluster-1";
 		top.addActorAsChild(cluster1, ClusterHeadActorFactory.createClusterHeadActor());	
-		
+				
 		cluster1 = cluster1 + "/";
 
-		top.addActorAsChild(cluster1 + "DachSWMZentrale", ClusterHeadActorFactory.createSolarActor(120.55));
 		
+		top.addActorAsChild(cluster1 + "DachSWMZentrale", ClusterHeadActorFactory.createSolarActor(120.55));		
 		
 		top.addActorAsChild(cluster1 + "DachMTZ", ClusterHeadActorFactory.createSolarActor(66.85)); 
 		top.addActorAsChild(cluster1 + "DachIsar2", ClusterHeadActorFactory.createSolarActor(17.4)); 
@@ -79,7 +80,7 @@ public class Topology {
 		top.addActorAsChild(cluster1 + "BioGasMichaelibad", ClusterHeadActorFactory.createBioGasActor(350.0));
 		top.addActorAsChild(cluster1 + "BioGas1", ClusterHeadActorFactory.createBioGasActor(700.0));
 		top.addActorAsChild(cluster1 + "BioMass1", ClusterHeadActorFactory.createBioMassActor(6500.0));
-		top.addActorAsChild(cluster1 + "BioMass2", ClusterHeadActorFactory.createBioMassActor(3500.0));
+		top.addActorAsChild(cluster1 + "BioMass2", ClusterHeadActorFactory.createBioMassActor(3500.0));		
 		top.addActorAsChild(cluster1 + "BioMass3", ClusterHeadActorFactory.createBioMassActor(8500.0));
 		
 		
@@ -196,6 +197,8 @@ public class Topology {
 		for (int i = 0; i < 60; i++) {
 			top.addActorAsChild(cluster4 + "Solar" + i, ClusterHeadActorFactory.createSolarActor(10.0));			
 		}
+		
+		
 		return top;
 	}
 

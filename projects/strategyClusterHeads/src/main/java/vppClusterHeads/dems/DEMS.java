@@ -9,21 +9,19 @@
 
 package vppClusterHeads.dems;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import vppClusterHeads.clusterHead.ClusterHeadAnswerContent;
-import vppClusterHeads.genericStuff.GenericRequestContent;
-import vppClusterHeads.helper.FileToLocalDiskHelper;
-import vppClusterHeads.helper.SenderToLivingLabWebsite;
+import com.google.gson.Gson;
+
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
-
-import com.google.gson.Gson;
+import vppClusterHeads.clusterHead.ClusterHeadAnswerContent;
+import vppClusterHeads.genericStuff.GenericRequestContent;
+import vppClusterHeads.helper.FileToLocalDiskHelper;
 
 /**
  * DEMSAggregator bekommt alle Nachrichten und kann diese Verarbeiten
@@ -34,12 +32,11 @@ import com.google.gson.Gson;
 public class DEMS extends BehaviorModel {
 
 	public DEMSAnswerContent answerContentToSend = new DEMSAnswerContent();
-	public GenericRequestContent requestContentToSend =
-			new GenericRequestContent();
+	public GenericRequestContent requestContentToSend = new GenericRequestContent();
 
 	public double ausgleichNotwendig, posAusgleichVerf, negAusgleichVerf;
 
-	private boolean connectionToLLdesired = true;
+	// private boolean connectionToLLdesired = true; im Moment unnötig siehe Kommentar unten
 
 	Gson gson = new Gson();
 
@@ -58,18 +55,16 @@ public class DEMS extends BehaviorModel {
 		if (ausgleichNotwendig > 0) {	
 			// Es wird mehr Energie benötigt			
 			requestFactor = ausgleichNotwendig / posAusgleichVerf;
-			if (requestFactor > 1) requestFactor = 1.0;						
+			if (requestFactor > 1) requestFactor = 1.0;		
 		} 
 		
 		if (ausgleichNotwendig < 0){
 			// Es ist zuviel Energie vorhanden
-			requestFactor = ausgleichNotwendig / negAusgleichVerf;
-			
+			requestFactor = ausgleichNotwendig / negAusgleichVerf;			
 			if (requestFactor < -1) requestFactor = -1;
 		}
 		
-		requestContentToSend.flexibilityRequestFactor = requestFactor;
-		
+		requestContentToSend.flexibilityRequestFactor = requestFactor;		
 		if (requestFactor != 0.0) System.out.println("DEMS reqestFlexibility: " + requestFactor);
 	}
 
@@ -108,7 +103,7 @@ public class DEMS extends BehaviorModel {
 				childPosAusgleich += answer.pF;
 				childNegAusgleich += answer.nF;
 
-				// falls ein Kind im Minus ist, muss von anders ein positiver
+				// falls ein Kind im Minus ist, muss von wo anders ein positiver
 				// Ausgleich gemacht werden.
 				childAusgleichNotwendig += answer.requestedPower;
 				children.add(answer);
@@ -131,14 +126,11 @@ public class DEMS extends BehaviorModel {
 		negAusgleichVerf = childNegAusgleich;
 
 		String answerAsJson = gson.toJson(answerContentToSend);
+		System.out.println(actorName + ": " + answerContentToSend);
 
-		if (true) {
-			//System.out.println(actorName + ": " + answerAsJson);
-			System.out.println(actorName + ": " + answerContentToSend);
-		}
+		FileToLocalDiskHelper.printFileToWWW(answerAsJson); // for the data update
 
-		FileToLocalDiskHelper.printFileToWWW(answerAsJson);
-
+		/** obsolete, since the website doesnt work anymore
 		if (connectionToLLdesired) {
 			try {
 				SenderToLivingLabWebsite.writeValues(answerAsJson);
@@ -148,6 +140,7 @@ public class DEMS extends BehaviorModel {
 				e.printStackTrace();
 			}
 		}
+		*/
 	}
 
 	@Override

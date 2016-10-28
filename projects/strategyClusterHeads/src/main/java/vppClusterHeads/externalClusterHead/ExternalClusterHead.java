@@ -11,16 +11,14 @@ package vppClusterHeads.externalClusterHead;
 
 import java.util.LinkedList;
 
-import vppClusterHeads.clusterHead.ClusterHeadAnswerContent;
-import vppClusterHeads.genericStuff.GenericRequestContent;
+import com.google.gson.Gson;
+
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import vppClusterHeads.clusterHead.ClusterHeadAnswerContent;
+import vppClusterHeads.genericStuff.GenericRequestContent;
 
 /**
  * 
@@ -30,13 +28,9 @@ import com.google.gson.JsonParser;
 public class ExternalClusterHead extends BehaviorModel{
 	
     public ClusterHeadAnswerContent answerContentToSend = new ClusterHeadAnswerContent();
-    public GenericRequestContent requestContentToSend = new GenericRequestContent();
+    public GenericRequestContent requestContentToSend = new GenericRequestContent();    
     
-    public double actualAggregatedPowerProduction = 0.0;
-    public double expectedAggregatedPowerProduction = 0.0;
-    
-    public String message;
-    public Gson gson = new Gson();
+    public String message;    
     
     public ClusterHeadConnection connection;
             
@@ -61,51 +55,33 @@ public class ExternalClusterHead extends BehaviorModel{
 
     @Override
     public void makeDecision() {
-    	    	
-    	double solarPower = 0.0;
     	
-    	actualAggregatedPowerProduction = 0.0;
-    	expectedAggregatedPowerProduction = 0.0;    	
+    	JsonCluster cluster = new JsonCluster();
     	
-    	if (connection != null){
-    		
+    	if (connection != null){    		
     		try {
     			message = connection.readValues();
-    			System.out.println(this.actorName + ": ReceivedMessage: " + message);    			     			
+    			Gson gson = new Gson();
+    	    	cluster = gson.fromJson(message, JsonCluster.class);
+    			//System.out.println(this.actorName + " receives message: " + message);
 			} catch (Exception e) {
-				//e.printStackTrace();
-				System.out.println(this.actorName + ": No connection to Ardino - all values will be set to 0"); 
-				message = "{\"SetPoint\": 0, \"PV\": 0, \"PVFortiss\":0, \"Wind\": 0, \"BHKW\": 0, \"RequestPower\": 0}";
+				System.out.println(this.actorName + ": No connection to DemoTableCluster - all values will be set to 0");
 			}
     	}
-
-		JsonObject json = (JsonObject) new JsonParser().parse(message);
+    	double scalingfactor = 1000;
     	
-    	//System.out.println(message);
-		//System.out.println(json.get("PV"));
-		
-		actualAggregatedPowerProduction = json.get("PV").getAsDouble();
-		solarPower = json.get("PV").getAsDouble();
-		
-		if (json.get("PVFortiss") != null){
-			actualAggregatedPowerProduction += json.get("PVFortiss").getAsDouble();
-			solarPower += json.get("PVFortiss").getAsDouble();
-		}
-		
-		answerContentToSend.solar = solarPower;
-		
-		actualAggregatedPowerProduction += json.get("Wind").getAsDouble();
-		answerContentToSend.wind = json.get("Wind").getAsDouble();
-		
-		actualAggregatedPowerProduction += json.get("BHKW").getAsDouble();
-		answerContentToSend.bioGas = json.get("BHKW").getAsDouble();
-    	
-    	answerContentToSend.scheduled = json.get("SetPoint").getAsDouble();
-    	answerContentToSend.requestedPower = json.get("RequestPower").getAsDouble();
-    	
-    	answerContentToSend.total = actualAggregatedPowerProduction;
+		answerContentToSend.solar = cluster.solar * scalingfactor;
+		answerContentToSend.wind = cluster.wind * scalingfactor;
+		answerContentToSend.bioGas = cluster.biogas *scalingfactor;
+    	answerContentToSend.scheduled = cluster.targetValue * scalingfactor;
+    	answerContentToSend.requestedPower = -cluster.clusterOutput * scalingfactor; // das ist das was benötigt wird    	
+    	answerContentToSend.total = cluster.currentValue * scalingfactor;
     	answerContentToSend.name = actorName;
+    	
+    	System.out.println(this.actorName + ": " + answerContentToSend);
     }
+    
+    
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {

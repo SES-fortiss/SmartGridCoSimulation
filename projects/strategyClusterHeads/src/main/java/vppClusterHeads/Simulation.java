@@ -12,19 +12,17 @@ package vppClusterHeads;
 import java.time.Duration;
 import java.time.LocalDate;
 
+import akka.actor.ActorSystem;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
-import akka.actor.ActorSystem;
 
-/**
+/************************************************
  * 
  * This is the main class for the VPP simulation.
- * It is executed with Eclipse.
  * 
  * @author bytschkow
- *
- */
-
+ * 
+ ************************************************/
 public class Simulation {
 	
 	public static ActorTopology vppgrid;

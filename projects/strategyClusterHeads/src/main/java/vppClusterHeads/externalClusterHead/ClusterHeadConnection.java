@@ -19,18 +19,20 @@ public class ClusterHeadConnection {
 	
     URL url;
     URLConnection urlconn;
+    
+    String urlString = "http://192.168.1.162:8080/";
+    //String urlString = "http://localhost:8080/";
+    
     int timeout = 1000; // in ms
     
     public ClusterHeadConnection() throws IOException{
-    	//url = new URL("http://localhost:8080/");
-    	url = new URL("http://192.168.1.22:8080/");
+    	url = new URL(urlString);
     	urlconn = url.openConnection();
     	urlconn.setConnectTimeout(timeout);
     }
 	
-	public String readValues() throws IOException {
-		
-		url = new URL("http://192.168.1.22:8080/");
+	public String readValues() throws IOException {		
+		url = new URL(urlString);
     	urlconn = url.openConnection();
     	urlconn.setConnectTimeout(timeout);
 		
