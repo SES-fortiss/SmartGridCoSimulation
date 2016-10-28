@@ -1,0 +1,335 @@
+clock { 
+timezone PST +8PDT; 
+starttime '2000-01-01 00:01:00'; 
+stoptime '2000-01-01 00:02:00';
+}
+ 
+#set minimum_timestep=60;
+#set profiler=1;
+#set relax_naming_rules=1;
+#set pauseatexit=1;
+#set minimum_timestep=60;
+#set profiler=1;
+#set relax_naming_rules=1;
+#set pauseatexit=1;
+module generators; 
+ module tape; 
+module assert; 
+module climate; 
+module residential; 
+module powerflow {  }
+object node {
+	name ID-RrUwbgC5;
+	nominal_voltage 240.0 V;
+	phases ABCN;
+}
+
+object node {
+	name ID-03Z51e7L;
+	nominal_voltage 240.0 V;
+	phases ABCN;
+}
+
+object node {
+	name ID-A5rmh07M;
+	nominal_voltage 240.0 V;
+	phases ABCN;
+}
+
+object node {
+	name ID-uMn0VSTk;
+	nominal_voltage 240.0 V;
+	phases ABCN;
+}
+
+object node {
+	name ID-OA34eafx;
+	nominal_voltage 240.0 V;
+	phases ABCN;
+}
+
+object node {
+	name ID-hMc05CgV;
+	nominal_voltage 240.0 V;
+	phases ABCN;
+}
+
+object node {
+	name ID-fOyWgKV1;
+	nominal_voltage 240.0 V;
+	phases ABCN;
+}
+
+object node {
+	name ID-6cTG1EJl;
+	nominal_voltage 240.0 V;
+	phases ABCN;
+}
+
+object node {
+	name ID-XIwuhdqn;
+	nominal_voltage 240.0 V;
+	phases ABCN;
+	bustype SWING;
+}
+
+object node {
+	parent ID-03Z51e7L;
+	name ID-JbRk5gSZ;
+	nominal_voltage 240.0;
+	phases ABCN;
+}
+
+object node {
+	parent ID-RrUwbgC5;
+	name ID-fGbSfr7F;
+	nominal_voltage 240.0;
+	phases ABCN;
+}
+
+object load {
+	constant_power_A 33.333332+11.666667j;
+	parent ID-fOyWgKV1;
+	name ID-VErIxyte;
+	nominal_voltage 240.0;
+	phases ABCN;
+}
+
+object load {
+	constant_power_A 0.0+0.0j;
+	parent ID-6cTG1EJl;
+	name ID-LPMv28P8;
+	nominal_voltage 240.0;
+	phases ABCN;
+}
+
+object load {
+	constant_power_A 41.666668+16.666666j;
+	parent ID-A5rmh07M;
+	name ID-AvLCiYMg;
+	nominal_voltage 240.0;
+	phases ABCN;
+}
+
+object load {
+	constant_power_A 0.0+0.0j;
+	parent ID-hMc05CgV;
+	name ID-rSQVbY3e;
+	nominal_voltage 240.0;
+	phases ABCN;
+}
+
+object load {
+	constant_power_A 30.0+10.0j;
+	parent ID-OA34eafx;
+	name ID-XVt6MtP3;
+	nominal_voltage 240.0;
+	phases ABCN;
+}
+
+object load {
+	constant_power_A 0.0+0.0j;
+	parent ID-uMn0VSTk;
+	name ID-DapeeV1o;
+	nominal_voltage 240.0;
+	phases ABCN;
+}
+
+object overhead_line {
+	configuration ID-CASVU4gu_config;
+	name ID-CASVU4gu;
+	length 2.0 m;
+	from ID-uMn0VSTk;
+	to ID-03Z51e7L;
+	phases ABCN;
+}
+
+object line_configuration {
+	name ID-CASVU4gu_config;
+	z21 0+0j;
+	z32 0+0j;
+	z31 0+0j;
+	z12 0+0j;
+	z23 0+0j;
+	z11 0.0+0.0625j;
+	z22 0.0+0.0625j;
+	z33 0.0+0.0625j;
+	z13 0+0j;
+}
+
+object overhead_line {
+	configuration ID-aBXjDxAe_config;
+	name ID-aBXjDxAe;
+	length 2.0 m;
+	from ID-fOyWgKV1;
+	to ID-uMn0VSTk;
+	phases ABCN;
+}
+
+object line_configuration {
+	name ID-aBXjDxAe_config;
+	z21 0+0j;
+	z32 0+0j;
+	z31 0+0j;
+	z12 0+0j;
+	z23 0+0j;
+	z11 0.0085+0.072j;
+	z22 0.0085+0.072j;
+	z33 0.0085+0.072j;
+	z13 0+0j;
+}
+
+object overhead_line {
+	configuration ID-AWvoxmWC_config;
+	name ID-AWvoxmWC;
+	length 2.0 m;
+	from ID-hMc05CgV;
+	to ID-OA34eafx;
+	phases ABCN;
+}
+
+object line_configuration {
+	name ID-AWvoxmWC_config;
+	z21 0+0j;
+	z32 0+0j;
+	z31 0+0j;
+	z12 0+0j;
+	z23 0+0j;
+	z11 0.017+0.092j;
+	z22 0.017+0.092j;
+	z33 0.017+0.092j;
+	z13 0+0j;
+}
+
+object overhead_line {
+	configuration ID-YhYiIS0k_config;
+	name ID-YhYiIS0k;
+	length 2.0 m;
+	from ID-6cTG1EJl;
+	to ID-fOyWgKV1;
+	phases ABCN;
+}
+
+object line_configuration {
+	name ID-YhYiIS0k_config;
+	z21 0+0j;
+	z32 0+0j;
+	z31 0+0j;
+	z12 0+0j;
+	z23 0+0j;
+	z11 0.0119+0.1008j;
+	z22 0.0119+0.1008j;
+	z33 0.0119+0.1008j;
+	z13 0+0j;
+}
+
+object overhead_line {
+	configuration ID-pGwN6gbK_config;
+	name ID-pGwN6gbK;
+	length 2.0 m;
+	from ID-XIwuhdqn;
+	to ID-hMc05CgV;
+	phases ABCN;
+}
+
+object line_configuration {
+	name ID-pGwN6gbK_config;
+	z21 0+0j;
+	z32 0+0j;
+	z31 0+0j;
+	z12 0+0j;
+	z23 0+0j;
+	z11 0.0+0.0576j;
+	z22 0.0+0.0576j;
+	z33 0.0+0.0576j;
+	z13 0+0j;
+}
+
+object overhead_line {
+	configuration ID-yC6fnC9n_config;
+	name ID-yC6fnC9n;
+	length 2.0 m;
+	from ID-A5rmh07M;
+	to ID-hMc05CgV;
+	phases ABCN;
+}
+
+object line_configuration {
+	name ID-yC6fnC9n_config;
+	z21 0+0j;
+	z32 0+0j;
+	z31 0+0j;
+	z12 0+0j;
+	z23 0+0j;
+	z11 0.01+0.085j;
+	z22 0.01+0.085j;
+	z33 0.01+0.085j;
+	z13 0+0j;
+}
+
+object overhead_line {
+	configuration ID-wnMjRaPA_config;
+	name ID-wnMjRaPA;
+	length 2.0 m;
+	from ID-OA34eafx;
+	to ID-6cTG1EJl;
+	phases ABCN;
+}
+
+object line_configuration {
+	name ID-wnMjRaPA_config;
+	z21 0+0j;
+	z32 0+0j;
+	z31 0+0j;
+	z12 0+0j;
+	z23 0+0j;
+	z11 0.039+0.17j;
+	z22 0.039+0.17j;
+	z33 0.039+0.17j;
+	z13 0+0j;
+}
+
+object overhead_line {
+	configuration ID-p3pjB6LJ_config;
+	name ID-p3pjB6LJ;
+	length 2.0 m;
+	from ID-RrUwbgC5;
+	to ID-6cTG1EJl;
+	phases ABCN;
+}
+
+object line_configuration {
+	name ID-p3pjB6LJ_config;
+	z21 0+0j;
+	z32 0+0j;
+	z31 0+0j;
+	z12 0+0j;
+	z23 0+0j;
+	z11 0.0+0.0586j;
+	z22 0.0+0.0586j;
+	z33 0.0+0.0586j;
+	z13 0+0j;
+}
+
+object overhead_line {
+	configuration ID-1rjSBQXm_config;
+	name ID-1rjSBQXm;
+	length 2.0 m;
+	from ID-uMn0VSTk;
+	to ID-A5rmh07M;
+	phases ABCN;
+}
+
+object line_configuration {
+	name ID-1rjSBQXm_config;
+	z21 0+0j;
+	z32 0+0j;
+	z31 0+0j;
+	z12 0+0j;
+	z23 0+0j;
+	z11 0.032+0.161j;
+	z22 0.032+0.161j;
+	z33 0.032+0.161j;
+	z13 0+0j;
+}
+

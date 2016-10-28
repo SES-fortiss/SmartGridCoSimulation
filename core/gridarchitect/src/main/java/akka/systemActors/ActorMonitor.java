@@ -19,9 +19,6 @@ import java.util.Map;
 
 import org.fortiss.powerflowsim.exporters.RDFExporter;
 
-import powerflowApi.PowerflowApi;
-import powerflowApi.PowerflowMapping;
-import resultLogger.ConstantLogger;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.ReceiveTimeout;
@@ -36,6 +33,9 @@ import akka.systemMessages.TimeStepMessage;
 import akka.systemMessages.TimeoutMessage;
 import behavior.advancedBehaviorModels.AbstractMessageHelper;
 import configuration.GridArchitectConfiguration;
+import powerflowApi.PowerflowApi;
+import powerflowApi.PowerflowMapping;
+import resultLogger.ConstantLogger;
 
 /**
  * Created with IntelliJ IDEA. User: amack Date: 6/13/13 Time: 12:02 PM
@@ -97,14 +97,13 @@ public class ActorMonitor extends UntypedActor {
 	@Override
 	public void onReceive(Object message) throws Exception {
 		// Zum Testen
-		/*
+		/*		
 		test++;
 		System.out.print("--------- " + test + ":");
 		if (message.getClass() == String.class) {
 			System.out.println( (String) message + " Sender: "  + getSender());
-		} else System.out.println(message.getClass() + " Sender: "  + getSender());
+		} else System.out.println(message.getClass() + " Sender: "  + getSender());				
 		*/
-		
 		
 		// Message exchange with Classes outside the ActorSystem should use the Inbox
 		if (message == "Inbox intitialize")
@@ -263,14 +262,14 @@ public class ActorMonitor extends UntypedActor {
 			LocalTime t = LocalTime.now();
 			System.out.println(t);
 
-			GlobalTime.currentTime = LocalDateTime.of(message.referenceDay, LocalTime.now());
-			GlobalTime.period = message.timeInterval;
+			GlobalTime.currentTime = LocalDateTime.of(ld, t);
+			GlobalTime.period = message.timeInterval;			
 			GlobalTime.nextTime = GlobalTime.currentTime.plus(GlobalTime.period);
 			
 			this.timeIntervalINT = message.timeInterval.getSeconds();
 			this.referenceDay = message.referenceDay;
 			
-			GlobalTime.lastTimeStep = 10000000;
+			GlobalTime.lastTimeStep = 10000000;			
 		}		
 	}
 
@@ -294,20 +293,19 @@ public class ActorMonitor extends UntypedActor {
 	/*
 	 * Increments TimeStep upon GridActorSupervisor completion and Broadcasts new TimeStep.
 	 */
-	public void startNewTimeStep() {
+	public void startNewTimeStep() {		
 		
-		if (GlobalTime.currentTimeStep < GlobalTime.lastTimeStep)
-		{		
+		if (GlobalTime.currentTimeStep < GlobalTime.lastTimeStep){		
 			if (considersTimeMode) System.out.println(GlobalTime.currentTime); // Shows the actual Time before starting it
+			
 			startTimeStepComputation = System.currentTimeMillis();
-
 			this.broadcastTimeStep();
 			
-			// Falls ein Delay gewünscht wird, wartet der ActorMonitor, bevor er weitermacht.
+			// Falls ein Delay gewünscht wird, wartet der ActorMonitor, bevor er weitermacht.			
+			
 			if (GridArchitectConfiguration.demoDelay > 0 || this.realTimeMode){				
 				long sleepInMS = GridArchitectConfiguration.demoDelay;				
-				if (this.realTimeMode) sleepInMS = timeIntervalINT * 1000;
-				
+				if (this.realTimeMode) sleepInMS = timeIntervalINT * 1000;				
 				try {
 					Thread.sleep(sleepInMS);
 				} catch (InterruptedException e) {
