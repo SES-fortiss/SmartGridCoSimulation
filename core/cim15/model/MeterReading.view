@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ASCII"?>
+<org.eclipse.emf.ecp.view.model:View xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:org.eclipse.emf.ecp.view.model="http://org/eclipse/emf/ecp/view/model/170" xmi:id="_47SaMK2iEeazdbM0QEZ8dA" name="MeterReading" ecorePath="/cim15/model/CIM15.ecore">
+  <rootEClass href="http://iec.ch/TC57/2010/CIM-schema-cim15#//IEC61968/Metering/MeterReading"/>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_47UPYK2iEeazdbM0QEZ8dA" name="Control UUID">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_47UPYa2iEeazdbM0QEZ8dA">
+      <domainModelEFeature xsi:type="ecore:EAttribute" href="http://iec.ch/TC57/2010/CIM-schema-cim15#//Element/UUID"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_47UPYq2iEeazdbM0QEZ8dA" name="Control Names">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_47UPY62iEeazdbM0QEZ8dA">
+      <domainModelEFeature xsi:type="ecore:EReference" href="http://iec.ch/TC57/2010/CIM-schema-cim15#//IEC61970/Core/IdentifiedObject/Names"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_47UPZK2iEeazdbM0QEZ8dA" name="Control DiagramObjects">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_47UPZa2iEeazdbM0QEZ8dA">
+      <domainModelEFeature xsi:type="ecore:EReference" href="http://iec.ch/TC57/2010/CIM-schema-cim15#//IEC61970/Core/IdentifiedObject/DiagramObjects"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_47UPZq2iEeazdbM0QEZ8dA" name="Control mRID">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_47UPZ62iEeazdbM0QEZ8dA">
+      <domainModelEFeature xsi:type="ecore:EAttribute" href="http://iec.ch/TC57/2010/CIM-schema-cim15#//IEC61970/Core/IdentifiedObject/mRID"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_47UPaK2iEeazdbM0QEZ8dA" name="Control aliasName">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_47UPaa2iEeazdbM0QEZ8dA">
+      <domainModelEFeature xsi:type="ecore:EAttribute" href="http://iec.ch/TC57/2010/CIM-schema-cim15#//IEC61970/Core/IdentifiedObject/aliasName"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_47UPaq2iEeazdbM0QEZ8dA" name="Control name">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_47UPa62iEeazdbM0QEZ8dA">
+      <domainModelEFeature xsi:type="ecore:EAttribute" href="http://iec.ch/TC57/2010/CIM-schema-cim15#//IEC61970/Core/IdentifiedObject/name"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_47U2cK2iEeazdbM0QEZ8dA" name="Control ModelingAuthoritySet">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_47U2ca2iEeazdbM0QEZ8dA">
+      <domainModelEFeature xsi:type="ecore:EReference" href="http://iec.ch/TC57/2010/CIM-schema-cim15#//IEC61970/Core/IdentifiedObject/ModelingAuthoritySet"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_47U2cq2iEeazdbM0QEZ8dA" name="Control ServiceDeliveryPoint">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_47U2c62iEeazdbM0QEZ8dA">
+      <domainModelEFeature xsi:type="ecore:EReference" href="http://iec.ch/TC57/2010/CIM-schema-cim15#//IEC61968/Metering/MeterReading/ServiceDeliveryPoint"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_47U2dK2iEeazdbM0QEZ8dA" name="Control valuesInterval">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_47U2da2iEeazdbM0QEZ8dA">
+      <domainModelEFeature xsi:type="ecore:EReference" href="http://iec.ch/TC57/2010/CIM-schema-cim15#//IEC61968/Metering/MeterReading/valuesInterval"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_47U2dq2iEeazdbM0QEZ8dA" name="Control EndDeviceEvents">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_47U2d62iEeazdbM0QEZ8dA">
+      <domainModelEFeature xsi:type="ecore:EReference" href="http://iec.ch/TC57/2010/CIM-schema-cim15#//IEC61968/Metering/MeterReading/EndDeviceEvents"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_47U2eK2iEeazdbM0QEZ8dA" name="Control Readings">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_47U2ea2iEeazdbM0QEZ8dA">
+      <domainModelEFeature xsi:type="ecore:EReference" href="http://iec.ch/TC57/2010/CIM-schema-cim15#//IEC61968/Metering/MeterReading/Readings"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_47U2eq2iEeazdbM0QEZ8dA" name="Control CustomerAgreement">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_47U2e62iEeazdbM0QEZ8dA">
+      <domainModelEFeature xsi:type="ecore:EReference" href="http://iec.ch/TC57/2010/CIM-schema-cim15#//IEC61968/Metering/MeterReading/CustomerAgreement"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_47U2fK2iEeazdbM0QEZ8dA" name="Control Meter">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_47U2fa2iEeazdbM0QEZ8dA">
+      <domainModelEFeature xsi:type="ecore:EReference" href="http://iec.ch/TC57/2010/CIM-schema-cim15#//IEC61968/Metering/MeterReading/Meter"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_47U2fq2iEeazdbM0QEZ8dA" name="Control IntervalBlocks">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_47U2f62iEeazdbM0QEZ8dA">
+      <domainModelEFeature xsi:type="ecore:EReference" href="http://iec.ch/TC57/2010/CIM-schema-cim15#//IEC61968/Metering/MeterReading/IntervalBlocks"/>
+    </domainModelReference>
+  </children>
+</org.eclipse.emf.ecp.view.model:View>

@@ -16,7 +16,6 @@
   	<dependency>
   		<groupId>com.google.code.gson</groupId>
   		<artifactId>gson</artifactId>
-  		<version>RELEASE</version>
   	</dependency>
   </dependencies>
   <organization>
@@ -36,4 +35,13 @@
 			</plugin>
 		</plugins>
 	</build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>RELEASE</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

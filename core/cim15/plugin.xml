@@ -374,4 +374,12 @@
             genModel="model/CIM15.genmodel"/>
    </extension>
 
+
+<extension  point="org.eclipse.emf.ecp.view.model.provider.xmi.file">
+<file filePath="model/MeterReading.view"/>
+
+<file filePath="model/MeasurementValue.view"/>
+
+<file filePath="model/Reading.view"/>
+</extension>
 </plugin>

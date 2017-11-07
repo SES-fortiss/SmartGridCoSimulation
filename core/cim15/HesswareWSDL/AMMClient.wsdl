@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="ConexaGateway"
+ targetNamespace="http://www.theben.de/smart-metering/conexaclient/20101021"
+ xmlns:tns="http://www.theben.de/smart-metering/conexaclient/20101021"
+ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+ xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:c="http://www.theben.de/smart-metering/conexaclient/20101021"
+ xmlns:SOAP="http://schemas.xmlsoap.org/wsdl/soap/"
+ xmlns:MIME="http://schemas.xmlsoap.org/wsdl/mime/"
+ xmlns:DIME="http://schemas.xmlsoap.org/ws/2002/04/dime/wsdl/"
+ xmlns:WSDL="http://schemas.xmlsoap.org/wsdl/"
+ xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+<types>
+
+ <schema targetNamespace="http://www.theben.de/smart-metering/conexaclient/20101021"
+  xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+  xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:c="http://www.theben.de/smart-metering/conexaclient/20101021"
+  xmlns="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+  <import namespace="http://schemas.xmlsoap.org/soap/encoding/" schemaLocation="http://schemas.xmlsoap.org/soap/encoding/"/>
+  <simpleType name="UpdateType">
+   <annotation>
+    <documentation>enumerated value listing possible update types</documentation>
+   </annotation>
+   <restriction base="xsd:string">
+    <enumeration value="ApplicationUpdate"/><!-- enum const = 0 -->
+    <enumeration value="ConfigUpdate"/><!-- enum const = 1 -->
+   </restriction>
+  </simpleType>
+  <simpleType name="MeterEventType">
+   <annotation>
+    <documentation>defines what type of meter event occurred</documentation>
+   </annotation>
+   <restriction base="xsd:string">
+    <enumeration value="NewMeterFound"/><!-- enum const = 0 -->
+    <enumeration value="MeterNotResponding"/><!-- enum const = 1 -->
+    <enumeration value="MeterRespondingAgain"/><!-- enum const = 2 -->
+   </restriction>
+  </simpleType>
+  <complexType name="ObisRecord">
+   <annotation>
+    <documentation>contains an OBIS identifier and value</documentation>
+   </annotation>
+   <sequence>
+     <element name="value" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+   </sequence>
+     <attribute name="OBISId" type="xsd:string" use="required"/>
+     <attribute name="scaler" type="xsd:byte" use="required"/>
+     <attribute name="unit" type="xsd:unsignedByte" use="required"/>
+  </complexType>
+  <complexType name="MeterRecordSignature">
+   <annotation>
+    <documentation>contains signature data for a MeterRecord</documentation>
+   </annotation>
+   <sequence>
+     <element name="signedOBISIds" type="xsd:string" minOccurs="1" maxOccurs="unbounded" nillable="true"/>
+     <element name="signatureData" type="xsd:base64Binary" minOccurs="1" maxOccurs="1" nillable="true"/>
+   </sequence>
+     <attribute name="signatureAlgorithm" type="xsd:string" use="required"/>
+  </complexType>
+  <complexType name="MeterRecord">
+   <annotation>
+    <documentation>contains a full meter record, including signature</documentation>
+   </annotation>
+   <sequence>
+     <element name="obisRecords" type="c:ObisRecord" minOccurs="1" maxOccurs="unbounded"/>
+     <element name="signature" type="c:MeterRecordSignature" minOccurs="1" maxOccurs="1"/>
+   </sequence>
+     <attribute name="timestamp" type="xsd:unsignedLong" use="required"/>
+     <attribute name="seqNo" type="xsd:unsignedLong" use="required"/>
+     <attribute name="requestId" type="xsd:string" use="optional"/>
+  </complexType>
+  <complexType name="MeterData">
+   <annotation>
+    <documentation>contains meter data consisting of one or more meter records, with optional envelope signature</documentation>
+   </annotation>
+   <sequence>
+     <element name="meterRecords" type="c:MeterRecord" minOccurs="0" maxOccurs="unbounded"/>
+   </sequence>
+     <attribute name="requestId" type="xsd:string" use="optional"/>
+     <attribute name="ownerNo" type="xsd:string" use="required"/>
+     <attribute name="envelopeSignatureAlgorithm" type="xsd:string" use="optional"/>
+     <attribute name="envelopeSignature" type="xsd:base64Binary" use="optional"/>
+  </complexType>
+  <complexType name="UpdateRequest">
+   <annotation>
+    <documentation>contains update request data</documentation>
+   </annotation>
+   <sequence>
+     <element name="type" type="c:UpdateType" minOccurs="1" maxOccurs="1"/>
+     <element name="version-hash" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="download-uri" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="releaseKeyPEM" type="xsd:base64Binary" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="serverCertsPEM" type="xsd:base64Binary" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="signatureData" type="xsd:base64Binary" minOccurs="1" maxOccurs="1" nillable="true"/>
+   </sequence>
+  </complexType>
+  <complexType name="MeteringEvent">
+   <annotation>
+    <documentation>contains a request for a meter reading at defined datetime</documentation>
+   </annotation>
+   <sequence>
+     <element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="customerId" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="meteringPointId" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="eventDateTime" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+   </sequence>
+  </complexType>
+  <complexType name="MeterDataRequest">
+   <annotation>
+    <documentation>contains a request for sending "historical" metering data</documentation>
+   </annotation>
+   <sequence>
+     <element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="customerId" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="meteringPointId" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="startDateTime" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+     <element name="endDateTime" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+     <element name="needsEnvelopeSignature" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+   </sequence>
+  </complexType>
+  <complexType name="LogDataRequest">
+   <annotation>
+    <documentation>contains a request to transmit log data to the server</documentation>
+   </annotation>
+   <sequence>
+     <element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="startDateTime" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+     <element name="endDateTime" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+     <element name="minLogLevel" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+     <element name="needsEnvelopeSignature" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+   </sequence>
+  </complexType>
+  <complexType name="LogRecord">
+   <annotation>
+    <documentation>contains a single log data record with loglevel, timestamp and logmessage</documentation>
+   </annotation>
+   <sequence>
+     <element name="level" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+     <element name="facility" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+     <element name="timestamp" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+     <element name="message" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+   </sequence>
+  </complexType>
+  <complexType name="LogData">
+   <annotation>
+    <documentation>contains a list of log records with optional envelope signature</documentation>
+   </annotation>
+   <sequence>
+     <element name="logRecords" type="c:LogRecord" minOccurs="0" maxOccurs="unbounded"/>
+     <element name="requestId" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+     <element name="envelopeSignatureAlgorithm" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+     <element name="envelopeSignature" type="xsd:base64Binary" minOccurs="0" maxOccurs="1" nillable="true"/>
+     <element name="ownerNo" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+   </sequence>
+  </complexType>
+  <complexType name="UpdateFailureNotice">
+   <annotation>
+    <documentation>notifies the software manager of update failures</documentation>
+   </annotation>
+   <sequence>
+     <element name="version-hash" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="permanent" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+   </sequence>
+  </complexType>
+  <complexType name="GatewayData">
+   <annotation>
+    <documentation>contains SMG status data to be transmitted in regular intervals</documentation>
+   </annotation>
+   <sequence>
+     <element name="software-version-hash" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="config-version" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="MACAddress" type="xsd:base64Binary" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="gatewayTimestamp" type="xsd:unsignedLong" minOccurs="1" maxOccurs="1"/>
+     <element name="ownerNo" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="updateFailures" type="c:UpdateFailureNotice" minOccurs="0" maxOccurs="unbounded"/>
+     <element name="signatureAlgorithm" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="signatureData" type="xsd:base64Binary" minOccurs="1" maxOccurs="1" nillable="true"/>
+   </sequence>
+  </complexType>
+  <complexType name="ServerData">
+   <annotation>
+    <documentation>contains a variety commands to the SMG in response to the regular Ping call</documentation>
+   </annotation>
+   <sequence>
+     <element name="softwareUpdate" type="c:UpdateRequest" minOccurs="0" maxOccurs="1" nillable="true"/>
+     <element name="configUpdate" type="c:UpdateRequest" minOccurs="0" maxOccurs="1" nillable="true"/>
+     <element name="meteringEventList" type="c:MeteringEvent" minOccurs="0" maxOccurs="unbounded"/>
+     <element name="meterDataRequestList" type="c:MeterDataRequest" minOccurs="0" maxOccurs="unbounded"/>
+     <element name="logDataRequestList" type="c:LogDataRequest" minOccurs="0" maxOccurs="unbounded"/>
+   </sequence>
+  </complexType>
+  <complexType name="MeterEvent">
+   <annotation>
+    <documentation>defines a meter event that was detected by the SMG</documentation>
+   </annotation>
+   <sequence>
+     <element name="eventType" type="c:MeterEventType" minOccurs="1" maxOccurs="1"/>
+     <element name="meterId" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="meteringPointId" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+   </sequence>
+  </complexType>
+  <complexType name="MeterEventData">
+   <annotation>
+    <documentation>contains one or more meter events</documentation>
+   </annotation>
+   <sequence>
+     <element name="MACAddress" type="xsd:base64Binary" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="gatewayTimestamp" type="xsd:unsignedLong" minOccurs="1" maxOccurs="1"/>
+     <element name="ownerNo" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="meterEvents" type="c:MeterEvent" minOccurs="0" maxOccurs="unbounded"/>
+     <element name="signatureAlgorithm" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+     <element name="signatureData" type="xsd:base64Binary" minOccurs="1" maxOccurs="1" nillable="true"/>
+   </sequence>
+  </complexType>
+ </schema>
+
+</types>
+
+<message name="Ping">
+ <part name="gatewayData" type="c:GatewayData"/>
+</message>
+
+<message name="PingResponse">
+ <part name="serverData" type="c:ServerData"/>
+</message>
+
+<message name="PushRecords">
+ <part name="records" type="c:MeterData"/>
+</message>
+
+<message name="PushLogs">
+ <part name="records" type="c:LogData"/>
+</message>
+
+<message name="MeterServiceRequest">
+ <part name="events" type="c:MeterEventData"/>
+</message>
+
+<portType name="ConexaGatewayPortType">
+ <operation name="Ping">
+  <documentation>regular keep-alive message</documentation>
+  <input message="tns:Ping"/>
+  <output message="tns:PingResponse"/>
+ </operation>
+ <operation name="PushRecords">
+  <documentation>function to report meter data to the server</documentation>
+  <input message="tns:PushRecords"/>
+ </operation>
+ <operation name="PushLogs">
+  <documentation>function to report log events to the server</documentation>
+  <input message="tns:PushLogs"/>
+ </operation>
+ <operation name="MeterServiceRequest">
+  <documentation>function to report meter-related events to the server</documentation>
+  <input message="tns:MeterServiceRequest"/>
+ </operation>
+</portType>
+
+<binding name="ConexaGateway" type="tns:ConexaGatewayPortType">
+ <SOAP:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+ <operation name="Ping">
+  <SOAP:operation style="rpc" soapAction=""/>
+  <input>
+     <SOAP:body use="encoded" namespace="http://www.theben.de/smart-metering/conexaclient/20101021" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </input>
+  <output>
+     <SOAP:body use="encoded" namespace="http://www.theben.de/smart-metering/conexaclient/20101021" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </output>
+ </operation>
+ <operation name="PushRecords">
+  <SOAP:operation style="rpc" soapAction=""/>
+  <input>
+     <SOAP:body use="encoded" namespace="http://www.theben.de/smart-metering/conexaclient/20101021" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </input>
+  <output>
+     <SOAP:body use="encoded" namespace="http://www.theben.de/smart-metering/conexaclient/20101021" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </output>
+ </operation>
+ <operation name="PushLogs">
+  <SOAP:operation style="rpc" soapAction=""/>
+  <input>
+     <SOAP:body use="encoded" namespace="http://www.theben.de/smart-metering/conexaclient/20101021" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </input>
+  <output>
+     <SOAP:body use="encoded" namespace="http://www.theben.de/smart-metering/conexaclient/20101021" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </output>
+ </operation>
+ <operation name="MeterServiceRequest">
+  <SOAP:operation style="rpc" soapAction=""/>
+  <input>
+     <SOAP:body use="encoded" namespace="http://www.theben.de/smart-metering/conexaclient/20101021" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </input>
+  <output>
+     <SOAP:body use="encoded" namespace="http://www.theben.de/smart-metering/conexaclient/20101021" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </output>
+ </operation>
+</binding>
+
+<service name="ConexaGateway">
+ <documentation>gSOAP 2.7.17 generated service definition</documentation>
+ <port name="ConexaGateway" binding="tns:ConexaGateway">
+  <SOAP:address location="http://localhost:8080/conexaClient/services"/>
+ </port>
+</service>
+</definitions>
