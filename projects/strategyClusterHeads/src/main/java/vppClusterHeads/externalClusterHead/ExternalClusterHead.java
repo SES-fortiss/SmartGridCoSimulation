@@ -46,8 +46,7 @@ public class ExternalClusterHead extends BehaviorModel{
 		} catch (Exception e) {
 			e.printStackTrace();
 			connection = null;
-		}
-    	
+		}    	
     }
 	
 	@Override
