@@ -319,6 +319,7 @@ public class BasicActor extends UntypedActor {
 	/*
 	 * Helper method to avoid an infinite askChildren loop when directConnections are defined sloppy. (Detects a short circuit during runtime)
 	 */
+	@SuppressWarnings("unlikely-arg-type")
 	public boolean detectCircle() {
 		boolean circle = false;
 		for (String directConnection : this.actorOptions.directConnectionsPathList)
