@@ -30,7 +30,7 @@ public class _ieee30BusTopologyImport {
 	
 	public static ActorTopology createTopology(){		
 		ActorTopology top = new ActorTopology(simulationName);
-		ArrayList<String> file = IeeeSystemFromFile.readFile("src/main/resources/ieeeExamples/30Bus/ieee30cdf.txt");		
+		ArrayList<String> file = IeeeSystemFromFile.readFile("src/main/resources/ieeeExamples/30Bus/ieee30cutldf.txt");		
 		IeeeSystemFromFile.createSystemFromFile(top, file);
 		return top;
 	}	
