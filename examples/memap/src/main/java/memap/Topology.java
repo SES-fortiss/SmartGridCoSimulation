@@ -34,6 +34,7 @@ public class Topology {
 		}
 		
 		top.addActorAsChild("MEMAP/Haus2", ActorFactory.createHaus2());
+		top.addActorAsChild("MEMAP/OnlineReader", ActorFactory.createReaderOnline());
 				
 		return top;
 	}

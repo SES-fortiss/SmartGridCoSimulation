@@ -16,6 +16,7 @@ import akka.basicActors.LoggingMode;
 import memap.behavior.Haus1;
 import memap.behavior.Haus2;
 import memap.behavior.MEMAPBehavior;
+import memap.behavior.ReaderFromOnline;
 
 /**
  * 
@@ -46,5 +47,12 @@ public abstract class ActorFactory {
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
 				new MEMAPBehavior());		
 		return result;		
+	}
+
+	public static ActorOptions createReaderOnline() {
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new ReaderFromOnline());		
+		return result;
 	}
 }
