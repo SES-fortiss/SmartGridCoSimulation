@@ -7,9 +7,8 @@
  * of this software distribution.
  */
 
-package smartMeterExample;
+package modellierung;
 
-import smartMeterExample.helper.ActorFactory;
 import topology.ActorTopology;
 
 /**
@@ -22,22 +21,15 @@ import topology.ActorTopology;
 
 public class Topology {
 	
-	private static String simulationName = "Simulation";
+	private static String simulationName = "MEMAP-Simulation";
 	
 	public static ActorTopology createTopology(){
-		
 		ActorTopology top = new ActorTopology(simulationName);
-				
-		/*
-		 *  Actor Topology
-		 */
-		top.addActor("Server", ActorFactory.createAggregator());
-		String path;
-		
-		for (int i = 1; i <= 100000; i++) {
-			path = "Server/SmartMeter"+i;
-			top.addActorAsChild(path, ActorFactory.createSmartMeter());
-		}
+		top.addActor("MEMAP", ActorFactory.createAggregatorBehavior());
+		top.addActorAsChild("MEMAP/gebaeude1", ActorFactory.createGebaeude1());
+		top.addActorAsChild("MEMAP/gebaeude2", ActorFactory.createGebaeude2());
+		top.addActorAsChild("MEMAP/gebaeude3", ActorFactory.createGebaeude3());
+		top.addActorAsChild("MEMAP/gebaeude4", ActorFactory.createGebaeude4());
 				
 		return top;
 	}

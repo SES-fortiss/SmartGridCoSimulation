@@ -24,6 +24,7 @@ import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
 import memap.external.M2MDisplay;
+import memap.messages.WeatherData;
 
 public class ReaderFromOnline extends BehaviorModel {
 	

@@ -71,11 +71,12 @@ public class SolarProduction {
 	}
 	
 	public static double getSolarProductionPower(double installedPower, LocalDateTime inputTime){		
-		double result = 0;		
-		double dailyproduction = getDailySolarProduction(installedPower, inputTime);		
-		int timeIndex = inputTime.getHour()*4 + inputTime.getMinute() / 15;			
-		double prozent = SolarProfile.getNormalizedSolarProfileSummer(timeIndex)*4;		
-		result = dailyproduction * prozent;		
+		double result = 0;
+		double dailyproduction = getDailySolarProduction(installedPower, inputTime);
+		
+		int timeIndex = inputTime.getHour()*4 + inputTime.getMinute() / 15;
+		double prozent = SolarProfile.getNormalizedSolarProfileSummer(timeIndex)*4;
+		result = dailyproduction * prozent;
 		return result;
 	}
 }

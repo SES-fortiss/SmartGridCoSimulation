@@ -47,7 +47,8 @@ public class Haus1 extends BehaviorModel {
 		strom.maximalLeistung = 100;
 		strom.minimalLeistung = 0;
 		
-		answerContentToSend.erzeugerList.add(kaelte);		
+		answerContentToSend.erzeugerList.add(kaelte);
+		answerContentToSend.erzeugerList.add(strom);
 	}
 	
 	@Override

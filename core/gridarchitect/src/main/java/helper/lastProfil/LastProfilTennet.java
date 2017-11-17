@@ -137,7 +137,7 @@ public class LastProfilTennet {
     	// Skip first two lines
     	zeile = br.readLine();
     	
-    	System.out.println(zeile);
+    	//System.out.println(zeile);
     	
     	zeile = br.readLine();
     	
