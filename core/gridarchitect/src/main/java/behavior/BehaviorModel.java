@@ -77,7 +77,8 @@ public abstract class BehaviorModel {
 	/**
 	 * <strong>handleError()</strong> <br>
 	 * This method shall be implemented by each individual behaviorModel. <br>
-	 * It gets called by the Actor if one child did not reply to the request of the current time step. <br>
+	 * It gets called by the Actor if one child did not reply to the request of the current time step. 
+	 * This method might be removed in future <br>
 	 * 
 	 * @param errors
 	 *            a list with all the Errors which were caused

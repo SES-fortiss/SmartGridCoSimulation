@@ -27,13 +27,19 @@ public class Topology {
 		int port = 8081;
 		ActorTopology top = new ActorTopology(simulationName);
 		top.addActor("MEMAP", ActorFactory.createAggregatorBehavior());
-		top.addActorAsChild("MEMAP/verbraucher1", ActorFactory.createVerbraucher(3000,100, port++));
-		top.addActorAsChild("MEMAP/verbraucher2", ActorFactory.createVerbraucher(5000,80, port++));
-		top.addActorAsChild("MEMAP/verbraucher3", ActorFactory.createVerbraucher(1000,60, port++));
-		top.addActorAsChild("MEMAP/verbraucher4", ActorFactory.createVerbraucher(1000,40, port++));
-		top.addActorAsChild("MEMAP/verbraucher5", ActorFactory.createVerbraucher(1000,20, port++));
-		top.addActorAsChild("MEMAP/verbraucher6", ActorFactory.createVerbraucher(1000,10, port++));
+		top.addActorAsChild("MEMAP/verbraucher1", ActorFactory.createVerbraucher(1000,10, port++));
+		top.addActorAsChild("MEMAP/verbraucher2", ActorFactory.createVerbraucher(2000,8, port++));
+		top.addActorAsChild("MEMAP/verbraucher3", ActorFactory.createVerbraucher(3000,6, port++));
+		top.addActorAsChild("MEMAP/verbraucher4", ActorFactory.createVerbraucher(4000,4, port++));
+		top.addActorAsChild("MEMAP/verbraucher5", ActorFactory.createVerbraucher(5000,2, port++));
+		top.addActorAsChild("MEMAP/verbraucher6", ActorFactory.createVerbraucher(6000,3, port++));
 				
+		top.addActorAsChild("MEMAP/erzeuger1", ActorFactory.createErzeuger(1,5, port++));
+		top.addActorAsChild("MEMAP/erzeuger2", ActorFactory.createErzeuger(1,1, port++));
+		top.addActorAsChild("MEMAP/erzeuger3", ActorFactory.createErzeuger(1,2, port++));
+		top.addActorAsChild("MEMAP/erzeuger4", ActorFactory.createErzeuger(1,3, port++));
+		top.addActorAsChild("MEMAP/erzeuger5", ActorFactory.createErzeuger(1,7, port++));
+		
 		return top;
 	}
 }

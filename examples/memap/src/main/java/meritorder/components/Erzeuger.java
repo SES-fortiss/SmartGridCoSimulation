@@ -1,27 +1,29 @@
-package meritorder;
+package meritorder.components;
 
 import java.util.LinkedList;
+
+import com.google.gson.Gson;
 
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
-import helper.standardLastProfil.StandardLastProfil;
 import memap.external.M2MDisplay;
-import meritorder.messages.Demand;
+import meritorder.messages.Offer;
 
-public class Verbraucher extends BehaviorModel {
+public class Erzeuger extends BehaviorModel {
 	
-	public Demand answerContentToSend = new Demand();
-	public M2MDisplay display;
+	private Offer answerContentToSend = new Offer();
+	private M2MDisplay display;
+	private Gson gson = new Gson();
 	
 	double price;
-	double verbrauch;
+	double erzeugung;
 	int port;
 	
 
-	public Verbraucher(double verbrauch, double price, int port) {
-		this.verbrauch = verbrauch;
+	public Erzeuger(double erzeugung, double price, int port) {
+		this.erzeugung = erzeugung;
 		this.price = price;
 		this.port = port;
 		
@@ -38,7 +40,8 @@ public class Verbraucher extends BehaviorModel {
 	@Override
 	public void makeDecision() {
 		answerContentToSend.price = this.price;
-		answerContentToSend.volume = StandardLastProfil.getH0DemandInterpolated(verbrauch, actualTimeValue);
+		answerContentToSend.volume = this.erzeugung;
+		display.update(gson.toJson(answerContentToSend));
 	}
 
 	@Override

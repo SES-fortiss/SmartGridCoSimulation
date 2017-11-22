@@ -13,6 +13,9 @@ import java.util.HashSet;
 
 import akka.basicActors.ActorOptions;
 import akka.basicActors.LoggingMode;
+import meritorder.components.AggregatorBehavior;
+import meritorder.components.Erzeuger;
+import meritorder.components.Verbraucher;
 
 /**
  * 
@@ -23,17 +26,24 @@ import akka.basicActors.LoggingMode;
  */
 public abstract class ActorFactory {
 
+	public static ActorOptions createErzeuger(double erzeugung, double price, int port){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new Erzeuger(erzeugung,price,port));	
+		return result;
+	}
+	
 	public static ActorOptions createVerbraucher(double verbrauch, double price, int port){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
 				new Verbraucher(verbrauch,price,port));	
 		return result;
-	}		
+	}
 	
 	public static ActorOptions createAggregatorBehavior(){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
 				new AggregatorBehavior());
-		return result;		
+		return result;
 	}
 }
