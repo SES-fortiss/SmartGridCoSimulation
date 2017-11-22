@@ -6,8 +6,8 @@ import akka.basicMessages.AnswerContent;
 
 public class AggregatedState implements AnswerContent{
 	
-	public double systemprice;
-	public double systemVolumen;
+	public double systemPrice;
+	public double systemVolume;	
 	public double overProduction;
 	public double overConsumption;
 	

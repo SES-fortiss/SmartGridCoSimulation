@@ -27,18 +27,16 @@ public class Topology {
 		int port = 8081;
 		ActorTopology top = new ActorTopology(simulationName);
 		top.addActor("MEMAP", ActorFactory.createAggregatorBehavior());
-		top.addActorAsChild("MEMAP/verbraucher1", ActorFactory.createVerbraucher(1000,10, port++));
-		top.addActorAsChild("MEMAP/verbraucher2", ActorFactory.createVerbraucher(2000,8, port++));
-		top.addActorAsChild("MEMAP/verbraucher3", ActorFactory.createVerbraucher(3000,6, port++));
-		top.addActorAsChild("MEMAP/verbraucher4", ActorFactory.createVerbraucher(4000,4, port++));
-		top.addActorAsChild("MEMAP/verbraucher5", ActorFactory.createVerbraucher(5000,2, port++));
-		top.addActorAsChild("MEMAP/verbraucher6", ActorFactory.createVerbraucher(6000,3, port++));
+		top.addActorAsChild("MEMAP/verbraucher1", ActorFactory.createVerbraucher("Lastprofil_EFH.csv",5.0, port++));
+		top.addActorAsChild("MEMAP/verbraucher2", ActorFactory.createVerbraucher("Lastprofil_EFH2.csv",20.0, port++));
+		top.addActorAsChild("MEMAP/verbraucher3", ActorFactory.createVerbraucher("Lastprofil_MFH_interp.csv",10.0, port++));
+		top.addActorAsChild("MEMAP/verbraucher4", ActorFactory.createVerbraucher("Lastprofil_MFH2_interp.csv",10.0, port++));
 				
-		top.addActorAsChild("MEMAP/erzeuger1", ActorFactory.createErzeuger(1,5, port++));
-		top.addActorAsChild("MEMAP/erzeuger2", ActorFactory.createErzeuger(1,1, port++));
-		top.addActorAsChild("MEMAP/erzeuger3", ActorFactory.createErzeuger(1,2, port++));
-		top.addActorAsChild("MEMAP/erzeuger4", ActorFactory.createErzeuger(1,3, port++));
-		top.addActorAsChild("MEMAP/erzeuger5", ActorFactory.createErzeuger(1,7, port++));
+		top.addActorAsChild("MEMAP/erzeuger1", ActorFactory.createErzeuger(20,5, port++));
+		top.addActorAsChild("MEMAP/erzeuger2", ActorFactory.createErzeuger(30,1, port++));
+		top.addActorAsChild("MEMAP/erzeuger3", ActorFactory.createErzeuger(50,2, port++));
+		top.addActorAsChild("MEMAP/erzeuger4", ActorFactory.createErzeuger(10,3, port++));
+		top.addActorAsChild("MEMAP/erzeuger5", ActorFactory.createErzeuger(100,10, port++));
 		
 		return top;
 	}

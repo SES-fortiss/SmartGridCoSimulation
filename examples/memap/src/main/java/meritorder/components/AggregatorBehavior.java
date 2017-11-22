@@ -58,20 +58,29 @@ public class AggregatorBehavior extends BehaviorModel {
 		ans.demandlist.sort((Demand a, Demand b) -> (int) (b.price - a.price));
 		ans.offerlist.sort((Offer a, Offer b) -> (int) (a.price - b.price));
 		
+		// Berechnung des Volumens und des Preises
 		double systemPrice = schnittPunktBestimmen(ans.demandlist, ans.offerlist);
 		double systemVolumen = 0;
 		double overProduction = 0;
 		double overConsumption = 0;
 		
-		double offerVolumen = 0;		
+		System.out.println("Price: " + systemPrice);
+		
+		double offerVolumen = 0;
 		for (Offer offer : ans.offerlist) {
 			if (offer.price <= systemPrice) offerVolumen += offer.volume;			
 		}
 		
 		double demandVolumen = 0;		
-		for (Demand demand :ans.demandlist) {
-			if (demand.price >= systemPrice) demandVolumen += demand.volume;			
+		for (Demand demand :ans.demandlist) {			
+			if (demand.price >= systemPrice) {
+				System.out.println(gson.toJson(demand));				
+				demandVolumen += demand.volume;			
+			}
 		}		
+		
+		System.out.println("DemandVolume: " + demandVolumen);
+		System.out.println("OfferVolume: " + offerVolumen);
 		
 		if (offerVolumen < demandVolumen) {
 			systemVolumen = offerVolumen;
@@ -83,15 +92,14 @@ public class AggregatorBehavior extends BehaviorModel {
 			overProduction = offerVolumen - demandVolumen;
 		}
 		
-		ans.systemprice = systemPrice;
+		ans.systemPrice = systemPrice;
 		ans.overConsumption = overConsumption;
 		ans.overProduction = overProduction;
-		ans.systemVolumen = systemVolumen;
+		ans.systemVolume = systemVolumen;
 		
-		display.update(gson.toJson(ans));
-		
+		display.update(gson.toJson(ans));		
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

@@ -8,23 +8,24 @@ import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
-import helper.standardLastProfil.StandardLastProfil;
 import memap.external.M2MDisplay;
+import meritorder.helper.ReadMemapFiles;
+import meritorder.messages.Accepted;
 import meritorder.messages.Demand;
 
 public class Verbraucher extends BehaviorModel {
 	
 	public Demand answerContentToSend = new Demand();
 	public M2MDisplay display;
-	Gson gson = new Gson();
+	Gson gson = new Gson();	
 	
 	double price;
-	double verbrauch;
 	int port;
 	
+	ReadMemapFiles file;
 
-	public Verbraucher(double verbrauch, double price, int port) {
-		this.verbrauch = verbrauch;
+	public Verbraucher(String file, double price, int port) {
+		this.file = new ReadMemapFiles(file);
 		this.price = price;
 		this.port = port;
 		
@@ -40,8 +41,9 @@ public class Verbraucher extends BehaviorModel {
 
 	@Override
 	public void makeDecision() {
+		answerContentToSend.accepted = Accepted.none;
 		answerContentToSend.price = this.price;
-		answerContentToSend.volume = StandardLastProfil.getH0DemandInterpolated(verbrauch, actualTimeValue);
+		answerContentToSend.volume = file.getStrom(actualTimeValue);
 		display.update(gson.toJson(answerContentToSend));
 	}
 

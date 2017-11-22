@@ -33,10 +33,10 @@ public abstract class ActorFactory {
 		return result;
 	}
 	
-	public static ActorOptions createVerbraucher(double verbrauch, double price, int port){
+	public static ActorOptions createVerbraucher(String filename, double price, int port){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new Verbraucher(verbrauch,price,port));	
+				new Verbraucher(filename,price,port));	
 		return result;
 	}
 	

@@ -47,8 +47,7 @@ public class Reader {
 	
 	private void read(BufferedReader br) throws IOException, ParseException{
 	    String zeile;
-	    String[] buffer;	    
-	    //DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+	    String[] buffer;
 	    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");	    
 	    NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
 	    int i = 0;
