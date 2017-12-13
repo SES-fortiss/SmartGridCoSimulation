@@ -35,9 +35,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-    	<groupId>org.fortiss</groupId>
-    	<artifactId>ParseWeatherData</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
+    	<groupId>com.joptimizer</groupId>
+    	<artifactId>joptimizer</artifactId>
+    	<version>3.4.0</version>
     </dependency>
   </dependencies>
   <organization>
