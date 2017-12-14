@@ -4,7 +4,7 @@ import java.util.HashSet;
 
 import akka.basicActors.ActorOptions;
 import akka.basicActors.LoggingMode;
-import linprog.components.BHKW;
+import linprog.components.CHP;
 import linprog.components.LinProgBehavior;
 
 public abstract class ActorFactory {
@@ -12,7 +12,7 @@ public abstract class ActorFactory {
 	public static ActorOptions createBHKW(String name, double qt_max, double efficiency, int port){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new BHKW(name, qt_max, efficiency));	
+				new CHP(name, qt_max, efficiency));	
 		return result;
 	}
 	

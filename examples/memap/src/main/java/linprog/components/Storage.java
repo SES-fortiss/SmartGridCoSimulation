@@ -1,12 +1,16 @@
 package linprog.components;
 
-public abstract class DeviceInOut extends Device {
+public abstract class Storage extends Device {
 
-	public double qt_max_in;
-	public double qt_max_out;
+	public double qdot_max_in;
+	public double qdot_max_out;
+	public double capacity;
 
-	public DeviceInOut(String name) {
+	public Storage(String name, double qdot_max_in, double qdot_max_out, double capacity) {
 		super(name);
+		this.qdot_max_in = qdot_max_in;
+		this.qdot_max_out = qdot_max_out;
+		this.capacity = capacity;
 	}
 
 	@Override
@@ -30,7 +34,7 @@ public abstract class DeviceInOut extends Device {
 			}			
 			specificationToSend.vector[i] = 0.0;
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = qt_max_in;
+			specificationToSend.upperBound[i] = qdot_max_in;
 		}
 		for(int i = n; i < 2*n; i++) {			
 			for(int j = 0; j <= i; j++) {
@@ -43,7 +47,7 @@ public abstract class DeviceInOut extends Device {
 			}			
 			specificationToSend.vector[i] = 0.0;
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = qt_max_out;
+			specificationToSend.upperBound[i] = qdot_max_out;
 		}
 	}
 	

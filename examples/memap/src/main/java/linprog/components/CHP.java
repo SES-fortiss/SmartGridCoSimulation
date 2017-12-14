@@ -4,13 +4,12 @@ import java.util.Calendar;
 
 import linprog.helper.EnergyPrices;
 
-public class BHKW extends DeviceIn {
+public class CHP extends Producer {
 
-	public static final double QDOT_MAX = 550;
 	public final double efficiency;
 	
-	public BHKW(String name, double qt_max, double efficiency) {
-		super(name, qt_max);
+	public CHP(String name, double qdot_max, double efficiency) {
+		super(name, qdot_max);
 		if(efficiency < 0 || efficiency > 1) {
 			//TODO throw exception
 		}
@@ -29,7 +28,7 @@ public class BHKW extends DeviceIn {
 			}
 			specificationToSend.couplingMatrix[i][i] = -efficiency;
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = 0.0;
+			specificationToSend.upperBound[i] = qdot_max;
 		}
 	}
 

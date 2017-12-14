@@ -1,12 +1,12 @@
 package linprog.components;
 
-public abstract class DeviceIn extends Device {
+public abstract class Producer extends Device {
 
-	protected double qt_max;
+	protected double qdot_max;
 	
-	public DeviceIn(String name, double qt_max) {
+	public Producer(String name, double qdot_max) {
 		super(name);
-		this.qt_max = qt_max;
+		this.qdot_max = qdot_max;
 	}
 
 	@Override
@@ -19,7 +19,7 @@ public abstract class DeviceIn extends Device {
 		
 		for (int i = 0; i < n; i++) {
 			specificationToSend.lowerBound[i] = 0;
-			specificationToSend.upperBound[i] = qt_max;			
+			specificationToSend.upperBound[i] = qdot_max;			
 		}
 	}
 
