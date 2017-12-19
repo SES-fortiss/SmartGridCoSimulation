@@ -1,10 +1,13 @@
 package linprog.components;
 
+import linprog.messages.StorageSpec;
+
 public abstract class Storage extends Device {
 
 	public double qdot_max_in;
 	public double qdot_max_out;
 	public double capacity;
+	public StorageSpec specificationToSend = new StorageSpec();
 
 	public Storage(String name, double qdot_max_in, double qdot_max_out, double capacity) {
 		super(name);
@@ -15,7 +18,7 @@ public abstract class Storage extends Device {
 
 	@Override
 	public void makeDecision() {
-		super.makeDecision();
+		specificationToSend.name = this.name;
 		specificationToSend.cost = new double[2*n];
 		specificationToSend.couplingMatrix = new double[n][2*n];
 		specificationToSend.capacityMatrix1 = new double[n][2*n];

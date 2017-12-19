@@ -17,7 +17,6 @@ public abstract class Device extends BehaviorModel {
 	
 	protected final String name;
 	
-	protected DeviceSpecification specificationToSend = new DeviceSpecification();
 	private M2MDisplay display;
 	private Gson gson = new Gson();
 	
@@ -48,12 +47,11 @@ public abstract class Device extends BehaviorModel {
 
 	@Override
 	public void makeDecision() {
-		specificationToSend.name = this.name;
 	}
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
-		return specificationToSend;
+		return null;
 	}
 
 	@Override

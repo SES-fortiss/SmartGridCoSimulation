@@ -1,5 +1,6 @@
 package linprog.components;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import com.google.gson.Gson;
@@ -10,7 +11,9 @@ import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
 import cern.colt.matrix.DoubleMatrix1D;
+import linprog.messages.DeviceSpecification;
 import linprog.messages.OptimizationResult;
+import linprog.messages.SpecificationRequest;
 import memap.external.M2MDisplay;
 
 public class LinProgBehavior extends BehaviorModel {
@@ -38,11 +41,14 @@ public class LinProgBehavior extends BehaviorModel {
 
 	@Override
 	public void makeDecision() {
+		
+		ArrayList<DeviceSpecification> devices = new ArrayList<DeviceSpecification>();
 
-		DoubleMatrix1D c = null;
+		double[] lambda = null;
+		
 		
 		LPOptimizationRequest or = new LPOptimizationRequest();
-		or.setC(c);
+		or.setC(lambda);
 
 	}
 

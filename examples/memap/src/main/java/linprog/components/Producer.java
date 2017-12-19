@@ -1,8 +1,10 @@
 package linprog.components;
 
+import linprog.messages.ProducerSpec;
 public abstract class Producer extends Device {
 
 	protected double qdot_max;
+	public ProducerSpec specificationToSend = new ProducerSpec();
 	
 	public Producer(String name, double qdot_max) {
 		super(name);
@@ -11,7 +13,7 @@ public abstract class Producer extends Device {
 
 	@Override
 	public void makeDecision() {
-		super.makeDecision();
+		specificationToSend.name = this.name;
 		specificationToSend.cost = new double[n];
 		specificationToSend.couplingMatrix = new double[n][n];
 		specificationToSend.lowerBound = new double[n];
