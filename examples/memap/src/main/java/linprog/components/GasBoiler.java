@@ -8,9 +8,9 @@ public class GasBoiler extends Producer {
 	
 	public final double efficiency;
 	
-	public GasBoiler(String name, double qdot_max, double efficiency) {
-		super(name, qdot_max);
-		if(efficiency < 0 || efficiency > 1) {
+	public GasBoiler(String name, double qdot_max, double efficiency, int port) {
+		super(name, qdot_max, port);
+		if(efficiency < 0.0 || efficiency > 1.0) {
 			//TODO throw exception
 		}
 		this.efficiency = efficiency;
@@ -19,10 +19,10 @@ public class GasBoiler extends Producer {
 	@Override
 	public void makeDecision() {
 		super.makeDecision();
-		Calendar currentTime = startTime;
+//		Calendar currentTime = startTime;
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = EnergyPrices.getGasPriceInCent(currentTime);
-			currentTime.add(Calendar.SECOND, stepSize);
+			specificationToSend.cost[i] = EnergyPrices.getGasPriceInCent(i);
+//			currentTime.add(Calendar.SECOND, stepSize);
 			for (int j = 0; j < n; j++) {
 				specificationToSend.couplingMatrix[i][j] = 0.0;
 			}
@@ -30,6 +30,8 @@ public class GasBoiler extends Producer {
 			specificationToSend.lowerBound[i] = 0.0;
 			specificationToSend.upperBound[i] = qdot_max;
 		}
+		
+		display.update(gson.toJson(specificationToSend));
 	}
 
 }

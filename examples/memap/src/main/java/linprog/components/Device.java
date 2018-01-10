@@ -9,7 +9,7 @@ import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
-import linprog.messages.DeviceSpecification;
+import linprog.Simulation;
 import linprog.messages.SpecificationRequest;
 import memap.external.M2MDisplay;
 
@@ -17,18 +17,22 @@ public abstract class Device extends BehaviorModel {
 	
 	protected final String name;
 	
-	private M2MDisplay display;
-	private Gson gson = new Gson();
+	protected M2MDisplay display;
+	protected Gson gson = new Gson();
+	public int port;
 	
 	public Calendar startTime;
-	public int n;
-	public int stepSize;
+	public int n = Simulation.maxTimeStep;
+	public int stepSize = 60;
 	
-	public Device(String name) {
+	public Device(String name, int port) {
 		if(name == null) {
 			//TODO throw exception
 		}
 		this.name = name;
+		this.port = port;
+		display = new M2MDisplay(port); // add port in to display a json
+		display.run();
 	}
 
 
@@ -40,18 +44,13 @@ public abstract class Device extends BehaviorModel {
 
 	@Override
 	public void handleRequest() {
-		n = ((SpecificationRequest) requestContentReceived).timesteps;
-		startTime = ((SpecificationRequest) requestContentReceived).startTime;
-		stepSize = ((SpecificationRequest) requestContentReceived).stepSize;
+//		n = ((SpecificationRequest) requestContentReceived).timesteps;
+//		startTime = ((SpecificationRequest) requestContentReceived).startTime;
+//		stepSize = ((SpecificationRequest) requestContentReceived).stepSize;
 	}
 
 	@Override
 	public void makeDecision() {
-	}
-
-	@Override
-	public AnswerContent returnAnswerContentToSend() {
-		return null;
 	}
 
 	@Override

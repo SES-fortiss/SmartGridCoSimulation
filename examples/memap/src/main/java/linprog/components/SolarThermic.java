@@ -9,9 +9,9 @@ public class SolarThermic extends Producer {
 	public final double efficiency;
 	public final double area;
 	
-	public SolarThermic(String name, double area, double efficiency) {
-		super(name, 0); //qdot_max not needed here
-		if(efficiency < 0 || efficiency > 1) {
+	public SolarThermic(String name, double area, double efficiency, int port) {
+		super(name, 0, port); //qdot_max not needed here
+		if(efficiency < 0.0 || efficiency > 1.0) {
 			//TODO throw exception
 		}
 		this.efficiency = efficiency;
@@ -21,7 +21,7 @@ public class SolarThermic extends Producer {
 	@Override
 	public void makeDecision() {
 		super.makeDecision();
-		Calendar currentTime = startTime;
+//		Calendar currentTime = startTime;
 		for (int i = 0; i < n; i++) {
 			specificationToSend.cost[i] = 0.0;
 			for (int j = 0; j < n; j++) {
@@ -29,8 +29,10 @@ public class SolarThermic extends Producer {
 			}
 			specificationToSend.couplingMatrix[i][i] = -efficiency;
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = SolarRadiation.getRadiation(currentTime)*area*efficiency;
-			currentTime.add(Calendar.SECOND, stepSize);
+			specificationToSend.upperBound[i] = SolarRadiation.getRadiation(i)*area*efficiency;
+//			currentTime.add(Calendar.SECOND, stepSize);
 		}
+		
+		display.update(gson.toJson(specificationToSend));
 	}
 }

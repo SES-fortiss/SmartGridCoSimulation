@@ -16,7 +16,10 @@ public class Topology {
 	public static ActorTopology createTopology(){
 		int port = 8081;
 		ActorTopology top = new ActorTopology(simulationName);
-		top.addActor(simulationName, ActorFactory.createLinProgBehavior());		
+		top.addActor(simulationName, ActorFactory.createLinProgBehavior());
+		
+		//Aggregated Consumption
+		top.addActorAsChild(simulationName + "/Consumption", ActorFactory.createConsumer("/Consumption", port++));
 
 		//Building 1
 		top.addActorAsChild(simulationName + "/1_OilBoiler", ActorFactory.createGasBoiler("1_OilBoiler", 100, .7, port++));

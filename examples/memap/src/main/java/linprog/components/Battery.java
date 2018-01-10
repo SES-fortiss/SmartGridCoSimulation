@@ -1,30 +1,30 @@
 package linprog.components;
 
+import linprog.helper.EnergyPrices;
+
 public class Battery extends Storage {
 	
-	
-	
-	public Battery(String name, double qdot_max_in, double qdot_max_out, double capacity) {
-		super(name, qdot_max_in, qdot_max_out, capacity);
+	public Battery(String name, double qdot_max_in, double qdot_max_out, double capacity, int port) {
+		super(name, qdot_max_in, qdot_max_out, capacity, port);
 	}
 	
 	@Override
 	public void makeDecision() {
 		super.makeDecision();
+		EnergyPrices energyPrices = new EnergyPrices();
 		for (int i = 0; i < n; i++) {
 			specificationToSend.cost[i] = 0.0;
-			for (int j = 0; j < n; j++) {
+			for (int j = 0; j < 2*n; j++) {
 				specificationToSend.couplingMatrix[i][j] = 0.0;
 			}
-			specificationToSend.vector[i] = 0;
+			specificationToSend.vector[i] = 0.0;
 		}
 		for (int i = n; i < 2*n; i++) {
-			specificationToSend.cost[i] = 0.0;
-			for (int j = 0; j < n; j++) {
-				specificationToSend.couplingMatrix[i][j] = 0.0;
-			}
+			specificationToSend.cost[i] = -energyPrices.getElectricityPriceInCent(i) + 0.001 * Math.random();
 			specificationToSend.vector[i] = capacity/stepSize;
 		}
+		
+		display.update(gson.toJson(specificationToSend));
 	}
 
 }

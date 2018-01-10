@@ -1,10 +1,12 @@
 package linprog.messages;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+
 import akka.basicMessages.AnswerContent;
-import linprog.helper.EnergyPrices;
 
 public class OptimizationResult implements AnswerContent {
 	
-	public EnergyPrices[] anlagenProfile;
-
+	public HashMap<String, double[]> resultMap = new HashMap<String, double[]>();
+	
 }

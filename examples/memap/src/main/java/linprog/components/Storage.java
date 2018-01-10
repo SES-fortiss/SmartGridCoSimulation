@@ -1,5 +1,6 @@
 package linprog.components;
 
+import akka.basicMessages.AnswerContent;
 import linprog.messages.StorageSpec;
 
 public abstract class Storage extends Device {
@@ -9,8 +10,8 @@ public abstract class Storage extends Device {
 	public double capacity;
 	public StorageSpec specificationToSend = new StorageSpec();
 
-	public Storage(String name, double qdot_max_in, double qdot_max_out, double capacity) {
-		super(name);
+	public Storage(String name, double qdot_max_in, double qdot_max_out, double capacity, int port) {
+		super(name, port);
 		this.qdot_max_in = qdot_max_in;
 		this.qdot_max_out = qdot_max_out;
 		this.capacity = capacity;
@@ -28,30 +29,37 @@ public abstract class Storage extends Device {
 		specificationToSend.upperBound = new double[2*n];
 		for(int i = 0; i < n; i++) {		
 			for(int j = 0; j <= i; j++) {
-				specificationToSend.capacityMatrix1[i][j] = -1;
-				specificationToSend.capacityMatrix2[i][j] = 1;
+				specificationToSend.capacityMatrix1[i][j] = -1.0;
+				specificationToSend.capacityMatrix2[i][j] = 1.0;
 			}			
-			for(int j = i+1; j <= n; j++) {
-				specificationToSend.capacityMatrix1[i][j] = 0;
-				specificationToSend.capacityMatrix2[i][j] = 0;
+			for(int j = i+1; j < n; j++) {
+				specificationToSend.capacityMatrix1[i][j] = 0.0;
+				specificationToSend.capacityMatrix2[i][j] = 0.0;
+			}					
+			for(int j = n; j <= n+i; j++) {
+				specificationToSend.capacityMatrix1[i][j] = 1.0;
+				specificationToSend.capacityMatrix2[i][j] = -1.0;
 			}			
+			for(int j = n+i+1; j < 2*n; j++) {
+				specificationToSend.capacityMatrix1[i][j] = 0.0;
+				specificationToSend.capacityMatrix2[i][j] = 0.0;
+			}
 			specificationToSend.vector[i] = 0.0;
 			specificationToSend.lowerBound[i] = 0.0;
 			specificationToSend.upperBound[i] = qdot_max_in;
 		}
-		for(int i = n; i < 2*n; i++) {			
-			for(int j = 0; j <= i; j++) {
-				specificationToSend.capacityMatrix1[i][j] = 1;
-				specificationToSend.capacityMatrix2[i][j] = -1;
-			}			
-			for(int j = i+1; j <= n; j++) {
-				specificationToSend.capacityMatrix1[i][j] = 0;
-				specificationToSend.capacityMatrix2[i][j] = 0;
-			}			
+		for(int i = n; i < 2*n; i++) {				
 			specificationToSend.vector[i] = 0.0;
 			specificationToSend.lowerBound[i] = 0.0;
 			specificationToSend.upperBound[i] = qdot_max_out;
 		}
 	}
+
+	@Override
+	public AnswerContent returnAnswerContentToSend() {
+		return specificationToSend;
+	}
+	
+	
 	
 }
