@@ -18,12 +18,12 @@ public class Consumer extends Device {
 	public void makeDecision() {
 		specificationToSend.vector = new double[n];
 		ConsumptionProfiles consumptionProfiles = new ConsumptionProfiles();
-//		Calendar currentTime = startTime;
+//		Calendar currentTime = startTime; 
 		for (int i = 0; i < n; i++) {
 			specificationToSend.vector[i] = consumptionProfiles.getHeatConsumption(i);
 //			currentTime.add(Calendar.SECOND, stepSize);
 		}
-		
+//		specificationToSend.addConsumption(vector);
 		display.update(gson.toJson(specificationToSend));
 	}
 

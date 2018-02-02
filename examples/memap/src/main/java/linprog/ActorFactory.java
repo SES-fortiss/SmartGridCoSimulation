@@ -10,6 +10,7 @@ import linprog.components.Consumer;
 import linprog.components.GasBoiler;
 import linprog.components.HeatPump;
 import linprog.components.LinProgBehavior;
+import linprog.components.OilBoiler;
 import linprog.components.PV;
 import linprog.components.SolarThermic;
 import linprog.components.ThermalStorage;
@@ -34,6 +35,13 @@ public abstract class ActorFactory {
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
 				new GasBoiler(name, qdot_max, efficiency, port));	
+		return result;
+	}
+	
+	public static ActorOptions createOilBoiler(String name, double qdot_max, double efficiency, int port){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new OilBoiler(name, qdot_max, efficiency, port));	
 		return result;
 	}
 	

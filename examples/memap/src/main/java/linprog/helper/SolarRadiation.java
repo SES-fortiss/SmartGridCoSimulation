@@ -23,7 +23,7 @@ public class SolarRadiation {
 	public static double getRadiation(int timestep) {
 		int hourOfDay = timestep % 24;
 		if(hourOfDay > 5 && hourOfDay < 21) {
-			return 700*Math.pow(Math.exp(-(hourOfDay-13.5)),2)/10*Math.random();
+			return 0.7*Math.pow(Math.exp(-(hourOfDay-13.5)),2)/10*Math.random();
 		}
 		else return 0.0;
 	}

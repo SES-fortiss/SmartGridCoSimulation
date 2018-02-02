@@ -15,6 +15,7 @@ import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
 import linprog.Simulation;
+import linprog.helper.OptimizationProblem;
 import linprog.messages.Consumption;
 import linprog.messages.OptimizationResult;
 import linprog.messages.ProducerSpec;
@@ -69,15 +70,11 @@ public class LinProgBehavior extends BehaviorModel {
 		
 		int nrOfStorages = storageSpecs.size();
 		int nrOfProducers = producerSpecs.size();
-		double[] lambda = new double[n*(nrOfProducers+2*nrOfStorages)];
-		double[] b = new double[n*(1+2*nrOfStorages)];
-		double[][] a = new double[n*(1+2*nrOfStorages)][n*(nrOfProducers+2*nrOfStorages)];
-		double[] x_lb = new double[n*(nrOfProducers+2*nrOfStorages)];
-		double[] x_ub = new double[n*(nrOfProducers+2*nrOfStorages)];
+		OptimizationProblem problem = new OptimizationProblem(n, nrOfProducers, nrOfStorages);
 		
 		for(Consumption consumption : consumptionProfiles) {
 			for(int i = 0; i < n; i++) {
-				b[i] -= consumption.vector[i];				
+				problem.h[i] -= consumption.vector[i];				
 			}
 		}
 
@@ -85,12 +82,12 @@ public class LinProgBehavior extends BehaviorModel {
 		int storagesHandled = 0;
 		for(ProducerSpec producerSpec : producerSpecs) {
 			for(int i = 0; i < n; i++) {
-				lambda[n*producersHandled+i] = producerSpec.cost[i];
-				x_lb[n*producersHandled+i] = producerSpec.lowerBound[i];
-				x_ub[n*producersHandled+i] = producerSpec.upperBound[i];
+				problem.lambda[n*producersHandled+i] = producerSpec.cost[i];
+				problem.x_lb[n*producersHandled+i] = producerSpec.lowerBound[i];
+				problem.x_ub[n*producersHandled+i] = producerSpec.upperBound[i];
 				
 				for(int j = 0; j < n; j++) {
-					a[i][n*producersHandled +j] = producerSpec.couplingMatrix[i][j];
+					problem.g[i][n*producersHandled +j] = producerSpec.couplingMatrix[i][j];
 				}	
 			}
 			producersHandled++;
@@ -100,39 +97,42 @@ public class LinProgBehavior extends BehaviorModel {
 			for(int i = 0; i < 2*n; i++) {
 				if(i < n) {
 					for(int j = 0; j < 2*n; j++) {
-						a[i][n*(producersHandled+storagesHandled)+j] = storageSpec.couplingMatrix[i][j];
-						a[n*(1+2*storagesHandled)+i][n*(producersHandled+2*storagesHandled)+j] = storageSpec.capacityMatrix1[i][j];
-						a[n*(2+2*storagesHandled)+i][n*(producersHandled+2*storagesHandled)+j] = storageSpec.capacityMatrix2[i][j];
+						problem.g[i][n*(producersHandled+storagesHandled)+j] = storageSpec.couplingMatrix[i][j];
+						problem.g[n*(1+2*storagesHandled)+i][n*(producersHandled+2*storagesHandled)+j] = storageSpec.capacityMatrix1[i][j];
+						problem.g[n*(2+2*storagesHandled)+i][n*(producersHandled+2*storagesHandled)+j] = storageSpec.capacityMatrix2[i][j];
 					}
 				}
-				lambda[n*(producersHandled+2*storagesHandled)+i] = storageSpec.cost[i];
-				x_lb[n*(producersHandled+2*storagesHandled)+i] = storageSpec.lowerBound[i];
-				x_ub[n*(producersHandled+2*storagesHandled)+i] = storageSpec.upperBound[i];
-				b[n*(1+2*storagesHandled)+i] = storageSpec.vector[i];	
+				problem.lambda[n*(producersHandled+2*storagesHandled)+i] = storageSpec.cost[i];
+				problem.x_lb[n*(producersHandled+2*storagesHandled)+i] = storageSpec.lowerBound[i];
+				problem.x_ub[n*(producersHandled+2*storagesHandled)+i] = storageSpec.upperBound[i];
+				problem.h[n*(1+2*storagesHandled)+i] = storageSpec.vector[i];	
 			}
 			storagesHandled++;
 		}		
 		
 		LPOptimizationRequest or = new LPOptimizationRequest();
-		or.setC(lambda);
-		or.setA(a);
-		or.setB(b);
-		or.setLb(x_lb);
-		or.setUb(x_ub);
+		or.setC(problem.lambda);
+		or.setG(problem.g);
+		or.setH(problem.h);
+		or.setLb(problem.x_lb);
+		or.setUb(problem.x_ub);
 
 		System.out.println("c: " + or.getC().size());		
-		System.out.println("A: " + or.getA().rows() + " x " + or.getA().columns());		
-		System.out.println("b: " + or.getB().size());		
+		System.out.println("G: " + or.getG().rows() + " x " + or.getG().columns());		
+		System.out.println("h: " + or.getH().size());		
 		System.out.println("lb: " + or.getLb().size());		
 		System.out.println("ub: " + or.getUb().size());		
 		
-		System.out.println(gson.toJson(a));
+//		System.out.println(gson.toJson(problem.g));		
+
+		display.update(gson.toJson(problem));
 
 		LPPrimalDualMethod opt = new LPPrimalDualMethod();
 //		JOptimizer opt = new JOptimizer();
-		or.setMaxIteration(5000);
-		or.setPresolvingDisabled(true);
-		opt.setOptimizationRequest(or);
+		or.setMaxIteration(100000);
+//		or.setPresolvingDisabled(true);
+		or.setDumpProblem(true);
+		opt.setLPOptimizationRequest(or);
 		try {
 			opt.optimize();
 		} catch (Exception e) {
@@ -140,7 +140,8 @@ public class LinProgBehavior extends BehaviorModel {
 			e.printStackTrace();
 		}
 		
-		double[] sol = opt.getOptimizationResponse().getSolution();
+		double[] sol = opt.getLPOptimizationResponse().getSolution();
+//		display.update(gson.toJson(sol));
 		int producerResultsHandled = 0;
 		int storageResultsHandled = 0;
 		for(ProducerSpec producerSpec: producerSpecs) {
@@ -149,15 +150,17 @@ public class LinProgBehavior extends BehaviorModel {
 				producerResult[i] = sol[n*producerResultsHandled + i];
 			}
 			ans.resultMap.put(producerSpec.name, producerResult);
+			producerResultsHandled++;
 		}
 		for(StorageSpec storageSpec: storageSpecs) {
-			double[] storageResult = new double[n];
+			double[] storageResult = new double[2*n];
 			for(int i = 0; i < 2*n; i++) {
 				storageResult[i] = sol[n*(producerResultsHandled+2*storageResultsHandled) + i];
 			}
 			ans.resultMap.put(storageSpec.name, storageResult);
+			storageResultsHandled++;
 		}
-		display.update(gson.toJson(ans));
+		display.update(gson.toJson(problem) + gson.toJson(ans));
 	}
 
 	@Override

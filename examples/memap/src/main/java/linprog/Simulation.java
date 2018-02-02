@@ -12,7 +12,7 @@ public class Simulation {
 	
 	private ActorTopology topology;
 
-	public static int maxTimeStep = 5;
+	public static int maxTimeStep = 10;
 	
 	//For the moment, the following 3 parameters need to stay as defined to match data input
 //	public static LocalDateTime startTime = LocalDateTime.of(2014,7,1,11,0);
