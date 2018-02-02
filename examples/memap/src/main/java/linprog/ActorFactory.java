@@ -5,6 +5,7 @@ import java.util.HashSet;
 import akka.basicActors.ActorOptions;
 import akka.basicActors.LoggingMode;
 import linprog.components.Battery;
+import linprog.components.Building;
 import linprog.components.CHP;
 import linprog.components.Consumer;
 import linprog.components.GasBoiler;
@@ -84,6 +85,13 @@ public abstract class ActorFactory {
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
 				new ThermalStorage(name, qdot_max_in, qdot_max_out, capacity, efficiency, port));	
+		return result;
+	}
+	
+	public static ActorOptions createBuilding(String name, int port){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new Building(name, port));	
 		return result;
 	}
 	

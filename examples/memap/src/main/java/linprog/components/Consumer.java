@@ -16,14 +16,14 @@ public class Consumer extends Device {
 
 	@Override
 	public void makeDecision() {
-		specificationToSend.vector = new double[n];
+		double[] vector = new double[n];
 		ConsumptionProfiles consumptionProfiles = new ConsumptionProfiles();
 //		Calendar currentTime = startTime; 
 		for (int i = 0; i < n; i++) {
-			specificationToSend.vector[i] = consumptionProfiles.getHeatConsumption(i);
+			vector[i] = consumptionProfiles.getHeatConsumption(i);
 //			currentTime.add(Calendar.SECOND, stepSize);
 		}
-//		specificationToSend.addConsumption(vector);
+		specificationToSend.setVector(vector);
 		display.update(gson.toJson(specificationToSend));
 	}
 

@@ -2,6 +2,8 @@ package linprog.components;
 
 import java.util.LinkedList;
 
+import com.google.gson.Gson;
+
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
@@ -11,26 +13,35 @@ import linprog.messages.BuildingSpec;
 import linprog.messages.Consumption;
 import linprog.messages.ProducerSpec;
 import linprog.messages.StorageSpec;
+import memap.external.M2MDisplay;
 
 public class Building extends BehaviorModel {
 	
+	//duplicated from Device.java
+	protected final String name;
+	
+	protected M2MDisplay display;
+	protected Gson gson = new Gson();
+	public int port;
+	
 	public BuildingSpec specificationToSend = new BuildingSpec();
 
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		// TODO Auto-generated method stub
-
+	public Building(String name, int port) {
+		
+		//duplicated from Device.java
+		if(name == null) {
+			//TODO throw exception
+		}
+		this.name = name;
+		this.port = port;
+		display = new M2MDisplay(port); // add port in to display a json
+		display.run();
 	}
 
-	@Override
-	public void handleRequest() {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void makeDecision() {
-		
+		specificationToSend = new BuildingSpec();
 		for(BasicAnswer basicAnswer : answerListReceived) {			
 			AnswerContent answerContent = basicAnswer.answerContent;
 			if(answerContent instanceof Consumption) {
@@ -43,6 +54,8 @@ public class Building extends BehaviorModel {
 				specificationToSend.storages.add((StorageSpec)answerContent);
 			}
 		}
+		
+		display.update(gson.toJson(specificationToSend));
 
 	}
 
@@ -50,6 +63,21 @@ public class Building extends BehaviorModel {
 	public AnswerContent returnAnswerContentToSend() {
 		return specificationToSend;
 	}
+
+
+	@Override
+	public void handleError(LinkedList<ErrorAnswerContent> errors) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void handleRequest() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	@Override
 	public RequestContent returnRequestContentToSend() {

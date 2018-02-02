@@ -16,6 +16,7 @@ import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
 import linprog.Simulation;
 import linprog.helper.OptimizationProblem;
+import linprog.messages.BuildingSpec;
 import linprog.messages.Consumption;
 import linprog.messages.OptimizationResult;
 import linprog.messages.ProducerSpec;
@@ -55,58 +56,68 @@ public class LinProgBehavior extends BehaviorModel {
 		ArrayList<Consumption> consumptionProfiles = new ArrayList<Consumption>();
 		ArrayList<ProducerSpec> producerSpecs = new ArrayList<ProducerSpec>();
 		ArrayList<StorageSpec> storageSpecs = new ArrayList<StorageSpec>();
+		ArrayList<BuildingSpec> buildingSpecs = new ArrayList<BuildingSpec>();
 		
 		for(BasicAnswer basicAnswer : answerListReceived) {
-			if(basicAnswer.answerContent instanceof Consumption) {
-				consumptionProfiles.add((Consumption) basicAnswer.answerContent);
+			AnswerContent answerContent = basicAnswer.answerContent;
+			if(answerContent instanceof Consumption) {
+				consumptionProfiles.add((Consumption) answerContent);
 			}
-			if(basicAnswer.answerContent instanceof ProducerSpec) {
-				producerSpecs.add((ProducerSpec) basicAnswer.answerContent);
+			if(answerContent instanceof ProducerSpec) {
+				producerSpecs.add((ProducerSpec) answerContent);
 			}
-			if(basicAnswer.answerContent instanceof StorageSpec) {
-				storageSpecs.add((StorageSpec) basicAnswer.answerContent);
+			if(answerContent instanceof StorageSpec) {
+				storageSpecs.add((StorageSpec) answerContent);
+			}		
+			if(answerContent instanceof BuildingSpec) {
+				buildingSpecs.add((BuildingSpec) answerContent);
 			}			
 		}
 		
 		int nrOfStorages = storageSpecs.size();
 		int nrOfProducers = producerSpecs.size();
+		for(BuildingSpec buildingSpeC : buildingSpecs) {
+			nrOfStorages += buildingSpeC.getNrOfStorages();
+			nrOfProducers += buildingSpeC.getNrOfProducers();
+		}
 		OptimizationProblem problem = new OptimizationProblem(n, nrOfProducers, nrOfStorages);
 		
-		for(Consumption consumption : consumptionProfiles) {
-			for(int i = 0; i < n; i++) {
-				problem.h[i] -= consumption.vector[i];				
-			}
+		Consumption h = new Consumption();
+		
+		for(BuildingSpec buildingSpec : buildingSpecs) {
+			h.addConsumption(buildingSpec.consumption.getVector());
 		}
+		
+		for(Consumption consumption : consumptionProfiles) {
+			h.addConsumption(consumption.getVector());
+		}
+		
+		problem.h = h.getVector();
 
 		int producersHandled = 0;
 		int storagesHandled = 0;
+		
+		for(BuildingSpec buildingSpec : buildingSpecs) {
+			h.addConsumption(buildingSpec.consumption.getVector());
+			
+			for(ProducerSpec producerSpec : buildingSpec.producers) {
+				addProducerToProblem(producerSpec, problem, producersHandled);
+				producersHandled++;
+			}	
+			
+			for(StorageSpec storageSpec : buildingSpec.storages) {
+				addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled);
+				storagesHandled++;
+			}	
+		}
+		
 		for(ProducerSpec producerSpec : producerSpecs) {
-			for(int i = 0; i < n; i++) {
-				problem.lambda[n*producersHandled+i] = producerSpec.cost[i];
-				problem.x_lb[n*producersHandled+i] = producerSpec.lowerBound[i];
-				problem.x_ub[n*producersHandled+i] = producerSpec.upperBound[i];
-				
-				for(int j = 0; j < n; j++) {
-					problem.g[i][n*producersHandled +j] = producerSpec.couplingMatrix[i][j];
-				}	
-			}
+			addProducerToProblem(producerSpec, problem, producersHandled);
 			producersHandled++;
 		}	
 		
 		for(StorageSpec storageSpec : storageSpecs) {
-			for(int i = 0; i < 2*n; i++) {
-				if(i < n) {
-					for(int j = 0; j < 2*n; j++) {
-						problem.g[i][n*(producersHandled+storagesHandled)+j] = storageSpec.couplingMatrix[i][j];
-						problem.g[n*(1+2*storagesHandled)+i][n*(producersHandled+2*storagesHandled)+j] = storageSpec.capacityMatrix1[i][j];
-						problem.g[n*(2+2*storagesHandled)+i][n*(producersHandled+2*storagesHandled)+j] = storageSpec.capacityMatrix2[i][j];
-					}
-				}
-				problem.lambda[n*(producersHandled+2*storagesHandled)+i] = storageSpec.cost[i];
-				problem.x_lb[n*(producersHandled+2*storagesHandled)+i] = storageSpec.lowerBound[i];
-				problem.x_ub[n*(producersHandled+2*storagesHandled)+i] = storageSpec.upperBound[i];
-				problem.h[n*(1+2*storagesHandled)+i] = storageSpec.vector[i];	
-			}
+			addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled);
 			storagesHandled++;
 		}		
 		
@@ -144,6 +155,9 @@ public class LinProgBehavior extends BehaviorModel {
 //		display.update(gson.toJson(sol));
 		int producerResultsHandled = 0;
 		int storageResultsHandled = 0;
+		for(BuildingSpec buildingSpec : buildingSpecs) {
+			
+		}
 		for(ProducerSpec producerSpec: producerSpecs) {
 			double[] producerResult = new double[n];
 			for(int i = 0; i < n; i++) {
@@ -161,6 +175,35 @@ public class LinProgBehavior extends BehaviorModel {
 			storageResultsHandled++;
 		}
 		display.update(gson.toJson(problem) + gson.toJson(ans));
+	}
+
+	private void addStorageToProblem(StorageSpec storageSpec, OptimizationProblem problem, int producersHandledSoFar,
+			int storagesHandledSoFar) {
+		for(int i = 0; i < 2*n; i++) {
+			if(i < n) {
+				for(int j = 0; j < 2*n; j++) {
+					problem.g[i][n*(producersHandledSoFar+storagesHandledSoFar)+j] = storageSpec.couplingMatrix[i][j];
+					problem.g[n*(1+2*storagesHandledSoFar)+i][n*(producersHandledSoFar+2*storagesHandledSoFar)+j] = storageSpec.capacityMatrix1[i][j];
+					problem.g[n*(2+2*storagesHandledSoFar)+i][n*(producersHandledSoFar+2*storagesHandledSoFar)+j] = storageSpec.capacityMatrix2[i][j];
+				}
+			}
+			problem.lambda[n*(producersHandledSoFar+2*storagesHandledSoFar)+i] = storageSpec.cost[i];
+			problem.x_lb[n*(producersHandledSoFar+2*storagesHandledSoFar)+i] = storageSpec.lowerBound[i];
+			problem.x_ub[n*(producersHandledSoFar+2*storagesHandledSoFar)+i] = storageSpec.upperBound[i];
+			problem.h[n*(1+2*storagesHandledSoFar)+i] = storageSpec.vector[i];	
+		}
+	}
+
+	private void addProducerToProblem(ProducerSpec producerSpec, OptimizationProblem problem, int producersHandledSoFar) {
+		for(int i = 0; i < n; i++) {
+			problem.lambda[n*producersHandledSoFar+i] = producerSpec.cost[i];
+			problem.x_lb[n*producersHandledSoFar+i] = producerSpec.lowerBound[i];
+			problem.x_ub[n*producersHandledSoFar+i] = producerSpec.upperBound[i];
+			
+			for(int j = 0; j < n; j++) {
+				problem.g[i][n*producersHandledSoFar +j] = producerSpec.couplingMatrix[i][j];
+			}	
+		}		
 	}
 
 	@Override
