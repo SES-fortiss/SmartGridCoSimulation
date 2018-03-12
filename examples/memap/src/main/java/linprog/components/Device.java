@@ -22,8 +22,7 @@ public abstract class Device extends BehaviorModel {
 	public int port;
 	
 	public Calendar startTime;
-	public int n = Simulation.maxTimeStep;
-	public int stepSize = 60;
+	public int n = Simulation.TIMESTEPS_PER_ITERATION;
 	
 	public Device(String name, int port) {
 		if(name == null) {

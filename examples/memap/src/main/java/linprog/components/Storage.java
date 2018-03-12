@@ -15,6 +15,7 @@ public abstract class Storage extends Device {
 		this.qdot_max_in = qdot_max_in;
 		this.qdot_max_out = qdot_max_out;
 		this.capacity = capacity;
+		specificationToSend.name = name;
 	}
 
 	@Override

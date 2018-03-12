@@ -1,6 +1,9 @@
 package linprog.helper;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
+
+import linprog.Simulation;
 
 public class SolarRadiation {
 	
@@ -15,15 +18,15 @@ public class SolarRadiation {
 	}
 	
 	/**
-	 * Returns the current solar radiation at a given timestep. Assumes hourly timesteps and start at 12 am.
+	 * Returns the current solar radiation at a given timestep. Assumes timestep 0 at 12 am.
 	 * 
 	 * @param time the timestep for which to get the radiation
 	 * @return solar radiation in kW/m²
 	 */
 	public static double getRadiation(int timestep) {
-		int hourOfDay = timestep % 24;
+		double hourOfDay = (timestep * Simulation.stepLength(TimeUnit.HOURS)) % 24;
 		if(hourOfDay > 5 && hourOfDay < 21) {
-			return 0.7*Math.pow(Math.exp(-(hourOfDay-13.5)),2)/10*Math.random();
+			return 0.1*Math.pow(Math.exp(-(hourOfDay-13.5)),2)/10*Math.random();
 		}
 		else return 0.0;
 	}

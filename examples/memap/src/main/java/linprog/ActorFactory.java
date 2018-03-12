@@ -15,6 +15,7 @@ import linprog.components.OilBoiler;
 import linprog.components.PV;
 import linprog.components.SolarThermic;
 import linprog.components.ThermalStorage;
+import linprog.helper.ConsumptionProfiles;
 
 public abstract class ActorFactory {
 	
@@ -60,10 +61,10 @@ public abstract class ActorFactory {
 		return result;
 	}
 	
-	public static ActorOptions createConsumer(String name, int port){
+	public static ActorOptions createConsumer(String name, ConsumptionProfiles consumptionProfiles, int consumerIndex, int port){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new Consumer(name, port));	
+				new Consumer(name, consumptionProfiles, consumerIndex, port));	
 		return result;
 	}
 	

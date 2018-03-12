@@ -10,6 +10,7 @@ public abstract class Producer extends Device {
 	public Producer(String name, double qdot_max, int port) {
 		super(name, port);
 		this.qdot_max = qdot_max;
+		specificationToSend.name = name;
 	}
 
 	@Override

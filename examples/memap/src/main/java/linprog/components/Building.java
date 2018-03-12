@@ -42,6 +42,7 @@ public class Building extends BehaviorModel {
 	@Override
 	public void makeDecision() {
 		specificationToSend = new BuildingSpec();
+		specificationToSend.name = name;
 		for(BasicAnswer basicAnswer : answerListReceived) {			
 			AnswerContent answerContent = basicAnswer.answerContent;
 			if(answerContent instanceof Consumption) {

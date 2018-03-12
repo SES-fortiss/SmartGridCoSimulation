@@ -9,18 +9,21 @@ import linprog.messages.Consumption;
 public class Consumer extends Device {
 	
 	public Consumption specificationToSend = new Consumption();
+	public final int consumerIndex;
+	private final ConsumptionProfiles consumptionProfiles;
 
-	public Consumer(String name, int port) {
+	public Consumer(String name, ConsumptionProfiles consumptionProfiles, int consumerIndex, int port) {
 		super(name, port);
+		this.consumerIndex = consumerIndex;
+		this.consumptionProfiles = consumptionProfiles;
 	}
 
 	@Override
 	public void makeDecision() {
 		double[] vector = new double[n];
-		ConsumptionProfiles consumptionProfiles = new ConsumptionProfiles();
 //		Calendar currentTime = startTime; 
 		for (int i = 0; i < n; i++) {
-			vector[i] = consumptionProfiles.getHeatConsumption(i);
+			vector[i] = -consumptionProfiles.getHeatConsumption(consumerIndex, i);
 //			currentTime.add(Calendar.SECOND, stepSize);
 		}
 		specificationToSend.setVector(vector);
