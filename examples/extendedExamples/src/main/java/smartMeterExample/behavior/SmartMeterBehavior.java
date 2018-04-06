@@ -28,6 +28,7 @@ public class SmartMeterBehavior extends BehaviorModel {
 	@Override
 	public void makeDecision() {
 		answerContentToSend.size = (int) (Math.random() * 256);
+		//System.out.println("Zahl: " + answerContentToSend.size);
 	}
 
 	@Override
