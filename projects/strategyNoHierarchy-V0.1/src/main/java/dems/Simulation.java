@@ -23,6 +23,8 @@ import akka.actor.ActorSystem;
  * This is the main class for the VPP simulation.
  * It is executed with Eclipse.
  * 
+ * This Simulation generate Output Files to ~/www2/root/... 
+ * 
  * @author bytschkow
  *
  */
