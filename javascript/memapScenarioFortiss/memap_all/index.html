@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+    <script src="https://code.highcharts.com/modules/sankey.js"></script>
+    <link rel="stylesheet" type="text/css" href="stylesheet1.css">
+</head>
+
+<body>
+
+<div id = "header">
+    <h1>Energiemonitor</h1>
+</div>
+<div id = "line-below-header"></div>
+<div id = "main-site">
+    <div class="tab">
+        <button class="button" onclick="show_p()">Profile</button>
+        <button class="button" onclick="show_s()">Sankey</button>
+    </div>
+
+    <div id = "buidling-info">
+        <ul>
+            <li id="number"></li>
+            <li>Geräteliste: <ul id="devices"></ul></li>
+        </ul>
+    </div>
+
+
+    <div id = "container">
+        <div id = "container_sankey"></div>
+        <div id = "container_profile">
+            <div id = "container_sync">
+                <div id="chart_consumption"></div>
+                <div id="chart_production_h"></div>
+                <div id="chart_production_el"></div>
+            </div>
+            <div id="chart_storage"></div>
+        </div>
+    </div>
+</div>
+
+<script type='text/javascript' >
+    var building_url = "http://localhost:8105";
+</script>
+<script src="js/main.js"></script>
+<script src="js/getBuildingInfo.js"></script>
+<script src="js/sankey_chart_hc.js"></script>
+<script src="js/profile_chart_hc.js"></script>
+
+
+</body>
+</html>
