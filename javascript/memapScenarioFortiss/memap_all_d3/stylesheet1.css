@@ -1,0 +1,112 @@
+body {
+    font-family: "Arial", sans-serif;
+    font-size: 14px;
+}
+
+#header{
+    margin-left:auto;
+    margin-right:auto;
+    width: 1200px;
+}
+
+h1{
+    text-align: center;
+}
+
+#line-below-header{
+    width: 100%;
+    height: 1px;
+    background: #000000;
+}
+
+#buidling-info{
+    height: 200px;
+    width: 13%;
+    margin: 2.5%;
+    padding: 0.5%;
+    border: 2px solid black;
+    float: left;
+    font-family: "Arial", sans-serif;
+    font-size: 18px;
+}
+
+#charts{
+    height: 800px;
+    width: 70%;
+    margin-left: 25%;
+}
+
+
+.line {
+    fill: none;
+    stroke: #000;
+    stroke-width: 2px;
+}
+
+.title {
+    text-anchor: middle;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Style the tab */
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.button.active {
+    background-color: #ccc;
+}
+
+#storage
+{
+    width: 400px;
+    margin: 100px auto
+}
+.chart-filled
+{
+    fill: steelblue;
+}
+.chart-empty
+{
+    fill: #dedede;
+}
+
+.needle, .needle-center
+{
+    fill: #464A4F;
+}
+
+/*.button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+*/

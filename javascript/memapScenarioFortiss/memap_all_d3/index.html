@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Energiemonitor</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="stylesheet1.css">
+</head>
+
+<body>
+
+<div id = "header">
+    <h1>Energiemonitor</h1>
+</div>
+<div id = "line-below-header"></div>
+<div id = "main-site">
+    <div class="tab">
+        <button class="button" onclick="show_p()">Profile</button>
+        <!--<button class="button" onclick="show_s()">Sankey</button>-->
+    </div>
+
+    <div id = "buidling-info">
+        <ul>
+            <li id="number"></li>
+            <li>Geräteliste: <ul id="devices"></ul></li>
+        </ul>
+    </div>
+
+    <div id = "charts">
+        <div id = "sankey"></div>
+        <div id = "profile">
+            <div id = "sync">
+                <div id="consumption"></div>
+                <div id="production_el"></div>
+                <div id="production_h"></div>
+            </div>
+            <div id="storage"></div>
+        </div>
+    </div>
+</div>
+
+<script type='text/javascript' >
+    var building_url = "http://localhost:8105";
+</script>
+<script src="main.js"></script>
+<script src="getBuildingInfo.js"></script>
+<script src="d3.legend.js"></script>
+<script src="time_format.js"></script>
+<script src="profile_chart.js"></script>
+<script src="gauge.js"></script>
+
+
+</body>
+</html>
