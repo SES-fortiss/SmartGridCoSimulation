@@ -109,7 +109,7 @@ public class ConsumptionProfiles {
 			if(++i >= timeStepDurationInMinutes) {
 				for( int j = 0; j < nrOfProfiles; j++) {
 					profiles.get(j).add(sumsPerTimestep[j]
-							.divide(Simulation.TIMESTEP_DURATION_IN_SECONDS.divide(BigInteger.valueOf(60))));
+							.divide(BigInteger.valueOf(60)));
 				}
 				sumsPerTimestep = newBigIntegerArray(nrOfProfiles);
 				i = 0;
