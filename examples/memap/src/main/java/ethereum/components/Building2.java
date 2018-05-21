@@ -16,8 +16,6 @@ public class Building2 extends Building {
 //	private BigInteger gasboilerPower = BigInteger.valueOf(40000); //W
 //	private BigInteger gasboilerPrice;
 	
-	private BigInteger currentElectricityConsumption = BigInteger.ZERO;
-	private BigInteger currentHeatConsumption = BigInteger.ZERO;
 	private BigInteger currentPVProduction = BigInteger.ZERO;
 	private double pvEfficiency = .2;
 	private double pvArea = 8.;
@@ -39,11 +37,14 @@ public class Building2 extends Building {
 		maxInOut = BigInteger.valueOf((long) (5000 * storageEfficiency))
 				.multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
 		capacity = UnitHelper.getWSfromKWH(40);
+		logger.print(",pv,gasboilerCost,gasboilerProduction,fromBattery,toBattery,stateOfCharge,excessHeat,lackingHeat,excessElectricity,electricityLack");
+		logger.println();
 	}
 
 	@Override
 	public void makeDecision() {
 		super.makeDecision();
+		logger.print("," + currentPVProduction);
 
 		String gasboilerStatus = "off";
 		BigInteger gasboilerProduction = Simulation.TIMESTEP_DURATION_IN_SECONDS.multiply(gasboilerPower);
@@ -58,6 +59,10 @@ public class Building2 extends Building {
 			heatToProduce = heatToProduce.subtract(gasboilerProduction).max(BigInteger.ZERO);
 			timestepInfo.cost = timestepInfo.cost.add(gasboilerProduction.multiply(gasboilerPrice));
 		}
+		System.out.println("[" + name + "] Gasboiler: " + gasboilerStatus + 
+				(gasboilerStatus.equals("on") ? ", producing " + UnitHelper.printAmount(gasboilerProduction) : ""  + "." ));
+		logger.print("," + timestepInfo.cost);
+		logger.print("," + (gasboilerStatus == "off" ? 0 : gasboilerProduction));
 		
 		BigInteger electricityToProduce = currentElectricityConsumption.add(soldElectricity).subtract(boughtElectricity);		
 		
@@ -66,40 +71,48 @@ public class Building2 extends Building {
 				subtract(electricityToProduce)
 			);
 		electricityToProduce = electricityToProduce.subtract(currentPVProduction).max(BigInteger.ZERO);
+		BigInteger fromStorage = BigInteger.ZERO;
 		if(isGreaterZero(electricityToProduce)) {
-			BigInteger fromStorage = stateOfCharge.min(maxInOut).min(electricityToProduce);
+			fromStorage = stateOfCharge.min(maxInOut).min(electricityToProduce);
 			stateOfCharge = stateOfCharge.subtract(fromStorage);
 			electricityToProduce = electricityToProduce.subtract(fromStorage);	
 			System.out.println("[" + name + "] Drawing " + UnitHelper.printAmount(fromStorage) +" from battery,"
 					+ " leaving state of charge at" + UnitHelper.printAmount(stateOfCharge) + ".");			
 		}
+		logger.print("," + fromStorage);
+		
+		BigInteger toStorage = BigInteger.ZERO;
 		if(isGreaterZero(excessElectricity)) {
-			BigInteger toStorage = excessElectricity.min(maxInOut);
+			toStorage = excessElectricity.min(maxInOut);
 			stateOfCharge = stateOfCharge.add(toStorage);
 			excessElectricity = excessElectricity.subtract(toStorage);
 			System.out.println("[" + name + "] Charging " + UnitHelper.printAmount(toStorage) + " into battery,"
 					+ " leaving state of charge at" + stateOfCharge + "Ws.");
-		}
-		System.out.println("[" + name + "] Gasboiler: " + gasboilerStatus + 
-				(gasboilerStatus.equals("on") ? ", producing " + UnitHelper.printAmount(gasboilerProduction) : ""  + "." ));		
+		}	
+		logger.print("," + toStorage);	
+		logger.print("," + stateOfCharge);	
 
 		if(isGreaterZero(excessHeat)) {
 			System.out.println("[" + name + "] Excess heat: " + UnitHelper.printAmount(excessHeat));
 			timestepInfo.heatFeedIn = excessHeat;
 		}
+		logger.print("," + excessHeat);
 		if(isGreaterZero(heatToProduce)) {
 			System.out.println("[" + name + "] Lacking heat : " + UnitHelper.printAmount(heatToProduce));
 			timestepInfo.heatWithdrawal = heatToProduce;
 		}
+		logger.print("," + heatToProduce);
 
 		if(isGreaterZero(excessElectricity)) {
 			System.out.println("[" + name + "] Excess electricity: " + UnitHelper.printAmount(excessElectricity));
 			timestepInfo.electricityFeedIn = excessElectricity;
 		}
+		logger.print("," + excessElectricity);
 		if(isGreaterZero(electricityToProduce)) {
 			System.out.println("[" + name + "] Lacking electricity : " + UnitHelper.printAmount(electricityToProduce));
 			timestepInfo.electricityWithdrawal = electricityToProduce;
 		}
+		logger.print("," + electricityToProduce);
 		
 		BigInteger nextHeatConsumption = consumptionProfiles.getHeatConsumption(
 				consumerIndex,
@@ -163,6 +176,7 @@ public class Building2 extends Building {
 		currentElectricityConsumption = nextElectricityConsumption;
 		currentHeatConsumption = nextHeatConsumption;
 		currentPVProduction = nextPVProduction;
+		logger.println();
 	}
 
 }

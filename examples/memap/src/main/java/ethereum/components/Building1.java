@@ -17,9 +17,6 @@ public class Building1 extends Building {
 	private BigInteger oilboilerPower = BigInteger.valueOf(40000); //W
 	private BigInteger oilboilerPrice = UnitHelper.getCentsPerWsFromCents(8.44);
 	
-	private BigInteger currentElectricityConsumption = BigInteger.ZERO;
-	private BigInteger currentHeatConsumption = BigInteger.ZERO;
-	
 	public Building1(
 			String name,
 			int rpcport,
@@ -28,6 +25,8 @@ public class Building1 extends Building {
 			int consumerIndex
 	) {
 		super(name, rpcport, privateKey, consumptionProfiles, consumerIndex);
+		logger.print(",oilBoilerCost,oilboilerProduction,excessHeat,lackingHeat,electricityLack");
+		logger.println();
 	}
 
 	@Override
@@ -47,21 +46,26 @@ public class Building1 extends Building {
 		}	
 		System.out.println("[" + name + "] Oilboiler: " + oilboilerStatus + 
 				(oilboilerStatus.equals("on") ? ", producing " + UnitHelper.printAmount(oilboilerProduction) + " Ws." : "." ));
-
+		logger.print("," + timestepInfo.cost);
+		logger.print("," + (oilboilerStatus == "off" ? 0 : oilboilerProduction));
+		
 		if(isGreaterZero(excessProduction)) {
 			System.out.println("[" + name + "] Excess heat: " + UnitHelper.printAmount(excessProduction));
 			timestepInfo.heatFeedIn = excessProduction;
 		}
+		logger.print("," + excessProduction);
 		if(isGreaterZero(amountToProduce)) {
 			System.out.println("[" + name + "] Lacking heat : " + UnitHelper.printAmount(amountToProduce));
 			timestepInfo.heatWithdrawal = amountToProduce;
 		}
+		logger.print("," + amountToProduce);
 		
 		BigInteger electricityLack = currentElectricityConsumption.subtract(boughtElectricity).max(BigInteger.ZERO);
 		if(isGreaterZero(electricityLack)) {
 			timestepInfo.electricityWithdrawal = electricityLack;
 			System.out.println("[" + name + "] Lacking electricity : " + UnitHelper.printAmount(electricityLack));
 		}
+		logger.print("," + electricityLack);
 		
 		BigInteger nextHeatConsumption = consumptionProfiles.getHeatConsumption(
 				consumerIndex,
@@ -74,7 +78,7 @@ public class Building1 extends Building {
 		);
 		
 		System.out.println("[" + name + "] Expected heat consumption for next step: " + UnitHelper.printAmount(nextHeatConsumption));
-		System.out.println("[" + name + "] Expected electricity consumption for next step: " + UnitHelper.printAmount(nextHeatConsumption));
+		System.out.println("[" + name + "] Expected electricity consumption for next step: " + UnitHelper.printAmount(nextElectricityConsumption));
 		
 
 		logDemand(nextElectricityConsumption, Simulation.ELECTRICITY_MAX_PRICE, Market.ELECTRICITY);
@@ -92,6 +96,7 @@ public class Building1 extends Building {
 
 		currentElectricityConsumption = nextElectricityConsumption;
 		currentHeatConsumption = nextHeatConsumption;
+		logger.println();
 	}
 
 }

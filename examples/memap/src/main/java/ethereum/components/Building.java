@@ -1,5 +1,9 @@
 package ethereum.components;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,12 +14,12 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.JsonRpc2_0Web3j;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.Contract;
 import org.web3j.utils.Async;
 
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
+import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import ethereum.Simulation;
 import ethereum.contracts.DoubleSidedAuctionMarket;
@@ -25,6 +29,7 @@ import ethereum.helper.ConsumptionProfiles;
 import ethereum.helper.Market;
 import ethereum.helper.UnitHelper;
 import ethereum.messages.TimestepInfo;
+import meritorder.helper.ReadMemapFiles;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -50,6 +55,12 @@ public abstract class Building extends BehaviorModel {
 	protected TimestepInfo timestepInfo;
 	
 	protected BigInteger paidDownPayments = BigInteger.ZERO;
+	
+	protected PrintWriter logger;
+
+	protected BigInteger currentHeatConsumption = BigInteger.ZERO;
+
+	protected BigInteger currentElectricityConsumption = BigInteger.ZERO;
 
 	public Building(
 			String name,
@@ -96,6 +107,22 @@ public abstract class Building extends BehaviorModel {
 				BigInteger.ONE, 
 				BigInteger.valueOf(8000000)
 			);
+	
+		try {
+			String dest = "res/logs/" + Simulation.timestamp + "-" + name + ".csv";			
+			String location = ReadMemapFiles.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			location = location.replace("%20", " ");
+			location = location.substring(0, location.length()-15);
+			location = location + dest;
+			new File(location);
+			FileWriter fr = new FileWriter(location, true);
+			logger = new PrintWriter(fr, true);
+		} catch (IOException e1) {
+				e1.printStackTrace();
+		}
+		
+		logger.print("timestep,heatDemand,electricityDemand,soldHeat,boughtHeat,soldElectricity,boughtElectricity,paidDownPayments,withdrawalAmount");
+		
 		System.out.println("[" + name + "] Started.");
 	}
 
@@ -110,6 +137,8 @@ public abstract class Building extends BehaviorModel {
 			boughtHeat = contract.getHeatToConsume().send();
 			soldElectricity = contract.getElectricityToProduce().send();
 			boughtElectricity = contract.getElectricityToConsume().send();
+			logger.print(GlobalTime.currentTimeStep + "," + currentHeatConsumption + "," + currentElectricityConsumption  + "," + 
+					soldHeat+ "," + boughtHeat+ "," + soldElectricity+ "," + boughtElectricity+ "," + paidDownPayments);
 			System.out.println("["+ name + "] Withdrawing released payments...");
 			TransactionReceipt receipt = contract.withdrawReleasedPayments().send();
 			List<LogWithdrawalSuccessfulEventResponse> withdrawalEvents = heatMarket.getLogWithdrawalSuccessfulEvents(receipt);
@@ -117,6 +146,7 @@ public abstract class Building extends BehaviorModel {
 			for(LogWithdrawalSuccessfulEventResponse withdrawalEvent : withdrawalEvents) {
 				timestepInfo.marketBalance = timestepInfo.marketBalance.add(withdrawalEvent.amount);
 			}
+			logger.print("," + timestepInfo.marketBalance);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -124,14 +154,10 @@ public abstract class Building extends BehaviorModel {
 		timestepInfo.marketBalance = timestepInfo.marketBalance.subtract(paidDownPayments);
 		System.out.println("["+ name + "] Market balance of previous timestep:  "
 				+ UnitHelper.printCents(timestepInfo.marketBalance) + ".");
-		System.out.println("["+ name + "] Bought " + boughtElectricity.toString() + " Ws(" + 
-				Double.toString(UnitHelper.getkWhfromWs(boughtElectricity)) + " kWh) of electricity. ");
-		System.out.println("["+ name + "] Bought " + boughtHeat.toString() + " Ws(" + 
-				Double.toString(UnitHelper.getkWhfromWs(boughtHeat)) + " kWh) of heat. ");
-		System.out.println("["+ name + "] Sold " + soldHeat.toString() + " Ws(" + 
-				Double.toString(UnitHelper.getkWhfromWs(soldHeat)) + " kWh) of heat.");	
-		System.out.println("["+ name + "] Sold " + soldElectricity.toString() + " Ws(" + 
-				Double.toString(UnitHelper.getkWhfromWs(soldHeat)) + " kWh) of electricity.");			
+		System.out.println("["+ name + "] Bought " + UnitHelper.printAmount(boughtElectricity) + " of electricity. ");
+		System.out.println("["+ name + "] Bought " + UnitHelper.printAmount(boughtHeat) + " of heat. ");
+		System.out.println("["+ name + "] Sold " + UnitHelper.printAmount(soldElectricity) + "of electricity.");	
+		System.out.println("["+ name + "] Sold " + UnitHelper.printAmount(soldHeat)+ " of heat.");			
 	}
 
 	@Override
@@ -227,6 +253,7 @@ public abstract class Building extends BehaviorModel {
 						amounts,
 						downpayment
 				).send();	
+				break;
 			case ELECTRICITY:
 				receipt = contract.postElectricityDemand(
 						prices,
@@ -253,7 +280,8 @@ public abstract class Building extends BehaviorModel {
 				receipt = contract.postHeatOffer(
 						prices,
 						amounts
-				).send();	
+				).send();
+				break;
 			case ELECTRICITY:
 				receipt = contract.postElectricityOffer(
 						prices,
@@ -280,5 +308,4 @@ public abstract class Building extends BehaviorModel {
 		System.out.println("[" + name + "] Demanding " + UnitHelper.printAmount(wattSeconds) + " of " + (market == Market.ELECTRICITY ? "electricity" : "heat") + " for max. " + 
 				Double.toString(centsPerKwh) + " ct/kWh.");
 	}
-
 }

@@ -13,6 +13,8 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.utils.Async;
 
+import com.google.gson.Gson;
+
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
@@ -24,6 +26,7 @@ import ethereum.contracts.IntegratedEnergyMarket;
 import ethereum.contracts.DoubleSidedAuctionMarket.LogOfferConfirmedEventResponse;
 import ethereum.helper.UnitHelper;
 import ethereum.messages.TimestepInfo;
+import memap.external.M2MDisplay;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 

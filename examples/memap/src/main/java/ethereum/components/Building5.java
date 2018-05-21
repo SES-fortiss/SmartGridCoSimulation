@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.netlib.util.booleanW;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import ethereum.Simulation;
@@ -22,8 +23,6 @@ public class Building5 extends Building {
 //	private BigInteger gasboilerPower = BigInteger.valueOf(40000); //W
 //	private BigInteger gasboilerPrice;
 	
-	private BigInteger currentElectricityConsumption = BigInteger.ZERO;
-	private BigInteger currentHeatConsumption = BigInteger.ZERO;
 	private BigInteger stateOfCharge = BigInteger.ZERO;
 	private BigInteger currentSTProduction = BigInteger.ZERO;
 	private double stEfficiency = .5;
@@ -52,11 +51,14 @@ public class Building5 extends Building {
 		chpElectricityProduction = UnitHelper.getWSfromKWH(20).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
 		chpHeatCost = UnitHelper.getCentsPerWsFromCents(5.2/0.6);
 		chpElectricityCost = UnitHelper.getCentsPerWsFromCents(5.2/0.25);
+		logger.print(",solarThermal,chpCost,chpHeatProduction,chpElectricityProduction,fromThermalStorage,toThermalStorage,stateOfCharge,excessHeat,lackingHeat,excessElectricity,electricityLack");
+		logger.println();
 	}
 
 	@Override
 	public void makeDecision() {
 		super.makeDecision();
+		logger.print("," + currentSTProduction);
 		
 		BigInteger heatToProduce = currentHeatConsumption.add(soldHeat).subtract(boughtHeat);
 		BigInteger excessHeat = currentSTProduction.subtract(heatToProduce).max(BigInteger.ZERO);
@@ -78,8 +80,9 @@ public class Building5 extends Building {
 
 		BigInteger electricityToProduce = currentElectricityConsumption.add(soldElectricity).subtract(boughtElectricity);	
 		BigInteger excessElectricity = BigInteger.ZERO;
-
+		boolean isChpOn = false;
 		if(isGreaterZero(heatToProduce) || isGreaterZero(electricityToProduce)) {
+			isChpOn = true;
 			System.out.println("[" + name + "] CHP: On. Producing " + UnitHelper.printAmount(chpHeatProduction) + " of heat"
 					+ " and " + UnitHelper.printAmount(chpElectricityProduction) + " of electricity.");
 			excessHeat = chpHeatProduction.subtract(heatToProduce).max(BigInteger.ZERO);
@@ -89,6 +92,10 @@ public class Building5 extends Building {
 		} else {
 			System.out.println("[" + name + "] CHP: Off.");
 		}
+		logger.print("," + timestepInfo.cost);
+		logger.print("," + (isChpOn ? chpHeatProduction : 0));
+		logger.print("," + (isChpOn ? chpElectricityProduction : 0));
+		logger.print("," + fromStorage);
 		BigInteger toStorage = capacity.subtract(stateOfCharge).min(maxInOut).min(excessHeat);		
 		if(isGreaterZero(toStorage)) {
 			stateOfCharge = stateOfCharge.add(toStorage);
@@ -96,24 +103,28 @@ public class Building5 extends Building {
 			System.out.println("[" + name + "] Feeding " + UnitHelper.printAmount(toStorage)
 					+ "  into thermal storage, leaving state of charge at " + UnitHelper.printAmount(stateOfCharge) + ".");
 		}
-
+		logger.print("," + toStorage);
+		logger.print("," + stateOfCharge);
 		if(isGreaterZero(excessHeat)) {
 			System.out.println("[" + name + "] Excess heat: " + UnitHelper.printAmount(excessHeat));
 			timestepInfo.heatFeedIn = excessHeat;
 		}
+		logger.print("," + excessHeat);
 		if(isGreaterZero(heatToProduce)) {
 			System.out.println("[" + name + "] Lacking heat : " + UnitHelper.printAmount(heatToProduce));
 			timestepInfo.heatWithdrawal = heatToProduce;
 		}
+		logger.print("," + heatToProduce);
 
 		if(isGreaterZero(excessElectricity)) {
 			System.out.println("[" + name + "] Excess electricity: " + UnitHelper.printAmount(excessElectricity));
 			timestepInfo.electricityFeedIn = excessElectricity;
 		}
-		if(isGreaterZero(electricityToProduce)) {
+		if(isGreaterZero(excessElectricity)) {
 			System.out.println("[" + name + "] Lacking electricity : " + UnitHelper.printAmount(electricityToProduce));
 			timestepInfo.electricityWithdrawal = electricityToProduce;
 		}
+		logger.print("," + electricityToProduce);
 		
 		BigInteger nextHeatConsumption = consumptionProfiles.getHeatConsumption(
 				consumerIndex,
@@ -133,7 +144,7 @@ public class Building5 extends Building {
 					);
 
 		System.out.println("[" + name + "] Expected heat consumption for next step: " + UnitHelper.printAmount(nextHeatConsumption));
-		System.out.println("[" + name + "] Expected electricity consumption for next step: " + UnitHelper.printAmount(nextHeatConsumption));
+		System.out.println("[" + name + "] Expected electricity consumption for next step: " + UnitHelper.printAmount(nextElectricityConsumption));
 		System.out.println("[" + name + "] Expected solar thermal production for next step: " + UnitHelper.printAmount(nextSTProduction));
 
 		BigInteger chpUniqueHeatPrice = findUniqueDemandPrice(chpHeatCost, Market.HEAT);
@@ -173,6 +184,7 @@ public class Building5 extends Building {
 		currentElectricityConsumption = nextElectricityConsumption;
 		currentHeatConsumption = nextHeatConsumption;
 		currentSTProduction = nextSTProduction;
+		logger.println();
 	}
 
 }
