@@ -153,10 +153,10 @@ public abstract class Building extends BehaviorModel {
 		}
 		timestepInfo.marketBalance = timestepInfo.marketBalance.subtract(paidDownPayments);
 		System.out.println("["+ name + "] Market balance of previous timestep:  "
-				+ UnitHelper.printCents(timestepInfo.marketBalance) + ".");
+				+ timestepInfo.marketBalance.doubleValue()/10000000000000000.0 + "ct.");
 		System.out.println("["+ name + "] Bought " + UnitHelper.printAmount(boughtElectricity) + " of electricity. ");
 		System.out.println("["+ name + "] Bought " + UnitHelper.printAmount(boughtHeat) + " of heat. ");
-		System.out.println("["+ name + "] Sold " + UnitHelper.printAmount(soldElectricity) + "of electricity.");	
+		System.out.println("["+ name + "] Sold " + UnitHelper.printAmount(soldElectricity) + " of electricity.");	
 		System.out.println("["+ name + "] Sold " + UnitHelper.printAmount(soldHeat)+ " of heat.");			
 	}
 

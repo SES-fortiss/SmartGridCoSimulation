@@ -136,12 +136,12 @@ public class Building3 extends Building {
 		
 		heatDemandAmounts.add(toStorage);
 		heatDemandAmounts.add(nextHeatConsumption);
-		BigInteger heatPrice1 = findUniqueDemandPrice(electricityToHeat(UnitHelper.getCentsPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE)), Market.HEAT);
-		BigInteger heatPrice2 = findUniqueDemandPrice(electricityToHeat(UnitHelper.getCentsPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE)), Market.HEAT);
+		BigInteger heatPrice1 = findUniqueDemandPrice(electricityToHeat(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE)), Market.HEAT);
+		BigInteger heatPrice2 = findUniqueDemandPrice(electricityToHeat(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE)), Market.HEAT);
 		heatDemandPrices.add(heatPrice1);
 		heatDemandPrices.add(heatPrice2);
-		logDemand(toStorage, UnitHelper.getCentsFromCentUnits(heatPrice1), Market.HEAT);
-		logDemand(nextHeatConsumption, UnitHelper.getCentsFromCentUnits(heatPrice2), Market.HEAT);
+		logDemand(toStorage, UnitHelper.getCentsPerKwhFromEtherPerWs(heatPrice1), Market.HEAT);
+		logDemand(nextHeatConsumption, UnitHelper.getCentsPerKwhFromEtherPerWs(heatPrice2), Market.HEAT);
 		postDemand(heatDemandPrices, heatDemandAmounts, Market.HEAT);
 
 		BigInteger heatToOffer = capacity.add(nextHeatConsumption).add(stateOfCharge).min(maxInOut);
@@ -152,7 +152,7 @@ public class Building3 extends Building {
 			}
 			heatOfferPrices.add(heatPrice2);
 			heatOfferAmounts.add(heatToOffer.mod(BigInteger.valueOf(1000000)));
-			logOffer(heatToOffer, UnitHelper.getCentsFromCentUnits(heatPrice2), Market.HEAT);
+			logOffer(heatToOffer, UnitHelper.getCentsPerKwhFromEtherPerWs(heatPrice2), Market.HEAT);
 			postOffer(heatOfferPrices, heatOfferAmounts, Market.HEAT);
 		}
 
@@ -163,17 +163,17 @@ public class Building3 extends Building {
 		electricityToProduce = nextElectricityConsumption.subtract(nextPVProduction).max(BigInteger.ZERO);
 		excessElectricity = nextPVProduction.subtract(nextElectricityConsumption).max(BigInteger.ZERO);
 		if(isGreaterZero(electricityToProduce)) {
-			electricityDemandPrices.add(UnitHelper.getCentsPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE));
+			electricityDemandPrices.add(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE));
 			electricityDemandAmounts.add(electricityToProduce);
 			logDemand(electricityToProduce, Simulation.ELECTRICITY_MAX_PRICE, Market.ELECTRICITY);
 			postDemand(electricityDemandPrices, electricityDemandAmounts, Market.ELECTRICITY);
 		}
 		if(isGreaterZero(excessElectricity)) {
 			for(int i = 0; i < excessElectricity.intValue() / 1000000; i++) {
-				electricityOfferPrices.add(UnitHelper.getCentsPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE));
+				electricityOfferPrices.add(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE));
 				electricityOfferAmounts.add(BigInteger.valueOf(1000000));
 			}
-			electricityOfferPrices.add(UnitHelper.getCentsPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE));
+			electricityOfferPrices.add(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE));
 			electricityOfferAmounts.add(excessElectricity.mod(BigInteger.valueOf(1000000)));
 
 			logOffer(excessElectricity, Simulation.ELECTRICITY_MIN_PRICE, Market.ELECTRICITY);

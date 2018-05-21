@@ -47,10 +47,10 @@ public class Building5 extends Building {
 				.multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
 //		gasboilerPrice = UnitConverter.getCentsPerWsFromCents(5.2);
 		capacity = UnitHelper.getWSfromKWH(100);
-		chpHeatProduction = UnitHelper.getWSfromKWH(80).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
-		chpElectricityProduction = UnitHelper.getWSfromKWH(20).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
-		chpHeatCost = UnitHelper.getCentsPerWsFromCents(5.2/0.6);
-		chpElectricityCost = UnitHelper.getCentsPerWsFromCents(5.2/0.25);
+		chpHeatProduction = BigInteger.valueOf(80000).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
+		chpElectricityProduction = BigInteger.valueOf(20000).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
+		chpHeatCost = UnitHelper.getEtherPerWsFromCents(5.2/0.6);
+		chpElectricityCost = UnitHelper.getEtherPerWsFromCents(5.2/0.25);
 		logger.print(",solarThermal,chpCost,chpHeatProduction,chpElectricityProduction,fromThermalStorage,toThermalStorage,stateOfCharge,excessHeat,lackingHeat,excessElectricity,electricityLack");
 		logger.println();
 	}
@@ -152,7 +152,7 @@ public class Building5 extends Building {
 		BigInteger lackingHeat = nextHeatConsumption.subtract(nextSTProduction).subtract(fromStorage).max(BigInteger.ZERO);
 		
 		if(isGreaterZero(lackingHeat)) {
-			logDemand(lackingHeat, UnitHelper.getCentsFromCentUnits(chpUniqueHeatPrice), Market.HEAT);
+			logDemand(lackingHeat, UnitHelper.getCentsPerKwhFromEtherPerWs(chpUniqueHeatPrice), Market.HEAT);
 			postDemand(
 					Arrays.asList(chpUniqueHeatPrice),
 					Arrays.asList(lackingHeat),
@@ -160,7 +160,7 @@ public class Building5 extends Building {
 				);
 		}
 		BigInteger heatOfferAmount = chpHeatProduction.add(fromStorage);
-		logOffer(heatOfferAmount, UnitHelper.getCentsFromCentUnits(chpUniqueHeatPrice), Market.HEAT);
+		logOffer(heatOfferAmount, UnitHelper.getCentsPerKwhFromEtherPerWs(chpUniqueHeatPrice), Market.HEAT);
 		postOffer(Arrays.asList(chpUniqueHeatPrice), Arrays.asList(heatOfferAmount), Market.HEAT);
 
 		ArrayList<BigInteger> electricityDemandPrices = new ArrayList<BigInteger>();
@@ -170,10 +170,10 @@ public class Building5 extends Building {
 		if(isGreaterZero(electricityToProduce)) {
 			electricityDemandPrices.add(chpUniqueElectricityPrice);
 			electricityDemandAmounts.add(electricityToProduce);
-			logDemand(electricityToProduce, UnitHelper.getCentsFromCentUnits(chpUniqueElectricityPrice), Market.ELECTRICITY);
+			logDemand(electricityToProduce, UnitHelper.getCentsPerKwhFromEtherPerWs(chpUniqueElectricityPrice), Market.ELECTRICITY);
 			electricityToProduce = nextElectricityConsumption.subtract(chpElectricityProduction);
 			if(isGreaterZero(electricityToProduce)) {
-				electricityDemandPrices.add(UnitHelper.getCentsPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE));
+				electricityDemandPrices.add(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE));
 				electricityDemandAmounts.add(electricityToProduce);
 				logDemand(electricityToProduce, Simulation.ELECTRICITY_MAX_PRICE, Market.ELECTRICITY);
 			}

@@ -43,10 +43,10 @@ public class Building4 extends Building {
 				.multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
 //		gasboilerPrice = UnitConverter.getCentsPerWsFromCents(5.2);
 		capacity = UnitHelper.getWSfromKWH(100);
-		chpHeatProduction = UnitHelper.getWSfromKWH(80).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
-		chpElectricityProduction = UnitHelper.getWSfromKWH(20).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
-		chpHeatCost = UnitHelper.getCentsPerWsFromCents(5.2/0.6);
-		chpElectricityCost = UnitHelper.getCentsPerWsFromCents(5.2/0.25);
+		chpHeatProduction = BigInteger.valueOf(80000).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
+		chpElectricityProduction = BigInteger.valueOf(20000).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
+		chpHeatCost = UnitHelper.getEtherPerWsFromCents(5.2/0.6);
+		chpElectricityCost = UnitHelper.getEtherPerWsFromCents(5.2/0.25);
 		logger.print(",chpCost,chpHeatProduction,chpElectricityProduction,fromThermalStorage,toThermalStorage,stateOfCharge,excessHeat,lackingHeat,excessElectricity,electricityLack");
 		logger.println();
 	}
@@ -133,9 +133,9 @@ public class Building4 extends Building {
 
 
 		BigInteger heatDemandPrice = findUniqueDemandPrice(chpHeatCost, Market.HEAT);
-		logDemand(nextHeatConsumption, UnitHelper.getCentsFromCentUnits(heatDemandPrice), Market.HEAT);
+		logDemand(nextHeatConsumption, UnitHelper.getCentsPerKwhFromEtherPerWs(heatDemandPrice), Market.HEAT);
 		postDemand(Arrays.asList(heatDemandPrice), Arrays.asList(nextHeatConsumption), Market.HEAT);
-		logOffer(chpHeatProduction, UnitHelper.getCentsFromCentUnits(heatDemandPrice), Market.HEAT);
+		logOffer(chpHeatProduction, UnitHelper.getCentsPerKwhFromEtherPerWs(heatDemandPrice), Market.HEAT);
 		postOffer(Arrays.asList(heatDemandPrice), Arrays.asList(chpHeatProduction), Market.HEAT);
 
 		ArrayList<BigInteger> electricityDemandPrices = new ArrayList<BigInteger>();
@@ -145,17 +145,17 @@ public class Building4 extends Building {
 		if(isGreaterZero(electricityToProduce)) {
 			electricityDemandPrices.add(chpUniquePrice);
 			electricityDemandAmounts.add(electricityToProduce);
-			logDemand(electricityToProduce, UnitHelper.getCentsFromCentUnits(chpUniquePrice), Market.ELECTRICITY);
+			logDemand(electricityToProduce, UnitHelper.getCentsPerKwhFromEtherPerWs(chpUniquePrice), Market.ELECTRICITY);
 			electricityToProduce = nextElectricityConsumption.subtract(chpElectricityProduction);
 			if(isGreaterZero(electricityToProduce)) {
-				electricityDemandPrices.add(UnitHelper.getCentsPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE));
+				electricityDemandPrices.add(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE));
 				electricityDemandAmounts.add(electricityToProduce);
 				logDemand(electricityToProduce, Simulation.ELECTRICITY_MAX_PRICE, Market.ELECTRICITY);
 			}
 			postDemand(electricityDemandPrices, electricityDemandAmounts, Market.ELECTRICITY);	
 		}
 
-		logOffer(chpElectricityProduction, UnitHelper.getCentsFromCentUnits(chpUniquePrice), Market.ELECTRICITY);
+		logOffer(chpElectricityProduction, UnitHelper.getCentsPerKwhFromEtherPerWs(chpUniquePrice), Market.ELECTRICITY);
 		postOffer(Arrays.asList(chpUniquePrice), Arrays.asList(chpElectricityProduction), Market.ELECTRICITY);	
 
 		currentElectricityConsumption = nextElectricityConsumption;
