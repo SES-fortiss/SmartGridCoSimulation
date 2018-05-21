@@ -26,13 +26,10 @@ public class Simulation {
 	public static String contractAddress = "";
 	public static String heatMarketAddress = "";
 	public static String electricityMarketAddress = "";
-	public static final double ELECTRICITY_MAX_PRICE = 25; //ct per kWh
-	public static final double ELECTRICITY_MIN_PRICE = 12; //ct per kWh
+	public static final double ELECTRICITY_MAX_PRICE = 28.69; //ct per kWh
+	public static final double ELECTRICITY_MIN_PRICE = 12.31; //ct per kWh
+	public static long timestamp;
 	
-	public static final int N_STEPS = 70;
-	public static final int N_DAYS = 7;
-	
-	public static final int TIMESTEPS_PER_ITERATION = N_STEPS;
 	public static final BigInteger TIMESTEP_DURATION_IN_SECONDS = 
 			BigInteger.valueOf(15*60);
 	
@@ -75,6 +72,7 @@ public class Simulation {
 			System.out.println("Heat market address: " + heatMarketAddress);
 			electricityMarketAddress = contract.electricityMarket().send();
 			System.out.println("Electricity market address: " + electricityMarketAddress);
+			timestamp = System.currentTimeMillis();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
