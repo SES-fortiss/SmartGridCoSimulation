@@ -5,8 +5,8 @@ import java.util.HashSet;
 import akka.basicActors.ActorOptions;
 import akka.basicActors.LoggingMode;
 import ethereum.components.Building1;
-import ethereum.components.Building2;
 import ethereum.components.Building3;
+import ethereum.components.Building2;
 import ethereum.components.Building4;
 import ethereum.components.Building5;
 import ethereum.components.Timekeeper;
@@ -115,7 +115,7 @@ public abstract class ActorFactory {
 	){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new Building2(name, rpcport, privateKey, consumptionProfiles, consumerIndex));	
+				new Building3(name, rpcport, privateKey, consumptionProfiles, consumerIndex));	
 		return result;
 	}
 	
@@ -127,7 +127,7 @@ public abstract class ActorFactory {
 	){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new Building3(name, rpcport, privateKey, consumptionProfiles, consumerIndex));	
+				new Building2(name, rpcport, privateKey, consumptionProfiles, consumerIndex));	
 		return result;
 	}
 	

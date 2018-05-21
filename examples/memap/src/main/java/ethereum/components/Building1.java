@@ -15,7 +15,7 @@ import ethereum.messages.TimestepInfo;
 public class Building1 extends Building {
 	
 	private BigInteger oilboilerPower = BigInteger.valueOf(40000); //W
-	private BigInteger oilboilerPrice = UnitHelper.getCentsPerWsFromCents(6.8);
+	private BigInteger oilboilerPrice = UnitHelper.getCentsPerWsFromCents(8.44);
 	
 	private BigInteger currentElectricityConsumption = BigInteger.ZERO;
 	private BigInteger currentHeatConsumption = BigInteger.ZERO;

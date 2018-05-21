@@ -1,10 +1,16 @@
 package ethereum.components;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import akka.systemActors.GlobalTime;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
+
 import ethereum.Simulation;
 import ethereum.helper.ConsumptionProfiles;
 import ethereum.helper.Market;
@@ -25,8 +31,7 @@ public class Building3 extends Building {
 	private BigInteger maxInOut; //Ws
 	private BigInteger capacity; //Ws
 	private double storageEfficiency = 1.;
-	private BigInteger gasboilerPower = BigInteger.valueOf(20000);
-	private BigInteger gasboilerPrice = UnitHelper.getCentsPerWsFromCents(5.2);
+	private BigInteger heatPumpPower = BigInteger.valueOf(20000);
 	
 	public Building3(
 			String name,
@@ -38,56 +43,46 @@ public class Building3 extends Building {
 		super(name, rpcport, privateKey, consumptionProfiles, consumerIndex);
 		maxInOut = BigInteger.valueOf((long) (5000 * storageEfficiency))
 				.multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
-		capacity = UnitHelper.getWSfromKWH(40);
+//		gasboilerPrice = UnitConverter.getCentsPerWsFromCents(5.2);
+		capacity = UnitHelper.getWSfromKWH(100);
 	}
 
 	@Override
 	public void makeDecision() {
 		super.makeDecision();
 
-		String gasboilerStatus = "off";
-		BigInteger gasboilerProduction = Simulation.TIMESTEP_DURATION_IN_SECONDS.multiply(gasboilerPower);
+		BigInteger heatPumpMaxProduction = Simulation.TIMESTEP_DURATION_IN_SECONDS.multiply(heatPumpPower);
 		
 		BigInteger heatToProduce = currentHeatConsumption.add(soldHeat);
 		heatToProduce = heatToProduce.subtract(boughtHeat); //never demand more heat than consumption+soldHeat --> always positive or zero
-		BigInteger excessHeat = BigInteger.ZERO;
+		BigInteger fromStorage = heatToProduce.min(stateOfCharge).min(maxInOut);
+		heatToProduce = heatToProduce.subtract(fromStorage);
+		stateOfCharge = stateOfCharge.subtract(fromStorage);
+		
+		BigInteger electricityToProduce = currentElectricityConsumption.add(soldElectricity).subtract(boughtElectricity);
+
+		BigInteger heatProduction = heatPumpMaxProduction.min(heatToProduce);
 		
 		if(isGreaterZero(heatToProduce)) {
-			gasboilerStatus = "on";
-			excessHeat = gasboilerProduction.subtract(heatToProduce).max(BigInteger.ZERO);
-			heatToProduce = heatToProduce.subtract(gasboilerProduction).max(BigInteger.ZERO);
-			timestepInfo.cost = timestepInfo.cost.add(gasboilerProduction.multiply(gasboilerPrice));
+			electricityToProduce = electricityToProduce.add(heatToElectricity(heatProduction)); // add electricity needed to produce necessary heating power
+			heatToProduce = heatToProduce.subtract(heatProduction);
 		}
 		
-		BigInteger electricityToProduce = currentElectricityConsumption.add(soldElectricity).subtract(boughtElectricity);		
-		
 		BigInteger excessElectricity = BigInteger.ZERO.max(
-				currentPVProduction.
+				boughtElectricity.
+				add(currentPVProduction).
 				subtract(electricityToProduce)
 			);
 		electricityToProduce = electricityToProduce.subtract(currentPVProduction).max(BigInteger.ZERO);
-		if(isGreaterZero(electricityToProduce)) {
-			BigInteger fromStorage = stateOfCharge.min(maxInOut).min(electricityToProduce);
-			stateOfCharge = stateOfCharge.subtract(fromStorage);
-			electricityToProduce = electricityToProduce.subtract(fromStorage);	
-			System.out.println("[" + name + "] Drawing " + UnitHelper.printAmount(fromStorage) +" from battery,"
-					+ " leaving state of charge at" + UnitHelper.printAmount(stateOfCharge) + ".");			
-		}
-		if(isGreaterZero(excessElectricity)) {
-			BigInteger toStorage = excessElectricity.min(maxInOut);
-			stateOfCharge = stateOfCharge.add(toStorage);
-			excessElectricity = excessElectricity.subtract(toStorage);
-			System.out.println("[" + name + "] Charging " + UnitHelper.printAmount(toStorage) + " into battery,"
-					+ " leaving state of charge at" + stateOfCharge + "Ws.");
-		}
-		System.out.println("[" + name + "] Gasboiler: " + gasboilerStatus + 
-				(gasboilerStatus.equals("on") ? ", producing " + UnitHelper.printAmount(gasboilerProduction) : ""  + "." ));		
-
-		if(isGreaterZero(excessHeat)) {
-			System.out.println("[" + name + "] Excess heat: " + UnitHelper.printAmount(excessHeat));
-			timestepInfo.heatFeedIn = excessHeat;
-		}
-		if(isGreaterZero(heatToProduce)) {
+		BigInteger maxHeatPumpProduction = electricityToHeat(excessElectricity).min(heatPumpMaxProduction);
+		BigInteger toStorage = capacity.subtract(stateOfCharge).min(maxInOut);
+		BigInteger charge = toStorage.min(maxHeatPumpProduction);
+		if(isGreaterZero(charge)) {
+			stateOfCharge = stateOfCharge.add(charge);
+			excessElectricity = excessElectricity.subtract(
+					heatToElectricity(charge));
+		}	
+		if(isGreaterZero(heatToProduce)) { //TODO heatToProduce
 			System.out.println("[" + name + "] Lacking heat : " + UnitHelper.printAmount(heatToProduce));
 			timestepInfo.heatWithdrawal = heatToProduce;
 		}
@@ -122,31 +117,43 @@ public class Building3 extends Building {
 		System.out.println("[" + name + "] Expected electricity consumption for next step: " + UnitHelper.printAmount(nextElectricityConsumption));
 		System.out.println("[" + name + "] Expected PV production for next step: " + UnitHelper.printAmount(nextPVProduction));
 
-		BigInteger heatDemandPrice = findUniqueDemandPrice(gasboilerPrice, Market.HEAT);
-		logDemand(nextHeatConsumption, UnitHelper.getCentsFromCentUnits(heatDemandPrice), Market.HEAT);
-		postDemand(Arrays.asList(heatDemandPrice), Arrays.asList(nextHeatConsumption), Market.HEAT);
-		logOffer(gasboilerProduction, UnitHelper.getCentsFromCentUnits(heatDemandPrice), Market.HEAT);
-		postOffer(Arrays.asList(heatDemandPrice), Arrays.asList(gasboilerProduction), Market.HEAT);
+		ArrayList<BigInteger> heatDemandPrices = new ArrayList<BigInteger>();
+		ArrayList<BigInteger> heatDemandAmounts = new ArrayList<BigInteger>();
+		ArrayList<BigInteger> heatOfferPrices = new ArrayList<BigInteger>();
+		ArrayList<BigInteger> heatOfferAmounts = new ArrayList<BigInteger>();
+		
+		heatDemandAmounts.add(toStorage);
+		heatDemandAmounts.add(nextHeatConsumption);
+		BigInteger heatPrice1 = findUniqueDemandPrice(electricityToHeat(UnitHelper.getCentsPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE)), Market.HEAT);
+		BigInteger heatPrice2 = findUniqueDemandPrice(electricityToHeat(UnitHelper.getCentsPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE)), Market.HEAT);
+		heatDemandPrices.add(heatPrice1);
+		heatDemandPrices.add(heatPrice2);
+		logDemand(toStorage, UnitHelper.getCentsFromCentUnits(heatPrice1), Market.HEAT);
+		logDemand(nextHeatConsumption, UnitHelper.getCentsFromCentUnits(heatPrice2), Market.HEAT);
+		postDemand(heatDemandPrices, heatDemandAmounts, Market.HEAT);
 
-		ArrayList<BigInteger> electricityOfferPrices = new ArrayList<BigInteger>();
-		ArrayList<BigInteger> electricityOfferAmounts = new ArrayList<BigInteger>();
+		BigInteger heatToOffer = capacity.add(nextHeatConsumption).add(stateOfCharge).min(maxInOut);
+		if(isGreaterZero(heatToOffer)) {
+			for(int i = 0; i < heatToOffer.intValue() / 1000000; i++) {
+				heatOfferPrices.add(heatPrice2);		
+				heatOfferAmounts.add(BigInteger.valueOf(1000000));
+			}
+			heatOfferPrices.add(heatPrice2);
+			heatOfferAmounts.add(heatToOffer.mod(BigInteger.valueOf(1000000)));
+			logOffer(heatToOffer, UnitHelper.getCentsFromCentUnits(heatPrice2), Market.HEAT);
+			postOffer(heatOfferPrices, heatOfferAmounts, Market.HEAT);
+		}
+
 		ArrayList<BigInteger> electricityDemandPrices = new ArrayList<BigInteger>();
 		ArrayList<BigInteger> electricityDemandAmounts = new ArrayList<BigInteger>();
-		BigInteger ownProduction = stateOfCharge.min(maxInOut).min(electricityToProduce).add(nextPVProduction);
-		BigInteger maxCharge = capacity.subtract(stateOfCharge).min(maxInOut);
-		electricityToProduce = nextElectricityConsumption.subtract(ownProduction).max(BigInteger.ZERO);
-		excessElectricity = ownProduction.subtract(nextElectricityConsumption).max(BigInteger.ZERO);
-		if(isGreaterZero(maxCharge)) {
-			electricityDemandPrices.add(UnitHelper.getCentsPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE));
-			electricityDemandAmounts.add(maxCharge);
-			logDemand(maxCharge, Simulation.ELECTRICITY_MIN_PRICE, Market.ELECTRICITY);
-		}
+		ArrayList<BigInteger> electricityOfferPrices = new ArrayList<BigInteger>();
+		ArrayList<BigInteger> electricityOfferAmounts = new ArrayList<BigInteger>();
+		electricityToProduce = nextElectricityConsumption.subtract(nextPVProduction).max(BigInteger.ZERO);
+		excessElectricity = nextPVProduction.subtract(nextElectricityConsumption).max(BigInteger.ZERO);
 		if(isGreaterZero(electricityToProduce)) {
 			electricityDemandPrices.add(UnitHelper.getCentsPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE));
 			electricityDemandAmounts.add(electricityToProduce);
 			logDemand(electricityToProduce, Simulation.ELECTRICITY_MAX_PRICE, Market.ELECTRICITY);
-		}
-		if(!electricityDemandPrices.isEmpty()) {	
 			postDemand(electricityDemandPrices, electricityDemandAmounts, Market.ELECTRICITY);
 		}
 		if(isGreaterZero(excessElectricity)) {
@@ -156,13 +163,22 @@ public class Building3 extends Building {
 			}
 			electricityOfferPrices.add(UnitHelper.getCentsPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE));
 			electricityOfferAmounts.add(excessElectricity.mod(BigInteger.valueOf(1000000)));
-			logOffer(excessElectricity, Simulation.ELECTRICITY_MIN_PRICE, Market.ELECTRICITY);		
+
+			logOffer(excessElectricity, Simulation.ELECTRICITY_MIN_PRICE, Market.ELECTRICITY);
 			postOffer(electricityOfferPrices, electricityOfferAmounts, Market.ELECTRICITY);
 		}
 
 		currentElectricityConsumption = nextElectricityConsumption;
 		currentHeatConsumption = nextHeatConsumption;
 		currentPVProduction = nextPVProduction;
+	}
+
+	private BigInteger electricityToHeat(BigInteger centsPerWs) {
+		return centsPerWs.multiply(BigInteger.TEN).divide(BigInteger.valueOf(38));
+	}
+
+	private BigInteger heatToElectricity(BigInteger centsPerWs) {
+		return centsPerWs.multiply(BigInteger.valueOf(38)).divide(BigInteger.TEN);
 	}
 
 }
