@@ -54,13 +54,14 @@ public abstract class Building extends BehaviorModel {
 	protected int consumerIndex;
 	protected TimestepInfo timestepInfo;
 	
-	protected BigInteger paidDownPayments = BigInteger.ZERO;
-	
+	protected BigInteger paidDownPayments = BigInteger.ZERO;	
 	protected PrintWriter logger;
 
 	protected BigInteger currentHeatConsumption = BigInteger.ZERO;
-
 	protected BigInteger currentElectricityConsumption = BigInteger.ZERO;
+	
+	protected BigInteger gasUsed = BigInteger.ZERO;
+	protected int failedPosts = 0;
 
 	public Building(
 			String name,
@@ -131,6 +132,8 @@ public abstract class Building extends BehaviorModel {
 	public void makeDecision() {
 		//TODO consider waiting random time up to one minute to achieve different orderings (unnecessary with current logic to check posted demands first)
 		timestepInfo = new TimestepInfo(name);
+		gasUsed = BigInteger.ZERO;
+		failedPosts = 0;
 		
 		try {
 			soldHeat = contract.getHeatToProduce().send();
@@ -141,17 +144,19 @@ public abstract class Building extends BehaviorModel {
 					soldHeat+ "," + boughtHeat+ "," + soldElectricity+ "," + boughtElectricity+ "," + paidDownPayments);
 			System.out.println("["+ name + "] Withdrawing released payments...");
 			TransactionReceipt receipt = contract.withdrawReleasedPayments().send();
+			gasUsed = gasUsed.add(receipt.getGasUsed());
 			List<LogWithdrawalSuccessfulEventResponse> withdrawalEvents = heatMarket.getLogWithdrawalSuccessfulEvents(receipt);
 			withdrawalEvents.addAll(electricityMarket.getLogWithdrawalSuccessfulEvents(receipt));
 			for(LogWithdrawalSuccessfulEventResponse withdrawalEvent : withdrawalEvents) {
 				timestepInfo.marketBalance = timestepInfo.marketBalance.add(withdrawalEvent.amount);
 			}
-			logger.print("," + timestepInfo.marketBalance);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		logger.print("," + timestepInfo.marketBalance);
 		timestepInfo.marketBalance = timestepInfo.marketBalance.subtract(paidDownPayments);
+		paidDownPayments = BigInteger.ZERO;
 		System.out.println("["+ name + "] Market balance of previous timestep:  "
 				+ timestepInfo.marketBalance.doubleValue()/10000000000000000.0 + "ct.");
 		System.out.println("["+ name + "] Bought " + UnitHelper.printAmount(boughtElectricity) + " of electricity. ");
@@ -262,7 +267,13 @@ public abstract class Building extends BehaviorModel {
 				).send();	
 			}
 			if(receipt != null) {
-				System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " demand posted: " + receipt.getTransactionHash());
+				gasUsed = gasUsed.add(receipt.getGasUsed());
+				if(receipt.getStatus().equals("0x1")){
+					System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " demand posted: " + receipt.getTransactionHash());
+				} else {
+					System.out.println(receipt.getTransactionHash() + " was not successful.");
+					failedPosts++;
+				}
 			}
 			paidDownPayments = paidDownPayments.add(downpayment);
 		} catch (Exception e2) {
@@ -289,7 +300,13 @@ public abstract class Building extends BehaviorModel {
 				).send();	
 			}
 			if(receipt != null) {
-				System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " offer posted: " + receipt.getTransactionHash());
+				gasUsed = gasUsed.add(receipt.getGasUsed());
+				if(receipt.getStatus().equals("0x1")){
+					System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " offer posted: " + receipt.getTransactionHash());
+				} else {
+					System.out.println(receipt.getTransactionHash() + " was not successful.");
+					failedPosts++;
+				}
 			}
 		} catch (Exception e2) {
 			// TODO Auto-generated catch block

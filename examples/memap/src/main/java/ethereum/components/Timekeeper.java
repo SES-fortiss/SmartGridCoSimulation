@@ -1,5 +1,9 @@
 package ethereum.components;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,6 +23,7 @@ import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
+import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import ethereum.Simulation;
 import ethereum.contracts.DoubleSidedAuctionMarket;
@@ -27,6 +32,7 @@ import ethereum.contracts.DoubleSidedAuctionMarket.LogOfferConfirmedEventRespons
 import ethereum.helper.UnitHelper;
 import ethereum.messages.TimestepInfo;
 import memap.external.M2MDisplay;
+import meritorder.helper.ReadMemapFiles;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -39,6 +45,7 @@ public class Timekeeper extends BehaviorModel {
 	private DoubleSidedAuctionMarket heatMarket;
 	private DoubleSidedAuctionMarket electricityMarket;
 	private HashMap<String, TimestepInfo> aggregatedBuildingInfos = new HashMap<>();
+	private PrintWriter logger;
 	
 	public Timekeeper(int rpcport) {
 		this.rpcport = rpcport;
@@ -53,6 +60,23 @@ public class Timekeeper extends BehaviorModel {
 		contract = IntegratedEnergyMarket.load(Simulation.contractAddress, web3j, credentials, BigInteger.ONE, BigInteger.valueOf(8000000));
 		heatMarket = DoubleSidedAuctionMarket.load(Simulation.heatMarketAddress, web3j, credentials, BigInteger.ONE, BigInteger.valueOf(8000000));
 		electricityMarket = DoubleSidedAuctionMarket.load(Simulation.electricityMarketAddress, web3j, credentials, BigInteger.ONE, BigInteger.valueOf(8000000));
+	
+		try {
+			String dest = "res/logs/" + Simulation.timestamp + "-Timekeeper.csv";			
+			String location = ReadMemapFiles.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			location = location.replace("%20", " ");
+			location = location.substring(0, location.length()-15);
+			location = location + dest;
+			new File(location);
+			FileWriter fr = new FileWriter(location, true);
+			logger = new PrintWriter(fr, true);
+		} catch (IOException e1) {
+				e1.printStackTrace();
+		}
+		
+		logger.print("timestep,startTime,numHeatDemands,numHeatOffers,numElectricityDemands,numElectricityOffers,clearingStartTime,clearingEndTime,clearingSuccessful,gasUsed,numOffersConfirmed,endTime");
+		logger.println();
+		logger.print("0," + System.currentTimeMillis() + ",");
 	}
 
 	@Override
@@ -94,6 +118,7 @@ public class Timekeeper extends BehaviorModel {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		logger.print(numHeatDemands + "," + numHeatOffers + "," + numElectricityDemands + "," + numElectricityOffers + ",");
 
 		System.out.println("[Timekeeper] " + numHeatDemands.toString() + " heat demands recorded.");
 		System.out.println("[Timekeeper] " + numHeatOffers.toString() + " heat offers recorded.");
@@ -107,10 +132,20 @@ public class Timekeeper extends BehaviorModel {
 		List<LogOfferConfirmedEventResponse> confirmedElectricityOffers = null;
 		
 		try {
+			logger.print(System.currentTimeMillis() + ",");
 			TransactionReceipt receipt = contract.nextTimestep().send();
+			logger.print(System.currentTimeMillis() + ",");
 			System.out.println("[Timekeeper] Transaction address: " + receipt.getTransactionHash());
 			confirmedHeatOffers = heatMarket.getLogOfferConfirmedEvents(receipt);
 			confirmedElectricityOffers = electricityMarket.getLogOfferConfirmedEvents(receipt);
+			if(receipt.getStatus().equals("0x1")) {
+				System.out.println("Market clearing successful.");
+				logger.print("yes,");
+			} else {
+				System.out.println("Market clearing NOT successful.");	
+				logger.print("no,");			
+			}
+			logger.print(receipt.getGasUsed() + ",");
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -128,8 +163,11 @@ public class Timekeeper extends BehaviorModel {
 					UnitHelper.printCents(confirmedElectricityOffer.price) + "/kWh."
 					);
 		}
+		logger.print(confirmedHeatOffers.size() + "," + System.currentTimeMillis() + ",");
+		logger.println();
+		logger.print(GlobalTime.currentTimeStep + "," + System.currentTimeMillis() + ",");
 	}
-
+	
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
 		// TODO Auto-generated method stub

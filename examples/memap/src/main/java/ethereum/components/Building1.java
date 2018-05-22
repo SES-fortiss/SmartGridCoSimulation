@@ -15,7 +15,7 @@ import ethereum.messages.TimestepInfo;
 public class Building1 extends Building {
 	
 	private BigInteger oilboilerPower = BigInteger.valueOf(40000); //W
-	private BigInteger oilboilerPrice = UnitHelper.getEtherPerWsFromCents(8.44);
+	private BigInteger oilboilerPrice = UnitHelper.getEtherPerWsFromCents(Simulation.OIL_PRICE);
 	
 	public Building1(
 			String name,
@@ -25,7 +25,7 @@ public class Building1 extends Building {
 			int consumerIndex
 	) {
 		super(name, rpcport, privateKey, consumptionProfiles, consumerIndex);
-		logger.print(",oilBoilerCost,oilboilerProduction,excessHeat,lackingHeat,electricityLack");
+		logger.print(",oilBoilerCost,oilboilerProduction,excessHeat,lackingHeat,electricityLack,gasUsed,failedPosts");
 		logger.println();
 	}
 
@@ -89,13 +89,14 @@ public class Building1 extends Building {
 			);
 
 		BigInteger heatDemandPrice = findUniqueDemandPrice(oilboilerPrice, Market.HEAT);
-		logDemand(nextHeatConsumption, UnitHelper.getCentsPerKwhFromEtherPerWs(heatDemandPrice), Market.HEAT);
+		logDemand(nextHeatConsumption, UnitHelper.getCentsPerKwhFromWeiPerWs(heatDemandPrice), Market.HEAT);
 		postDemand(Arrays.asList(heatDemandPrice), Arrays.asList(nextHeatConsumption), Market.HEAT);
-		logOffer(oilboilerProduction, UnitHelper.getCentsPerKwhFromEtherPerWs(heatDemandPrice), Market.HEAT);
+		logOffer(oilboilerProduction, UnitHelper.getCentsPerKwhFromWeiPerWs(heatDemandPrice), Market.HEAT);
 		postOffer(Arrays.asList(heatDemandPrice), Arrays.asList(oilboilerProduction), Market.HEAT);
 
 		currentElectricityConsumption = nextElectricityConsumption;
 		currentHeatConsumption = nextHeatConsumption;
+		logger.print("," + gasUsed + "," + failedPosts);
 		logger.println();
 	}
 

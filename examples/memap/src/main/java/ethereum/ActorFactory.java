@@ -115,7 +115,7 @@ public abstract class ActorFactory {
 	){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new Building3(name, rpcport, privateKey, consumptionProfiles, consumerIndex));	
+				new Building2(name, rpcport, privateKey, consumptionProfiles, consumerIndex));	
 		return result;
 	}
 	
@@ -127,7 +127,7 @@ public abstract class ActorFactory {
 	){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new Building2(name, rpcport, privateKey, consumptionProfiles, consumerIndex));	
+				new Building3(name, rpcport, privateKey, consumptionProfiles, consumerIndex));	
 		return result;
 	}
 	
