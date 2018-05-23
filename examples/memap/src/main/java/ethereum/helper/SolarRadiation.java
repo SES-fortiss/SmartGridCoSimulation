@@ -30,11 +30,12 @@ public class SolarRadiation {
 		if(!loaded) {
 			irridiation = new double[Simulation.NR_OF_ITERATIONS];
 			for(int i = 0; i < irridiation.length; i++) {
-				double hourOfDay = (timestep * Simulation.TIMESTEP_DURATION_IN_SECONDS.doubleValue()/3600) % 24;
+				double hourOfDay = (i * Simulation.TIMESTEP_DURATION_IN_SECONDS.doubleValue()/3600) % 24;
 				if(hourOfDay > 5 && hourOfDay < 21) {
-					return 0.1*Math.pow(Math.exp(-(hourOfDay-13.5)),2)/10*Math.random();
+					irridiation[i] = 0.1*Math.exp(-Math.pow((hourOfDay-13.5),2)/10)*Math.random();
 				}
 			}
+			loaded = true;
 		}
 		return irridiation[timestep];
 	}
