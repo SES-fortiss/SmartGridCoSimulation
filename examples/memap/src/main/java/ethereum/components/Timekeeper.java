@@ -95,7 +95,7 @@ public class Timekeeper extends BehaviorModel {
 
 	@Override
 	public void makeDecision() {
-		logger.print(SolarRadiation.getRadiation(0));
+		logger.print(SolarRadiation.getRadiation(GlobalTime.currentTimeStep));
 		for(BasicAnswer answer : answerListReceived) {
 			TimestepInfo newInfo = (TimestepInfo) answer.answerContent;
 			String name = newInfo.name;

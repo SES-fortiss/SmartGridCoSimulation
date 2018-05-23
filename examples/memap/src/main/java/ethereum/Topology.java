@@ -2,6 +2,7 @@ package ethereum;
 
 import akka.basicActors.ActorOptions;
 import ethereum.helper.ConsumptionProfiles;
+import ethereum.helper.SolarRadiation;
 import topology.ActorTopology;
 
 /**
@@ -42,6 +43,7 @@ public class Topology {
 		ActorTopology top = new ActorTopology(simulationName);		
 		top.addActor(simulationName, ActorFactory.createTimekeeper(port++));
 		ConsumptionProfiles consumptionProfiles = new ConsumptionProfiles(NR_OF_CONSUMERS);
+		SolarRadiation solarRadiation = new SolarRadiation();
 
 		String building1Name = "Building1";			
 		top.addActorAsChild(simulationName + "/" + building1Name, ActorFactory.createBuilding1(

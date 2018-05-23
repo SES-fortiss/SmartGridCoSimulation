@@ -21,8 +21,6 @@ import ethereum.helper.UnitHelper;
 public class Building5 extends Building {
 	
 	private final double QdotCHP = 80000.0;
-//	private BigInteger gasboilerPower = BigInteger.valueOf(40000); //W
-//	private BigInteger gasboilerPrice;
 	
 	private BigInteger stateOfCharge = BigInteger.ZERO;
 	private BigInteger currentSTProduction = BigInteger.ZERO;
