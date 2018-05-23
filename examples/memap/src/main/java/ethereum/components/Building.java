@@ -110,7 +110,7 @@ public abstract class Building extends BehaviorModel {
 			);
 	
 		try {
-			String dest = "res/logs/" + Simulation.timestamp + "-" + name + ".csv";			
+			String dest = "target/logs/" + Simulation.timestamp + "-" + name + ".csv";			
 			String location = ReadMemapFiles.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			location = location.replace("%20", " ");
 			location = location.substring(0, location.length()-15);
@@ -143,13 +143,13 @@ public abstract class Building extends BehaviorModel {
 			logger.print(GlobalTime.currentTimeStep + "," + currentHeatConsumption + "," + currentElectricityConsumption  + "," + 
 					soldHeat+ "," + boughtHeat+ "," + soldElectricity+ "," + boughtElectricity+ "," + paidDownPayments);
 			System.out.println("["+ name + "] Withdrawing released payments...");
-			TransactionReceipt receipt = contract.withdrawReleasedPayments().send();
-			gasUsed = gasUsed.add(receipt.getGasUsed());
-			List<LogWithdrawalSuccessfulEventResponse> withdrawalEvents = heatMarket.getLogWithdrawalSuccessfulEvents(receipt);
-			withdrawalEvents.addAll(electricityMarket.getLogWithdrawalSuccessfulEvents(receipt));
-			for(LogWithdrawalSuccessfulEventResponse withdrawalEvent : withdrawalEvents) {
-				timestepInfo.marketBalance = timestepInfo.marketBalance.add(withdrawalEvent.amount);
-			}
+//			TransactionReceipt receipt = contract.withdrawReleasedPayments().send();
+//			gasUsed = gasUsed.add(receipt.getGasUsed());
+//			List<LogWithdrawalSuccessfulEventResponse> withdrawalEvents = heatMarket.getLogWithdrawalSuccessfulEvents(receipt);
+//			withdrawalEvents.addAll(electricityMarket.getLogWithdrawalSuccessfulEvents(receipt));
+//			for(LogWithdrawalSuccessfulEventResponse withdrawalEvent : withdrawalEvents) {
+//				timestepInfo.marketBalance = timestepInfo.marketBalance.add(withdrawalEvent.amount);
+//			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -193,43 +193,44 @@ public abstract class Building extends BehaviorModel {
 
 
 	protected BigInteger findUniqueDemandPrice(BigInteger minPrice, Market market) {
-		int demandIndex = 0;
-		int numDemands = 0;
-		try {
-			switch (market) {
-			case HEAT:
-				numDemands = contract.numHeatDemands().send().intValue();
-				break;
-			case ELECTRICITY:
-				numDemands = contract.numElectricityDemands().send().intValue();
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		BigInteger currentPrice = BigInteger.ZERO;
-		BigInteger offerPrice = minPrice;
-		while(demandIndex < numDemands && 
-				currentPrice.compareTo(offerPrice) <= 0
-		) {
-			try {
-				switch (market) {
-				case HEAT:
-					currentPrice = heatMarket.demands(BigInteger.valueOf(demandIndex), BigInteger.ZERO).send();
-					break;
-				case ELECTRICITY:
-					currentPrice = electricityMarket.demands(BigInteger.valueOf(demandIndex), BigInteger.ZERO).send();
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			demandIndex++;
-			if(currentPrice.compareTo(offerPrice) == 0) {
-				offerPrice = offerPrice.add(BigInteger.ONE);
-			}
-		}
-		return offerPrice;
+//		int demandIndex = 0;
+//		int numDemands = 0;
+//		try {
+//			switch (market) {
+//			case HEAT:
+//				numDemands = contract.numHeatDemands().send().intValue();
+//				break;
+//			case ELECTRICITY:
+//				numDemands = contract.numElectricityDemands().send().intValue();
+//			}
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		BigInteger currentPrice = BigInteger.ZERO;
+//		BigInteger offerPrice = minPrice;
+//		while(demandIndex < numDemands && 
+//				currentPrice.compareTo(offerPrice) <= 0
+//		) {
+//			try {
+//				switch (market) {
+//				case HEAT:
+//					currentPrice = heatMarket.demands(BigInteger.valueOf(demandIndex), BigInteger.ZERO).send();
+//					break;
+//				case ELECTRICITY:
+//					currentPrice = electricityMarket.demands(BigInteger.valueOf(demandIndex), BigInteger.ZERO).send();
+//				}
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			demandIndex++;
+//			if(currentPrice.compareTo(offerPrice) == 0) {
+//				offerPrice = offerPrice.add(BigInteger.ONE);
+//			}
+//		}
+//		return offerPrice;
+		return BigInteger.ZERO;
 	}
 
 
@@ -247,82 +248,82 @@ public abstract class Building extends BehaviorModel {
 	}
 
 	protected void postDemand(List<BigInteger> prices, List<BigInteger> amounts, Market market) {
-		TransactionReceipt receipt = null;
-		BigInteger downpayment = calculateDownpayment(prices, amounts);
-		try {
-			System.out.println("[" + name + "] Posting " + (market == Market.HEAT ? "heat" : "electricity") + " demand...");
-			switch (market) {
-			case HEAT:
-				receipt = contract.postHeatDemand(
-						prices,
-						amounts,
-						downpayment
-				).send();	
-				break;
-			case ELECTRICITY:
-				receipt = contract.postElectricityDemand(
-						prices,
-						amounts,
-						downpayment
-				).send();	
-			}
-			if(receipt != null) {
-				gasUsed = gasUsed.add(receipt.getGasUsed());
-				if(receipt.getStatus().equals("0x1")){
-					System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " demand posted: " + receipt.getTransactionHash());
-				} else {
-					System.out.println(receipt.getTransactionHash() + " was not successful.");
-					failedPosts++;
-				}
-			}
-			paidDownPayments = paidDownPayments.add(downpayment);
-		} catch (Exception e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+//		TransactionReceipt receipt = null;
+//		BigInteger downpayment = calculateDownpayment(prices, amounts);
+//		try {
+//			System.out.println("[" + name + "] Posting " + (market == Market.HEAT ? "heat" : "electricity") + " demand...");
+//			switch (market) {
+//			case HEAT:
+//				receipt = contract.postHeatDemand(
+//						prices,
+//						amounts,
+//						downpayment
+//				).send();	
+//				break;
+//			case ELECTRICITY:
+//				receipt = contract.postElectricityDemand(
+//						prices,
+//						amounts,
+//						downpayment
+//				).send();	
+//			}
+//			if(receipt != null) {
+//				gasUsed = gasUsed.add(receipt.getGasUsed());
+//				if(receipt.getStatus().equals("0x1")){
+//					System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " demand posted: " + receipt.getTransactionHash());
+//				} else {
+//					System.out.println(receipt.getTransactionHash() + " was not successful.");
+//					failedPosts++;
+//				}
+//			}
+//			paidDownPayments = paidDownPayments.add(downpayment);
+//		} catch (Exception e2) {
+//			// TODO Auto-generated catch block
+//			e2.printStackTrace();
+//		}
 	}
 
 	protected void postOffer(List<BigInteger> prices, List<BigInteger> amounts, Market market) {
-		TransactionReceipt receipt = null;
-		try {
-			System.out.println("[" + name + "] Posting " + (market == Market.HEAT ? "heat" : "electricity") + " offer...");
-			switch (market) {
-			case HEAT:
-				receipt = contract.postHeatOffer(
-						prices,
-						amounts
-				).send();
-				break;
-			case ELECTRICITY:
-				receipt = contract.postElectricityOffer(
-						prices,
-						amounts
-				).send();	
-			}
-			if(receipt != null) {
-				gasUsed = gasUsed.add(receipt.getGasUsed());
-				if(receipt.getStatus().equals("0x1")){
-					System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " offer posted: " + receipt.getTransactionHash());
-				} else {
-					System.out.println(receipt.getTransactionHash() + " was not successful.");
-					failedPosts++;
-				}
-			}
-		} catch (Exception e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+//		TransactionReceipt receipt = null;
+//		try {
+//			System.out.println("[" + name + "] Posting " + (market == Market.HEAT ? "heat" : "electricity") + " offer...");
+//			switch (market) {
+//			case HEAT:
+//				receipt = contract.postHeatOffer(
+//						prices,
+//						amounts
+//				).send();
+//				break;
+//			case ELECTRICITY:
+//				receipt = contract.postElectricityOffer(
+//						prices,
+//						amounts
+//				).send();	
+//			}
+//			if(receipt != null) {
+//				gasUsed = gasUsed.add(receipt.getGasUsed());
+//				if(receipt.getStatus().equals("0x1")){
+//					System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " offer posted: " + receipt.getTransactionHash());
+//				} else {
+//					System.out.println(receipt.getTransactionHash() + " was not successful.");
+//					failedPosts++;
+//				}
+//			}
+//		} catch (Exception e2) {
+//			// TODO Auto-generated catch block
+//			e2.printStackTrace();
+//		}
 	}
 
 
 	protected void logOffer(BigInteger wattSeconds, double centsPerKwh, Market market) {
-		System.out.println("[" + name + "] Offering " + UnitHelper.printAmount(wattSeconds) + " of " + (market == Market.ELECTRICITY ? "electricity" : "heat") + " for " + 
-				Double.toString(centsPerKwh) + " ct/kWh.");
+//		System.out.println("[" + name + "] Offering " + UnitHelper.printAmount(wattSeconds) + " of " + (market == Market.ELECTRICITY ? "electricity" : "heat") + " for " + 
+//				Double.toString(centsPerKwh) + " ct/kWh.");
 	}
 
 
 	protected void logDemand(BigInteger wattSeconds, double centsPerKwh, Market market) {
-		System.out.println("[" + name + "] Demanding " + UnitHelper.printAmount(wattSeconds) + " of " + (market == Market.ELECTRICITY ? "electricity" : "heat") + " for max. " + 
-				Double.toString(centsPerKwh) + " ct/kWh.");
+//		System.out.println("[" + name + "] Demanding " + UnitHelper.printAmount(wattSeconds) + " of " + (market == Market.ELECTRICITY ? "electricity" : "heat") + " for max. " + 
+//				Double.toString(centsPerKwh) + " ct/kWh.");
 	}
 }

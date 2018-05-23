@@ -29,6 +29,7 @@ import ethereum.Simulation;
 import ethereum.contracts.DoubleSidedAuctionMarket;
 import ethereum.contracts.IntegratedEnergyMarket;
 import ethereum.contracts.DoubleSidedAuctionMarket.LogOfferConfirmedEventResponse;
+import ethereum.helper.SolarRadiation;
 import ethereum.helper.UnitHelper;
 import ethereum.messages.TimestepInfo;
 import memap.external.M2MDisplay;
@@ -62,7 +63,7 @@ public class Timekeeper extends BehaviorModel {
 		electricityMarket = DoubleSidedAuctionMarket.load(Simulation.electricityMarketAddress, web3j, credentials, BigInteger.ONE, BigInteger.valueOf(8000000));
 	
 		try {
-			String dest = "res/logs/" + Simulation.timestamp + "-Timekeeper.csv";			
+			String dest = "target/logs/" + Simulation.timestamp + "-Timekeeper.csv";			
 			String location = ReadMemapFiles.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			location = location.replace("%20", " ");
 			location = location.substring(0, location.length()-15);
@@ -73,8 +74,9 @@ public class Timekeeper extends BehaviorModel {
 		} catch (IOException e1) {
 				e1.printStackTrace();
 		}
-		
-		logger.print("timestep,startTime,numHeatDemands,numHeatOffers,numElectricityDemands,numElectricityOffers,clearingStartTime,clearingEndTime,clearingSuccessful,gasUsed,numOffersConfirmed,endTime");
+		logger.print("startBlock," + web3j.ethBlockNumber());
+		logger.print("timestep,startTime,irridiation,numHeatDemands,numHeatOffers,numElectricityDemands,numElectricityOffers,"
+				+ "clearingStartTime,clearingEndTime,clearingSuccessful,gasUsed,numOffersConfirmed,endTime,blockNumber");
 		logger.println();
 		logger.print("0," + System.currentTimeMillis() + ",");
 	}
@@ -93,7 +95,7 @@ public class Timekeeper extends BehaviorModel {
 
 	@Override
 	public void makeDecision() {
-		
+		logger.print(SolarRadiation.getRadiation(0));
 		for(BasicAnswer answer : answerListReceived) {
 			TimestepInfo newInfo = (TimestepInfo) answer.answerContent;
 			String name = newInfo.name;
@@ -163,7 +165,7 @@ public class Timekeeper extends BehaviorModel {
 					UnitHelper.printCents(confirmedElectricityOffer.price) + "/kWh."
 					);
 		}
-		logger.print(confirmedHeatOffers.size() + "," + System.currentTimeMillis() + ",");
+		logger.print(confirmedHeatOffers.size() + "," + System.currentTimeMillis() + "," + web3j.ethBlockNumber() + ",");
 		logger.println();
 		logger.print(GlobalTime.currentTimeStep + "," + System.currentTimeMillis() + ",");
 	}

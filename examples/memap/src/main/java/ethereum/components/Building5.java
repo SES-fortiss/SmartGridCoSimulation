@@ -144,7 +144,7 @@ public class Building5 extends Building {
 						(long) (SolarRadiation.getRadiation(GlobalTime.currentTimeStep + 1)
 								* stArea
 								* stEfficiency)
-					);
+					).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
 
 		System.out.println("[" + name + "] Expected heat consumption for next step: " + UnitHelper.printAmount(nextHeatConsumption));
 		System.out.println("[" + name + "] Expected electricity consumption for next step: " + UnitHelper.printAmount(nextElectricityConsumption));

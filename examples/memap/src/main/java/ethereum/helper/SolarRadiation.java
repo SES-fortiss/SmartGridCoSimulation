@@ -7,6 +7,9 @@ import ethereum.Simulation;
 
 public class SolarRadiation {
 	
+	private static double[] irridiation;
+	private static boolean loaded = false;
+	
 	/**
 	 * Returns the current solar radiation at a given point in time.
 	 * 
@@ -24,11 +27,16 @@ public class SolarRadiation {
 	 * @return solar radiation in kW/m�
 	 */
 	public static double getRadiation(int timestep) {
-		double hourOfDay = (timestep * Simulation.TIMESTEP_DURATION_IN_SECONDS.doubleValue()/3600) % 24;
-		if(hourOfDay > 5 && hourOfDay < 21) {
-			return 0.1*Math.pow(Math.exp(-(hourOfDay-13.5)),2)/10*Math.random();
+		if(!loaded) {
+			irridiation = new double[Simulation.NR_OF_ITERATIONS];
+			for(int i = 0; i < irridiation.length; i++) {
+				double hourOfDay = (timestep * Simulation.TIMESTEP_DURATION_IN_SECONDS.doubleValue()/3600) % 24;
+				if(hourOfDay > 5 && hourOfDay < 21) {
+					return 0.1*Math.pow(Math.exp(-(hourOfDay-13.5)),2)/10*Math.random();
+				}
+			}
 		}
-		else return 0.0;
+		return irridiation[timestep];
 	}
 
 }

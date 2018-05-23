@@ -36,7 +36,7 @@ public class Simulation {
 	public static final BigInteger TIMESTEP_DURATION_IN_SECONDS = 
 			BigInteger.valueOf(15*60);
 	
-	private static final int NR_OF_ITERATIONS = 96;
+	public static final int NR_OF_ITERATIONS = 96;
 	
 	//For the moment, the following 3 parameters need to stay as defined to match data input
 //	public static LocalDateTime startTime = LocalDateTime.of(2014,7,1,11,0);

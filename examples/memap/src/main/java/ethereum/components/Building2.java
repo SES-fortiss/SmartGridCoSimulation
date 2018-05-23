@@ -125,7 +125,7 @@ public class Building2 extends Building {
 						(long) (SolarRadiation.getRadiation(GlobalTime.currentTimeStep + 1)
 								* pvArea
 								* pvEfficiency)
-					);
+					).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
 		
 		BigInteger nextElectricityConsumption = consumptionProfiles.getElectricityConsumption(
 				consumerIndex,
