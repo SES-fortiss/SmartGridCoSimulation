@@ -129,20 +129,19 @@ public class Building5 extends Building {
 		
 		BigInteger nextHeatConsumption = consumptionProfiles.getHeatConsumption(
 				consumerIndex,
-				GlobalTime.currentTimeStep + 1
+				GlobalTime.currentTimeStep
 		);
 		
 		BigInteger nextElectricityConsumption = consumptionProfiles.getElectricityConsumption(
 				consumerIndex,
-				GlobalTime.currentTimeStep + 1
+				GlobalTime.currentTimeStep
 		);
 		
 		BigInteger nextSTProduction = 
 				BigInteger.valueOf(
-						(long) (SolarRadiation.getRadiation(GlobalTime.currentTimeStep + 1)
-								* stArea
-								* stEfficiency)
-					).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
+						(long) (SolarRadiation.getRadiation(GlobalTime.currentTimeStep)
+								* stArea*1000000000)
+						).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS).divide(BigInteger.valueOf(1000000000));
 
 		System.out.println("[" + name + "] Expected heat consumption for next step: " + UnitHelper.printAmount(nextHeatConsumption));
 		System.out.println("[" + name + "] Expected electricity consumption for next step: " + UnitHelper.printAmount(nextElectricityConsumption));

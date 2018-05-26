@@ -74,7 +74,13 @@ public class Timekeeper extends BehaviorModel {
 		} catch (IOException e1) {
 				e1.printStackTrace();
 		}
-		logger.print("startBlock," + web3j.ethBlockNumber());
+		try {
+			logger.print("startBlock," + web3j.ethBlockNumber().send().getBlockNumber());
+			logger.println();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		logger.print("timestep,startTime,irridiation,numHeatDemands,numHeatOffers,numElectricityDemands,numElectricityOffers,"
 				+ "clearingStartTime,clearingEndTime,clearingSuccessful,gasUsed,numOffersConfirmed,endTime,blockNumber");
 		logger.println();
@@ -95,7 +101,7 @@ public class Timekeeper extends BehaviorModel {
 
 	@Override
 	public void makeDecision() {
-		logger.print(SolarRadiation.getRadiation(GlobalTime.currentTimeStep));
+		logger.print(SolarRadiation.getRadiation(GlobalTime.currentTimeStep) + ",");
 		for(BasicAnswer answer : answerListReceived) {
 			TimestepInfo newInfo = (TimestepInfo) answer.answerContent;
 			String name = newInfo.name;
@@ -165,7 +171,12 @@ public class Timekeeper extends BehaviorModel {
 					UnitHelper.printCents(confirmedElectricityOffer.price) + "/kWh."
 					);
 		}
-		logger.print(confirmedHeatOffers.size() + "," + System.currentTimeMillis() + "," + web3j.ethBlockNumber() + ",");
+		logger.print(confirmedHeatOffers.size() + "," + System.currentTimeMillis() + ",");
+		try {
+			logger.print(web3j.ethBlockNumber().send().getBlockNumber() + "");
+		} catch (IOException e) {
+			logger.print("ERROR");
+		}
 		logger.println();
 		logger.print(GlobalTime.currentTimeStep + "," + System.currentTimeMillis() + ",");
 	}

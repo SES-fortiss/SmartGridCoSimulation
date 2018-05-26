@@ -121,12 +121,12 @@ public class Building4 extends Building {
 		
 		BigInteger nextHeatConsumption = consumptionProfiles.getHeatConsumption(
 				consumerIndex,
-				GlobalTime.currentTimeStep + 1
+				GlobalTime.currentTimeStep
 		);
 		
 		BigInteger nextElectricityConsumption = consumptionProfiles.getElectricityConsumption(
 				consumerIndex,
-				GlobalTime.currentTimeStep + 1
+				GlobalTime.currentTimeStep
 		);
 
 		System.out.println("[" + name + "] Expected heat consumption for next step: " + UnitHelper.printAmount(nextHeatConsumption));

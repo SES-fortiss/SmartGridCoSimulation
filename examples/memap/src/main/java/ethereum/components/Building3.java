@@ -71,21 +71,21 @@ public class Building3 extends Building {
 				subtract(electricityToProduce)
 			);
 		electricityToProduce = electricityToProduce.subtract(currentPVProduction).max(BigInteger.ZERO);
-		BigInteger maxHeatPumpProduction = electricityToHeat(excessElectricity).min(heatPumpMaxProduction);
-		BigInteger toStorage = capacity.subtract(stateOfCharge).min(maxInOut);
-		BigInteger charge = toStorage.min(maxHeatPumpProduction);
-		heatProduction = heatProduction.add(charge);
+		BigInteger maxHeatPumpProduction = electricityToHeat(excessElectricity).min(heatPumpMaxProduction.subtract(heatProduction));
+		BigInteger maxCharge = capacity.subtract(stateOfCharge).min(maxInOut);
+		BigInteger toStorage = maxCharge.min(maxHeatPumpProduction);
+		heatProduction = heatProduction.add(toStorage);
 		BigInteger electricityForHeatPump = BigInteger.ZERO;
-		if(isGreaterZero(charge)) {
-			stateOfCharge = stateOfCharge.add(charge);
-			electricityForHeatPump = heatToElectricity(charge);
+		if(isGreaterZero(toStorage)) {
+			stateOfCharge = stateOfCharge.add(toStorage);
+			electricityForHeatPump = heatToElectricity(toStorage);
 			excessElectricity = excessElectricity.subtract(
 					electricityForHeatPump);
 		}	
 		logger.print("," + electricityForHeatPump);
 		logger.print("," + heatProduction);
 		logger.print("," + fromStorage);
-		logger.print("," + charge);
+		logger.print("," + toStorage);
 		logger.print("," + stateOfCharge);
 		if(isGreaterZero(heatToProduce)) {
 			System.out.println("[" + name + "] Lacking heat : " + UnitHelper.printAmount(heatToProduce));
@@ -106,19 +106,18 @@ public class Building3 extends Building {
 		
 		BigInteger nextHeatConsumption = consumptionProfiles.getHeatConsumption(
 				consumerIndex,
-				GlobalTime.currentTimeStep + 1
+				GlobalTime.currentTimeStep
 		);
 		
 		BigInteger nextPVProduction = 
 				BigInteger.valueOf(
-						(long) (SolarRadiation.getRadiation(GlobalTime.currentTimeStep + 1)
-								* pvArea
-								* pvEfficiency)
-					).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
+						(long) (SolarRadiation.getRadiation(GlobalTime.currentTimeStep)
+								* pvArea *1000000000)
+						).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS).divide(BigInteger.valueOf(1000000000));
 		
 		BigInteger nextElectricityConsumption = consumptionProfiles.getElectricityConsumption(
 				consumerIndex,
-				GlobalTime.currentTimeStep + 1
+				GlobalTime.currentTimeStep
 		);
 		
 		System.out.println("[" + name + "] Expected heat consumption for next step: " + UnitHelper.printAmount(nextHeatConsumption));
@@ -130,17 +129,17 @@ public class Building3 extends Building {
 		ArrayList<BigInteger> heatOfferPrices = new ArrayList<BigInteger>();
 		ArrayList<BigInteger> heatOfferAmounts = new ArrayList<BigInteger>();
 		
-		heatDemandAmounts.add(toStorage);
+		heatDemandAmounts.add(maxCharge);
 		heatDemandAmounts.add(nextHeatConsumption);
 		BigInteger heatPrice1 = findUniqueDemandPrice(electricityToHeat(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE)), Market.HEAT);
 		BigInteger heatPrice2 = findUniqueDemandPrice(electricityToHeat(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE)), Market.HEAT);
 		heatDemandPrices.add(heatPrice1);
 		heatDemandPrices.add(heatPrice2);
-		logDemand(toStorage, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice1), Market.HEAT);
+		logDemand(maxCharge, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice1), Market.HEAT);
 		logDemand(nextHeatConsumption, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice2), Market.HEAT);
 		postDemand(heatDemandPrices, heatDemandAmounts, Market.HEAT);
 
-		BigInteger heatToOffer = capacity.add(nextHeatConsumption).add(stateOfCharge).min(maxInOut);
+		BigInteger heatToOffer = stateOfCharge.min(maxInOut).add(heatPumpMaxProduction);
 		
 		if(isGreaterZero(heatToOffer)) {
 			int i = 0;

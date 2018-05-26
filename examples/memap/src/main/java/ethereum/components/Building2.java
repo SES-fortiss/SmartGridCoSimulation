@@ -117,19 +117,18 @@ public class Building2 extends Building {
 		
 		BigInteger nextHeatConsumption = consumptionProfiles.getHeatConsumption(
 				consumerIndex,
-				GlobalTime.currentTimeStep + 1
+				GlobalTime.currentTimeStep
 		);
 		
 		BigInteger nextPVProduction = 
 				BigInteger.valueOf(
-						(long) (SolarRadiation.getRadiation(GlobalTime.currentTimeStep + 1)
-								* pvArea
-								* pvEfficiency)
-					).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
+						(long) (SolarRadiation.getRadiation(GlobalTime.currentTimeStep)
+								* pvArea*1000000000)
+					).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS).divide(BigInteger.valueOf(1000000000));
 		
 		BigInteger nextElectricityConsumption = consumptionProfiles.getElectricityConsumption(
 				consumerIndex,
-				GlobalTime.currentTimeStep + 1
+				GlobalTime.currentTimeStep
 		);
 		
 		System.out.println("[" + name + "] Expected heat consumption for next step: " + UnitHelper.printAmount(nextHeatConsumption));
@@ -150,8 +149,9 @@ public class Building2 extends Building {
 		BigInteger maxCharge = capacity.subtract(stateOfCharge).min(maxInOut);
 		electricityToProduce = nextElectricityConsumption.subtract(ownProduction).max(BigInteger.ZERO);
 		excessElectricity = ownProduction.subtract(nextElectricityConsumption).max(BigInteger.ZERO);
+		BigInteger uniqueMinPrice = findUniqueDemandPrice(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE), Market.HEAT);
 		if(isGreaterZero(maxCharge)) {
-			electricityDemandPrices.add(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE));
+			electricityDemandPrices.add(uniqueMinPrice);
 			electricityDemandAmounts.add(maxCharge);
 			logDemand(maxCharge, Simulation.ELECTRICITY_MIN_PRICE, Market.ELECTRICITY);
 		}
@@ -170,13 +170,13 @@ public class Building2 extends Building {
 			while(i <= excessElectricity.divide(UnitHelper.QUARTER_KWH).intValue()) {
 				int j = 0;
 				while(j < 5 && i < excessElectricity.divide(UnitHelper.QUARTER_KWH).intValue()) {
-					electricityOfferPrices.add(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE));
+					electricityOfferPrices.add(uniqueMinPrice);
 					electricityOfferAmounts.add(UnitHelper.QUARTER_KWH);
 					j++;
 					i++;
 				}
 				if(j < 5) {
-					electricityOfferPrices.add(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE));
+					electricityOfferPrices.add(uniqueMinPrice);
 					electricityOfferAmounts.add(excessElectricity.mod(UnitHelper.QUARTER_KWH));	
 					i++;
 				}	
