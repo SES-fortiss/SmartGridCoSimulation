@@ -138,7 +138,7 @@ public class Building5 extends Building {
 		);
 		
 		BigInteger nextSTProduction = 
-				BigInteger.valueOf(
+				UnitHelper.getWSfromKWH(
 						(long) (SolarRadiation.getRadiation(GlobalTime.currentTimeStep)
 								* stArea*1000000000)
 						).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS).divide(BigInteger.valueOf(1000000000));
