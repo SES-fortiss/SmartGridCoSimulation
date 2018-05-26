@@ -82,7 +82,7 @@ public class Building4 extends Building {
 		} else {
 			System.out.println("[" + name + "] CHP: Off.");
 		}
-		logger.print("," + timestepInfo.cost);
+		logger.print("," + UnitHelper.getEtherPerWsFromCents(Simulation.GAS_PRICE).multiply(UnitHelper.getWSfromKWH(QdotCHP)));
 		logger.print("," + (isChpOn ? chpHeatProduction : 0));
 		logger.print("," + (isChpOn ? chpElectricityProduction : 0));
 		logger.print("," + fromStorage);
