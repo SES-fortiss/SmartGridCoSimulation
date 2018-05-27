@@ -146,7 +146,6 @@ public abstract class Building extends BehaviorModel {
 			TransactionReceipt receipt = contract.withdrawReleasedPayments().send();
 			gasUsed = gasUsed.add(receipt.getGasUsed());
 			List<LogWithdrawalSuccessfulEventResponse> withdrawalEvents = heatMarket.getLogWithdrawalSuccessfulEvents(receipt);
-			withdrawalEvents.addAll(electricityMarket.getLogWithdrawalSuccessfulEvents(receipt));
 			for(LogWithdrawalSuccessfulEventResponse withdrawalEvent : withdrawalEvents) {
 				timestepInfo.marketBalance = timestepInfo.marketBalance.add(withdrawalEvent.amount);
 			}
