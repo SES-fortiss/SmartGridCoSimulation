@@ -17,8 +17,6 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.utils.Async;
 
-import com.google.gson.Gson;
-
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
@@ -27,12 +25,11 @@ import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import ethereum.Simulation;
 import ethereum.contracts.DoubleSidedAuctionMarket;
-import ethereum.contracts.IntegratedEnergyMarket;
 import ethereum.contracts.DoubleSidedAuctionMarket.LogOfferConfirmedEventResponse;
+import ethereum.contracts.IntegratedEnergyMarket;
 import ethereum.helper.SolarRadiation;
 import ethereum.helper.UnitHelper;
 import ethereum.messages.TimestepInfo;
-import memap.external.M2MDisplay;
 import meritorder.helper.ReadMemapFiles;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -178,7 +175,7 @@ public class Timekeeper extends BehaviorModel {
 			logger.print("ERROR");
 		}
 		logger.println();
-		logger.print(GlobalTime.currentTimeStep + "," + System.currentTimeMillis() + ",");
+		logger.print((GlobalTime.currentTimeStep + 1) + "," + System.currentTimeMillis() + ",");
 	}
 	
 	@Override

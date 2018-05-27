@@ -59,26 +59,23 @@ public class Building3 extends Building {
 		BigInteger electricityToProduce = currentElectricityConsumption.add(soldElectricity).subtract(boughtElectricity);
 
 		BigInteger heatProduction = heatPumpMaxProduction.min(heatToProduce);
+		BigInteger electricityForHeatPump = BigInteger.ZERO;
 		
 		if(isGreaterZero(heatToProduce)) {
-			electricityToProduce = electricityToProduce.add(heatToElectricity(heatProduction)); // add electricity needed to produce necessary heating power
+			electricityForHeatPump = electricityForHeatPump.add(heatToElectricity(heatProduction));
+			electricityToProduce = electricityToProduce.add(electricityForHeatPump); // add electricity needed to produce necessary heating power
 			heatToProduce = heatToProduce.subtract(heatProduction);
 		}
 		
-		BigInteger excessElectricity = BigInteger.ZERO.max(
-				boughtElectricity.
-				add(currentPVProduction).
-				subtract(electricityToProduce)
-			);
+		BigInteger excessElectricity = BigInteger.ZERO.max(currentPVProduction.subtract(electricityToProduce));
 		electricityToProduce = electricityToProduce.subtract(currentPVProduction).max(BigInteger.ZERO);
 		BigInteger maxHeatPumpProduction = electricityToHeat(excessElectricity).min(heatPumpMaxProduction.subtract(heatProduction));
-		BigInteger maxCharge = capacity.subtract(stateOfCharge).min(maxInOut);
+		BigInteger maxCharge = capacity.subtract(stateOfCharge).min(maxInOut.add(fromStorage));
 		BigInteger toStorage = maxCharge.min(maxHeatPumpProduction);
 		heatProduction = heatProduction.add(toStorage);
-		BigInteger electricityForHeatPump = BigInteger.ZERO;
 		if(isGreaterZero(toStorage)) {
 			stateOfCharge = stateOfCharge.add(toStorage);
-			electricityForHeatPump = heatToElectricity(toStorage);
+			electricityForHeatPump = electricityForHeatPump.add(heatToElectricity(toStorage));
 			excessElectricity = excessElectricity.subtract(
 					electricityForHeatPump);
 		}	
@@ -110,10 +107,11 @@ public class Building3 extends Building {
 		);
 		
 		BigInteger nextPVProduction = 
-				UnitHelper.getWSfromKWH(
+				BigInteger.valueOf(
 						(long) (SolarRadiation.getRadiation(GlobalTime.currentTimeStep)
-								* pvArea *1000000000)
-						).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS).divide(BigInteger.valueOf(1000000000));
+								* pvArea*1000000000) //kW * 1000000000
+					).multiply(BigInteger.valueOf(1000)) //W * 1000000000
+				.multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS).divide(BigInteger.valueOf(1000000000)); //Ws
 		
 		BigInteger nextElectricityConsumption = consumptionProfiles.getElectricityConsumption(
 				consumerIndex,

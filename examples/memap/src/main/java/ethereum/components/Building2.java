@@ -84,7 +84,7 @@ public class Building2 extends Building {
 		
 		BigInteger toStorage = BigInteger.ZERO;
 		if(isGreaterZero(excessElectricity)) {
-			toStorage = excessElectricity.min(maxInOut);
+			toStorage = excessElectricity.min(maxInOut.add(fromStorage));
 			stateOfCharge = stateOfCharge.add(toStorage);
 			excessElectricity = excessElectricity.subtract(toStorage);
 			System.out.println("[" + name + "] Charging " + UnitHelper.printAmount(toStorage) + " into battery,"
@@ -121,10 +121,11 @@ public class Building2 extends Building {
 		);
 		
 		BigInteger nextPVProduction = 
-				UnitHelper.getWSfromKWH(
+				BigInteger.valueOf(
 						(long) (SolarRadiation.getRadiation(GlobalTime.currentTimeStep)
-								* pvArea*1000000000)
-					).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS).divide(BigInteger.valueOf(1000000000));
+								* pvArea*1000000000) //kW * 1000000000
+					).multiply(BigInteger.valueOf(1000)) //W * 1000000000
+				.multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS).divide(BigInteger.valueOf(1000000000)); //Ws
 		
 		BigInteger nextElectricityConsumption = consumptionProfiles.getElectricityConsumption(
 				consumerIndex,
