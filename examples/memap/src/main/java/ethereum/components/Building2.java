@@ -80,7 +80,7 @@ public class Building2 extends Building {
 		
 		BigInteger toStorage = BigInteger.ZERO;
 		if(isGreaterZero(excessElectricity)) {
-			toStorage = excessElectricity.min(maxInOut.add(fromStorage));
+			toStorage = excessElectricity.min(maxInOut.add(fromStorage)).min(capacity.subtract(stateOfCharge));
 			stateOfCharge = stateOfCharge.add(toStorage);
 			excessElectricity = excessElectricity.subtract(toStorage);
 			System.out.println("[" + name + "] Charging " + UnitHelper.printAmount(toStorage) + " into battery,"
