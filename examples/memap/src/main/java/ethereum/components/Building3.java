@@ -119,15 +119,15 @@ public class Building3 extends Building {
 
 		ArrayList<BigInteger> heatDemandPrices = new ArrayList<BigInteger>();
 		ArrayList<BigInteger> heatDemandAmounts = new ArrayList<BigInteger>();
-		
+		BigInteger heatNeeded = nextHeatConsumption.subtract((stateOfCharge).min(maxInOut));
 		heatDemandAmounts.add(maxCharge);
-		heatDemandAmounts.add(nextHeatConsumption);
+		heatDemandAmounts.add(heatNeeded.subtract(maxCharge));
 		BigInteger heatPrice1 = findUniqueDemandPrice(electricityToHeat(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE)), Market.HEAT);
 		BigInteger heatPrice2 = findUniqueDemandPrice(electricityToHeat(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE)), Market.HEAT);
 		heatDemandPrices.add(heatPrice1);
 		heatDemandPrices.add(heatPrice2);
 		logDemand(maxCharge, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice1), Market.HEAT);
-		logDemand(nextHeatConsumption, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice2), Market.HEAT);
+		logDemand(heatNeeded.subtract(maxCharge), UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice2), Market.HEAT);
 		postDemand(heatDemandPrices, heatDemandAmounts, Market.HEAT);
 
 		BigInteger heatToOffer = stateOfCharge.min(maxInOut).add(heatPumpMaxProduction);
