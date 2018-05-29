@@ -1,6 +1,5 @@
 package ethereum.components;
 
-import java.awt.font.ShapeGraphicAttribute;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
@@ -13,11 +12,7 @@ import ethereum.helper.UnitHelper;
 
 public class Building3 extends Building {
 	
-//	private BigInteger gasboilerPower = BigInteger.valueOf(40000); //W
-//	private BigInteger gasboilerPrice;
-	
 	private BigInteger currentPVProduction = BigInteger.ZERO;
-	private double pvEfficiency = .2;
 	private double pvArea = 8.;
 	private BigInteger stateOfCharge = BigInteger.ZERO;
 	private BigInteger maxInOut; //Ws
@@ -124,8 +119,6 @@ public class Building3 extends Building {
 
 		ArrayList<BigInteger> heatDemandPrices = new ArrayList<BigInteger>();
 		ArrayList<BigInteger> heatDemandAmounts = new ArrayList<BigInteger>();
-		ArrayList<BigInteger> heatOfferPrices = new ArrayList<BigInteger>();
-		ArrayList<BigInteger> heatOfferAmounts = new ArrayList<BigInteger>();
 		
 		heatDemandAmounts.add(maxCharge);
 		heatDemandAmounts.add(nextHeatConsumption);
@@ -140,41 +133,12 @@ public class Building3 extends Building {
 		BigInteger heatToOffer = stateOfCharge.min(maxInOut).add(heatPumpMaxProduction);
 		
 		if(isGreaterZero(heatToOffer)) {
-			int i = 0;
-			logOffer(heatToOffer, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice2), Market.HEAT);	
-			while(i <= heatToOffer.divide(UnitHelper.QUARTER_KWH).intValue()) {
-				int j = 0;
-				while(j < Simulation.MAX_POINTS_PER_POST && i < heatToOffer.divide(UnitHelper.QUARTER_KWH).intValue()) {
-					heatOfferPrices.add(heatPrice2);
-					heatOfferAmounts.add(UnitHelper.QUARTER_KWH);
-					j++;
-					i++;
-				}
-				if(j < Simulation.MAX_POINTS_PER_POST) {
-					heatOfferPrices.add(heatPrice2);
-					heatOfferAmounts.add(heatToOffer.mod(UnitHelper.QUARTER_KWH));	
-					i++;
-				}	
-				postOffer(heatOfferPrices, heatOfferAmounts, Market.HEAT);
-				heatOfferPrices = new ArrayList<>();
-				heatOfferAmounts = new ArrayList<>();
-			}
+			logOffer(heatToOffer, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice2), Market.HEAT);
+			postOfferSplit(heatPrice2, heatToOffer, Market.HEAT);
 		}
-//		if(isGreaterZero(heatToOffer)) {
-//			for(int i = 0; i < heatToOffer.intValue() / 1000000; i++) {
-//				heatOfferPrices.add(heatPrice2);		
-//				heatOfferAmounts.add(BigInteger.valueOf(1000000));
-//			}
-//			heatOfferPrices.add(heatPrice2);
-//			heatOfferAmounts.add(heatToOffer.mod(BigInteger.valueOf(1000000)));
-//			logOffer(heatToOffer, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice2), Market.HEAT);
-//			postOffer(heatOfferPrices, heatOfferAmounts, Market.HEAT);
-//		}
 
 		ArrayList<BigInteger> electricityDemandPrices = new ArrayList<BigInteger>();
 		ArrayList<BigInteger> electricityDemandAmounts = new ArrayList<BigInteger>();
-		ArrayList<BigInteger> electricityOfferPrices = new ArrayList<BigInteger>();
-		ArrayList<BigInteger> electricityOfferAmounts = new ArrayList<BigInteger>();
 		electricityToProduce = nextElectricityConsumption.subtract(nextPVProduction).max(BigInteger.ZERO);
 		excessElectricity = nextPVProduction.subtract(nextElectricityConsumption).max(BigInteger.ZERO);
 		if(isGreaterZero(electricityToProduce)) {
@@ -185,25 +149,8 @@ public class Building3 extends Building {
 		}
 		
 		if(isGreaterZero(excessElectricity)) {
-			int i = 0;
 			logOffer(excessElectricity, Simulation.ELECTRICITY_MIN_PRICE, Market.ELECTRICITY);	
-			while(i <= excessElectricity.divide(UnitHelper.QUARTER_KWH).intValue()) {
-				int j = 0;
-				while(j < Simulation.MAX_POINTS_PER_POST && i < excessElectricity.divide(UnitHelper.QUARTER_KWH).intValue()) {
-					electricityOfferPrices.add(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE));
-					electricityOfferAmounts.add(UnitHelper.QUARTER_KWH);
-					j++;
-					i++;
-				}
-				if(j < Simulation.MAX_POINTS_PER_POST) {
-					electricityOfferPrices.add(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE));
-					electricityOfferAmounts.add(excessElectricity.mod(UnitHelper.QUARTER_KWH));	
-					i++;
-				}	
-				postOffer(electricityOfferPrices, electricityOfferAmounts, Market.ELECTRICITY);
-				electricityOfferPrices = new ArrayList<>();
-				electricityOfferAmounts = new ArrayList<>();
-			}
+			postOfferSplit(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE), excessElectricity, Market.ELECTRICITY);
 		}
 
 		currentElectricityConsumption = nextElectricityConsumption;

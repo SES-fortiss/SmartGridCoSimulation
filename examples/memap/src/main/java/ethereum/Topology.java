@@ -1,8 +1,6 @@
 package ethereum;
 
-import akka.basicActors.ActorOptions;
 import ethereum.helper.ConsumptionProfiles;
-import ethereum.helper.SolarRadiation;
 import topology.ActorTopology;
 
 /**
@@ -16,34 +14,12 @@ public class Topology {
 	
 	private static String simulationName = "Ethereum";
 	private static final int NR_OF_CONSUMERS = 5;
-	private static final double EFFICIENCY_CHP_H = .6;
-	private static final double EFFICIENCY_CHP_EL = .25;
-	private static final double EFFICIENCY_THERMALSTORAGE = 1.;
-	private static final double EFFICIENCY_GASBOILER = 1.;
-	private static final double EFFICIENCY_OILBOILER = 1.;
-	private static final double EFFICIENCY_SOLARTHERMIC = .5;
-	private static final double EFFICIENCY_HEATPUMP = 3.8;
-	private static final double EFFICIENCY_PV = .2;
-
-	private static final double QDOT_MAX_THERMALSTORAGE_IN = 5.;
-	private static final double QDOT_MAX_THERMALSTORAGE_OUT = 5.;
-	private static final double QDOT_MAX_GASBOILER = 40.;
-	private static final double QDOT_MAX_OILBOILER = 40.;
-	private static final double P_MAX_BATTERY_IN = 5.;
-	private static final double P_MAX_BATTERY_OUT = 5.;
-	private static final double QDOT_MAX_CHP = 80.;
-	private static final double AREA_SOLARTHERMIC = 6.;
-	private static final double AREA_PV = 8.;
-	private static final double P_MAX_HEATPUMP = 20.;
-	private static final double CAPACITY_THERMALSTORAGE = 100000.;
-	private static final double CAPACITY_BATTERY = 40000.;
 	
 	public static ActorTopology createTopology(){
 		int port = 8081;
 		ActorTopology top = new ActorTopology(simulationName);		
 		top.addActor(simulationName, ActorFactory.createTimekeeper(port++));
 		ConsumptionProfiles consumptionProfiles = new ConsumptionProfiles(NR_OF_CONSUMERS);
-		SolarRadiation solarRadiation = new SolarRadiation();
 
 		String building1Name = "Building1";			
 		top.addActorAsChild(simulationName + "/" + building1Name, ActorFactory.createBuilding1(

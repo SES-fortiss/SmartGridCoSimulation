@@ -1,16 +1,13 @@
 package ethereum.components;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import akka.systemActors.GlobalTime;
 import ethereum.Simulation;
-import ethereum.components.Building;
 import ethereum.helper.ConsumptionProfiles;
 import ethereum.helper.Market;
 import ethereum.helper.UnitHelper;
-import ethereum.messages.TimestepInfo;
 
 public class Building1 extends Building {
 	

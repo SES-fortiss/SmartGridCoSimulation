@@ -2,10 +2,8 @@ package ethereum;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.JsonRpc2_0Web3j;
@@ -36,12 +34,7 @@ public class Simulation {
 	public static final BigInteger TIMESTEP_DURATION_IN_SECONDS = 
 			BigInteger.valueOf(15*60);
 	
-	public static final int NR_OF_ITERATIONS = 97;
-	
-	//For the moment, the following 3 parameters need to stay as defined to match data input
-//	public static LocalDateTime startTime = LocalDateTime.of(2014,7,1,11,0);
-//	public static LocalDateTime endTime = LocalDateTime.of(2014,7,1,12,0);
-//	public static Duration timeInterval = Duration.ofMinutes(15);
+	public static final int NR_OF_ITERATIONS = 98;
 	
 	public Simulation() {
 		OkHttpClient.Builder builder = new OkHttpClient().newBuilder();

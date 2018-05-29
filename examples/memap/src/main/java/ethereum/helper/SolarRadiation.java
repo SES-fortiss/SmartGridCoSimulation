@@ -1,7 +1,6 @@
 package ethereum.helper;
 
 import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 
 import ethereum.Simulation;
 

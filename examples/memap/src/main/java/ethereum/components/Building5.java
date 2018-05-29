@@ -17,7 +17,6 @@ public class Building5 extends Building {
 	
 	private BigInteger stateOfCharge = BigInteger.ZERO;
 	private BigInteger currentSTProduction = BigInteger.ZERO;
-	private double stEfficiency = .5;
 	private double stArea = 6.;
 	private BigInteger maxInOut; //Ws
 	private BigInteger capacity; //Ws
@@ -73,8 +72,15 @@ public class Building5 extends Building {
 
 		BigInteger electricityToProduce = currentElectricityConsumption.add(soldElectricity).subtract(boughtElectricity);	
 		BigInteger excessElectricity = BigInteger.ZERO;
+		
+		boolean isCHPeconomic = isGreaterZero(heatToProduce);
+		BigInteger chpSavings = electricityToProduce.multiply(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE));
+		if(chpSavings.compareTo(chpCost) >= 0) {
+			isCHPeconomic = true;
+		}
+		
 		boolean isChpOn = false;
-		if(isGreaterZero(heatToProduce) || isGreaterZero(electricityToProduce)) {
+		if(isCHPeconomic) {
 			isChpOn = true;
 			System.out.println("[" + name + "] CHP: On. Producing " + UnitHelper.printAmount(chpHeatProduction) + " of heat"
 					+ " and " + UnitHelper.printAmount(chpElectricityProduction) + " of electricity.");
@@ -144,6 +150,12 @@ public class Building5 extends Building {
 		ArrayList<BigInteger> electricityDemandPrices = new ArrayList<BigInteger>();
 		ArrayList<BigInteger> electricityDemandAmounts = new ArrayList<BigInteger>();
 		electricityToProduce = nextElectricityConsumption.min(chpElectricityProduction);
+		try {
+			Thread.sleep(20000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} //wait until building 4 has posted its demands so that really a unique price is calculated
 		BigInteger uniqueELectricityMinPrice = findUniqueDemandPrice(
 				UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE),
 				Market.ELECTRICITY)				;
@@ -159,27 +171,9 @@ public class Building5 extends Building {
 			}
 			postDemand(electricityDemandPrices, electricityDemandAmounts, Market.ELECTRICITY);	
 		}
-		ArrayList<BigInteger> electricityOfferPrices = new ArrayList<BigInteger>();
-		ArrayList<BigInteger> electricityOfferAmounts = new ArrayList<BigInteger>();		
-		int i = 0;
+
 		logOffer(chpElectricityProduction, UnitHelper.getCentsPerKwhFromWeiPerWs(uniqueELectricityMinPrice), Market.ELECTRICITY);	
-		while(i <= chpElectricityProduction.divide(UnitHelper.QUARTER_KWH).intValue()) {
-			int j = 0;
-			while(j < Simulation.MAX_POINTS_PER_POST && i < chpElectricityProduction.divide(UnitHelper.QUARTER_KWH).intValue()) {
-				electricityOfferPrices.add(uniqueELectricityMinPrice);
-				electricityOfferAmounts.add(UnitHelper.QUARTER_KWH);
-				j++;
-				i++;
-			}
-			if(j < Simulation.MAX_POINTS_PER_POST) {
-				electricityOfferPrices.add(uniqueELectricityMinPrice);
-				electricityOfferAmounts.add(chpElectricityProduction.mod(UnitHelper.QUARTER_KWH));	
-				i++;
-			}	
-			postOffer(electricityOfferPrices, electricityOfferAmounts, Market.ELECTRICITY);
-			electricityOfferPrices = new ArrayList<>();
-			electricityOfferAmounts = new ArrayList<>();
-		}
+		postOfferSplit(uniqueELectricityMinPrice, chpElectricityProduction, Market.ELECTRICITY);
 		
 		BigInteger chpHeatPrice = chpCost.subtract(
 				chpElectricityProduction.multiply(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE)))
@@ -197,29 +191,9 @@ public class Building5 extends Building {
 				);
 		}
 		BigInteger heatOfferAmount = chpHeatProduction.add(fromStorage);
-
-		ArrayList<BigInteger> heatOfferPrices = new ArrayList<>();
-		ArrayList<BigInteger> heatOfferAmounts = new ArrayList<>();
-		i = 0;
+		
 		logOffer(heatOfferAmount, UnitHelper.getCentsPerKwhFromWeiPerWs(heatDemandPrice), Market.HEAT);	
-		while(i <= heatOfferAmount.divide(UnitHelper.QUARTER_KWH).intValue()) {
-			int j = 0;
-			while(j < Simulation.MAX_POINTS_PER_POST && i < heatOfferAmount.divide(UnitHelper.QUARTER_KWH).intValue()) {
-				heatOfferPrices.add(heatDemandPrice);
-				heatOfferAmounts.add(UnitHelper.QUARTER_KWH);
-				j++;
-				i++;
-			}
-			if(j < Simulation.MAX_POINTS_PER_POST) {
-				heatOfferPrices.add(heatDemandPrice);
-				heatOfferAmounts.add(heatOfferAmount.mod(UnitHelper.QUARTER_KWH));	
-				i++;
-			}	
-			postOffer(heatOfferPrices, heatOfferAmounts, Market.HEAT);
-			heatOfferPrices = new ArrayList<>();
-			heatOfferAmounts = new ArrayList<>();
-		}
-
+		postOfferSplit(heatDemandPrice, heatOfferAmount, Market.HEAT);
 
 		currentElectricityConsumption = nextElectricityConsumption;
 		currentHeatConsumption = nextHeatConsumption;

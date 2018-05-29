@@ -5,8 +5,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.web3j.crypto.Credentials;
@@ -14,6 +16,7 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.JsonRpc2_0Web3j;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tx.FastRawTransactionManager;
 import org.web3j.utils.Async;
 
 import akka.advancedMessages.ErrorAnswerContent;
@@ -86,10 +89,11 @@ public abstract class Building extends BehaviorModel {
 		ScheduledExecutorService executorService = Async.defaultExecutorService();
 		web3j = Web3j.build(httpService, JsonRpc2_0Web3j.DEFAULT_BLOCK_TIME, executorService);
 		credentials = Credentials.create(privateKey);
+		FastRawTransactionManager fastRawTxMgr = new FastRawTransactionManager(web3j, credentials);
 		contract = IntegratedEnergyMarket.load(
 				Simulation.contractAddress, 
 				web3j, 
-				credentials, 
+				fastRawTxMgr, 
 				BigInteger.ONE, 
 				BigInteger.valueOf(8000000)
 			);
@@ -324,5 +328,56 @@ public abstract class Building extends BehaviorModel {
 	protected void logDemand(BigInteger wattSeconds, double centsPerKwh, Market market) {
 		System.out.println("[" + name + "] Demanding " + UnitHelper.printAmount(wattSeconds) + " of " + (market == Market.ELECTRICITY ? "electricity" : "heat") + " for max. " + 
 				Double.toString(centsPerKwh) + " ct/kWh.");
+	}
+
+
+	protected void postOfferSplit(BigInteger price, BigInteger amount, Market market) {
+		ArrayList<BigInteger> prices = new ArrayList<>();
+		ArrayList<BigInteger> amounts = new ArrayList<>();
+		int i = 0;
+		logOffer(amount, UnitHelper.getCentsPerKwhFromWeiPerWs(price), market);	
+		ArrayList<CompletableFuture<TransactionReceipt>> receiptFutures = new ArrayList<>();
+		while(i <= amount.divide(UnitHelper.FIFTH_KWH).intValue()) {
+			int j = 0;
+			while(j < Simulation.MAX_POINTS_PER_POST && i < amount.divide(UnitHelper.FIFTH_KWH).intValue()) {
+				prices.add(price);
+				amounts.add(UnitHelper.FIFTH_KWH);
+				j++;
+				i++;
+			}
+			if(j < Simulation.MAX_POINTS_PER_POST) {
+				prices.add(price);
+				amounts.add(amount.mod(UnitHelper.FIFTH_KWH));	
+				i++;
+			}
+					
+			System.out.println("[" + name + "] Posting " + (market == Market.HEAT ? "heat" : "electricity") + " offer...");
+			switch (market) {
+			case HEAT:
+				receiptFutures.add(contract.postHeatOffer(
+						prices,
+						amounts
+				).sendAsync());
+				break;
+			case ELECTRICITY:
+				receiptFutures.add(contract.postElectricityOffer(
+						prices,
+						amounts
+				).sendAsync());	
+			}
+		}
+		
+		for(CompletableFuture<TransactionReceipt> receiptFuture : receiptFutures) {
+			TransactionReceipt receipt = receiptFuture.join();
+			gasUsed = gasUsed.add(receipt.getGasUsed());
+			if(receipt.getStatus().equals("0x1")){
+				System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " offer posted: " + receipt.getTransactionHash());
+			} else {
+				System.out.println(receipt.getTransactionHash() + " was not successful.");
+				failedPosts++;
+			}
+		}
+		prices = new ArrayList<>();
+		amounts = new ArrayList<>();
 	}
 }
