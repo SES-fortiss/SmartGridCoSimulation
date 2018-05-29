@@ -2,6 +2,7 @@ package ethereum.components;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import akka.systemActors.GlobalTime;
 import ethereum.Simulation;
@@ -90,6 +91,7 @@ public class Building3 extends Building {
 			timestepInfo.electricityFeedIn = excessElectricity;
 		}
 		logger.print("," + excessElectricity);
+		
 		if(isGreaterZero(electricityToProduce)) {
 			System.out.println("[" + name + "] Lacking electricity : " + UnitHelper.printAmount(electricityToProduce));
 			timestepInfo.electricityWithdrawal = electricityToProduce;
@@ -115,23 +117,35 @@ public class Building3 extends Building {
 		
 		System.out.println("[" + name + "] Expected heat consumption for next step: " + UnitHelper.printAmount(nextHeatConsumption));
 		System.out.println("[" + name + "] Expected electricity consumption for next step: " + UnitHelper.printAmount(nextElectricityConsumption));
-		System.out.println("[" + name + "] Expected PV production for next step: " + UnitHelper.printAmount(nextPVProduction));
+		System.out.println("[" + name + "] Expected PV production for next step: " + UnitHelper.printAmount(nextPVProduction));		
+
+		electricityToProduce = nextElectricityConsumption.subtract(nextPVProduction).max(BigInteger.ZERO);
+		excessElectricity = nextPVProduction.subtract(nextElectricityConsumption).max(BigInteger.ZERO);
+		BigInteger excessHeat = electricityToHeat(excessElectricity).min(heatPumpMaxProduction);
+		BigInteger heatNeeded = nextHeatConsumption.subtract(excessHeat).max(BigInteger.ZERO);
+		heatNeeded = heatNeeded.subtract((stateOfCharge).min(maxInOut)).max(BigInteger.ZERO);
+		excessHeat = excessHeat.subtract(nextHeatConsumption).max(BigInteger.ZERO);
+		maxCharge = capacity.subtract(stateOfCharge).min(maxInOut).min(excessHeat);
+		excessHeat = excessHeat.subtract(maxCharge).max(BigInteger.ZERO);
 
 		ArrayList<BigInteger> heatDemandPrices = new ArrayList<BigInteger>();
 		ArrayList<BigInteger> heatDemandAmounts = new ArrayList<BigInteger>();
-		BigInteger heatNeeded = nextHeatConsumption.subtract((stateOfCharge).min(maxInOut));
 		heatDemandAmounts.add(maxCharge);
-		heatDemandAmounts.add(heatNeeded.subtract(maxCharge));
+		heatDemandAmounts.add(heatNeeded);
 		BigInteger heatPrice1 = findUniqueDemandPrice(electricityToHeat(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE)), Market.HEAT);
 		BigInteger heatPrice2 = findUniqueDemandPrice(electricityToHeat(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE)), Market.HEAT);
 		heatDemandPrices.add(heatPrice1);
 		heatDemandPrices.add(heatPrice2);
 		logDemand(maxCharge, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice1), Market.HEAT);
-		logDemand(heatNeeded.subtract(maxCharge), UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice2), Market.HEAT);
+		logDemand(heatNeeded, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice2), Market.HEAT);
 		postDemand(heatDemandPrices, heatDemandAmounts, Market.HEAT);
 
 		BigInteger heatToOffer = stateOfCharge.min(maxInOut).add(heatPumpMaxProduction);
-		
+
+		if(isGreaterZero(excessHeat)) {
+			logOffer(excessHeat, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice1), Market.HEAT);
+			postOffer(Arrays.asList(heatPrice1), Arrays.asList(excessHeat), Market.HEAT);
+		}
 		if(isGreaterZero(heatToOffer)) {
 			logOffer(heatToOffer, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice2), Market.HEAT);
 			postOfferSplit(heatPrice2, heatToOffer, Market.HEAT);
@@ -139,8 +153,6 @@ public class Building3 extends Building {
 
 		ArrayList<BigInteger> electricityDemandPrices = new ArrayList<BigInteger>();
 		ArrayList<BigInteger> electricityDemandAmounts = new ArrayList<BigInteger>();
-		electricityToProduce = nextElectricityConsumption.subtract(nextPVProduction).max(BigInteger.ZERO);
-		excessElectricity = nextPVProduction.subtract(nextElectricityConsumption).max(BigInteger.ZERO);
 		if(isGreaterZero(electricityToProduce)) {
 			electricityDemandPrices.add(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE));
 			electricityDemandAmounts.add(electricityToProduce);
