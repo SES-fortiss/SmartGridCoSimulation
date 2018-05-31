@@ -58,20 +58,20 @@ public class Building3 extends Building {
 		BigInteger electricityForHeatPump = BigInteger.ZERO;
 		
 		if(isGreaterZero(heatToProduce)) {
-			electricityForHeatPump = electricityForHeatPump.add(heatToElectricity(heatProduction));
+			electricityForHeatPump = electricityForHeatPump.add(heatToElectricityAmount(heatProduction));
 			electricityToProduce = electricityToProduce.add(electricityForHeatPump); // add electricity needed to produce necessary heating power
 			heatToProduce = heatToProduce.subtract(heatProduction);
 		}
 		
 		BigInteger excessElectricity = BigInteger.ZERO.max(currentPVProduction.subtract(electricityToProduce));
 		electricityToProduce = electricityToProduce.subtract(currentPVProduction).max(BigInteger.ZERO);
-		BigInteger maxHeatPumpProduction = electricityToHeat(excessElectricity).min(heatPumpMaxProduction.subtract(heatProduction));
+		BigInteger maxHeatPumpProduction = electricityToHeatAmount(excessElectricity).min(heatPumpMaxProduction.subtract(heatProduction));
 		BigInteger maxCharge = capacity.subtract(stateOfCharge).min(maxInOut.add(fromStorage));
 		BigInteger toStorage = maxCharge.min(maxHeatPumpProduction);
 		heatProduction = heatProduction.add(toStorage);
 		if(isGreaterZero(toStorage)) {
 			stateOfCharge = stateOfCharge.add(toStorage);
-			electricityForHeatPump = electricityForHeatPump.add(heatToElectricity(toStorage));
+			electricityForHeatPump = electricityForHeatPump.add(heatToElectricityAmount(toStorage));
 			excessElectricity = excessElectricity.subtract(
 					electricityForHeatPump);
 		}	
@@ -121,31 +121,27 @@ public class Building3 extends Building {
 
 		electricityToProduce = nextElectricityConsumption.subtract(nextPVProduction).max(BigInteger.ZERO);
 		excessElectricity = nextPVProduction.subtract(nextElectricityConsumption).max(BigInteger.ZERO);
-		BigInteger excessHeat = electricityToHeat(excessElectricity).min(heatPumpMaxProduction);
-		BigInteger heatNeeded = nextHeatConsumption.subtract(excessHeat).max(BigInteger.ZERO);
-		heatNeeded = heatNeeded.subtract((stateOfCharge).min(maxInOut)).max(BigInteger.ZERO);
-		excessHeat = excessHeat.subtract(nextHeatConsumption).max(BigInteger.ZERO);
-		maxCharge = capacity.subtract(stateOfCharge).min(maxInOut).min(excessHeat).min(heatNeeded);
-		excessHeat = excessHeat.subtract(maxCharge).max(BigInteger.ZERO);
+		maxCharge = capacity.subtract(stateOfCharge).min(maxInOut);
+		heatProduction = electricityToHeatAmount(excessElectricity).min(heatPumpMaxProduction).min(nextHeatConsumption.add(maxCharge));
+		BigInteger heatNeeded = nextHeatConsumption.subtract(heatProduction).max(BigInteger.ZERO);
+		excessElectricity = excessElectricity.subtract(heatToElectricityAmount(heatProduction));
+		fromStorage = stateOfCharge.min(maxInOut);
+		toStorage = capacity.subtract(stateOfCharge).min(maxInOut);
 
 		ArrayList<BigInteger> heatDemandPrices = new ArrayList<BigInteger>();
 		ArrayList<BigInteger> heatDemandAmounts = new ArrayList<BigInteger>();
-		heatDemandAmounts.add(maxCharge);
+		heatDemandAmounts.add(fromStorage.min(toStorage)); // demand amount that could be as well taken from storage but only as much as could be added to storage in case other demand is also fulfilled
 		heatDemandAmounts.add(heatNeeded);
-		BigInteger heatPrice1 = findUniqueDemandPrice(electricityToHeat(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE)), Market.HEAT);
-		BigInteger heatPrice2 = findUniqueDemandPrice(electricityToHeat(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE)), Market.HEAT);
+		BigInteger heatPrice1 = findUniqueDemandPrice(electricityToHeatPrice(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE)), Market.HEAT);
+		BigInteger heatPrice2 = findUniqueDemandPrice(electricityToHeatPrice(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE)), Market.HEAT);
 		heatDemandPrices.add(heatPrice1);
 		heatDemandPrices.add(heatPrice2);
-		logDemand(maxCharge, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice1), Market.HEAT);
+		logDemand(fromStorage.min(toStorage), UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice1), Market.HEAT);
 		logDemand(heatNeeded, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice2), Market.HEAT);
 		postDemand(heatDemandPrices, heatDemandAmounts, Market.HEAT);
 
-		BigInteger heatToOffer = stateOfCharge.min(maxInOut).add(heatPumpMaxProduction);
+		BigInteger heatToOffer = fromStorage.add(heatPumpMaxProduction);
 
-		if(isGreaterZero(excessHeat)) {
-			logOffer(excessHeat, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice1), Market.HEAT);
-			postOffer(Arrays.asList(heatPrice1), Arrays.asList(excessHeat), Market.HEAT);
-		}
 		if(isGreaterZero(heatToOffer)) {
 			logOffer(heatToOffer, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice2), Market.HEAT);
 			postOfferSplit(heatPrice2, heatToOffer, Market.HEAT);
@@ -172,12 +168,16 @@ public class Building3 extends Building {
 		logger.println();
 	}
 
-	private BigInteger electricityToHeat(BigInteger centsPerWs) {
+	private BigInteger electricityToHeatPrice(BigInteger centsPerWs) {
 		return centsPerWs.multiply(BigInteger.TEN).divide(BigInteger.valueOf(38));
 	}
 
-	private BigInteger heatToElectricity(BigInteger centsPerWs) {
-		return centsPerWs.multiply(BigInteger.valueOf(38)).divide(BigInteger.TEN);
+	private BigInteger electricityToHeatAmount(BigInteger electricityAmount) {
+		return electricityAmount.multiply(BigInteger.valueOf(38)).divide(BigInteger.TEN);
+	}
+
+	private BigInteger heatToElectricityAmount(BigInteger heatAmount) {
+		return heatAmount.multiply(BigInteger.TEN).divide(BigInteger.valueOf(38));
 	}
 
 }

@@ -141,7 +141,7 @@ public class Building2 extends Building {
 		ArrayList<BigInteger> electricityDemandPrices = new ArrayList<BigInteger>();
 		ArrayList<BigInteger> electricityDemandAmounts = new ArrayList<BigInteger>();
 		BigInteger ownProduction = stateOfCharge.min(maxInOut).min(electricityToProduce).add(nextPVProduction);
-		BigInteger maxCharge = capacity.subtract(stateOfCharge).min(maxInOut);
+		BigInteger maxCharge = capacity.subtract(stateOfCharge).divide(BigInteger.valueOf(2)).min(maxInOut);
 		electricityToProduce = nextElectricityConsumption.subtract(ownProduction).max(BigInteger.ZERO);
 		excessElectricity = ownProduction.subtract(nextElectricityConsumption).max(BigInteger.ZERO);
 		BigInteger uniqueMinPrice = findUniqueDemandPrice(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE), Market.HEAT);
