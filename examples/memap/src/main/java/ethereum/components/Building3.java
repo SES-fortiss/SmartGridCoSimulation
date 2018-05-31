@@ -125,7 +125,7 @@ public class Building3 extends Building {
 		BigInteger heatNeeded = nextHeatConsumption.subtract(excessHeat).max(BigInteger.ZERO);
 		heatNeeded = heatNeeded.subtract((stateOfCharge).min(maxInOut)).max(BigInteger.ZERO);
 		excessHeat = excessHeat.subtract(nextHeatConsumption).max(BigInteger.ZERO);
-		maxCharge = capacity.subtract(stateOfCharge).min(maxInOut).min(excessHeat);
+		maxCharge = capacity.subtract(stateOfCharge).min(maxInOut).min(excessHeat).min(heatNeeded);
 		excessHeat = excessHeat.subtract(maxCharge).max(BigInteger.ZERO);
 
 		ArrayList<BigInteger> heatDemandPrices = new ArrayList<BigInteger>();

@@ -26,8 +26,8 @@ public class Simulation {
 	public static String electricityMarketAddress = "";
 	public static final double ELECTRICITY_MAX_PRICE = 28.69; //ct per kWh
 	public static final double ELECTRICITY_MIN_PRICE = 12.31; //ct per kWh
-	public static final double GAS_PRICE = 5.87; //ct per kWh
-	public static final double OIL_PRICE = 8.44; //ct per kWh
+	public static final double GAS_PRICE = 6.08; //ct per kWh
+	public static final double OIL_PRICE = 5.47; //ct per kWh
 	public static long timestamp;
 	public static final int MAX_POINTS_PER_POST = 8;
 	
