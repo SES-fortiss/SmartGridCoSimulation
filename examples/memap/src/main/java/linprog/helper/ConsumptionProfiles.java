@@ -19,13 +19,13 @@ import simulation.SimulationStarter;
 public class ConsumptionProfiles {
 
 	private HashMap<Integer, ArrayList<Double>> heatProfiles = new HashMap<Integer, ArrayList<Double>>();
-	private ArrayList<Double> electricityProfile = new ArrayList<Double>();
+	private HashMap<Integer, ArrayList<Double>> electricityProfiles = new HashMap<Integer, ArrayList<Double>>();
 	private final int nrOfProfiles;
 	
 	public ConsumptionProfiles(int nrOfProfiles) {
 		this.nrOfProfiles = nrOfProfiles;
 		heatProfiles = readConsumption("WaermeVerbraeuche.csv", nrOfProfiles);
-//		electricityProfile = readConsumption("StromVerbraeuche.csv");
+		electricityProfiles = readConsumption("StromVerbraeuche.csv", nrOfProfiles);
 	}
 	
 	/**
@@ -39,6 +39,19 @@ public class ConsumptionProfiles {
 			//TODO throw Exception;
 		}
 		return heatProfiles.get(consumptionIndex).get(timestep % heatProfiles.size());
+	}
+	
+	/**
+	 * Returns the current heat consumption at a given timestep.
+	 * 
+	 * @param time the timestep for which to get the heat consumption
+	 * @return heat consumption at given timestep
+	 */
+	public double getElectricityConsumption(int consumptionIndex, int timestep) {
+		if (consumptionIndex > nrOfProfiles) {
+			//TODO throw Exception;
+		}
+		return electricityProfiles.get(consumptionIndex).get(timestep % electricityProfiles.size());
 	}
 	
 	/**
