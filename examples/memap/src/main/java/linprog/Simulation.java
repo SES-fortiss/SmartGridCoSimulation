@@ -1,11 +1,8 @@
 package linprog;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 import akka.actor.ActorSystem;
-import linprog.Simulation;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 
@@ -35,6 +32,7 @@ public class Simulation {
 	
 	public static void main(String[] args){
 		new Simulation().run();
+		
 	}
 	
 	public static double stepLength(TimeUnit timeUnit) {

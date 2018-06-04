@@ -21,6 +21,8 @@ public class SolarThermic extends Producer {
 	@Override
 	public void makeDecision() {
 		super.makeDecision();
+		SolarRadiation solarRadiation = new SolarRadiation();
+		
 //		Calendar currentTime = startTime;
 		for (int i = 0; i < n; i++) {
 			specificationToSend.cost[i] = 0.0;
@@ -29,7 +31,7 @@ public class SolarThermic extends Producer {
 			}
 			specificationToSend.couplingMatrix[i][i] = -efficiency;
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = SolarRadiation.getRadiation(i)*area*efficiency;
+			specificationToSend.upperBound[i] = solarRadiation.getRadiation(i)*area*efficiency;
 //			currentTime.add(Calendar.SECOND, stepSize);
 		}
 		

@@ -19,9 +19,11 @@ public class OilBoiler extends Producer {
 	@Override
 	public void makeDecision() {
 		super.makeDecision();
+		
 //		Calendar currentTime = startTime;
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = 0.05;
+			specificationToSend.cost[i] = EnergyPrices.getGasPriceInCent(i);
+//			specificationToSend.cost[i] = 0.05;
 //			currentTime.add(Calendar.SECOND, stepSize);
 			for (int j = 0; j < n; j++) {
 				specificationToSend.couplingMatrix[i][j] = 0.0;

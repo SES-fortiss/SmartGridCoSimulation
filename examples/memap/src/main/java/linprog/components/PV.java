@@ -20,18 +20,21 @@ public class PV extends Producer {
 	public void makeDecision() {
 		super.makeDecision();
 		EnergyPrices energyPrices = new EnergyPrices();
+		SolarRadiation solarRadiation = new SolarRadiation();
 		
 //		Calendar currentTime = startTime;
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = -energyPrices.getElectricityPriceInCent(i)+0.001*Math.random();
+			specificationToSend.cost[i] = -energyPrices.getElectricityPricePVInCent(i)/3600*1.1; //+0.001*Math.random();
 //			currentTime.add(Calendar.SECOND, stepSize);
 			for (int j = 0; j < n; j++) {
 				specificationToSend.couplingMatrix[i][j] = 0.0;
 			}
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = SolarRadiation.getRadiation(i)*area*efficiency;
+			specificationToSend.upperBound[i] = solarRadiation.getRadiation(i)*area*efficiency;
+			
 		}
-		
+//		System.out.println(solarRadiation.getRadiation(0));
+//		System.out.println("PV: " + specificationToSend.cost[0]);
 		display.update(gson.toJson(specificationToSend));
 	}
 	

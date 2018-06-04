@@ -41,7 +41,7 @@ public class Building extends BehaviorModel {
 
 	@Override
 	public void makeDecision() {
-		specificationToSend = new BuildingSpec();
+	//	specificationToSend = new BuildingSpec();
 		specificationToSend.name = name;
 		for(BasicAnswer basicAnswer : answerListReceived) {			
 			AnswerContent answerContent = basicAnswer.answerContent;
@@ -49,10 +49,10 @@ public class Building extends BehaviorModel {
 				specificationToSend.consumption.addConsumption(((Consumption) answerContent).getVector()); 
 			}
 			if(answerContent instanceof ProducerSpec) {
-				specificationToSend.producers.add((ProducerSpec)answerContent);
+				specificationToSend.producers.add((ProducerSpec) answerContent);
 			}
 			if(answerContent instanceof StorageSpec) {
-				specificationToSend.storages.add((StorageSpec)answerContent);
+				specificationToSend.storages.add((StorageSpec) answerContent);
 			}
 		}
 		
