@@ -50,7 +50,7 @@ public class ConsumptionProfiles {
 		if (consumptionIndex > nrOfProfiles) {
 			//TODO throw Exception;
 		}
-		return electricityProfiles.get(consumptionIndex).get(timestep % electricityProfiles.size());
+		return electricityProfiles.get(consumptionIndex).get(timestep % electricityProfiles.get(0).size());
 	}
 	
 	/**
