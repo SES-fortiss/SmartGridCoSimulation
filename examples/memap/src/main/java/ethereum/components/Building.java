@@ -1,8 +1,14 @@
 package ethereum.components;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.web3j.crypto.Credentials;
@@ -10,12 +16,13 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.JsonRpc2_0Web3j;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.Contract;
+import org.web3j.tx.FastRawTransactionManager;
 import org.web3j.utils.Async;
 
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
+import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import ethereum.Simulation;
 import ethereum.contracts.DoubleSidedAuctionMarket;
@@ -25,6 +32,7 @@ import ethereum.helper.ConsumptionProfiles;
 import ethereum.helper.Market;
 import ethereum.helper.UnitHelper;
 import ethereum.messages.TimestepInfo;
+import meritorder.helper.ReadMemapFiles;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -49,7 +57,14 @@ public abstract class Building extends BehaviorModel {
 	protected int consumerIndex;
 	protected TimestepInfo timestepInfo;
 	
-	protected BigInteger paidDownPayments = BigInteger.ZERO;
+	protected BigInteger paidDownPayments = BigInteger.ZERO;	
+	protected PrintWriter logger;
+
+	protected BigInteger currentHeatConsumption = BigInteger.ZERO;
+	protected BigInteger currentElectricityConsumption = BigInteger.ZERO;
+	
+	protected BigInteger gasUsed = BigInteger.ZERO;
+	protected int failedPosts = 0;
 
 	public Building(
 			String name,
@@ -74,10 +89,11 @@ public abstract class Building extends BehaviorModel {
 		ScheduledExecutorService executorService = Async.defaultExecutorService();
 		web3j = Web3j.build(httpService, JsonRpc2_0Web3j.DEFAULT_BLOCK_TIME, executorService);
 		credentials = Credentials.create(privateKey);
+		FastRawTransactionManager fastRawTxMgr = new FastRawTransactionManager(web3j, credentials);
 		contract = IntegratedEnergyMarket.load(
 				Simulation.contractAddress, 
 				web3j, 
-				credentials, 
+				fastRawTxMgr, 
 				BigInteger.ONE, 
 				BigInteger.valueOf(8000000)
 			);
@@ -96,6 +112,22 @@ public abstract class Building extends BehaviorModel {
 				BigInteger.ONE, 
 				BigInteger.valueOf(8000000)
 			);
+	
+		try {
+			String dest = "target/logs/" + Simulation.timestamp + "-" + name + ".csv";			
+			String location = ReadMemapFiles.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			location = location.replace("%20", " ");
+			location = location.substring(0, location.length()-15);
+			location = location + dest;
+			new File(location);
+			FileWriter fr = new FileWriter(location, true);
+			logger = new PrintWriter(fr, true);
+		} catch (IOException e1) {
+				e1.printStackTrace();
+		}
+		
+		logger.print("timestep,heatDemand,electricityDemand,soldHeat,boughtHeat,soldElectricity,boughtElectricity,paidDownPayments,withdrawalAmount");
+		
 		System.out.println("[" + name + "] Started.");
 	}
 
@@ -104,16 +136,20 @@ public abstract class Building extends BehaviorModel {
 	public void makeDecision() {
 		//TODO consider waiting random time up to one minute to achieve different orderings (unnecessary with current logic to check posted demands first)
 		timestepInfo = new TimestepInfo(name);
+		gasUsed = BigInteger.ZERO;
+		failedPosts = 0;
 		
 		try {
 			soldHeat = contract.getHeatToProduce().send();
 			boughtHeat = contract.getHeatToConsume().send();
 			soldElectricity = contract.getElectricityToProduce().send();
 			boughtElectricity = contract.getElectricityToConsume().send();
+			logger.print(GlobalTime.currentTimeStep + "," + currentHeatConsumption + "," + currentElectricityConsumption  + "," + 
+					soldHeat+ "," + boughtHeat+ "," + soldElectricity+ "," + boughtElectricity+ "," + paidDownPayments);
 			System.out.println("["+ name + "] Withdrawing released payments...");
 			TransactionReceipt receipt = contract.withdrawReleasedPayments().send();
+			gasUsed = gasUsed.add(receipt.getGasUsed());
 			List<LogWithdrawalSuccessfulEventResponse> withdrawalEvents = heatMarket.getLogWithdrawalSuccessfulEvents(receipt);
-			withdrawalEvents.addAll(electricityMarket.getLogWithdrawalSuccessfulEvents(receipt));
 			for(LogWithdrawalSuccessfulEventResponse withdrawalEvent : withdrawalEvents) {
 				timestepInfo.marketBalance = timestepInfo.marketBalance.add(withdrawalEvent.amount);
 			}
@@ -121,17 +157,15 @@ public abstract class Building extends BehaviorModel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		logger.print("," + timestepInfo.marketBalance);
 		timestepInfo.marketBalance = timestepInfo.marketBalance.subtract(paidDownPayments);
+		paidDownPayments = BigInteger.ZERO;
 		System.out.println("["+ name + "] Market balance of previous timestep:  "
-				+ UnitHelper.printCents(timestepInfo.marketBalance) + ".");
-		System.out.println("["+ name + "] Bought " + boughtElectricity.toString() + " Ws(" + 
-				Double.toString(UnitHelper.getkWhfromWs(boughtElectricity)) + " kWh) of electricity. ");
-		System.out.println("["+ name + "] Bought " + boughtHeat.toString() + " Ws(" + 
-				Double.toString(UnitHelper.getkWhfromWs(boughtHeat)) + " kWh) of heat. ");
-		System.out.println("["+ name + "] Sold " + soldHeat.toString() + " Ws(" + 
-				Double.toString(UnitHelper.getkWhfromWs(soldHeat)) + " kWh) of heat.");	
-		System.out.println("["+ name + "] Sold " + soldElectricity.toString() + " Ws(" + 
-				Double.toString(UnitHelper.getkWhfromWs(soldHeat)) + " kWh) of electricity.");			
+				+ timestepInfo.marketBalance.doubleValue()/10000000000000000.0 + "ct.");
+		System.out.println("["+ name + "] Bought " + UnitHelper.printAmount(boughtElectricity) + " of electricity. ");
+		System.out.println("["+ name + "] Bought " + UnitHelper.printAmount(boughtHeat) + " of heat. ");
+		System.out.println("["+ name + "] Sold " + UnitHelper.printAmount(soldElectricity) + " of electricity.");	
+		System.out.println("["+ name + "] Sold " + UnitHelper.printAmount(soldHeat)+ " of heat.");			
 	}
 
 	@Override
@@ -199,6 +233,7 @@ public abstract class Building extends BehaviorModel {
 			}
 		}
 		return offerPrice;
+//		return BigInteger.ZERO;
 	}
 
 
@@ -227,6 +262,7 @@ public abstract class Building extends BehaviorModel {
 						amounts,
 						downpayment
 				).send();	
+				break;
 			case ELECTRICITY:
 				receipt = contract.postElectricityDemand(
 						prices,
@@ -235,7 +271,13 @@ public abstract class Building extends BehaviorModel {
 				).send();	
 			}
 			if(receipt != null) {
-				System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " demand posted: " + receipt.getTransactionHash());
+				gasUsed = gasUsed.add(receipt.getGasUsed());
+				if(receipt.getStatus().equals("0x1")){
+					System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " demand posted: " + receipt.getTransactionHash());
+				} else {
+					System.out.println(receipt.getTransactionHash() + " was not successful.");
+					failedPosts++;
+				}
 			}
 			paidDownPayments = paidDownPayments.add(downpayment);
 		} catch (Exception e2) {
@@ -253,7 +295,8 @@ public abstract class Building extends BehaviorModel {
 				receipt = contract.postHeatOffer(
 						prices,
 						amounts
-				).send();	
+				).send();
+				break;
 			case ELECTRICITY:
 				receipt = contract.postElectricityOffer(
 						prices,
@@ -261,7 +304,13 @@ public abstract class Building extends BehaviorModel {
 				).send();	
 			}
 			if(receipt != null) {
-				System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " offer posted: " + receipt.getTransactionHash());
+				gasUsed = gasUsed.add(receipt.getGasUsed());
+				if(receipt.getStatus().equals("0x1")){
+					System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " offer posted: " + receipt.getTransactionHash());
+				} else {
+					System.out.println(receipt.getTransactionHash() + " was not successful.");
+					failedPosts++;
+				}
 			}
 		} catch (Exception e2) {
 			// TODO Auto-generated catch block
@@ -281,4 +330,54 @@ public abstract class Building extends BehaviorModel {
 				Double.toString(centsPerKwh) + " ct/kWh.");
 	}
 
+
+	protected void postOfferSplit(BigInteger price, BigInteger amount, Market market) {
+		ArrayList<BigInteger> prices = new ArrayList<>();
+		ArrayList<BigInteger> amounts = new ArrayList<>();
+		int i = 0;
+		logOffer(amount, UnitHelper.getCentsPerKwhFromWeiPerWs(price), market);	
+		ArrayList<CompletableFuture<TransactionReceipt>> receiptFutures = new ArrayList<>();
+		while(i <= amount.divide(UnitHelper.FIFTH_KWH).intValue()) {
+			int j = 0;
+			while(j < Simulation.MAX_POINTS_PER_POST && i < amount.divide(UnitHelper.FIFTH_KWH).intValue()) {
+				prices.add(price);
+				amounts.add(UnitHelper.FIFTH_KWH);
+				j++;
+				i++;
+			}
+			if(j < Simulation.MAX_POINTS_PER_POST) {
+				prices.add(price);
+				amounts.add(amount.mod(UnitHelper.FIFTH_KWH));	
+				i++;
+			}
+					
+			System.out.println("[" + name + "] Posting " + (market == Market.HEAT ? "heat" : "electricity") + " offer...");
+			switch (market) {
+			case HEAT:
+				receiptFutures.add(contract.postHeatOffer(
+						prices,
+						amounts
+				).sendAsync());
+				break;
+			case ELECTRICITY:
+				receiptFutures.add(contract.postElectricityOffer(
+						prices,
+						amounts
+				).sendAsync());	
+			}
+		}
+		
+		for(CompletableFuture<TransactionReceipt> receiptFuture : receiptFutures) {
+			TransactionReceipt receipt = receiptFuture.join();
+			gasUsed = gasUsed.add(receipt.getGasUsed());
+			if(receipt.getStatus().equals("0x1")){
+				System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " offer posted: " + receipt.getTransactionHash());
+			} else {
+				System.out.println(receipt.getTransactionHash() + " was not successful.");
+				failedPosts++;
+			}
+		}
+		prices = new ArrayList<>();
+		amounts = new ArrayList<>();
+	}
 }

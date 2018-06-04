@@ -1,37 +1,26 @@
 package ethereum.components;
 
 import java.math.BigInteger;
-
-import akka.systemActors.GlobalTime;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
-
+import akka.systemActors.GlobalTime;
 import ethereum.Simulation;
 import ethereum.helper.ConsumptionProfiles;
 import ethereum.helper.Market;
-import ethereum.helper.SolarRadiation;
 import ethereum.helper.UnitHelper;
 
 public class Building4 extends Building {
 	
-//	private BigInteger gasboilerPower = BigInteger.valueOf(40000); //W
-//	private BigInteger gasboilerPrice;
-	
-	private BigInteger currentElectricityConsumption = BigInteger.ZERO;
-	private BigInteger currentHeatConsumption = BigInteger.ZERO;
+	private final double QdotCHP = 80000.0;
+		
 	private BigInteger stateOfCharge = BigInteger.ZERO;
 	private BigInteger maxInOut; //Ws
 	private BigInteger capacity; //Ws
 	private double storageEfficiency = 1.;
 	private BigInteger chpHeatProduction;
 	private BigInteger chpElectricityProduction;
-	private BigInteger chpHeatCost;
-	private BigInteger chpElectricityCost;
+	private BigInteger chpCost;
 	
 	public Building4(
 			String name,
@@ -45,10 +34,14 @@ public class Building4 extends Building {
 				.multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
 //		gasboilerPrice = UnitConverter.getCentsPerWsFromCents(5.2);
 		capacity = UnitHelper.getWSfromKWH(100);
-		chpHeatProduction = UnitHelper.getWSfromKWH(80).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
-		chpElectricityProduction = UnitHelper.getWSfromKWH(20).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
-		chpHeatCost = UnitHelper.getCentsPerWsFromCents(5.2/0.6);
-		chpElectricityCost = UnitHelper.getCentsPerWsFromCents(5.2/0.25);
+		chpHeatProduction = BigInteger.valueOf((long) (QdotCHP*.6)).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
+		chpElectricityProduction = BigInteger.valueOf((long) (QdotCHP*.25)).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
+		chpCost = BigInteger.valueOf((long) QdotCHP).multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS)
+				.multiply(UnitHelper.getEtherPerWsFromCents(Simulation.GAS_PRICE));
+		logger.print(",chpCost,chpHeatProduction,chpElectricityProduction,"
+				+ "fromThermalStorage,toThermalStorage,stateOfCharge,"
+				+ "excessHeat,lackingHeat,excessElectricity,electricityLack,gasUsed,failedPosts");
+		logger.println();
 	}
 
 	@Override
@@ -67,86 +60,121 @@ public class Building4 extends Building {
 
 		BigInteger electricityToProduce = currentElectricityConsumption.add(soldElectricity).subtract(boughtElectricity);	
 		BigInteger excessElectricity = BigInteger.ZERO;
-
-		if(isGreaterZero(heatToProduce) || isGreaterZero(electricityToProduce)) {
+		
+		boolean isCHPeconomic = isGreaterZero(heatToProduce);
+		BigInteger chpSavings = electricityToProduce.multiply(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE));
+		if(chpSavings.compareTo(chpCost) >= 0) {
+			isCHPeconomic = true;
+		}
+		
+		boolean isChpOn = false;
+		if(isCHPeconomic) {
+			isChpOn = true;
 			System.out.println("[" + name + "] CHP: On. Producing " + UnitHelper.printAmount(chpHeatProduction) + " of heat"
 					+ " and " + UnitHelper.printAmount(chpElectricityProduction) + " of electricity.");
-			heatToProduce = heatToProduce.subtract(chpHeatProduction).max(BigInteger.ZERO);
 			excessHeat = chpHeatProduction.subtract(heatToProduce).max(BigInteger.ZERO);
-			electricityToProduce = electricityToProduce.subtract(chpElectricityProduction).max(BigInteger.ZERO);
+			heatToProduce = heatToProduce.subtract(chpHeatProduction).max(BigInteger.ZERO);
 			excessElectricity = chpElectricityProduction.subtract(electricityToProduce).max(BigInteger.ZERO);
-			timestepInfo.cost = timestepInfo.cost.add(chpHeatCost.multiply(chpHeatProduction));
+			electricityToProduce = electricityToProduce.subtract(chpElectricityProduction).max(BigInteger.ZERO);
+			timestepInfo.cost = timestepInfo.cost.add(BigInteger.valueOf((long) (Simulation.GAS_PRICE*QdotCHP)));
 		} else {
 			System.out.println("[" + name + "] CHP: Off.");
 		}
-		BigInteger toStorage = capacity.subtract(stateOfCharge).min(maxInOut).min(excessHeat);
+		logger.print("," + (isChpOn ? chpCost : 0));
+		logger.print("," + (isChpOn ? chpHeatProduction : 0));
+		logger.print("," + (isChpOn ? chpElectricityProduction : 0));
+		logger.print("," + fromStorage);
+		BigInteger toStorage = capacity.subtract(stateOfCharge).min(maxInOut.add(fromStorage)).min(excessHeat);
 		if(isGreaterZero(toStorage)) {
 			stateOfCharge = stateOfCharge.add(toStorage);
 			excessHeat = excessHeat.subtract(toStorage);
 			System.out.println("[" + name + "] Feeding " + UnitHelper.printAmount(toStorage)
 					+ "  into thermal storage, leaving state of charge at " + UnitHelper.printAmount(stateOfCharge) + ".");
 		}
+		logger.print("," + toStorage);
+		logger.print("," + stateOfCharge);
 
 		if(isGreaterZero(excessHeat)) {
 			System.out.println("[" + name + "] Excess heat: " + UnitHelper.printAmount(excessHeat));
 			timestepInfo.heatFeedIn = excessHeat;
 		}
+		logger.print("," + excessHeat);
+		
 		if(isGreaterZero(heatToProduce)) {
 			System.out.println("[" + name + "] Lacking heat : " + UnitHelper.printAmount(heatToProduce));
 			timestepInfo.heatWithdrawal = heatToProduce;
 		}
+		logger.print("," + heatToProduce);
 
 		if(isGreaterZero(excessElectricity)) {
 			System.out.println("[" + name + "] Excess electricity: " + UnitHelper.printAmount(excessElectricity));
 			timestepInfo.electricityFeedIn = excessElectricity;
 		}
+		logger.print("," + excessElectricity);
 		if(isGreaterZero(electricityToProduce)) {
 			System.out.println("[" + name + "] Lacking electricity : " + UnitHelper.printAmount(electricityToProduce));
 			timestepInfo.electricityWithdrawal = electricityToProduce;
 		}
+		logger.print("," + electricityToProduce);
 		
 		BigInteger nextHeatConsumption = consumptionProfiles.getHeatConsumption(
 				consumerIndex,
-				GlobalTime.currentTimeStep + 1
+				GlobalTime.currentTimeStep
 		);
 		
 		BigInteger nextElectricityConsumption = consumptionProfiles.getElectricityConsumption(
 				consumerIndex,
-				GlobalTime.currentTimeStep + 1
+				GlobalTime.currentTimeStep
 		);
 
 		System.out.println("[" + name + "] Expected heat consumption for next step: " + UnitHelper.printAmount(nextHeatConsumption));
-		System.out.println("[" + name + "] Expected electricity consumption for next step: " + UnitHelper.printAmount(nextHeatConsumption));
-
-
-		BigInteger heatDemandPrice = findUniqueDemandPrice(chpHeatCost, Market.HEAT);
-		logDemand(nextHeatConsumption, UnitHelper.getCentsFromCentUnits(heatDemandPrice), Market.HEAT);
-		postDemand(Arrays.asList(heatDemandPrice), Arrays.asList(nextHeatConsumption), Market.HEAT);
-		logOffer(chpHeatProduction, UnitHelper.getCentsFromCentUnits(heatDemandPrice), Market.HEAT);
-		postOffer(Arrays.asList(heatDemandPrice), Arrays.asList(chpHeatProduction), Market.HEAT);
+		System.out.println("[" + name + "] Expected electricity consumption for next step: " + UnitHelper.printAmount(nextElectricityConsumption));
 
 		ArrayList<BigInteger> electricityDemandPrices = new ArrayList<BigInteger>();
 		ArrayList<BigInteger> electricityDemandAmounts = new ArrayList<BigInteger>();
 		electricityToProduce = nextElectricityConsumption.min(chpElectricityProduction);
-		BigInteger chpUniquePrice = findUniqueDemandPrice(chpElectricityCost, Market.ELECTRICITY);
+		BigInteger uniqueELectricityMinPrice = findUniqueDemandPrice(
+				UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE),
+				Market.ELECTRICITY)				;
 		if(isGreaterZero(electricityToProduce)) {
-			electricityDemandPrices.add(chpUniquePrice);
+			electricityDemandPrices.add(uniqueELectricityMinPrice);
 			electricityDemandAmounts.add(electricityToProduce);
-			logDemand(electricityToProduce, UnitHelper.getCentsFromCentUnits(chpUniquePrice), Market.ELECTRICITY);
+			logDemand(electricityToProduce, UnitHelper.getCentsPerKwhFromWeiPerWs(uniqueELectricityMinPrice), Market.ELECTRICITY);
 			electricityToProduce = nextElectricityConsumption.subtract(chpElectricityProduction);
 			if(isGreaterZero(electricityToProduce)) {
-				electricityDemandPrices.add(UnitHelper.getCentsPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE));
+				electricityDemandPrices.add(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE));
 				electricityDemandAmounts.add(electricityToProduce);
 				logDemand(electricityToProduce, Simulation.ELECTRICITY_MAX_PRICE, Market.ELECTRICITY);
 			}
 			postDemand(electricityDemandPrices, electricityDemandAmounts, Market.ELECTRICITY);	
 		}
+	
+		logOffer(chpElectricityProduction, UnitHelper.getCentsPerKwhFromWeiPerWs(uniqueELectricityMinPrice), Market.ELECTRICITY);	
+		postOfferSplit(uniqueELectricityMinPrice, chpElectricityProduction, Market.ELECTRICITY);
+		
+		BigInteger chpHeatPrice = chpCost.subtract(
+				chpElectricityProduction.multiply(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE)))
+				.divide(chpHeatProduction);
+		BigInteger heatDemandPrice = findUniqueDemandPrice(chpHeatPrice, Market.HEAT);
+		BigInteger lackingHeat = nextHeatConsumption.subtract(fromStorage).max(BigInteger.ZERO);
+		
+		if(isGreaterZero(lackingHeat)) {
+			logDemand(lackingHeat, UnitHelper.getCentsPerKwhFromWeiPerWs(heatDemandPrice), Market.HEAT);
+			postDemand(
+					Arrays.asList(heatDemandPrice),
+					Arrays.asList(lackingHeat),
+					Market.HEAT
+				);
+		}
 
-		logOffer(chpElectricityProduction, UnitHelper.getCentsFromCentUnits(chpUniquePrice), Market.ELECTRICITY);
-		postOffer(Arrays.asList(chpUniquePrice), Arrays.asList(chpElectricityProduction), Market.ELECTRICITY);	
+		BigInteger heatOfferAmount = chpHeatProduction.add(fromStorage);
+		postOfferSplit(heatDemandPrice, heatOfferAmount, Market.HEAT);
+		
 
 		currentElectricityConsumption = nextElectricityConsumption;
 		currentHeatConsumption = nextHeatConsumption;
+		logger.print("," + gasUsed + "," + failedPosts);
+		logger.println();
 	}
 
 }

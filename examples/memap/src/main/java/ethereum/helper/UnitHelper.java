@@ -3,25 +3,31 @@ package ethereum.helper;
 import java.math.BigInteger;
 
 public class UnitHelper {
+	
+	public static final double WS_PER_KWH = 3600000.0;
+	public static final BigInteger FIFTH_KWH = getWSfromKWH(0.2);
+	private static final double CENT_IN_WEI = 10000000000000000.0;
 
 	public static BigInteger getWSfromKWH(int kWh) {
-		return BigInteger.valueOf(kWh*3600000);
+		return BigInteger.valueOf((long) (kWh*WS_PER_KWH));
 	}
 
 	public static BigInteger getWSfromKWH(double kWh) {
-		return BigInteger.valueOf((int) (kWh*3600000));
+		return BigInteger.valueOf((long) (kWh*WS_PER_KWH));
 	}
 
 	public static double getkWhfromWs(BigInteger ws) {
-		return ws.doubleValue() / 3600000.0;
+		return ws.doubleValue() / WS_PER_KWH;
 	}
 	
-	public static BigInteger getCentsPerWsFromCents(double cents) {
-		return BigInteger.valueOf((int) (cents*3600000));
+	public static BigInteger getEtherPerWsFromCents(double cents) {
+		double wei = cents*CENT_IN_WEI;
+		return BigInteger.valueOf((long) (wei/WS_PER_KWH));
 	}
 	
-	public static double getCentsFromCentUnits(BigInteger centUnits) {
-		return centUnits.doubleValue() / 3600000.0;
+	public static double getCentsPerKwhFromWeiPerWs(BigInteger etherPerWs) {
+		double perKwh = etherPerWs.doubleValue()*WS_PER_KWH;
+		return perKwh/CENT_IN_WEI;
 	}
 	
 	public static String printAmount(BigInteger amount) {
@@ -30,7 +36,7 @@ public class UnitHelper {
 	}
 	
 	public static String printCents(BigInteger centUnits) {
-		return Double.toString(getCentsFromCentUnits(centUnits)) + " ct";
+		return Double.toString(getCentsPerKwhFromWeiPerWs(centUnits)) + " ct";
 	}
 
 }

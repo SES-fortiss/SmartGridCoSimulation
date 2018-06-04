@@ -2,10 +2,8 @@ package ethereum;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.JsonRpc2_0Web3j;
@@ -26,22 +24,17 @@ public class Simulation {
 	public static String contractAddress = "";
 	public static String heatMarketAddress = "";
 	public static String electricityMarketAddress = "";
-	public static final double ELECTRICITY_MAX_PRICE = 25; //ct per kWh
-	public static final double ELECTRICITY_MIN_PRICE = 12; //ct per kWh
+	public static final double ELECTRICITY_MAX_PRICE = 28.69; //ct per kWh
+	public static final double ELECTRICITY_MIN_PRICE = 12.31; //ct per kWh
+	public static final double GAS_PRICE = 6.08; //ct per kWh
+	public static final double OIL_PRICE = 5.47; //ct per kWh
+	public static long timestamp;
+	public static final int MAX_POINTS_PER_POST = 8;
 	
-	public static final int N_STEPS = 70;
-	public static final int N_DAYS = 7;
-	
-	public static final int TIMESTEPS_PER_ITERATION = N_STEPS;
 	public static final BigInteger TIMESTEP_DURATION_IN_SECONDS = 
 			BigInteger.valueOf(15*60);
 	
-	private static final int NR_OF_ITERATIONS = 96;
-	
-	//For the moment, the following 3 parameters need to stay as defined to match data input
-//	public static LocalDateTime startTime = LocalDateTime.of(2014,7,1,11,0);
-//	public static LocalDateTime endTime = LocalDateTime.of(2014,7,1,12,0);
-//	public static Duration timeInterval = Duration.ofMinutes(15);
+	public static final int NR_OF_ITERATIONS = 98;
 	
 	public Simulation() {
 		OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
@@ -75,6 +68,7 @@ public class Simulation {
 			System.out.println("Heat market address: " + heatMarketAddress);
 			electricityMarketAddress = contract.electricityMarket().send();
 			System.out.println("Electricity market address: " + electricityMarketAddress);
+			timestamp = System.currentTimeMillis();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
