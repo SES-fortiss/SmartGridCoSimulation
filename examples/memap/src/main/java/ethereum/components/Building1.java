@@ -22,7 +22,7 @@ public class Building1 extends Building {
 			int consumerIndex
 	) {
 		super(name, rpcport, privateKey, consumptionProfiles, consumerIndex);
-		logger.print(",oilBoilerCost,oilboilerProduction,excessHeat,lackingHeat,electricityLack,gasUsed,failedPosts");
+		logger.print(",oilBoilerCost,oilboilerProduction,excessHeat,lackingHeat,electricityLack,gasUsed,failedPosts,nrOfTransactions");
 		logger.println();
 	}
 
@@ -93,7 +93,7 @@ public class Building1 extends Building {
 
 		currentElectricityConsumption = nextElectricityConsumption;
 		currentHeatConsumption = nextHeatConsumption;
-		logger.print("," + gasUsed + "," + failedPosts);
+		logger.print("," + gasUsed + "," + failedPosts + "," + nrOfTransactions);
 		logger.println();
 	}
 

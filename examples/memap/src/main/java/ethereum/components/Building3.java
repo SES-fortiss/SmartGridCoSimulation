@@ -35,7 +35,7 @@ public class Building3 extends Building {
 		capacity = UnitHelper.getWSfromKWH(100);
 		logger.print(",pv,heatPumpConsumption,heatPumpProduction,"
 				+ "fromThermalStorage,toThermalStorage,stateOfCharge,"
-				+ "lackingHeat,excessElectricity,electricityLack,gasUsed,failedPosts");
+				+ "lackingHeat,excessElectricity,electricityLack,gasUsed,failedPosts,nrOfTransactions");
 		logger.println();
 	}
 
@@ -164,7 +164,7 @@ public class Building3 extends Building {
 		currentElectricityConsumption = nextElectricityConsumption;
 		currentHeatConsumption = nextHeatConsumption;
 		currentPVProduction = nextPVProduction;
-		logger.print("," + gasUsed + "," + failedPosts);
+		logger.print("," + gasUsed + "," + failedPosts + "," + nrOfTransactions);
 		logger.println();
 	}
 

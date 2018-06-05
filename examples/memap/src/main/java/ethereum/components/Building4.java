@@ -40,7 +40,7 @@ public class Building4 extends Building {
 				.multiply(UnitHelper.getEtherPerWsFromCents(Simulation.GAS_PRICE));
 		logger.print(",chpCost,chpHeatProduction,chpElectricityProduction,"
 				+ "fromThermalStorage,toThermalStorage,stateOfCharge,"
-				+ "excessHeat,lackingHeat,excessElectricity,electricityLack,gasUsed,failedPosts");
+				+ "excessHeat,lackingHeat,excessElectricity,electricityLack,gasUsed,failedPosts,nrOfTransactions");
 		logger.println();
 	}
 
@@ -133,13 +133,13 @@ public class Building4 extends Building {
 		ArrayList<BigInteger> electricityDemandPrices = new ArrayList<BigInteger>();
 		ArrayList<BigInteger> electricityDemandAmounts = new ArrayList<BigInteger>();
 		electricityToProduce = nextElectricityConsumption.min(chpElectricityProduction);
-		BigInteger uniqueELectricityMinPrice = findUniqueDemandPrice(
+		BigInteger uniqueElectricityMinPrice = findUniqueDemandPrice(
 				UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE),
 				Market.ELECTRICITY)				;
 		if(isGreaterZero(electricityToProduce)) {
-			electricityDemandPrices.add(uniqueELectricityMinPrice);
+			electricityDemandPrices.add(uniqueElectricityMinPrice);
 			electricityDemandAmounts.add(electricityToProduce);
-			logDemand(electricityToProduce, UnitHelper.getCentsPerKwhFromWeiPerWs(uniqueELectricityMinPrice), Market.ELECTRICITY);
+			logDemand(electricityToProduce, UnitHelper.getCentsPerKwhFromWeiPerWs(uniqueElectricityMinPrice), Market.ELECTRICITY);
 			electricityToProduce = nextElectricityConsumption.subtract(chpElectricityProduction);
 			if(isGreaterZero(electricityToProduce)) {
 				electricityDemandPrices.add(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE));
@@ -149,8 +149,8 @@ public class Building4 extends Building {
 			postDemand(electricityDemandPrices, electricityDemandAmounts, Market.ELECTRICITY);	
 		}
 	
-		logOffer(chpElectricityProduction, UnitHelper.getCentsPerKwhFromWeiPerWs(uniqueELectricityMinPrice), Market.ELECTRICITY);	
-		postOfferSplit(uniqueELectricityMinPrice, chpElectricityProduction, Market.ELECTRICITY);
+		logOffer(chpElectricityProduction, UnitHelper.getCentsPerKwhFromWeiPerWs(uniqueElectricityMinPrice), Market.ELECTRICITY);	
+		postOfferSplit(uniqueElectricityMinPrice, chpElectricityProduction, Market.ELECTRICITY);
 		
 		BigInteger chpHeatPrice = chpCost.subtract(
 				chpElectricityProduction.multiply(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE)))
@@ -173,7 +173,7 @@ public class Building4 extends Building {
 
 		currentElectricityConsumption = nextElectricityConsumption;
 		currentHeatConsumption = nextHeatConsumption;
-		logger.print("," + gasUsed + "," + failedPosts);
+		logger.print("," + gasUsed + "," + failedPosts + "," + nrOfTransactions);
 		logger.println();
 	}
 

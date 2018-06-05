@@ -63,6 +63,7 @@ public abstract class Building extends BehaviorModel {
 	protected BigInteger currentHeatConsumption = BigInteger.ZERO;
 	protected BigInteger currentElectricityConsumption = BigInteger.ZERO;
 	
+	protected int nrOfTransactions = 0;
 	protected BigInteger gasUsed = BigInteger.ZERO;
 	protected int failedPosts = 0;
 
@@ -138,16 +139,22 @@ public abstract class Building extends BehaviorModel {
 		timestepInfo = new TimestepInfo(name);
 		gasUsed = BigInteger.ZERO;
 		failedPosts = 0;
+		nrOfTransactions = 0;
 		
 		try {
 			soldHeat = contract.getHeatToProduce().send();
+			nrOfTransactions++;
 			boughtHeat = contract.getHeatToConsume().send();
+			nrOfTransactions++;
 			soldElectricity = contract.getElectricityToProduce().send();
+			nrOfTransactions++;
 			boughtElectricity = contract.getElectricityToConsume().send();
+			nrOfTransactions++;
 			logger.print(GlobalTime.currentTimeStep + "," + currentHeatConsumption + "," + currentElectricityConsumption  + "," + 
 					soldHeat+ "," + boughtHeat+ "," + soldElectricity+ "," + boughtElectricity+ "," + paidDownPayments);
 			System.out.println("["+ name + "] Withdrawing released payments...");
 			TransactionReceipt receipt = contract.withdrawReleasedPayments().send();
+			nrOfTransactions++;
 			gasUsed = gasUsed.add(receipt.getGasUsed());
 			List<LogWithdrawalSuccessfulEventResponse> withdrawalEvents = heatMarket.getLogWithdrawalSuccessfulEvents(receipt);
 			for(LogWithdrawalSuccessfulEventResponse withdrawalEvent : withdrawalEvents) {
@@ -202,9 +209,11 @@ public abstract class Building extends BehaviorModel {
 			switch (market) {
 			case HEAT:
 				numDemands = contract.numHeatDemands().send().intValue();
+				nrOfTransactions++;
 				break;
 			case ELECTRICITY:
 				numDemands = contract.numElectricityDemands().send().intValue();
+				nrOfTransactions++;
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -272,6 +281,7 @@ public abstract class Building extends BehaviorModel {
 			}
 			if(receipt != null) {
 				gasUsed = gasUsed.add(receipt.getGasUsed());
+				nrOfTransactions++;
 				if(receipt.getStatus().equals("0x1")){
 					System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " demand posted: " + receipt.getTransactionHash());
 				} else {
@@ -305,6 +315,7 @@ public abstract class Building extends BehaviorModel {
 			}
 			if(receipt != null) {
 				gasUsed = gasUsed.add(receipt.getGasUsed());
+				nrOfTransactions++;
 				if(receipt.getStatus().equals("0x1")){
 					System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " offer posted: " + receipt.getTransactionHash());
 				} else {
@@ -337,17 +348,17 @@ public abstract class Building extends BehaviorModel {
 		int i = 0;
 		logOffer(amount, UnitHelper.getCentsPerKwhFromWeiPerWs(price), market);	
 		ArrayList<CompletableFuture<TransactionReceipt>> receiptFutures = new ArrayList<>();
-		while(i <= amount.divide(UnitHelper.FIFTH_KWH).intValue()) {
+		while(i <= amount.divide(UnitHelper.QUARTER_KWH).intValue()) {
 			int j = 0;
-			while(j < Simulation.MAX_POINTS_PER_POST && i < amount.divide(UnitHelper.FIFTH_KWH).intValue()) {
+			while(j < Simulation.MAX_POINTS_PER_POST && i < amount.divide(UnitHelper.QUARTER_KWH).intValue()) {
 				prices.add(price);
-				amounts.add(UnitHelper.FIFTH_KWH);
+				amounts.add(UnitHelper.QUARTER_KWH);
 				j++;
 				i++;
 			}
 			if(j < Simulation.MAX_POINTS_PER_POST) {
 				prices.add(price);
-				amounts.add(amount.mod(UnitHelper.FIFTH_KWH));	
+				amounts.add(amount.mod(UnitHelper.QUARTER_KWH));	
 				i++;
 			}
 					
@@ -370,6 +381,7 @@ public abstract class Building extends BehaviorModel {
 		for(CompletableFuture<TransactionReceipt> receiptFuture : receiptFutures) {
 			TransactionReceipt receipt = receiptFuture.join();
 			gasUsed = gasUsed.add(receipt.getGasUsed());
+			nrOfTransactions++;
 			if(receipt.getStatus().equals("0x1")){
 				System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " offer posted: " + receipt.getTransactionHash());
 			} else {

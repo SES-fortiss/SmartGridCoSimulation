@@ -130,8 +130,6 @@ public class Timekeeper extends BehaviorModel {
 		System.out.println("[Timekeeper] " + numElectricityDemands.toString() + " electricity demands recorded.");
 		System.out.println("[Timekeeper] " + numElectricityOffers.toString() + " electricity offers recorded.");
 		System.out.println("[Timekeeper] Clearing markets...");
-		
-		//TODO log state of the system before starting next step
 
 		List<LogOfferConfirmedEventResponse> confirmedHeatOffers = null;
 		List<LogOfferConfirmedEventResponse> confirmedElectricityOffers = null;

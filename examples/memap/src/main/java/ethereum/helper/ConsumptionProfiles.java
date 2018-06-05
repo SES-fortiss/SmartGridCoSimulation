@@ -37,7 +37,7 @@ public class ConsumptionProfiles {
 		if (consumptionIndex > nrOfProfiles) {
 			//TODO throw Exception;
 		}
-		return heatProfiles.get(consumptionIndex).get(timestep % heatProfiles.size());
+		return heatProfiles.get(consumptionIndex).get(timestep % heatProfiles.get(0).size());
 	}
 	
 	/**

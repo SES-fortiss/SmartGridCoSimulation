@@ -12,6 +12,7 @@ import org.web3j.utils.Async;
 
 import akka.actor.ActorSystem;
 import ethereum.contracts.IntegratedEnergyMarket;
+import ethereum.helper.ConsumptionProfiles;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import simulation.SimulationStarter;
@@ -29,7 +30,7 @@ public class Simulation {
 	public static final double GAS_PRICE = 6.08; //ct per kWh
 	public static final double OIL_PRICE = 5.47; //ct per kWh
 	public static long timestamp;
-	public static final int MAX_POINTS_PER_POST = 8;
+	public static final int MAX_POINTS_PER_POST = 6;
 	
 	public static final BigInteger TIMESTEP_DURATION_IN_SECONDS = 
 			BigInteger.valueOf(15*60);

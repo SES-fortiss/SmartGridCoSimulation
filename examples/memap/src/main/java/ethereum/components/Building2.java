@@ -34,7 +34,7 @@ public class Building2 extends Building {
 				.multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS);
 		capacity = UnitHelper.getWSfromKWH(40);
 		logger.print(",pv,gasboilerCost,gasboilerProduction,fromBattery,toBattery,stateOfCharge,"
-				+ "excessHeat,lackingHeat,excessElectricity,electricityLack,gasUsed,failedPosts");
+				+ "excessHeat,lackingHeat,excessElectricity,electricityLack,gasUsed,failedPosts,nrOfTransactions");
 		logger.println();
 	}
 
@@ -167,7 +167,7 @@ public class Building2 extends Building {
 		currentElectricityConsumption = nextElectricityConsumption;
 		currentHeatConsumption = nextHeatConsumption;
 		currentPVProduction = nextPVProduction;
-		logger.print("," + gasUsed + "," + failedPosts);
+		logger.print("," + gasUsed + "," + failedPosts + "," + nrOfTransactions);
 		logger.println();
 	}
 

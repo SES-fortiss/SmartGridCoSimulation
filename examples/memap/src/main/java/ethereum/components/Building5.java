@@ -43,7 +43,7 @@ public class Building5 extends Building {
 				.multiply(UnitHelper.getEtherPerWsFromCents(Simulation.GAS_PRICE));
 		logger.print(",solarThermal,chpCost,chpHeatProduction,chpElectricityProduction,"
 				+ "fromThermalStorage,toThermalStorage,stateOfCharge,"
-				+ "excessHeat,lackingHeat,excessElectricity,electricityLack,gasUsed,failedPosts");
+				+ "excessHeat,lackingHeat,excessElectricity,electricityLack,gasUsed,failedPosts,nrOfTransactions");
 		logger.println();
 	}
 
@@ -198,7 +198,7 @@ public class Building5 extends Building {
 		currentElectricityConsumption = nextElectricityConsumption;
 		currentHeatConsumption = nextHeatConsumption;
 		currentSTProduction = nextSTProduction;
-		logger.print("," + gasUsed + "," + failedPosts);
+		logger.print("," + gasUsed + "," + failedPosts + "," + nrOfTransactions);
 		logger.println();
 	}
 

@@ -5,7 +5,7 @@ import java.math.BigInteger;
 public class UnitHelper {
 	
 	public static final double WS_PER_KWH = 3600000.0;
-	public static final BigInteger FIFTH_KWH = getWSfromKWH(0.2);
+	public static final BigInteger QUARTER_KWH = getWSfromKWH(0.25);
 	private static final double CENT_IN_WEI = 10000000000000000.0;
 
 	public static BigInteger getWSfromKWH(int kWh) {
