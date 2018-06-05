@@ -21,7 +21,6 @@ public class ConsumptionProfiles {
 	private HashMap<Integer, ArrayList<Double>> heatProfiles = new HashMap<Integer, ArrayList<Double>>();
 	private HashMap<Integer, ArrayList<Double>> electricityProfile = new HashMap<Integer, ArrayList<Double>>();
 //	private ArrayList<Double> electricityProfile = new ArrayList<Double>();
-
 	private final int nrOfProfiles;
 	
 	public ConsumptionProfiles(int nrOfProfiles) {
@@ -29,7 +28,6 @@ public class ConsumptionProfiles {
 		// kWh / Minute - f�r 1 Tag
 		heatProfiles = readConsumption("WaermeVerbraeuche.csv", nrOfProfiles);
 		electricityProfile = readConsumption("StromVerbraeucheMatlab.csv", nrOfProfiles);
-
 	}
 	
 	/**
@@ -53,19 +51,6 @@ public class ConsumptionProfiles {
 		}
 //		return electricityProfile.get(consumptionIndex).get(timestep % heatProfiles.size());
 		return electricityProfile.get(consumptionIndex).get(timestep);
-	}
-	
-	/**
-	 * Returns the current heat consumption at a given timestep.
-	 * 
-	 * @param time the timestep for which to get the heat consumption
-	 * @return heat consumption at given timestep
-	 */
-	public double getElectricityConsumption(int consumptionIndex, int timestep) {
-		if (consumptionIndex > nrOfProfiles) {
-			//TODO throw Exception;
-		}
-		return electricityProfiles.get(consumptionIndex).get(timestep % electricityProfiles.size());
 	}
 	
 	/**
