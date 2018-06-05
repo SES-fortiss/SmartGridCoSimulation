@@ -30,7 +30,7 @@ public class SmartMeterUseCase {
 	public void run(){	
 		
 		topology = Topology.createTopology();		
-		SimulationStarter.saveGridTopologyPlot(topology);   
+		//SimulationStarter.saveGridTopologyPlot(topology);   
 		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
         SimulationStarter.startSimulation(actorSystem,startTime, endTime, timeInterval);
 	}

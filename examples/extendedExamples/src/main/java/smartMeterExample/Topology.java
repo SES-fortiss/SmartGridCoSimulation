@@ -34,7 +34,7 @@ public class Topology {
 		top.addActor("Server", ActorFactory.createAggregator());
 		String path;
 		
-		for (int i = 1; i <= 100000; i++) {
+		for (int i = 1; i <= 100; i++) {
 			path = "Server/SmartMeter"+i;
 			top.addActorAsChild(path, ActorFactory.createSmartMeter());
 		}

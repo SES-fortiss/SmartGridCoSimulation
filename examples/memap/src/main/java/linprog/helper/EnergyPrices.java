@@ -20,12 +20,15 @@ import simulation.SimulationStarter;
  */
 public class EnergyPrices {
 	
-	private static final String STROMPREISE_CSV_FILENAME = "Strompreise_7Tage.csv";
+	private static final String STROMPREISE_CSV_FILENAME = "Strompreise_7Tage_interpolated.csv";
+	private static final String STROMPREISE_CSV_FILENAME_PV = "Strompreise_7Tage.csv";
 	
 	private ArrayList<Double> electricityPrices;
+	private ArrayList<Double> electricityPricesPV;
 	
 	public EnergyPrices() {
 		electricityPrices = readElectricityPrices(STROMPREISE_CSV_FILENAME);
+		electricityPricesPV = readElectricityPrices(STROMPREISE_CSV_FILENAME_PV);
 	}
 	
 	/**
@@ -71,6 +74,10 @@ public class EnergyPrices {
 		return electricityPrices.get(timestep % electricityPrices.size());
 	}
 	
+	public double getElectricityPricePVInCent(int timestep) {
+		return electricityPricesPV.get(timestep % electricityPrices.size());
+	}
+	
 	private ArrayList<Double> readElectricityPrices(String filename){
 		ArrayList<Double> electricityPrices = new ArrayList<Double>();
 		try {
@@ -99,7 +106,7 @@ public class EnergyPrices {
     	while ((zeile = br.readLine()) != null){	
 				
 			try {
-				electricityPrices.add(nf.parse(zeile).doubleValue()/3600.0);	
+				electricityPrices.add(nf.parse(zeile).doubleValue());	
 			} catch (Exception e) {
 				// do nothing
 			}

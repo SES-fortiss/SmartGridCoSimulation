@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import linprog.Simulation;
 import linprog.helper.EnergyPrices;
+import linprog.helper.SolarRadiation;
 
 public class Battery extends Storage {
 	
@@ -16,17 +17,18 @@ public class Battery extends Storage {
 		super.makeDecision();
 		EnergyPrices energyPrices = new EnergyPrices();
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = 0.0;
+			specificationToSend.cost[i] = energyPrices.getElectricityPriceInCent(i); //  + 0.001 * Math.random();
 			for (int j = 0; j < 2*n; j++) {
 				specificationToSend.couplingMatrix[i][j] = 0.0;
 			}
 			specificationToSend.vector[i] = 0.0;
 		}
 		for (int i = n; i < 2*n; i++) {
-			specificationToSend.cost[i] = -energyPrices.getElectricityPriceInCent(i) + 0.001 * Math.random();
+//			specificationToSend.cost[i] = -energyPrices.getElectricityPriceInCent(i) + 0.001 * Math.random();
+			specificationToSend.cost[i] = -energyPrices.getElectricityPricePVInCent(i)/3600*1.1;
 			specificationToSend.vector[i] = capacity/Simulation.stepLength(TimeUnit.SECONDS);
 		}
-		
+	
 		display.update(gson.toJson(specificationToSend));
 	}
 

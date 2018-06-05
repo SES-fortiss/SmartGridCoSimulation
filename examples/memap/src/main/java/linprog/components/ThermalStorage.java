@@ -20,7 +20,7 @@ public class ThermalStorage extends Storage {
 	public void makeDecision() {
 		super.makeDecision();
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = 0.0;
+			specificationToSend.cost[i] = 0.0000001; 	// = 0.0008640;
 			for (int j = 0; j < 2*n; j++) {
 				specificationToSend.couplingMatrix[i][j] = 0.0;
 			}
@@ -29,7 +29,7 @@ public class ThermalStorage extends Storage {
 			specificationToSend.vector[i] = 0.0;
 		}
 		for (int i = n; i < 2*n; i++) {
-			specificationToSend.cost[i] = 0.0;
+			specificationToSend.cost[i] = 0.0000001; 	// = 0.0008640;
 			specificationToSend.vector[i] = capacity/Simulation.stepLength(TimeUnit.SECONDS);
 		}
 		

@@ -11,16 +11,27 @@ package smartMeterExample.behavior;
 
 import java.util.LinkedList;
 
-import smartMeterExample.message.SmartMeterAnswer;
+import com.google.gson.Gson;
+
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
+import smartMeterExample.M2MDisplay;
+import smartMeterExample.message.SmartMeterAnswer;
 
 public class AggregatorBehavior extends BehaviorModel {
 
+	public M2MDisplay display;
+	public TestMessage test = new TestMessage();
+	
+	public AggregatorBehavior() {
+		display = new M2MDisplay(8090);
+		display.run();
+	}
+	
+	
 	// CPU rating per second
 	public double cpuRating = 1337;
 
@@ -30,37 +41,27 @@ public class AggregatorBehavior extends BehaviorModel {
 
 	@Override
 	public void makeDecision() {
-		
 		int sum = 0;
-		int cpuMessageRating = 0;
-		double cpuDemand = 0;
-		
 		for (BasicAnswer answer : super.answerListReceived) {
 		
 			SmartMeterAnswer ans = (SmartMeterAnswer) answer.answerContent;
 			sum = sum + ans.size;			
-			
-			// CPU Bedarf pro Nachricht 
-			if (ans.size <= 20) cpuMessageRating = 10;
-			else cpuMessageRating = 20;
-			
-			if (ans.size > 200) cpuMessageRating = 30;
-
-			// Berechne den CPU Bedarf
-			cpuDemand += cpuMessageRating;			
+				
 		}
-		
-		// Berechne die Last pro Sekunde
-		double memoryUtlization = sum / GlobalTime.period.getSeconds();		
-		cpuDemand  = cpuDemand / GlobalTime.period.getSeconds();
-		
-		// Umrechnen in Prozent
-		double cpuUtilization = cpuDemand / cpuRating;
-		cpuUtilization = cpuUtilization * 100;
 				
 		// Ausgabe
-		System.out.println("Speicher Last: " + memoryUtlization + " kB/s");
-		System.out.println("CPU Last: " + cpuUtilization + " %");
+		System.out.println("Summe : " + sum);
+		
+		test.size = sum;
+		Gson gson = new Gson();
+		display.update(gson.toJson(test));	
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

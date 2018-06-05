@@ -25,7 +25,8 @@ public class ConsumptionProfiles {
 	
 	public ConsumptionProfiles(int nrOfProfiles) {
 		this.nrOfProfiles = nrOfProfiles;
-		// kWh / Minute - fï¿½r 1 Tag
+
+		// kWh / Minute - für 1 Tag
 		heatProfiles = readConsumption("WaermeVerbraeuche.csv", nrOfProfiles);
 		electricityProfile = readConsumption("StromVerbraeucheMatlab.csv", nrOfProfiles);
 	}
@@ -105,7 +106,7 @@ public class ConsumptionProfiles {
 	
     	while ( (zeile = br.readLine()) != null) {		
 			buffer = zeile.split(";");	
-			// Zur Korrektur des Zeitschritts werden 143 Zeitschritte ï¿½bersprungen
+			// Zur Korrektur des Zeitschritts werden 143 Zeitschritte übersprungen
 			if ( (i++ == k*Simulation.stepLength(TimeUnit.MINUTES)) && (buffer.length != 0) ) {
 				try {
 					for(int j = 0; j < buffer.length; j++) {
@@ -121,7 +122,7 @@ public class ConsumptionProfiles {
     	
 	    br.close();  
 	    
-	 // Das Wï¿½rmeprofil eines Tages wird auf n_days kopiert
+	 // Das Wärmeprofil eines Tages wird auf n_days kopiert
     	System.out.println(gson.toJson(dailyProfiles.get(1).size()));   
     	
 	    for (int m = 0; m < (Simulation.N_STEPS/k); m++) {
@@ -145,7 +146,7 @@ public class ConsumptionProfiles {
 
 	
 		
-//  Hier werden 144 Minuten/Eintrï¿½ge aus dem csv Zusammengefasst damit sie dem Zeitschritt 2,4 Std der Sim entsprechen		
+//  Hier werden 144 Minuten/Einträge aus dem csv Zusammengefasst damit sie dem Zeitschritt 2,4 Std der Sim entsprechen		
 			
 //			i++;
 //			if(i < Simulation.stepLength(TimeUnit.MINUTES)) {

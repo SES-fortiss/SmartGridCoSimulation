@@ -12,8 +12,10 @@ public class HeatPump extends Producer {
 		super(name, qdot_max, port);
 		if(efficiency < 0.0 || efficiency > 1.0) {
 			//TODO throw exception
+			this.efficiency = efficiency;
+		} else {
+			this.efficiency = efficiency;
 		}
-		this.efficiency = efficiency;
 	}
 	
 	@Override
