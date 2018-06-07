@@ -1,6 +1,7 @@
 package ethereum.components;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import akka.systemActors.GlobalTime;
@@ -11,8 +12,9 @@ import ethereum.helper.UnitHelper;
 
 public class Building1 extends Building {
 	
-	private BigInteger oilboilerPower = BigInteger.valueOf(40000); //W
+	private BigInteger oilboilerPower = BigInteger.valueOf(15000); //W
 	private BigInteger oilboilerPrice = UnitHelper.getEtherPerWsFromCents(Simulation.OIL_PRICE);
+	private final int stages = 1;
 	
 	public Building1(
 			String name,
@@ -30,32 +32,38 @@ public class Building1 extends Building {
 	public void makeDecision() {
 		super.makeDecision();
 
-		String oilboilerStatus = "off";
-		BigInteger oilboilerProduction = Simulation.TIMESTEP_DURATION_IN_SECONDS.multiply(oilboilerPower);
+		int oilboilerStage = 0;
+		BigInteger oilboilerProductionPerStage = Simulation.TIMESTEP_DURATION_IN_SECONDS.multiply(oilboilerPower).divide(BigInteger.valueOf(stages));
+		BigInteger oilboilerCost = BigInteger.ZERO;
 		
-		BigInteger amountToProduce = currentHeatConsumption.add(soldHeat).subtract(boughtHeat);
-		BigInteger excessProduction = BigInteger.ZERO;
-		if(isGreaterZero(amountToProduce)) {
-			oilboilerStatus = "on";
-			excessProduction = oilboilerProduction.subtract(amountToProduce).max(BigInteger.ZERO);
-			amountToProduce = amountToProduce.subtract(oilboilerProduction).max(BigInteger.ZERO);
-			timestepInfo.cost = timestepInfo.cost.add(oilboilerProduction.multiply(oilboilerPrice));
-		}	
-		System.out.println("[" + name + "] Oilboiler: " + oilboilerStatus + 
-				(oilboilerStatus.equals("on") ? ", producing " + UnitHelper.printAmount(oilboilerProduction) + " Ws." : "." ));
-		logger.print("," + timestepInfo.cost);
-		logger.print("," + (oilboilerStatus == "off" ? 0 : oilboilerProduction));
+		BigInteger heatToProduce = currentHeatConsumption.add(soldHeat).subtract(boughtHeat);
+		BigInteger excessHeat = BigInteger.ZERO;
+		while(oilboilerStage < stages) {
+			if(isGreaterZero(heatToProduce)) {
+				oilboilerStage++;
+				excessHeat = oilboilerProductionPerStage.subtract(heatToProduce).max(BigInteger.ZERO);
+				heatToProduce = heatToProduce.subtract(oilboilerProductionPerStage).max(BigInteger.ZERO);
+				oilboilerCost = oilboilerCost.add(oilboilerProductionPerStage.multiply(oilboilerPrice));
+			}	
+			else {
+				break;
+			}
+		}
+		System.out.println("[" + name + "] Oilboiler: " + (oilboilerStage == 0 ? "off" : "Stage " + oilboilerStage) + 
+				(oilboilerStage > 0 ? ", producing " + UnitHelper.printAmount(oilboilerProductionPerStage.multiply(BigInteger.valueOf(oilboilerStage))) : "." ));
+		logger.print("," + oilboilerCost.toString());
+		logger.print("," + oilboilerProductionPerStage.multiply(BigInteger.valueOf(oilboilerStage)).toString());
 		
-		if(isGreaterZero(excessProduction)) {
-			System.out.println("[" + name + "] Excess heat: " + UnitHelper.printAmount(excessProduction));
-			timestepInfo.heatFeedIn = excessProduction;
+		if(isGreaterZero(excessHeat)) {
+			System.out.println("[" + name + "] Excess heat: " + UnitHelper.printAmount(excessHeat));
+			timestepInfo.heatFeedIn = excessHeat;
 		}
-		logger.print("," + excessProduction);
-		if(isGreaterZero(amountToProduce)) {
-			System.out.println("[" + name + "] Lacking heat : " + UnitHelper.printAmount(amountToProduce));
-			timestepInfo.heatWithdrawal = amountToProduce;
+		logger.print("," + excessHeat);
+		if(isGreaterZero(heatToProduce)) {
+			System.out.println("[" + name + "] Lacking heat : " + UnitHelper.printAmount(heatToProduce));
+			timestepInfo.heatWithdrawal = heatToProduce;
 		}
-		logger.print("," + amountToProduce);
+		logger.print("," + heatToProduce);
 		
 		BigInteger electricityLack = currentElectricityConsumption.subtract(boughtElectricity).max(BigInteger.ZERO);
 		if(isGreaterZero(electricityLack)) {
@@ -88,8 +96,14 @@ public class Building1 extends Building {
 		BigInteger heatDemandPrice = findUniqueDemandPrice(oilboilerPrice, Market.HEAT);
 		logDemand(nextHeatConsumption, UnitHelper.getCentsPerKwhFromWeiPerWs(heatDemandPrice), Market.HEAT);
 		postDemand(Arrays.asList(heatDemandPrice), Arrays.asList(nextHeatConsumption), Market.HEAT);
-		logOffer(oilboilerProduction, UnitHelper.getCentsPerKwhFromWeiPerWs(heatDemandPrice), Market.HEAT);
-		postOffer(Arrays.asList(heatDemandPrice), Arrays.asList(oilboilerProduction), Market.HEAT);
+		ArrayList<BigInteger> heatOfferPrices = new ArrayList<>();
+		ArrayList<BigInteger> heatOfferAmounts = new ArrayList<>();
+		for(int i = 0; i < stages; i++) {
+			logOffer(oilboilerProductionPerStage, UnitHelper.getCentsPerKwhFromWeiPerWs(heatDemandPrice), Market.HEAT);
+			heatOfferPrices.add(heatDemandPrice);
+			heatOfferAmounts.add(oilboilerProductionPerStage);
+		}
+		postOffer(heatOfferPrices, heatOfferAmounts, Market.HEAT);
 
 		currentElectricityConsumption = nextElectricityConsumption;
 		currentHeatConsumption = nextHeatConsumption;

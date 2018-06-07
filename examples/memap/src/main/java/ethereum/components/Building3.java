@@ -130,21 +130,23 @@ public class Building3 extends Building {
 
 		ArrayList<BigInteger> heatDemandPrices = new ArrayList<BigInteger>();
 		ArrayList<BigInteger> heatDemandAmounts = new ArrayList<BigInteger>();
-		heatDemandAmounts.add(fromStorage.min(toStorage)); // demand amount that could be as well taken from storage but only as much as could be added to storage in case other demand is also fulfilled
-		heatDemandAmounts.add(heatNeeded);
 		BigInteger heatPrice1 = findUniqueDemandPrice(electricityToHeatPrice(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE)), Market.HEAT);
+		BigInteger heatAmount1 = fromStorage.min(toStorage); // demand amount that could be as well taken from storage but only as much as could be added to storage in case other demand is also fulfilled
+		if(isGreaterZero(heatAmount1)) {
+			logDemand(heatAmount1, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice1), Market.HEAT);
+			heatDemandAmounts.add(heatAmount1);
+			heatDemandPrices.add(heatPrice1);
+		}
+		heatDemandAmounts.add(heatNeeded);
 		BigInteger heatPrice2 = findUniqueDemandPrice(electricityToHeatPrice(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MAX_PRICE)), Market.HEAT);
-		heatDemandPrices.add(heatPrice1);
 		heatDemandPrices.add(heatPrice2);
-		logDemand(fromStorage.min(toStorage), UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice1), Market.HEAT);
 		logDemand(heatNeeded, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice2), Market.HEAT);
 		postDemand(heatDemandPrices, heatDemandAmounts, Market.HEAT);
 
 		BigInteger heatToOffer = fromStorage.add(heatPumpMaxProduction);
 
 		if(isGreaterZero(heatToOffer)) {
-			logOffer(heatToOffer, UnitHelper.getCentsPerKwhFromWeiPerWs(heatPrice2), Market.HEAT);
-			postOfferSplit(heatPrice2, heatToOffer, Market.HEAT);
+			postAndLogOfferSplit(heatPrice2, heatToOffer, Market.HEAT);
 		}
 
 		ArrayList<BigInteger> electricityDemandPrices = new ArrayList<BigInteger>();
@@ -157,8 +159,7 @@ public class Building3 extends Building {
 		}
 		
 		if(isGreaterZero(excessElectricity)) {
-			logOffer(excessElectricity, Simulation.ELECTRICITY_MIN_PRICE, Market.ELECTRICITY);	
-			postOfferSplit(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE), excessElectricity, Market.ELECTRICITY);
+			postAndLogOfferSplit(UnitHelper.getEtherPerWsFromCents(Simulation.ELECTRICITY_MIN_PRICE), excessElectricity, Market.ELECTRICITY);
 		}
 
 		currentElectricityConsumption = nextElectricityConsumption;

@@ -14,13 +14,15 @@ import ethereum.helper.UnitHelper;
 public class Building2 extends Building {
 	
 	private BigInteger currentPVProduction = BigInteger.ZERO;
-	private double pvArea = 8.;
+	private double pvArea = 40.;
+	private double pvEfficiency = 0.2;
 	private BigInteger stateOfCharge = BigInteger.ZERO;
 	private BigInteger maxInOut; //Ws
 	private BigInteger capacity; //Ws
 	private double storageEfficiency = 1.;
 	private BigInteger gasboilerPower = BigInteger.valueOf(80000);
 	private BigInteger gasboilerPrice = UnitHelper.getEtherPerWsFromCents(Simulation.GAS_PRICE);
+	private final int stages = 2;
 	
 	public Building2(
 			String name,
@@ -43,23 +45,29 @@ public class Building2 extends Building {
 		super.makeDecision();
 		logger.print("," + currentPVProduction);
 
-		String gasboilerStatus = "off";
-		BigInteger gasboilerProduction = Simulation.TIMESTEP_DURATION_IN_SECONDS.multiply(gasboilerPower);
+		int gasboilerStage = 0;
+		BigInteger gasboilerProductionPerStage = Simulation.TIMESTEP_DURATION_IN_SECONDS.multiply(gasboilerPower).divide(BigInteger.valueOf(stages));
+		BigInteger gasBoilerCost = BigInteger.ZERO;
 		
 		BigInteger heatToProduce = currentHeatConsumption.add(soldHeat);
 		heatToProduce = heatToProduce.subtract(boughtHeat); //never demand more heat than consumption+soldHeat --> always positive or zero
 		BigInteger excessHeat = BigInteger.ZERO;
 		
-		if(isGreaterZero(heatToProduce)) {
-			gasboilerStatus = "on";
-			excessHeat = gasboilerProduction.subtract(heatToProduce).max(BigInteger.ZERO);
-			heatToProduce = heatToProduce.subtract(gasboilerProduction).max(BigInteger.ZERO);
-			timestepInfo.cost = timestepInfo.cost.add(gasboilerProduction.multiply(gasboilerPrice));
+		while(gasboilerStage < stages) {
+			if(isGreaterZero(heatToProduce)) {
+				gasboilerStage++;
+				excessHeat = gasboilerProductionPerStage.subtract(heatToProduce).max(BigInteger.ZERO);
+				heatToProduce = heatToProduce.subtract(gasboilerProductionPerStage).max(BigInteger.ZERO);
+				gasBoilerCost = gasBoilerCost.add(gasboilerProductionPerStage.multiply(gasboilerPrice));
+			}	
+			else {
+				break;
+			}
 		}
-		System.out.println("[" + name + "] Gasboiler: " + gasboilerStatus + 
-				(gasboilerStatus.equals("on") ? ", producing " + UnitHelper.printAmount(gasboilerProduction) : ""  + "." ));
-		logger.print("," + timestepInfo.cost);
-		logger.print("," + (gasboilerStatus == "off" ? 0 : gasboilerProduction));
+		System.out.println("[" + name + "] Gasboiler: " + (gasboilerStage == 0 ? "off" : "Stage " + gasboilerStage) + 
+				(gasboilerStage > 0 ? ", producing " + UnitHelper.printAmount(gasboilerProductionPerStage.multiply(BigInteger.valueOf(gasboilerStage))) : "." ));
+		logger.print("," + gasBoilerCost.toString());
+		logger.print("," + gasboilerProductionPerStage.multiply(BigInteger.valueOf(gasboilerStage)).toString());
 		
 		BigInteger electricityToProduce = currentElectricityConsumption.add(soldElectricity).subtract(boughtElectricity);		
 		
@@ -74,7 +82,7 @@ public class Building2 extends Building {
 			stateOfCharge = stateOfCharge.subtract(fromStorage);
 			electricityToProduce = electricityToProduce.subtract(fromStorage);	
 			System.out.println("[" + name + "] Drawing " + UnitHelper.printAmount(fromStorage) +" from battery,"
-					+ " leaving state of charge at" + UnitHelper.printAmount(stateOfCharge) + ".");			
+					+ " leaving state of charge at " + UnitHelper.printAmount(stateOfCharge) + ".");			
 		}
 		logger.print("," + fromStorage);
 		
@@ -84,7 +92,7 @@ public class Building2 extends Building {
 			stateOfCharge = stateOfCharge.add(toStorage);
 			excessElectricity = excessElectricity.subtract(toStorage);
 			System.out.println("[" + name + "] Charging " + UnitHelper.printAmount(toStorage) + " into battery,"
-					+ " leaving state of charge at" + stateOfCharge + "Ws.");
+					+ " leaving state of charge at " + UnitHelper.printAmount(stateOfCharge) + "Ws.");
 		}	
 		logger.print("," + toStorage);	
 		logger.print("," + stateOfCharge);	
@@ -119,7 +127,7 @@ public class Building2 extends Building {
 		BigInteger nextPVProduction = 
 				BigInteger.valueOf(
 						(long) (SolarRadiation.getRadiation(GlobalTime.currentTimeStep)
-								* pvArea*1000000000) //kW * 1000000000
+								* pvArea * pvEfficiency * 1000000000) //kW * 1000000000
 					).multiply(BigInteger.valueOf(1000)) //W * 1000000000
 				.multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS).divide(BigInteger.valueOf(1000000000)); //Ws
 		
@@ -135,8 +143,14 @@ public class Building2 extends Building {
 		BigInteger heatDemandPrice = findUniqueDemandPrice(gasboilerPrice, Market.HEAT);
 		logDemand(nextHeatConsumption, UnitHelper.getCentsPerKwhFromWeiPerWs(heatDemandPrice), Market.HEAT);
 		postDemand(Arrays.asList(heatDemandPrice), Arrays.asList(nextHeatConsumption), Market.HEAT);
-		logOffer(gasboilerProduction, UnitHelper.getCentsPerKwhFromWeiPerWs(heatDemandPrice), Market.HEAT);
-		postOffer(Arrays.asList(heatDemandPrice), Arrays.asList(gasboilerProduction), Market.HEAT);
+		ArrayList<BigInteger> heatOfferPrices = new ArrayList<>();
+		ArrayList<BigInteger> heatOfferAmounts = new ArrayList<>();
+		for(int i = 0; i < stages; i++) {
+			logOffer(gasboilerProductionPerStage, UnitHelper.getCentsPerKwhFromWeiPerWs(heatDemandPrice), Market.HEAT);
+			heatOfferPrices.add(heatDemandPrice);
+			heatOfferAmounts.add(gasboilerProductionPerStage);
+		}
+		postOffer(heatOfferPrices, heatOfferAmounts, Market.HEAT);
 
 		ArrayList<BigInteger> electricityDemandPrices = new ArrayList<BigInteger>();
 		ArrayList<BigInteger> electricityDemandAmounts = new ArrayList<BigInteger>();
@@ -161,7 +175,7 @@ public class Building2 extends Building {
 		
 		if(isGreaterZero(excessElectricity)) {
 			logOffer(excessElectricity, Simulation.ELECTRICITY_MIN_PRICE, Market.ELECTRICITY);	
-			postOfferSplit(uniqueMinPrice, excessElectricity, Market.ELECTRICITY);
+			postAndLogOfferSplit(uniqueMinPrice, excessElectricity, Market.ELECTRICITY);
 		}
 
 		currentElectricityConsumption = nextElectricityConsumption;

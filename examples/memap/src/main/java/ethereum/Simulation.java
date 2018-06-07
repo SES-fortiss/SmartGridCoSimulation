@@ -22,6 +22,8 @@ public class Simulation {
 
 	private ActorTopology topology;
 
+	public static final int GAS_LIMIT = 80000000;
+
 	public static String contractAddress = "";
 	public static String heatMarketAddress = "";
 	public static String electricityMarketAddress = "";
@@ -30,7 +32,7 @@ public class Simulation {
 	public static final double GAS_PRICE = 6.08; //ct per kWh
 	public static final double OIL_PRICE = 5.47; //ct per kWh
 	public static long timestamp;
-	public static final int MAX_POINTS_PER_POST = 6;
+	public static final int MAX_POINTS_PER_POST = 8;
 	
 	public static final BigInteger TIMESTEP_DURATION_IN_SECONDS = 
 			BigInteger.valueOf(15*60);
@@ -52,7 +54,7 @@ public class Simulation {
 							web3j,
 							credentials,
 							BigInteger.ONE,
-							BigInteger.valueOf(8000000),
+							BigInteger.valueOf(GAS_LIMIT),
 							"0x627306090abaB3A6e1400e9345bC60c78a8BEf57",
 							Arrays.asList(
 									"0xf17f52151EbEF6C7334FAD080c5704D77216b732",

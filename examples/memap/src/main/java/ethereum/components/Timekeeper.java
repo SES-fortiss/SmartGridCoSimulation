@@ -55,9 +55,9 @@ public class Timekeeper extends BehaviorModel {
 		ScheduledExecutorService executorService = Async.defaultExecutorService();
 		web3j = Web3j.build(httpService, JsonRpc2_0Web3j.DEFAULT_BLOCK_TIME, executorService);
 		credentials = Credentials.create("0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3");
-		contract = IntegratedEnergyMarket.load(Simulation.contractAddress, web3j, credentials, BigInteger.ONE, BigInteger.valueOf(8000000));
-		heatMarket = DoubleSidedAuctionMarket.load(Simulation.heatMarketAddress, web3j, credentials, BigInteger.ONE, BigInteger.valueOf(8000000));
-		electricityMarket = DoubleSidedAuctionMarket.load(Simulation.electricityMarketAddress, web3j, credentials, BigInteger.ONE, BigInteger.valueOf(8000000));
+		contract = IntegratedEnergyMarket.load(Simulation.contractAddress, web3j, credentials, BigInteger.ONE, BigInteger.valueOf(Simulation.GAS_LIMIT));
+		heatMarket = DoubleSidedAuctionMarket.load(Simulation.heatMarketAddress, web3j, credentials, BigInteger.ONE, BigInteger.valueOf(Simulation.GAS_LIMIT));
+		electricityMarket = DoubleSidedAuctionMarket.load(Simulation.electricityMarketAddress, web3j, credentials, BigInteger.ONE, BigInteger.valueOf(Simulation.GAS_LIMIT));
 	
 		try {
 			String dest = "target/logs/" + Simulation.timestamp + "-Timekeeper.csv";			
@@ -131,42 +131,38 @@ public class Timekeeper extends BehaviorModel {
 		System.out.println("[Timekeeper] " + numElectricityOffers.toString() + " electricity offers recorded.");
 		System.out.println("[Timekeeper] Clearing markets...");
 
-		List<LogOfferConfirmedEventResponse> confirmedHeatOffers = null;
-		List<LogOfferConfirmedEventResponse> confirmedElectricityOffers = null;
-		
+		List<LogOfferConfirmedEventResponse> confirmedOffers = null;
+
+		String success = "no,";
 		try {
 			logger.print(System.currentTimeMillis() + ",");
-			TransactionReceipt receipt = contract.nextTimestep().send();
-			logger.print(System.currentTimeMillis() + ",");
-			System.out.println("[Timekeeper] Transaction address: " + receipt.getTransactionHash());
-			confirmedHeatOffers = heatMarket.getLogOfferConfirmedEvents(receipt);
-			confirmedElectricityOffers = electricityMarket.getLogOfferConfirmedEvents(receipt);
-			if(receipt.getStatus().equals("0x1")) {
-				System.out.println("Market clearing successful.");
-				logger.print("yes,");
-			} else {
-				System.out.println("Market clearing NOT successful.");	
-				logger.print("no,");			
+			int tries = 0;
+			while(tries < 3) {
+				TransactionReceipt receipt = contract.nextTimestep().send();
+				System.out.println("[Timekeeper] Transaction address: " + receipt.getTransactionHash());
+				confirmedOffers = heatMarket.getLogOfferConfirmedEvents(receipt);
+				if(receipt.getStatus().equals("0x1")) {
+					System.out.println("Market clearing successful.");
+					success = "yes,";
+					break;
+				} else {
+					System.out.println("Market clearing NOT successful.");	
+					tries++;
+				}
 			}
-			logger.print(receipt.getGasUsed() + ",");
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		for(LogOfferConfirmedEventResponse confirmedHeatOffer : confirmedHeatOffers) {
-			System.out.println("[Timekeeper] Offer confirmed: " + confirmedHeatOffer.producer + " sold " + 
-					UnitHelper.printAmount(confirmedHeatOffer.amount) + " of heat for " + 
-					UnitHelper.printCents(confirmedHeatOffer.price) + "/kWh."
+		logger.print(success);
+		for(LogOfferConfirmedEventResponse confirmedOffer : confirmedOffers) {
+			System.out.println("[Timekeeper] Offer confirmed: " + confirmedOffer.producer + " sold " + //TODO determine type
+					UnitHelper.printAmount(confirmedOffer.amount) + " for " + 
+					UnitHelper.printCents(confirmedOffer.price) + "/kWh."
 					);
-		}
-		for(LogOfferConfirmedEventResponse confirmedElectricityOffer : confirmedElectricityOffers) {
-			System.out.println("[Timekeeper] Offer confirmed: " + confirmedElectricityOffer.producer + " sold " + 
-					UnitHelper.printAmount(confirmedElectricityOffer.amount) + " of electricity for " + 
-					UnitHelper.printCents(confirmedElectricityOffer.price) + "/kWh."
-					);
-		}
-		logger.print(confirmedHeatOffers.size() + "," + System.currentTimeMillis() + ",");
+		}//TODO determine type
+		logger.print(confirmedOffers.size() + "," + System.currentTimeMillis() + ",");
 		try {
 			logger.print(web3j.ethBlockNumber().send().getBlockNumber() + "");
 		} catch (IOException e) {

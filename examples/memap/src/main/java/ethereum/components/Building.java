@@ -96,7 +96,7 @@ public abstract class Building extends BehaviorModel {
 				web3j, 
 				fastRawTxMgr, 
 				BigInteger.ONE, 
-				BigInteger.valueOf(8000000)
+				BigInteger.valueOf(Simulation.GAS_LIMIT)
 			);
 		contract.setGasPrice(BigInteger.ZERO);
 		heatMarket = DoubleSidedAuctionMarket.load(
@@ -104,14 +104,14 @@ public abstract class Building extends BehaviorModel {
 				web3j, 
 				credentials, 
 				BigInteger.ONE, 
-				BigInteger.valueOf(8000000)
+				BigInteger.valueOf(Simulation.GAS_LIMIT)
 			);
 		electricityMarket = DoubleSidedAuctionMarket.load(
 				Simulation.electricityMarketAddress, 
 				web3j, 
 				credentials, 
 				BigInteger.ONE, 
-				BigInteger.valueOf(8000000)
+				BigInteger.valueOf(Simulation.GAS_LIMIT)
 			);
 	
 		try {
@@ -285,7 +285,7 @@ public abstract class Building extends BehaviorModel {
 				if(receipt.getStatus().equals("0x1")){
 					System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " demand posted: " + receipt.getTransactionHash());
 				} else {
-					System.out.println(receipt.getTransactionHash() + " was not successful.");
+					System.out.println("[" + name + "]  Posting " + (market == Market.HEAT ? "heat" : "electricity") + " demand (" + receipt.getTransactionHash() + " was not successful.");
 					failedPosts++;
 				}
 			}
@@ -319,7 +319,7 @@ public abstract class Building extends BehaviorModel {
 				if(receipt.getStatus().equals("0x1")){
 					System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " offer posted: " + receipt.getTransactionHash());
 				} else {
-					System.out.println(receipt.getTransactionHash() + " was not successful.");
+					System.out.println("[" + name + "] Posting " + (market == Market.HEAT ? "heat" : "electricity") + " offer (" +receipt.getTransactionHash() + " was not successful.");
 					failedPosts++;
 				}
 			}
@@ -342,27 +342,28 @@ public abstract class Building extends BehaviorModel {
 	}
 
 
-	protected void postOfferSplit(BigInteger price, BigInteger amount, Market market) {
-		ArrayList<BigInteger> prices = new ArrayList<>();
-		ArrayList<BigInteger> amounts = new ArrayList<>();
+	protected void postAndLogOfferSplit(BigInteger price, BigInteger amount, Market market) {
 		int i = 0;
 		logOffer(amount, UnitHelper.getCentsPerKwhFromWeiPerWs(price), market);	
 		ArrayList<CompletableFuture<TransactionReceipt>> receiptFutures = new ArrayList<>();
-		while(i <= amount.divide(UnitHelper.QUARTER_KWH).intValue()) {
+		int nrOfChunks = amount.divide(UnitHelper.FIFTH_KWH).intValue();
+		while(i <= nrOfChunks) {
+			ArrayList<BigInteger> prices = new ArrayList<>();
+			ArrayList<BigInteger> amounts = new ArrayList<>();
 			int j = 0;
-			while(j < Simulation.MAX_POINTS_PER_POST && i < amount.divide(UnitHelper.QUARTER_KWH).intValue()) {
+			while(j < Simulation.MAX_POINTS_PER_POST && i < nrOfChunks) {
 				prices.add(price);
-				amounts.add(UnitHelper.QUARTER_KWH);
+				amounts.add(UnitHelper.FIFTH_KWH);
 				j++;
 				i++;
 			}
 			if(j < Simulation.MAX_POINTS_PER_POST) {
 				prices.add(price);
-				amounts.add(amount.mod(UnitHelper.QUARTER_KWH));	
+				amounts.add(amount.mod(UnitHelper.FIFTH_KWH));	
 				i++;
 			}
 					
-			System.out.println("[" + name + "] Posting " + (market == Market.HEAT ? "heat" : "electricity") + " offer...");
+			System.out.println("[" + name + "] Posting " + (market == Market.HEAT ? "heat" : "electricity") + " offer (" + i + "/" + (nrOfChunks+1) + ")");
 			switch (market) {
 			case HEAT:
 				receiptFutures.add(contract.postHeatOffer(
@@ -385,11 +386,9 @@ public abstract class Building extends BehaviorModel {
 			if(receipt.getStatus().equals("0x1")){
 				System.out.println("[" + name + "] " + (market == Market.HEAT ? "Heat" : "Electricity") + " offer posted: " + receipt.getTransactionHash());
 			} else {
-				System.out.println(receipt.getTransactionHash() + " was not successful.");
+				System.out.println("[" + name + "] Posting " + (market == Market.HEAT ? "heat" : "electricity") + " offer ("+ receipt.getTransactionHash() + ") was not successful.");
 				failedPosts++;
 			}
 		}
-		prices = new ArrayList<>();
-		amounts = new ArrayList<>();
 	}
 }
