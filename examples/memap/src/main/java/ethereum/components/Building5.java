@@ -90,7 +90,7 @@ public class Building5 extends Building {
 				chpStage++;
 				excessHeat = chpHeatProductionPerStage.subtract(heatToProduce).max(BigInteger.ZERO);
 				heatToProduce = heatToProduce.subtract(chpHeatProductionPerStage).max(BigInteger.ZERO);
-				excessElectricity = chpElectricityProductionPerStage.subtract(electricityToProduce).max(BigInteger.ZERO);
+				excessElectricity = excessElectricity.add(chpElectricityProductionPerStage.subtract(electricityToProduce).max(BigInteger.ZERO));
 				electricityToProduce = electricityToProduce.subtract(chpElectricityProductionPerStage).max(BigInteger.ZERO);
 				chpActualCost = chpActualCost.add(chpCostPerStage);
 			}

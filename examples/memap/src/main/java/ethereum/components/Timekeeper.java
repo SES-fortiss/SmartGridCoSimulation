@@ -134,6 +134,7 @@ public class Timekeeper extends BehaviorModel {
 		List<LogOfferConfirmedEventResponse> confirmedOffers = null;
 
 		String success = "no,";
+		BigInteger gasUsed = BigInteger.ZERO;
 		try {
 			logger.print(System.currentTimeMillis() + ",");
 			int tries = 0;
@@ -144,6 +145,7 @@ public class Timekeeper extends BehaviorModel {
 				if(receipt.getStatus().equals("0x1")) {
 					System.out.println("Market clearing successful.");
 					success = "yes,";
+					gasUsed = receipt.getGasUsed();
 					break;
 				} else {
 					System.out.println("Market clearing NOT successful.");	
@@ -155,7 +157,7 @@ public class Timekeeper extends BehaviorModel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		logger.print(success);
+		logger.print(System.currentTimeMillis() + "," + success + "," + gasUsed + ",");
 		for(LogOfferConfirmedEventResponse confirmedOffer : confirmedOffers) {
 			System.out.println("[Timekeeper] Offer confirmed: " + confirmedOffer.producer + " sold " + //TODO determine type
 					UnitHelper.printAmount(confirmedOffer.amount) + " for " + 

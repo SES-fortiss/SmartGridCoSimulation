@@ -1,0 +1,9 @@
+geth --datadir ./datadir init ./genesis.json 2>> timekeeper.log
+geth account import accounts/timekeeper_pk --datadir datadir/ --password accounts/password 2>> timekeeper.log
+
+for num in 1 2 3 4 5
+do
+    geth --datadir ./building${num}datadir init ./genesis.json 2>> building${num}.log
+    geth account import accounts/building${num}_pk --datadir building${num}datadir/ --password accounts/password 2>> building${num}.log
+    echo "Initialized node $num"
+done
