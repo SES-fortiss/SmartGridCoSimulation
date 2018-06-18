@@ -20,10 +20,11 @@ public class Consumer extends Device {
 
 	@Override
 	public void makeDecision() {
-		double[] vector = new double[n];
+		double[] vector = new double[2*n];
 //		Calendar currentTime = startTime; 
 		for (int i = 0; i < n; i++) {
 			vector[i] = -consumptionProfiles.getHeatConsumption(consumerIndex, i);
+			vector[n+i] = -consumptionProfiles.getElectricConsumption(consumerIndex, i);
 //			currentTime.add(Calendar.SECOND, stepSize);
 		}
 		specificationToSend.setVector(vector);

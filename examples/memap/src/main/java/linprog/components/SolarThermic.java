@@ -27,11 +27,12 @@ public class SolarThermic extends Producer {
 		for (int i = 0; i < n; i++) {
 			specificationToSend.cost[i] = 0.0;
 			for (int j = 0; j < n; j++) {
-				specificationToSend.couplingMatrix[i][j] = 0.0;
+				specificationToSend.couplingMatrix_H[i][j] = 0.0;
+				specificationToSend.couplingMatrix_el[i][j] = 0.0;
 			}
-			specificationToSend.couplingMatrix[i][i] = -efficiency;
+			specificationToSend.couplingMatrix_H[i][i] = -efficiency;
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = solarRadiation.getRadiation(i)*area*efficiency*10;
+			specificationToSend.upperBound[i] = solarRadiation.getRadiation(i)*area*efficiency;
 //			currentTime.add(Calendar.SECOND, stepSize);
 		}
 		

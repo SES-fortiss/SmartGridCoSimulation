@@ -26,9 +26,10 @@ public class OilBoiler extends Producer {
 //			specificationToSend.cost[i] = 0.05;
 //			currentTime.add(Calendar.SECOND, stepSize);
 			for (int j = 0; j < n; j++) {
-				specificationToSend.couplingMatrix[i][j] = 0.0;
+				specificationToSend.couplingMatrix_H[i][j] = 0.0;
+				specificationToSend.couplingMatrix_el[i][j] = 0.0;
 			}
-			specificationToSend.couplingMatrix[i][i] = -efficiency;
+			specificationToSend.couplingMatrix_H[i][i] = -efficiency;
 			specificationToSend.lowerBound[i] = 0.0;
 			specificationToSend.upperBound[i] = qdot_max;
 		}

@@ -127,10 +127,6 @@ public class LinProgBehavior extends BehaviorModel {
 		
 // ================= Handling the result ================== 	
 
-//		double[][] A = {{2,3},{1,4}};
-//		double[] b = {5,2};
-//		double[] result = SolutionHandler.matrixMultiplication(A, b);
-//		System.out.println(gson.toJson(result));
 		
 //		double[] productionExport = SolutionHandler.matrixMultiplication(problem.a_eq, sol);
 //		SolutionHandler.exportData(productionExport, "PruductionMEMAP.csv");

@@ -27,10 +27,12 @@ public class PV extends Producer {
 			specificationToSend.cost[i] = -energyPrices.getElectricityPriceInCent(i)*1.1; //+0.001*Math.random();
 //			currentTime.add(Calendar.SECOND, stepSize);
 			for (int j = 0; j < n; j++) {
-				specificationToSend.couplingMatrix[i][j] = 0.0;
+				specificationToSend.couplingMatrix_H[i][j] = 0.0;
+				specificationToSend.couplingMatrix_el[i][j] = 0.0;
 			}
+			specificationToSend.couplingMatrix_el[i][i] = -efficiency;
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = solarRadiation.getRadiation(i)*area*efficiency*10;
+			specificationToSend.upperBound[i] = solarRadiation.getRadiation(i)*area*efficiency;
 			
 		}
 //		System.out.println(solarRadiation.getRadiation(0));

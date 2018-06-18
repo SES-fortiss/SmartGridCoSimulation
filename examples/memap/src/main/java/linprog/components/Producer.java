@@ -17,7 +17,8 @@ public abstract class Producer extends Device {
 	public void makeDecision() {
 		specificationToSend.name = this.name;
 		specificationToSend.cost = new double[n];
-		specificationToSend.couplingMatrix = new double[n][n];
+		specificationToSend.couplingMatrix_H = new double[n][n];
+		specificationToSend.couplingMatrix_el = new double[n][n];
 		specificationToSend.lowerBound = new double[n];
 		specificationToSend.upperBound = new double[n];
 		

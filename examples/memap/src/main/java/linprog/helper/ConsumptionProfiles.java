@@ -27,8 +27,8 @@ public class ConsumptionProfiles {
 		this.nrOfProfiles = nrOfProfiles;
 
 		// kWh / Minute - für 1 Tag
-		heatProfiles = readConsumption("WaermeVerbraeuche.csv", nrOfProfiles);
-		electricityProfile = readConsumption("StromVerbraeucheMatlab.csv", nrOfProfiles);
+		heatProfiles = readConsumption("WaermeVerbraeuche_interpolated.csv", nrOfProfiles);
+		electricityProfile = readConsumption("StromVerbrauch_interpolated.csv", nrOfProfiles);
 	}
 	
 	/**
@@ -62,7 +62,9 @@ public class ConsumptionProfiles {
 		return nrOfProfiles;
 	}
 	
-	private HashMap<Integer, ArrayList<Double>> readConsumption(String filename, int nrOfProfiles){				
+	private HashMap<Integer, ArrayList<Double>> readConsumption(String filename, int nrOfProfiles){
+		
+		
 		HashMap<Integer, ArrayList<Double>> profiles = new HashMap<Integer, ArrayList<Double>>();
 		HashMap<Integer, ArrayList<Double>> dailyProfiles = new HashMap<Integer, ArrayList<Double>>();
 		for(int i = 0; i < nrOfProfiles; i++) {

@@ -68,17 +68,14 @@ public abstract class OptimizationStarter {
 //		
 //		System.out.println("----------");
 //		System.out.println("Summen:");
-//		System.out.println("A: " + summeA); // + " - ok.");
+//		System.out.println("A: " + summeA + " - ok.");
 //		System.out.println("G: " + summeG); // + " - ok....");
 //		System.out.println("Cost/Gain Potential: " + summeL); // + " - ok.");
 //		System.out.println("Predicted Heat Consumption: " + summeB); // + " - ok.");
 //		System.out.println("h: " + summeH); // + " - ok.");
 //		System.out.println("x_UB: " + summeUb); // + " - ok.");
 //		System.out.println("x_LB: " + summeLb); // + " - ok.");
-//		System.out.println(" ");
-		
-		
-		
+//		System.out.println(" ");	
 //		System.out.println("----------");	
 		
 		
@@ -92,7 +89,8 @@ public abstract class OptimizationStarter {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-			
+//		System.out.println(" --- done. ---");	
+		
 		double[] sol = opt.getLPOptimizationResponse().getSolution();
 		return sol;
 		

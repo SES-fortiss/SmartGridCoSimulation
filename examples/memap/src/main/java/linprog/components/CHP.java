@@ -30,9 +30,11 @@ public class CHP extends Producer {
 			specificationToSend.cost[i] = EnergyPrices.getGasPriceInCent(i) - energyPrices.getElectricityPriceInCent(i)*efficiency_el;
 //			currentTime.add(Calendar.SECOND, stepSize);
 			for (int j = 0; j < n; j++) {
-				specificationToSend.couplingMatrix[i][j] = 0.0;
+				specificationToSend.couplingMatrix_H[i][j] = 0.0;
+				specificationToSend.couplingMatrix_el[i][j] = 0.0;
 			}
-			specificationToSend.couplingMatrix[i][i] = -efficiency_H;
+			specificationToSend.couplingMatrix_H[i][i] = -efficiency_H;
+			specificationToSend.couplingMatrix_el[i][i] = -efficiency_el;
 			specificationToSend.lowerBound[i] = 0.0;
 			specificationToSend.upperBound[i] = qdot_max;
 		}

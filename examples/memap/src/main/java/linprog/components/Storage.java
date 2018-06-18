@@ -22,7 +22,8 @@ public abstract class Storage extends Device {
 	public void makeDecision() {
 		specificationToSend.name = this.name;
 		specificationToSend.cost = new double[2*n];
-		specificationToSend.couplingMatrix = new double[n][2*n];
+		specificationToSend.couplingMatrix_H = new double[n][2*n];
+		specificationToSend.couplingMatrix_el = new double[n][2*n];
 		specificationToSend.capacityMatrix1 = new double[n][2*n];
 		specificationToSend.capacityMatrix2 = new double[n][2*n];
 		specificationToSend.vector = new double[2*n];
