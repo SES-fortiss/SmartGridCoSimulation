@@ -21,6 +21,7 @@ import linprog.Topology;
 import linprog.helper.MatrixBuildup;
 import linprog.helper.OptimizationProblem;
 import linprog.helper.OptimizationStarter;
+import linprog.helper.SolutionHandler;
 import linprog.messages.BuildingSpec;
 import linprog.messages.Consumption;
 import linprog.messages.OptimizationResult;
@@ -91,7 +92,6 @@ public class LinProgBehavior extends BehaviorModel {
 		
 		// ------------ BUILDING OPTIMIZATION ------------ 
 		
-		double buildingsTotalCosts = 0;
 		int counter = 0; // counter variable
 		double[] costsPerBuilding = new double[buildingSpecs.size()];
 		
@@ -100,46 +100,86 @@ public class LinProgBehavior extends BehaviorModel {
 			OptimizationProblem problem = MatrixBuildup.SingleBuilding(buildingSpec);
 			double[] sol = OptimizationStarter.runLinProg(problem);
 			
-			
-
-			for (int i=0; i<problem.lambda.length; i++) {
-				costsPerBuilding[counter] += problem.lambda[i]*sol[i];
-				buildingsTotalCosts += problem.lambda[i]*sol[i];
-			}
-			
-			System.out.println("Costs: " + costsPerBuilding[counter]/100);
+			costsPerBuilding[counter] = SolutionHandler.exportCosts(sol, problem.lambda, "CostGEB" + (counter+1) + ".csv");		
+			System.out.println("COSTS: " + costsPerBuilding[counter]);
 			System.out.println("****************************************************************");	
 			
 			nrOfStorages += buildingSpec.getNrOfStorages();
 			nrOfProducers += buildingSpec.getNrOfProducers();	
-			counter++;
+			counter++;		
+			
+			SolutionHandler.exportData(sol, "XvectorGEB" + (counter) + ".csv");	
+			SolutionHandler.exportData(buildingSpec.consumption.getVector(), "ConsumptionGEB" + (counter) + ".csv");
 		}
+
+		// ------------ MEMAP - OPTIMIZATION ------------ 
+
 		System.out.println(" << MEMAP Optimization >> ");
 		System.out.println("Total Storage: " + nrOfStorages);
 		System.out.println("Total Producer: " + nrOfProducers);
 		
-
-		// ------------ MEMAP - OPTIMIZATION ------------ 
-		OptimizationProblem problem = MatrixBuildup.memapMatrices(nrOfStorages,nrOfProducers,buildingSpecs,consumptionProfiles,producerSpecs,storageSpecs);
+		OptimizationProblem problem = MatrixBuildup.memapMatrices(nrOfProducers,nrOfStorages,buildingSpecs,consumptionProfiles,producerSpecs,storageSpecs);
 		double[] sol = OptimizationStarter.runLinProg(problem);
 
 		display.update(gson.toJson(sol));
 		
-		double costs = 0;
-		double solSum = 0;
+	
 		
-		for (int i=0; i<problem.lambda.length; i++) {
-			costs += problem.lambda[i]*sol[i];
-			solSum += sol[i];
+// ================= Handling the result ================== 	
+
+//		double[][] A = {{2,3},{1,4}};
+//		double[] b = {5,2};
+//		double[] result = SolutionHandler.matrixMultiplication(A, b);
+//		System.out.println(gson.toJson(result));
+		
+//		double[] productionExport = SolutionHandler.matrixMultiplication(problem.a_eq, sol);
+//		SolutionHandler.exportData(productionExport, "PruductionMEMAP.csv");
+		
+		SolutionHandler.exportMatrix(problem.a_eq, "CouplingMatrix.csv");
+		SolutionHandler.exportData(problem.b_eq, "ConsumptionMEMAP.csv");
+
+		
+		double buildingsTotalCosts = 0;
+		for (int i=0; i<buildingSpecs.size(); i++) {
+			buildingsTotalCosts += costsPerBuilding[i];
 		}
+		double costsMEMAP = SolutionHandler.exportCosts(sol, problem.lambda, "CostMEMAP.csv");
+		
+		System.out.println("****************************************************************");	
+		System.out.println("COSTS without MEMAP: " + buildingsTotalCosts);
+		System.out.println("COSTS with MEMAP: " + costsMEMAP);
+		System.out.println("****************************************************************");	
 
-		System.out.println("****************************************************************");
-		System.out.println("COSTS without MEMAP: " + buildingsTotalCosts/100);	
-		System.out.println("COSTS with MEMAP: " + costs/100);	
- 		
 
-// ================= Handling the result ================== 		
  		
+		int nrOfStorages2 = 0;
+		int nrOfProducers2 = 0;
+		int building = 0;
+		int range1 = 0;
+		int range2 = 0;
+		
+		System.out.println(" << New Costs >>");
+					
+		for(BuildingSpec buildingSpec : buildingSpecs) {
+			double newBuildingCosts = 0;
+			nrOfProducers2 += buildingSpec.getNrOfProducers();
+			nrOfStorages2 += buildingSpec.getNrOfStorages();	
+			range2 = n*(nrOfProducers2+2*nrOfStorages2);
+			for (int j=range1; j<range2; j++) {
+				newBuildingCosts += problem.lambda[j]*sol[j];
+			}
+			range1=range2;
+			building++;
+			
+
+			System.out.println("Building " + building + ": " + newBuildingCosts/100);
+		}
+		
+		
+		
+		
+	
+		
 		System.out.println("****************************************************************");
 //		System.out.println(" --- Reading result for Producer and Storages: --- ");
 		int index = 0;

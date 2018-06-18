@@ -36,16 +36,18 @@ public abstract class MatrixBuildup {
 		int producersHandled = 0;
 		int storagesHandled = 0;
 		
+		System.out.println(" << " + buildingSpec.name + " >> ");
+		
 		for(ProducerSpec producerSpec : buildingSpec.producers) {
 			addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled);
 			producersHandled++;
-			System.out.println("Prod-Nr.: " + producersHandled + ", " + buildingSpec.name+ ", " + producerSpec.name);
+			System.out.println("Prod-Nr.: " + producersHandled + ", " + producerSpec.name);
 		}	
 		
 		for(StorageSpec storageSpec : buildingSpec.storages) {
 			addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled);
 			storagesHandled++;
-			System.out.println("Stor-Nr.: " + storagesHandled + ", " + buildingSpec.name+ ", " + storageSpec.name);
+			System.out.println("Stor-Nr.: " + storagesHandled + ", " + storageSpec.name);
 		}
 		
 		return problem;
@@ -75,7 +77,7 @@ public abstract class MatrixBuildup {
 		/**
 		 *  ====== BUILD PRODUCER & STORAGES Matrices =========
 		 */
-		System.out.println("****************************************************************");		
+//		System.out.println("****************************************************************");		
 		System.out.println(" --- Adding Producer and Storages: --- ");
 		int producersHandled = 0;
 		int storagesHandled = 0;

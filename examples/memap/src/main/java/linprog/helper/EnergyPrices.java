@@ -49,9 +49,9 @@ public class EnergyPrices {
 	 * @param time the point in time for which to get the electricity price
 	 * @return electricity price in ct/kWh at specified point in time
 	 */
-	public static double getElectricityPriceInCent(Calendar time) {
-		return 30 + (new Random()).nextDouble()*5 - 2.5;
-	}
+//	public static double getElectricityPriceInCent(Calendar time) {
+//		return 30 + (new Random()).nextDouble()*5 - 2.5;
+//	}
 	
 	/**
 	 * Returns the gas price in cents per kWh at any given timestep. For now, it constantly returns .0017ct/kJ,

@@ -24,7 +24,7 @@ public class PV extends Producer {
 		
 //		Calendar currentTime = startTime;
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = -energyPrices.getElectricityPricePVInCent(i)/3600*1.1; //+0.001*Math.random();
+			specificationToSend.cost[i] = -energyPrices.getElectricityPriceInCent(i)*1.1; //+0.001*Math.random();
 //			currentTime.add(Calendar.SECOND, stepSize);
 			for (int j = 0; j < n; j++) {
 				specificationToSend.couplingMatrix[i][j] = 0.0;

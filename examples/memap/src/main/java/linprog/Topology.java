@@ -14,7 +14,7 @@ import topology.ActorTopology;
 public class Topology {	
 	
 	private static String simulationName = "LinProg";
-	private static final int NR_OF_CONSUMERS = 5;
+	public static final int NR_OF_CONSUMERS = 5;
 	
 	// Efficiencies
 	private static final double EFFICIENCY_CHP_H = .6;

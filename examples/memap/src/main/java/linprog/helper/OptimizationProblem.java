@@ -12,6 +12,7 @@ public class OptimizationProblem {
 
 	public OptimizationProblem(int n, int nrOfProducers, int nrOfStorages) {
 	
+	
 		lambda  = new double[n*(nrOfProducers+2*nrOfStorages)];
 		h = new double[n*2*nrOfStorages];
 		g = new double[n*2*nrOfStorages][n*(nrOfProducers+2*nrOfStorages)];

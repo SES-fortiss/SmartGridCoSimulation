@@ -19,6 +19,15 @@ public abstract class OptimizationStarter {
 		or.setLb(problem.x_lb);
 		or.setUb(problem.x_ub);		
 
+//		System.out.println("Size of Matrices:");
+//		System.out.println("c: " + or.getC().size());		
+//		System.out.println("G: " + or.getG().rows() + " x " + or.getG().columns());		
+//		System.out.println("h: " + or.getH().size());	
+//		System.out.println("A: " + or.getA().rows() + " x " + or.getA().columns());		
+//		System.out.println("b: " + or.getB().size());
+//		System.out.println("lb: " + or.getLb().size());		
+//		System.out.println("ub: " + or.getUb().size());	
+
 		
 		/*
 		 *  Check Sums to compare with Matlab-Model
@@ -57,12 +66,12 @@ public abstract class OptimizationStarter {
 //				}
 //			}
 //		
-//		System.out.println("****************************************************************");
+//		System.out.println("----------");
 //		System.out.println("Summen:");
 //		System.out.println("A: " + summeA); // + " - ok.");
 //		System.out.println("G: " + summeG); // + " - ok....");
-//		System.out.println("Lambda: " + summeL); // + " - ok.");
-//		System.out.println("b: " + summeB); // + " - ok.");
+//		System.out.println("Cost/Gain Potential: " + summeL); // + " - ok.");
+//		System.out.println("Predicted Heat Consumption: " + summeB); // + " - ok.");
 //		System.out.println("h: " + summeH); // + " - ok.");
 //		System.out.println("x_UB: " + summeUb); // + " - ok.");
 //		System.out.println("x_LB: " + summeLb); // + " - ok.");
@@ -70,8 +79,10 @@ public abstract class OptimizationStarter {
 		
 		
 		
-//		System.out.println("****************************************************************");	
-		System.out.println("Optimization running ...");	
+//		System.out.println("----------");	
+		
+		
+		System.out.println(" --- Optimization running ---");	
 		
 		LPPrimalDualMethod opt = new LPPrimalDualMethod();
 		opt.setLPOptimizationRequest(or);

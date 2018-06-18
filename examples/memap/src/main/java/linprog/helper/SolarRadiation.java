@@ -32,9 +32,9 @@ public class SolarRadiation {
 	 * @param time the point in time for which to get the radiation
 	 * @return solar radiation in kW/m²
 	 */
-	public static double getRadiation(Calendar time) {
-		return 0.0;
-	}
+//	public static double getRadiation(Calendar time) {
+//		return 0.0;
+//	}
 	
 	/**
 	 * Returns the current solar radiation at a given timestep. Assumes timestep 0 at 12 am.

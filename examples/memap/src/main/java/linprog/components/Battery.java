@@ -17,7 +17,7 @@ public class Battery extends Storage {
 		super.makeDecision();
 		EnergyPrices energyPrices = new EnergyPrices();
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = energyPrices.getElectricityPriceInCent(i); //  + 0.001 * Math.random();
+			specificationToSend.cost[i] = energyPrices.getElectricityPriceInCent(i)*1.05; //  + 0.001 * Math.random();
 			for (int j = 0; j < 2*n; j++) {
 				specificationToSend.couplingMatrix[i][j] = 0.0;
 			}
@@ -25,7 +25,7 @@ public class Battery extends Storage {
 		}
 		for (int i = n; i < 2*n; i++) {
 //			specificationToSend.cost[i] = -energyPrices.getElectricityPriceInCent(i) + 0.001 * Math.random();
-			specificationToSend.cost[i] = -energyPrices.getElectricityPricePVInCent(i)/3600*1.1;
+			specificationToSend.cost[i] = -energyPrices.getElectricityPriceInCent(i)*0.95;
 			specificationToSend.vector[i] = capacity/Simulation.stepLength(TimeUnit.SECONDS);
 		}
 	
