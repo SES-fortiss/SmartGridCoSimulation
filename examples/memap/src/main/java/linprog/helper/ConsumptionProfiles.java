@@ -62,9 +62,7 @@ public class ConsumptionProfiles {
 		return nrOfProfiles;
 	}
 	
-	private HashMap<Integer, ArrayList<Double>> readConsumption(String filename, int nrOfProfiles){
-		
-		
+	private HashMap<Integer, ArrayList<Double>> readConsumption(String filename, int nrOfProfiles){				
 		HashMap<Integer, ArrayList<Double>> profiles = new HashMap<Integer, ArrayList<Double>>();
 		HashMap<Integer, ArrayList<Double>> dailyProfiles = new HashMap<Integer, ArrayList<Double>>();
 		for(int i = 0; i < nrOfProfiles; i++) {

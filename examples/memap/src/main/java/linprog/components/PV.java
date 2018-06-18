@@ -30,7 +30,7 @@ public class PV extends Producer {
 				specificationToSend.couplingMatrix[i][j] = 0.0;
 			}
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = solarRadiation.getRadiation(i)*area*efficiency;
+			specificationToSend.upperBound[i] = solarRadiation.getRadiation(i)*area*efficiency*10;
 			
 		}
 //		System.out.println(solarRadiation.getRadiation(0));

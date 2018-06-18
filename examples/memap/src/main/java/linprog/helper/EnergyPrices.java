@@ -49,8 +49,9 @@ public class EnergyPrices {
 	 * @param time the point in time for which to get the electricity price
 	 * @return electricity price in ct/kWh at specified point in time
 	 */
+
 //	public static double getElectricityPriceInCent(Calendar time) {
-//		return 30 + (new Random()).nextDouble()*5 - 2.5;
+//		return 10 + new Random().nextDouble()*20; // value now between [10..30], but not used at the moment
 //	}
 	
 	/**
