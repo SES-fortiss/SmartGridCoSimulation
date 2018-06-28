@@ -5,11 +5,7 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
-import org.netlib.util.doubleW;
-
 import com.google.gson.Gson;
-import com.joptimizer.optimizers.LPOptimizationRequest;
-import com.joptimizer.optimizers.LPPrimalDualMethod;
 
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
@@ -17,7 +13,6 @@ import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
 import linprog.Simulation;
-import linprog.Topology;
 import linprog.helper.MatrixBuildup;
 import linprog.helper.OptimizationProblem;
 import linprog.helper.OptimizationStarter;
@@ -87,7 +82,7 @@ public class LinProgBehavior extends BehaviorModel {
 
 		int nrOfStorages = storageSpecs.size();
 		int nrOfProducers = producerSpecs.size();
-		int nrOfConsumers = consumptionProfiles.size();
+		//int nrOfConsumers = consumptionProfiles.size();
 		
 		
 		// ------------ BUILDING OPTIMIZATION ------------ 
@@ -101,7 +96,7 @@ public class LinProgBehavior extends BehaviorModel {
 			double[] sol = OptimizationStarter.runLinProg(problem);
 			
 			costsPerBuilding[counter] = SolutionHandler.exportCosts(sol, problem.lambda, "CostGEB" + (counter+1) + ".csv");		
-			System.out.println("COSTS: " + costsPerBuilding[counter]);
+			System.out.println("COSTS: " + String.format("%.02f", costsPerBuilding[counter]));
 			System.out.println("****************************************************************");	
 			
 			nrOfStorages += buildingSpec.getNrOfStorages();
@@ -110,6 +105,7 @@ public class LinProgBehavior extends BehaviorModel {
 			
 			SolutionHandler.exportData(sol, "XvectorGEB" + (counter) + ".csv");	
 			SolutionHandler.exportData(buildingSpec.consumption.getVector(), "ConsumptionGEB" + (counter) + ".csv");
+			SolutionHandler.exportMatrix(problem.a_eq, "CouplingMatrixGEB" + (counter) + ".csv");
 		}
 
 		// ------------ MEMAP - OPTIMIZATION ------------ 
@@ -131,6 +127,8 @@ public class LinProgBehavior extends BehaviorModel {
 //		double[] productionExport = SolutionHandler.matrixMultiplication(problem.a_eq, sol);
 //		SolutionHandler.exportData(productionExport, "PruductionMEMAP.csv");
 		
+		SolutionHandler.exportData(sol, "XvectorMEMAP.csv");
+		
 		SolutionHandler.exportMatrix(problem.a_eq, "CouplingMatrix.csv");
 		SolutionHandler.exportData(problem.b_eq, "ConsumptionMEMAP.csv");
 
@@ -142,8 +140,8 @@ public class LinProgBehavior extends BehaviorModel {
 		double costsMEMAP = SolutionHandler.exportCosts(sol, problem.lambda, "CostMEMAP.csv");
 		
 		System.out.println("****************************************************************");	
-		System.out.println("COSTS without MEMAP: " + buildingsTotalCosts);
-		System.out.println("COSTS with MEMAP: " + costsMEMAP);
+		System.out.println("COSTS without MEMAP: " + String.format("%.02f", buildingsTotalCosts));
+		System.out.println("COSTS with MEMAP: " + String.format("%.02f", costsMEMAP));
 		System.out.println("****************************************************************");	
 
 
@@ -168,13 +166,10 @@ public class LinProgBehavior extends BehaviorModel {
 			building++;
 			
 
-			System.out.println("Building " + building + ": " + newBuildingCosts/100);
+			System.out.println("Building " + building + ": " + String.format("%.02f", newBuildingCosts));
 		}
 		
 		
-		
-		
-	
 		
 		System.out.println("****************************************************************");
 //		System.out.println(" --- Reading result for Producer and Storages: --- ");

@@ -16,7 +16,7 @@ public abstract class SolutionHandler {
 		BufferedWriter bw = null;
 
 		try {
-			String source = "res/" + filename;
+			String source = "res/results/" + filename;
 			String location = ReadMemapFiles.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			location = location.replace("%20", " ");
 			location = location.substring(0, location.length() - 15);
@@ -68,15 +68,13 @@ public abstract class SolutionHandler {
 		double[] costVector = new double[lambda.length];
 		
 		for (int i=0; i<lambda.length; i++) {
-			costVector[i] += lambda[i]*sol[i];
+			costVector[i] = lambda[i]*sol[i];
 			costs += costVector[i];
-		}
-		
-	//		System.out.println("COSTS without MEMAP: " + buildingsTotalCosts/100);		
+		}	
 
-		SolutionHandler.exportData(costVector, filename);
+		SolutionHandler.exportData(lambda, filename);
 
-		return costs/100;	
+		return costs;	
 
 		
 	}
@@ -104,7 +102,7 @@ public abstract class SolutionHandler {
 		BufferedWriter bw = null;
 
 		try {
-			String source = "res/" + filename;
+			String source = "res/results/" + filename;
 			String location = ReadMemapFiles.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			location = location.replace("%20", " ");
 			location = location.substring(0, location.length() - 15);

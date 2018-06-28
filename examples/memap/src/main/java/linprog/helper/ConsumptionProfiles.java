@@ -26,32 +26,35 @@ public class ConsumptionProfiles {
 	public ConsumptionProfiles(int nrOfProfiles) {
 		this.nrOfProfiles = nrOfProfiles;
 
-		// kWh / Minute - für 1 Tag
-		heatProfiles = readConsumption("WaermeVerbraeuche_interpolated.csv", nrOfProfiles);
-		electricityProfile = readConsumption("StromVerbrauch_interpolated.csv", nrOfProfiles);
+		// kWh / Minute - für 24 Stunden, 1440 Minuten = Einträge
+		heatProfiles = readConsumption("WaermeVerbraeuche.csv", nrOfProfiles);
+		electricityProfile = readConsumption("StromVerbraeuche.csv", nrOfProfiles);
 	}
 	
 	/**
 	 * Returns the current heat consumption at a given timestep.
 	 * 
+	 * Inputs are kW per Minute
+	 * Converted to kWh and the multiplied by timestep in hours
+	 * 
 	 * @param time the timestep for which to get the heat consumption
 	 * @return heat consumption at given timestep
 	 */
+	
 	public double getHeatConsumption(int consumptionIndex, int timestep) {
 		if (consumptionIndex > nrOfProfiles) {
 			//TODO throw Exception;
 		}
-//		System.out.println("Timestep :" + timestep % heatProfiles.size());
-//		return heatProfiles.get(consumptionIndex).get(timestep % heatProfiles.size());
-		return heatProfiles.get(consumptionIndex).get(timestep);
-	}
+		return heatProfiles.get(consumptionIndex).get(timestep)/60;
+		//*Simulation.stepLength(TimeUnit.HOURS)	
+		}
 	
 	public double getElectricConsumption(int consumptionIndex, int timestep) {
 		if (consumptionIndex > nrOfProfiles) {
 			//TODO throw Exception;
 		}
-//		return electricityProfile.get(consumptionIndex).get(timestep % heatProfiles.size());
-		return electricityProfile.get(consumptionIndex).get(timestep);
+		return electricityProfile.get(consumptionIndex).get(timestep)/60;
+		//*Simulation.stepLength(TimeUnit.HOURS)
 	}
 	
 	/**
@@ -63,7 +66,6 @@ public class ConsumptionProfiles {
 	}
 	
 	private HashMap<Integer, ArrayList<Double>> readConsumption(String filename, int nrOfProfiles){
-		
 		
 		HashMap<Integer, ArrayList<Double>> profiles = new HashMap<Integer, ArrayList<Double>>();
 		HashMap<Integer, ArrayList<Double>> dailyProfiles = new HashMap<Integer, ArrayList<Double>>();
@@ -80,51 +82,55 @@ public class ConsumptionProfiles {
 			location = location + source;	
 
 			FileReader fr = new FileReader(location);
-			BufferedReader br = new BufferedReader(fr);
-		    read(br, dailyProfiles, profiles);	
-		    
+			BufferedReader br = new BufferedReader(fr);	
+			read(br, dailyProfiles, profiles);		    
 		    
 		} catch (IOException | ParseException e1) {
 				e1.printStackTrace();
 				SimulationStarter.stopSimulation();
 				return null;
 		}
-		
 		return profiles;
 	}
 	
+	
 	private void read(BufferedReader br, HashMap<Integer, ArrayList<Double>> dailyProfiles, HashMap<Integer, ArrayList<Double>> profiles) throws IOException, ParseException{
 	    
-		Gson gson = new Gson();
-		
 		String zeile;
 	    String[] buffer;  
 	    NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
     	
 	    int i = 0;
 	    int k = 0;
+	    
+	    double[] consumptionBuffer = new double[nrOfProfiles];
 	
-    	while ( (zeile = br.readLine()) != null) {		
+					
+		while ( (zeile = br.readLine()) != null) {		
 			buffer = zeile.split(";");	
-			// Zur Korrektur des Zeitschritts werden 143 Zeitschritte übersprungen
-			if ( (i++ == k*Simulation.stepLength(TimeUnit.MINUTES)) && (buffer.length != 0) ) {
+			
+			for(int j = 0; j < nrOfProfiles; j++) {
+				consumptionBuffer[j] += nf.parse(buffer[j]).doubleValue();
+			}
+			i++;
+							// Anzahl der Minuten Pro Timestep
+			if ( (i == (k+1)*Simulation.stepLength(TimeUnit.MINUTES)) && (buffer.length != 0) ) {
 				try {
 					for(int j = 0; j < buffer.length; j++) {
-						dailyProfiles.get(j).add(nf.parse(buffer[j]).doubleValue());
+//						dailyProfiles.get(j).add(nf.parse(buffer[j]).doubleValue());
+						dailyProfiles.get(j).add(consumptionBuffer[j]);
+						consumptionBuffer[j] = 0;
 					}
-					System.out.println(gson.toJson(nf.parse(buffer[1]).doubleValue()));
 					k++;
 				} catch (Exception e) {
 					// do nothing
 				}
 			}
 		}
-    	
+					
 	    br.close();  
-	    
-	 // Das Wärmeprofil eines Tages wird auf n_days kopiert
-    	System.out.println(gson.toJson(dailyProfiles.get(1).size()));   
-    	
+	    System.out.println(k);
+	 // Das Wärmeprofil eines Tages wird auf n_days kopiert; k = N_Days
 	    for (int m = 0; m < (Simulation.N_STEPS/k); m++) {
 	    	for(int j = 0; j < nrOfProfiles; j++) {
 	    		for (int v=0; v<dailyProfiles.get(1).size(); v++) {
@@ -132,36 +138,7 @@ public class ConsumptionProfiles {
 	    		}
 			}
 	    }
-	    
-//	    for (int m = 0; m < (Simulation.N_STEPS % k); m++) {
-//    	for(int j = 0; j < nrOfProfiles; j++) {
-//    		profiles.get(j).add(profiles.get(j).get(m));
-//    	}
-//    }
 
-    System.out.println(Simulation.N_STEPS/k);
-    System.out.println(gson.toJson(profiles.get(1).size()));
-    
 	}
-
-	
 		
-//  Hier werden 144 Minuten/Einträge aus dem csv Zusammengefasst damit sie dem Zeitschritt 2,4 Std der Sim entsprechen		
-			
-//			i++;
-//			if(i < Simulation.stepLength(TimeUnit.MINUTES)) {
-//				for( int j = 0; j < nrOfProfiles; j++) {
-//					profiles.get(j).add(sumsPerTimestep[j]/Simulation.stepLength(TimeUnit.MINUTES));
-//				}
-//
-//			} else { 
-//				System.out.println(gson.toJson(sumsPerTimestep[0]));
-//				sumsPerTimestep = new double[nrOfProfiles];
-//				i = 0;
-//			}
-// =================================================================================		
-			
-
-
-	
 }

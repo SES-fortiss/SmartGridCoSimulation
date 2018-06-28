@@ -12,6 +12,7 @@ import linprog.messages.StorageSpec;
 
 
 
+
 public abstract class MatrixBuildup {
 	
 	//  =========================== Matrix Filling ==============================
@@ -121,7 +122,7 @@ public abstract class MatrixBuildup {
 						
 		int n_index = n*(producersHandledSoFar+2*storagesHandledSoFar);
 		for(int i = 0; i < n; i++) {
-			problem.lambda[n_index+i] = producerSpec.cost[i]*Simulation.stepLength(TimeUnit.SECONDS);
+			problem.lambda[n_index+i] = producerSpec.cost[i];
 			problem.x_lb[n_index+i] = producerSpec.lowerBound[i];
 			problem.x_ub[n_index+i] = producerSpec.upperBound[i];
 			
@@ -135,21 +136,20 @@ public abstract class MatrixBuildup {
 		if (producersHandledSoFar+1+storagesHandledSoFar == problem.getNumberofProducers()+problem.getNumberofStorages()) {
 			n_index = n_index + n ;
 			EnergyPrices energyPrices = new EnergyPrices();
-
+			
 			for(int i = 0; i < 2*n; i++) {
 				// no limit for selling or buying
-				problem.x_lb[n_index+i] = -999.0;    // limit for JOptimizer
-				problem.x_ub[n_index+i] = 999.0;     // limit for JOptimizer
+				problem.x_lb[n_index+i] = 0.0;    // limit for JOptimizer
+				problem.x_ub[n_index+i] = 999.9;     // limit for JOptimizer
 				
 				for(int j = 0; j < n; j++) {
 
-					if (i == j) {
-					problem.a_eq[i][n_index+j] = 1.;	// buying (positive x) or selling (negative x) of heat
-					} else if (i == n+j) {
-					problem.a_eq[i][n_index+n+j] = 1.;  // buying (positive x) or selling (negative x) of electricity
+					if (i == n+j) {
+					problem.a_eq[i][n_index+j] = -1.;  // buying (positive x) or selling (negative x) of electricity
+					problem.a_eq[i][n_index+n+j] = 1.;
 					}
-					problem.lambda[n_index+j] = energyPrices.getElectricityPriceInCent(j)*1.005;		// buy price
-					problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInCent(j)*0.995;  // sell price
+					problem.lambda[n_index+j] = energyPrices.getElectricityPriceInEuro(j);		// buy price
+					problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInEuro(j)*0.5;     // sell price
 				}	
 
 			}
@@ -166,7 +166,7 @@ public abstract class MatrixBuildup {
 					problem.a_eq[n+i][n_index+j] = storageSpec.couplingMatrix_el[i][j];
 					problem.g[n*(2*storagesHandledSoFar)+i][n_index+j] = storageSpec.capacityMatrix1[i][j];
 					problem.g[n*(1+2*storagesHandledSoFar)+i][n_index+j] = storageSpec.capacityMatrix2[i][j];
-					problem.lambda[n_index+j] = storageSpec.cost[j]*Simulation.stepLength(TimeUnit.SECONDS);
+					problem.lambda[n_index+j] = storageSpec.cost[j];
 					problem.x_lb[n_index+j] = storageSpec.lowerBound[j];
 					problem.x_ub[n_index+j] = storageSpec.upperBound[j];
 					
@@ -177,23 +177,22 @@ public abstract class MatrixBuildup {
 		
 		// After the last systems was added, another matrix will be added to handle buying and selling of electricity and heat
 		if (producersHandledSoFar+storagesHandledSoFar+1 == problem.getNumberofProducers()+problem.getNumberofStorages()) {
-			n_index = n_index + n ;
+			n_index = n_index + 2*n ;
 			EnergyPrices energyPrices = new EnergyPrices();
 			
 			for(int i = 0; i < 2*n; i++) {
 				// no limit for selling or buying
-				problem.x_lb[n_index+i] = -999.0;    // limit for JOptimizer
-				problem.x_ub[n_index+i] = 999.0;     // limit for JOptimizer
+				problem.x_lb[n_index+i] = 0.0;    // limit for JOptimizer
+				problem.x_ub[n_index+i] = 999.9;     // limit for JOptimizer
 				
 				for(int j = 0; j < n; j++) {
 
-					if (i == j) {
-					problem.a_eq[i][n_index+j] = 1.;	// buying (positive x) or selling (negative x) of heat
-					} else if (i == n+j) {
-					problem.a_eq[i][n_index+n+j] = 1.;  // buying (positive x) or selling (negative x) of electricity
+					if (i == n+j) {
+					problem.a_eq[i][n_index+j] = -1.;  // buying (positive x) or selling (negative x) of electricity
+					problem.a_eq[i][n_index+n+j] = 1.;
 					}
-					problem.lambda[n_index+j] = energyPrices.getElectricityPriceInCent(j)*1.005;		// buy price
-					problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInCent(j)*0.995;  // sell price
+					problem.lambda[n_index+j] = energyPrices.getElectricityPriceInEuro(j);		// buy price
+					problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInEuro(j)*0.5;     // sell price
 				}	
 
 			}

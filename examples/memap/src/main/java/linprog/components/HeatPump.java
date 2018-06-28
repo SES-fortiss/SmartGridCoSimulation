@@ -1,7 +1,5 @@
 package linprog.components;
 
-import java.util.Calendar;
-
 import linprog.helper.EnergyPrices;
 
 public class HeatPump extends Producer {
@@ -24,7 +22,8 @@ public class HeatPump extends Producer {
 		EnergyPrices energyPrices = new EnergyPrices();
 //		Calendar currentTime = startTime;
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = energyPrices.getElectricityPriceInCent(i);
+			// = 0 : Electricity for heat pump should come from PV production
+			specificationToSend.cost[i] = 0.0; //energyPrices.getElectricityPriceInEuro(i);
 //			currentTime.add(Calendar.SECOND, stepSize);
 			for (int j = 0; j < n; j++) {
 				specificationToSend.couplingMatrix_H[i][j] = 0.0;

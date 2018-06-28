@@ -1,7 +1,5 @@
 package linprog.components;
 
-import java.util.Calendar;
-
 import linprog.helper.EnergyPrices;
 
 public class CHP extends Producer {
@@ -24,10 +22,9 @@ public class CHP extends Producer {
 	@Override
 	public void makeDecision() {
 		super.makeDecision();
-		EnergyPrices energyPrices = new EnergyPrices();
 //		Calendar currentTime = startTime;
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = EnergyPrices.getGasPriceInCent(i) - energyPrices.getElectricityPriceInCent(i)*efficiency_el;
+			specificationToSend.cost[i] = EnergyPrices.getGasPriceInEuro(i); // - energyPrices.getElectricityPriceInCent(i)*efficiency_el;
 //			currentTime.add(Calendar.SECOND, stepSize);
 			for (int j = 0; j < n; j++) {
 				specificationToSend.couplingMatrix_H[i][j] = 0.0;

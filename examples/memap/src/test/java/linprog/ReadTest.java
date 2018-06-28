@@ -1,20 +1,11 @@
 package linprog;
 
-import com.google.gson.Gson;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
-import akka.actor.ActorSystem;
-import linprog.Simulation;
-import simulation.SimulationStarter;
-import topology.ActorTopology;
+import com.google.gson.Gson;
+
 import linprog.helper.ConsumptionProfiles;
 import linprog.helper.EnergyPrices;
-import meritorder.helper.ReadMemapFiles;
-
-import com.joptimizer.optimizers.LPOptimizationRequest;
-import com.joptimizer.optimizers.LPPrimalDualMethod;;
 
 
 
@@ -24,7 +15,7 @@ public class ReadTest {
 	
 	
 	private static final int NR_OF_CONSUMERS_JAN = 5;
-	private static final int N = 70;
+	private static final int N = Simulation.N_STEPS;
 	
 	
 	public static void main(String[] args) {
@@ -32,26 +23,52 @@ public class ReadTest {
 		Gson gson = new Gson();
 		
 		
-//		ConsumptionProfiles consumptionProfiles = new ConsumptionProfiles(NR_OF_CONSUMERS_JAN);
+		ConsumptionProfiles consumptionProfiles = new ConsumptionProfiles(NR_OF_CONSUMERS_JAN);
+		double[] vector = new double[2*N];
+		double[] sum = new double[2];
+		
+		
 //		for (int k=0; k<NR_OF_CONSUMERS_JAN; k++) {
 //		System.out.println("Haus " + (k+1) + ":");
-//		System.out.println("Wärme: " + consumptionProfiles.getHeatConsumption(k,0));
+//		System.out.println("Wärme: " + consumptionProfiles.getHeatConsumption(2,0));
+//		System.out.println("Wärme: " + consumptionProfiles.getHeatConsumption(2,1));
+//		
 //		System.out.println("Wärme: " + consumptionProfiles.getHeatConsumption(k,10));
 //		System.out.println("Wärme: " + consumptionProfiles.getHeatConsumption(k,69));
 //		System.out.println("Strom: " + consumptionProfiles.getElectricConsumption(k,0));
 //		}
+//		System.out.println(Simulation.stepLength(TimeUnit.HOURS));
+			sum[0] = 0;
+			sum[1] = 0;
+			for (int i=0; i<N; i++) {
+				vector[i] = -consumptionProfiles.getHeatConsumption(0,i);
+				System.out.println(vector[i]);
+				sum[0] += consumptionProfiles.getHeatConsumption(0,i);
+							
+				vector[N+i] = -consumptionProfiles.getElectricConsumption(0,i);
+				sum[1] += consumptionProfiles.getElectricConsumption(0,i);
+				
+				
+			}
+			System.out.println("Sum_H = " + sum[0] + ", Sum_el = " + sum[1]);
+//		}
+		
+		
+//		System.out.println("N_Days= " + Simulation.N_DAYS + ", N_Steps= " + Simulation.N_STEPS);
 		System.out.println(" ------------------------------ ");
 		
 		EnergyPrices energyPrices = new EnergyPrices();
 		
 		double[] cost = new double[N] ;
+		double costN = 0 ;
 		
 		for (int i = 0; i < N; i++) {
-			cost[i] = energyPrices.getElectricityPriceInCent(i);
+			cost[i] = energyPrices.getElectricityPriceInEuro(i);
+			costN += energyPrices.getElectricityPriceInEuro(i);
+			System.out.println(cost[i]);
 		}
-		
-		System.out.println("Kosten: " + cost[0]);
-		
+		System.out.println(costN);
+
 		
 //		double[][] A = createMatrix();
 		

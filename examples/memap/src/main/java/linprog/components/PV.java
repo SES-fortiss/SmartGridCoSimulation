@@ -1,8 +1,6 @@
 package linprog.components;
 
-import java.util.Calendar;
-
-import linprog.helper.EnergyPrices;
+//import linprog.helper.EnergyPrices;
 import linprog.helper.SolarRadiation;
 
 public class PV extends Producer {
@@ -19,12 +17,12 @@ public class PV extends Producer {
 	@Override
 	public void makeDecision() {
 		super.makeDecision();
-		EnergyPrices energyPrices = new EnergyPrices();
+		//EnergyPrices energyPrices = new EnergyPrices();
 		SolarRadiation solarRadiation = new SolarRadiation();
 		
 //		Calendar currentTime = startTime;
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = -energyPrices.getElectricityPriceInCent(i)*1.1; //+0.001*Math.random();
+			specificationToSend.cost[i] = 0.0; //-energyPrices.getElectricityPriceInCent(i)*1.1; //+0.001*Math.random();
 //			currentTime.add(Calendar.SECOND, stepSize);
 			for (int j = 0; j < n; j++) {
 				specificationToSend.couplingMatrix_H[i][j] = 0.0;

@@ -6,11 +6,8 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
-import linprog.Simulation;
 import meritorder.helper.ReadMemapFiles;
 import simulation.SimulationStarter;
 

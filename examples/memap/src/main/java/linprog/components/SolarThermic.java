@@ -1,7 +1,5 @@
 package linprog.components;
 
-import java.util.Calendar;
-
 import linprog.helper.SolarRadiation;
 
 public class SolarThermic extends Producer {

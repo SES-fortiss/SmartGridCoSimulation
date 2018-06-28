@@ -1,6 +1,5 @@
 package linprog;
 
-import akka.basicActors.ActorOptions;
 import linprog.helper.ConsumptionProfiles;
 import topology.ActorTopology;
 
@@ -36,7 +35,7 @@ public class Topology {
 	private static final double P_MAX_BATTERY_OUT = 5.;
 	private static final double QDOT_MAX_CHP = 80.;
 	private static final double AREA_SOLARTHERMIC = 6.;
-	private static final double QDOT_MAX_SOLARTHERMIC = 3.;
+	//private static final double QDOT_MAX_SOLARTHERMIC = 3.;
 	private static final double AREA_PV = 8.;
 	private static final double P_MAX_HEATPUMP = 20.;
 	private static final double CAPACITY_THERMALSTORAGE = 100000.;

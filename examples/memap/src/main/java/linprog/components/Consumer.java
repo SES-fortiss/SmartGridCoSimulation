@@ -1,7 +1,5 @@
 package linprog.components;
 
-import java.util.Calendar;
-
 import akka.basicMessages.AnswerContent;
 import linprog.helper.ConsumptionProfiles;
 import linprog.messages.Consumption;
