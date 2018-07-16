@@ -20,7 +20,7 @@ public class GasBoiler extends Producer {
 		
 //		Calendar currentTime = startTime;
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = EnergyPrices.getGasPriceInEuro(i);
+			specificationToSend.cost[i] = 0.0000001 + EnergyPrices.getGasPriceInEuro(i);
 //			currentTime.add(Calendar.SECOND, stepSize);
 			for (int j = 0; j < n; j++) {
 				specificationToSend.couplingMatrix_H[i][j] = 0.0;

@@ -23,7 +23,7 @@ public class SolarThermic extends Producer {
 		
 //		Calendar currentTime = startTime;
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = 0.0;
+			specificationToSend.cost[i] = 0.0000001;
 			for (int j = 0; j < n; j++) {
 				specificationToSend.couplingMatrix_H[i][j] = 0.0;
 				specificationToSend.couplingMatrix_el[i][j] = 0.0;
