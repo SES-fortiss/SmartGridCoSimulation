@@ -38,7 +38,6 @@ public class EnergyPrices {
 		// 0.0017 ct/kJ, covert to Eur / kWh times timestep in hours = Eur / (kW*timestep)
 		// double gasPrice = 6.12d*Simulation.stepLength(TimeUnit.HOURS)/100;
 		// Example N_Steps 70/ n_Days 7 : 0.014 Euro
-		double gasPrice = 6.12d*Simulation.stepLength(TimeUnit.HOURS)/100;
 		return 0.0612d;
 	}
 	
@@ -105,57 +104,57 @@ public class EnergyPrices {
 
 	
 	private void read(BufferedReader br, ArrayList<Double> electricityPrices) throws IOException, ParseException{
-	    String zeile;
-	      
+	    
+		String zeile;   
 	    NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
-    	
-	    int i = 0;
-	    int k = 0;
-	    double valueToRead = 0;
+	    ArrayList<Double> originalValues = new  ArrayList<Double>();
 	    
-	 // Number of hours per timestep
-	    double stepsize = Simulation.stepLength(TimeUnit.HOURS); 
-	    ArrayList<Double> originialValues = new  ArrayList<Double>();
-	    
-    	while ((zeile = br.readLine()) != null){	
-    		
-    		originialValues.add(nf.parse(zeile).doubleValue());
-    				
-    		if (++i >= k*stepsize+1) {
-				try {	
-    				// linear calculation of value in between two source-timesteps
-					double fraction = (k*stepsize+1) - (i-1);
-					if (k == 0) {
-						valueToRead = nf.parse(zeile).doubleValue();
-					} else {
-						double stepDifference = nf.parse(zeile).doubleValue()-originialValues.get(originialValues.size() - 2);		
-						valueToRead = originialValues.get(originialValues.size() - 2) + fraction*stepDifference;
-					}
-					// Unit in ct / KWh
-					electricityPrices.add(valueToRead);	
-					
-				} catch (Exception e) {
-					// do nothing
-					System.out.println("Error in reading Electricity prices");
-					
-				}
-				k++;
-    		}
+    	while ((zeile = br.readLine()) != null){			
+    		originalValues.add(nf.parse(zeile).doubleValue());	
 		}
-    	
-    	// This Part is necessary if price should not vary over one day:
-    	double stepsPerDay = (double)Simulation.N_STEPS/(double)Simulation.N_DAYS;
-    	int m = 1;
-	
-    	for (int j = 0; j < electricityPrices.size(); j++) {
-    		
-			double dailyPrice = electricityPrices.get((int)((m-1)*stepsPerDay+stepsPerDay/2));
-			electricityPrices.set(j, dailyPrice);
-			
-			if ( j+1 == m*(int)stepsPerDay ) {
-				m++;
-    		}
+
+    	double[] x = new double[originalValues.size()];
+    	double[] y = new double[originalValues.size()];
+
+		for (int i = 0; i < originalValues.size() ; i++) {
+    		x[i]=i;    		// 24h * 7 Days -1 = 167 
+    		y[i]=originalValues.get(i);
     	}
+		
+    	double[] xi = new double[Simulation.N_STEPS];
+    	
+		for (int j = 0; j < Simulation.N_STEPS ; j++) {
+    		xi[j]=j*Simulation.stepLength(TimeUnit.HOURS);    
+    	}	   		
+		
+		double[] yi = Interpolation.interpLinear(x, y, xi);
+    			
+		SolutionHandler.exportData(x, "XpriceOrig.csv");
+		SolutionHandler.exportData(y, "YpriceOrig.csv");
+		SolutionHandler.exportData(xi, "XIpriceOrig.csv");
+		SolutionHandler.exportData(yi, "YIpriceOrig.csv");
+		
+    	for (int k = 0; k < yi.length; k++) {
+    		electricityPrices.add(yi[k]);
+    	}
+		
+    	// This Part is only necessary if price should not vary over one day:
+    	// ===========================================================================
+    	
+//    	double stepsPerDay = (double)Simulation.N_STEPS/(double)Simulation.N_DAYS;
+//    	int m = 1;
+//	
+//    	for (int j = 0; j < electricityPrices.size(); j++) {
+//    		
+//			double dailyPrice = electricityPrices.get((int)((m-1)*stepsPerDay+stepsPerDay/2));
+//			electricityPrices.set(j, dailyPrice);
+//			
+//			if ( j+1 == m*(int)stepsPerDay ) {
+//				m++;
+//    		}
+//    	}
+
+    	// ===========================================================================
     	
 	    br.close();
 

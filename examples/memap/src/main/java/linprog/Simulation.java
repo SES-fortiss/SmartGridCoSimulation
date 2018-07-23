@@ -10,7 +10,7 @@ public class Simulation {
 
 	private ActorTopology topology;
 
-	public static final int N_STEPS = 24;
+	public static final int N_STEPS = 4*24; // 15 min timestep
 	public static final int N_DAYS = 1;
 	
 	public static final int TIMESTEPS_PER_ITERATION = N_STEPS; //equals N_STEPS for case of overall optimization, smaller for reactive case

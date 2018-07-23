@@ -105,7 +105,7 @@ public class ConsumptionProfiles {
 	    
 	    double[] consumptionBuffer = new double[nrOfProfiles];
 	
-					
+		// Read-in of consumption values in kJ for every minute 			
 		while ( (zeile = br.readLine()) != null) {		
 			buffer = zeile.split(";");	
 			
@@ -113,11 +113,10 @@ public class ConsumptionProfiles {
 				consumptionBuffer[j] += nf.parse(buffer[j]).doubleValue();
 			}
 			i++;
-							// Anzahl der Minuten Pro Timestep
+			// Sum up consumption over the number of minutes per timestep
 			if ( (i == (k+1)*Simulation.stepLength(TimeUnit.MINUTES)) && (buffer.length != 0) ) {
 				try {
 					for(int j = 0; j < buffer.length; j++) {
-//						dailyProfiles.get(j).add(nf.parse(buffer[j]).doubleValue());
 						dailyProfiles.get(j).add(consumptionBuffer[j]);
 						consumptionBuffer[j] = 0;
 					}
@@ -129,8 +128,8 @@ public class ConsumptionProfiles {
 		}
 					
 	    br.close();  
-	    System.out.println(k);
-	 // Das Wärmeprofil eines Tages wird auf n_days kopiert; k = N_Days
+
+	 // the heat profile of one day is copied for n_days;  ( k = N_STEPS/N_Days )
 	    for (int m = 0; m < (Simulation.N_STEPS/k); m++) {
 	    	for(int j = 0; j < nrOfProfiles; j++) {
 	    		for (int v=0; v<dailyProfiles.get(1).size(); v++) {
