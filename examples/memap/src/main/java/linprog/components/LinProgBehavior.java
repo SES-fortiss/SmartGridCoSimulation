@@ -137,7 +137,7 @@ public class LinProgBehavior extends BehaviorModel {
 		for (int i=0; i<buildingSpecs.size(); i++) {
 			buildingsTotalCosts += costsPerBuilding[i];
 		}
-		double costsMEMAP = SolutionHandler.exportCosts(sol, problem.lambda, "CostMEMAP.csv");
+		double costsMEMAP = SolutionHandler.exportCosts(sol, problem.lambda, "CostVectorMEMAP.csv");
 		
 		System.out.println("****************************************************************");	
 		System.out.println("COSTS without MEMAP: " + String.format("%.02f", buildingsTotalCosts));
@@ -151,22 +151,28 @@ public class LinProgBehavior extends BehaviorModel {
 		int building = 0;
 		int range1 = 0;
 		int range2 = 0;
+		int marketmatrices = 4; // selling/buying(2) of electricity/heat(2)
 		
-		System.out.println(" << New Costs >>");
+		System.out.println(" << New Costs (to grid) >>");
 					
 		for(BuildingSpec buildingSpec : buildingSpecs) {
 			double newBuildingCosts = 0;
+			double newBuildingTradeCosts = 0;
 			nrOfProducers2 += buildingSpec.getNrOfProducers();
 			nrOfStorages2 += buildingSpec.getNrOfStorages();	
-			range2 = n*(nrOfProducers2+2*nrOfStorages2);
+			range2 = n*(nrOfProducers2+2*nrOfStorages2+marketmatrices);
 			for (int j=range1; j<range2; j++) {
 				newBuildingCosts += problem.lambda[j]*sol[j];
 			}
+			for (int j=range2-n*marketmatrices; j<range2; j++) {
+				newBuildingTradeCosts += problem.lambda[j]*sol[j];
+			}
+			
 			range1=range2;
 			building++;
 			
 
-			System.out.println("Building " + building + ": " + String.format("%.02f", newBuildingCosts));
+			System.out.println("Building " + building + ": " + String.format("%.02f", newBuildingCosts)+ "(" + String.format("%.02f", newBuildingTradeCosts) + ")");
 		}
 		
 		

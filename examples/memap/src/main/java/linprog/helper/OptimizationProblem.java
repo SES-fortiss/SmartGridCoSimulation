@@ -18,16 +18,16 @@ public class OptimizationProblem {
 		this.nrOfProducers = nrOfProducers;
 		this.nrOfStorages = nrOfStorages;
 		
-		lambda  = new double[n*(nrOfProducers+2*nrOfStorages+2)];
+		lambda  = new double[n*(nrOfProducers+(2*nrOfStorages)+4)];
 		
 		h = new double[n*2*nrOfStorages];
-		g = new double[n*2*nrOfStorages][n*(nrOfProducers+2*nrOfStorages+2)];
+		g = new double[n*2*nrOfStorages][n*(nrOfProducers+(2*nrOfStorages)+4)];
 		
 		b_eq = new double[2*n];
-		a_eq = new double[2*n][n*(nrOfProducers+2*nrOfStorages+2)];
+		a_eq = new double[2*n][n*(nrOfProducers+(2*nrOfStorages)+4)];
 		
-		x_lb = new double[n*(nrOfProducers+2*nrOfStorages+2)];
-		x_ub = new double[n*(nrOfProducers+2*nrOfStorages+2)];
+		x_lb = new double[n*(nrOfProducers+(2*nrOfStorages)+4)];
+		x_ub = new double[n*(nrOfProducers+(2*nrOfStorages)+4)];
 		
 		
 	}

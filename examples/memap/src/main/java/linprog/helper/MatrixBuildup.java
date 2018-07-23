@@ -132,28 +132,39 @@ public abstract class MatrixBuildup {
 			}	
 		}
 		
-		// After the last systems was added, another matrix will be added to handle buying and selling of electricity and heat
+		// After the last systems was added, more matrices will be added to handle buying and selling of electricity and heat
 		if (producersHandledSoFar+1+storagesHandledSoFar == problem.getNumberofProducers()+problem.getNumberofStorages()) {
 			n_index = n_index + n ;
 			EnergyPrices energyPrices = new EnergyPrices();
 			
 			for(int i = 0; i < 2*n; i++) {
-				// no limit for selling or buying
-				problem.x_lb[n_index+i] = 0.0;    // limit for JOptimizer
-				problem.x_ub[n_index+i] = 999.9;     // limit for JOptimizer
+				// limits for JOptimizer: selling or buying of electricity
+				problem.x_lb[n_index+i] = 0.0; 
+				problem.x_ub[n_index+i] = 999.9;  
+				// limits for JOptimizer: selling or buying of heat
+				problem.x_lb[2*n+n_index+i] = 0.0;  
+				problem.x_ub[2*n+n_index+i] = 0.0;   
 				
 				for(int j = 0; j < n; j++) {
 
 					if (i == n+j) {
-					problem.a_eq[i][n_index+j] = -1.;  // buying (positive x) or selling (negative x) of electricity
-					problem.a_eq[i][n_index+n+j] = 1.;
+						problem.a_eq[i][n_index+j] = -1.;  	// buying of electricity
+						problem.a_eq[i][n_index+n+j] = 1.;	// selling of electricity
 					}
-					problem.lambda[n_index+j] = energyPrices.getElectricityPriceInEuro(j);		// buy price
-					problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInEuro(j)*0.5;     // sell price
+					if (i+2*n == j) {
+						problem.a_eq[i+2*n][j] = 0.0;  	// buying of heat - not possibel at the moment
+						problem.a_eq[i+2*n][n+j] = 1.;		// selling of heat
+					}
+					// Extended price vector for market
+					problem.lambda[n_index+j] = energyPrices.getElectricityPriceInEuro(j);			// electricity buy price
+					problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInEuro(j)*0.5;   // electricity sell price
+					problem.lambda[n_index+2*n+j] = 0.0;											// heat buy price - placeholder
+					problem.lambda[n_index+3*n+j] = 0.0;     										// heat sell price
 				}	
 
 			}
 		}
+		
 	}
 	
 	private static void addStorageToProblem(StorageSpec storageSpec, OptimizationProblem problem, int producersHandledSoFar,
@@ -181,18 +192,28 @@ public abstract class MatrixBuildup {
 			EnergyPrices energyPrices = new EnergyPrices();
 			
 			for(int i = 0; i < 2*n; i++) {
-				// no limit for selling or buying
-				problem.x_lb[n_index+i] = 0.0;    // limit for JOptimizer
-				problem.x_ub[n_index+i] = 999.9;     // limit for JOptimizer
+				// limits for JOptimizer: selling or buying of electricity
+				problem.x_lb[n_index+i] = 0.0; 
+				problem.x_ub[n_index+i] = 999.9;  
+				// limits for JOptimizer: selling or buying of heat
+				problem.x_lb[2*n+n_index+i] = 0.0;  
+				problem.x_ub[2*n+n_index+i] = 0.0;   
 				
 				for(int j = 0; j < n; j++) {
 
 					if (i == n+j) {
-					problem.a_eq[i][n_index+j] = -1.;  // buying (positive x) or selling (negative x) of electricity
-					problem.a_eq[i][n_index+n+j] = 1.;
+						problem.a_eq[i][n_index+j] = -1.;  	// buying of electricity
+						problem.a_eq[i][n_index+n+j] = 1.;	// selling of electricity
 					}
-					problem.lambda[n_index+j] = energyPrices.getElectricityPriceInEuro(j);		// buy price
-					problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInEuro(j)*0.5;     // sell price
+					if (i+2*n == j) {
+						problem.a_eq[i+2*n][j] = 0.0;  	// buying of heat - not possibel at the moment
+						problem.a_eq[i+2*n][n+j] = 1.;		// selling of heat
+					}
+					// Extended price vector for market
+					problem.lambda[n_index+j] = energyPrices.getElectricityPriceInEuro(j);			// electricity buy price
+					problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInEuro(j)*0.5;   // electricity sell price
+					problem.lambda[n_index+2*n+j] = 0.0;											// heat buy price - placeholder
+					problem.lambda[n_index+3*n+j] = 0.0;     										// heat sell price
 				}	
 
 			}

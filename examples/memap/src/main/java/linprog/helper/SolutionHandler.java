@@ -72,7 +72,7 @@ public abstract class SolutionHandler {
 			costs += costVector[i];
 		}	
 
-		SolutionHandler.exportData(lambda, filename);
+		SolutionHandler.exportData(costVector, filename);
 
 		return costs;	
 
