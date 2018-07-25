@@ -103,10 +103,12 @@ public class LinProgBehavior extends BehaviorModel {
 			nrOfProducers += buildingSpec.getNrOfProducers();	
 			counter++;		
 			
+			// CSV Export functions
 			SolutionHandler.exportData(sol, "XvectorGEB" + (counter) + ".csv");	
 			SolutionHandler.exportProduction(problem.a_eq, sol, "ProductionVecGEB" + (counter) + ".csv");
 			SolutionHandler.exportData(buildingSpec.consumption.getVector(), "ConsumptionGEB" + (counter) + ".csv");
 			SolutionHandler.exportMatrix(problem.a_eq, "CouplingMatrixGEB" + (counter) + ".csv");
+			SolutionHandler.exportMatrix(problem.g, "CapacityMatrixGEB" + (counter) + ".csv");
 		}
 
 		// ------------ MEMAP - OPTIMIZATION ------------ 

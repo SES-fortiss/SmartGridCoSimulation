@@ -1,7 +1,5 @@
 package linprog.components;
 
-import linprog.helper.EnergyPrices;
-
 public class HeatPump extends Producer {
 
 	public final double efficiency;
@@ -19,7 +17,6 @@ public class HeatPump extends Producer {
 	@Override
 	public void makeDecision() {
 		super.makeDecision();
-		EnergyPrices energyPrices = new EnergyPrices();
 //		Calendar currentTime = startTime;
 		for (int i = 0; i < n; i++) {
 			

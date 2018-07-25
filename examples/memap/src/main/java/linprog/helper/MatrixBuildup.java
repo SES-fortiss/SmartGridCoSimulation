@@ -1,8 +1,6 @@
 package linprog.helper;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-
 import linprog.Simulation;
 
 import linprog.messages.BuildingSpec;
