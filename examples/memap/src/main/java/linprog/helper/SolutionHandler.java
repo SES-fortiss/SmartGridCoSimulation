@@ -160,4 +160,17 @@ public abstract class SolutionHandler {
 		}
 		
 	}
+
+	public static void exportProduction(double[][] matrixA, double[] sol, String filename) {
+
+		try {
+			double[] result = SolutionHandler.matrixMultiplication(matrixA, sol);
+			SolutionHandler.exportData(result, filename);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return;	
+	}
 }

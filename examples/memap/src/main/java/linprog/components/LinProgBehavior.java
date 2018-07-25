@@ -104,6 +104,7 @@ public class LinProgBehavior extends BehaviorModel {
 			counter++;		
 			
 			SolutionHandler.exportData(sol, "XvectorGEB" + (counter) + ".csv");	
+			SolutionHandler.exportProduction(problem.a_eq, sol, "ProductionVecGEB" + (counter) + ".csv");
 			SolutionHandler.exportData(buildingSpec.consumption.getVector(), "ConsumptionGEB" + (counter) + ".csv");
 			SolutionHandler.exportMatrix(problem.a_eq, "CouplingMatrixGEB" + (counter) + ".csv");
 		}
@@ -114,7 +115,8 @@ public class LinProgBehavior extends BehaviorModel {
 		System.out.println("Total Storage: " + nrOfStorages);
 		System.out.println("Total Producer: " + nrOfProducers);
 		
-		OptimizationProblem problem = MatrixBuildup.memapMatrices(nrOfProducers,nrOfStorages,buildingSpecs,consumptionProfiles,producerSpecs,storageSpecs);
+		OptimizationProblem problem = MatrixBuildup.memapMatrices(nrOfProducers,nrOfStorages,
+				buildingSpecs,consumptionProfiles,producerSpecs,storageSpecs);
 		double[] sol = OptimizationStarter.runLinProg(problem);
 
 		display.update(gson.toJson(sol));
@@ -157,22 +159,17 @@ public class LinProgBehavior extends BehaviorModel {
 					
 		for(BuildingSpec buildingSpec : buildingSpecs) {
 			double newBuildingCosts = 0;
-			double newBuildingTradeCosts = 0;
 			nrOfProducers2 += buildingSpec.getNrOfProducers();
 			nrOfStorages2 += buildingSpec.getNrOfStorages();	
 			range2 = n*(nrOfProducers2+2*nrOfStorages2+marketmatrices);
 			for (int j=range1; j<range2; j++) {
 				newBuildingCosts += problem.lambda[j]*sol[j];
-			}
-			for (int j=range2-n*marketmatrices; j<range2; j++) {
-				newBuildingTradeCosts += problem.lambda[j]*sol[j];
-			}
-			
+			}	
 			range1=range2;
 			building++;
 			
-
-			System.out.println("Building " + building + ": " + String.format("%.02f", newBuildingCosts)+ "(" + String.format("%.02f", newBuildingTradeCosts) + ")");
+			System.out.println("Building " + building + ": " + String.format("%.02f", newBuildingCosts));
+			
 		}
 		
 		
