@@ -10,5 +10,5 @@ public class StorageSpec implements AnswerContent {
 	public double max_capacity;
 	public double p_in;
 	public double p_out;
-
+	
 }

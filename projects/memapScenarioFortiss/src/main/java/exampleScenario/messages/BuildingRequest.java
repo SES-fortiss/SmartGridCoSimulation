@@ -1,13 +1,14 @@
 package exampleScenario.messages;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import akka.basicMessages.RequestContent;
 
 public class BuildingRequest implements RequestContent{
 	public Consumption consumption = new Consumption();
-	public HashMap<String,ProducerSpec> producers = new HashMap<String,ProducerSpec>();
-	public HashMap<String,StorageSpec> storages = new HashMap<String,StorageSpec>();
+	public Map<String,ProducerSpec> producers = new HashMap<String,ProducerSpec>();
+	public Map<String,StorageSpec> storages = new HashMap<String,StorageSpec>();
 	
 	public int getNrOfProducers() {
 		return producers.size();

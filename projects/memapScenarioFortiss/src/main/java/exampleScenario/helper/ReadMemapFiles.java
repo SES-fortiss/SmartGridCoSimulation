@@ -85,7 +85,7 @@ public class ReadMemapFiles {
 	// ineffizient, spielt im Moment aber keine Rolle
 	public int getIndex(LocalTime lt) {
 		int result = 0;
-		while (time.get(result).isBefore(lt) && (result < time.size()) ) {
+		while (time.get(result).isBefore(lt) && (result < time.size()-1) ) {
 			result++;
 		}
 		return result;

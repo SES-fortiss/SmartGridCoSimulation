@@ -1,7 +1,6 @@
 package exampleScenario.messages;
 
 import java.util.HashMap;
-
 import akka.basicMessages.AnswerContent;
 
 public class BuildingSpec implements AnswerContent {

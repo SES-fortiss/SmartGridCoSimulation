@@ -26,7 +26,7 @@ public class ThermalStorage extends Storage {
 		
 		if (requestContentReceived != null) {
 			request = (BuildingRequest) requestContentReceived;
-			diff = request.getHeatProduction() - (request.consumption.getDHWValue()+request.consumption.getHeatValue());
+			diff = request.getHeatProduction() - (request.consumption.getDhw()+request.consumption.getHeat());
 			
 			// production > consumption -> charge thermal storage
 			if (diff > 0) {

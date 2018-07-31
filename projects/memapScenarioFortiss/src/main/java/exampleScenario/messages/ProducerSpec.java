@@ -8,5 +8,5 @@ public class ProducerSpec implements AnswerContent {
 	public double cost;
 	public double power_el;
 	public double power_h;
-
+	
 }

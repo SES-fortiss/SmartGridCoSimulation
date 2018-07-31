@@ -21,10 +21,10 @@ public class OilBoiler extends Producer {
 		BuildingRequest request;
 		if (requestContentReceived != null) {
 			request = (BuildingRequest) requestContentReceived;
-			specificationToSend.power_h = request.consumption.getDHWValue() + request.consumption.getHeatValue();
+			specificationToSend.power_h = request.consumption.getDhw() + request.consumption.getHeat();
 			if (specificationToSend.power_h > this.qdot_max) specificationToSend.power_h = this.qdot_max;
 		}
-		specificationToSend.cost = 0.10*specificationToSend.power_h*(1/efficiency);
+		specificationToSend.cost = 10*(1/(60*60))*specificationToSend.power_h*(1/efficiency);	// ct/kWs
 	}
 
 }

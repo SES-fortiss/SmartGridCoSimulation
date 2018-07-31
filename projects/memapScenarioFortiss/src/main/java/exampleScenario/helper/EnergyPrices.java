@@ -79,7 +79,12 @@ public class EnergyPrices {
 	public double getElectricityPriceInCent(LocalDateTime time) {
 		int day = time.getDayOfWeek().getValue();
 		int hour = time.getHour();
-		return electricityPrices.get(1+(day-1)*24+hour);
+		if ((1+(day-1)*24+hour) < electricityPrices.size()) {
+			return electricityPrices.get(1+(day-1)*24+hour);
+		}
+		else {
+			return electricityPrices.get(electricityPrices.size()-1);
+		}
 	}
 	
 	private ArrayList<Double> readElectricityPrices(String filename){

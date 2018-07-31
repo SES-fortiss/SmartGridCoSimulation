@@ -25,21 +25,18 @@ public class CHP extends Producer {
 		
 		// wärme orientiert
 		BuildingRequest request;
-		//double q_dot_gas;
 		double q_dot_other = 0.0;
 		
 		if (requestContentReceived != null) {
 			request = (BuildingRequest) requestContentReceived;
 			q_dot_other = request.getHeatProduction() - request.producers.get("BHKW").power_h;
-			specificationToSend.power_h = request.consumption.getHeatValue() + request.consumption.getDHWValue() - q_dot_other;
+			specificationToSend.power_h = request.consumption.getHeat() + request.consumption.getDhw() - q_dot_other;
 			if(specificationToSend.power_h < 0) specificationToSend.power_h = 0.0;
-			//q_dot_gas = specificationToSend.power_h*(1/this.efficiency_H);
-			//q_dot = q_dot_gas*this.efficiency_el;
 			if (specificationToSend.power_h > this.qdot_max) specificationToSend.power_h = this.qdot_max;
 			specificationToSend.power_el = specificationToSend.power_h*(this.efficiency_el/this.efficiency_H);
 		}
 		
-		specificationToSend.cost = 0.06*specificationToSend.power_el*(1/this.efficiency_el);
+		specificationToSend.cost = 6*(1/(60*60))*specificationToSend.power_el*(1/this.efficiency_el);	// ct/kWs
 	}
 
 }

@@ -25,9 +25,9 @@ public class HeatPump extends Producer {
 		
 		if (requestContentReceived != null) {
 			request = (BuildingRequest) requestContentReceived;
-			specificationToSend.power_h = request.consumption.getDHWValue() + request.consumption.getHeatValue();
+			specificationToSend.power_h = request.consumption.getDhw() + request.consumption.getHeat();
 			if (specificationToSend.power_h > this.qdot_max) specificationToSend.power_h = this.qdot_max;
 		}
-		specificationToSend.cost = energyPrices.getElectricityPriceInCent(GlobalTime.currentTime)*specificationToSend.power_h*(1/efficiency);
+		specificationToSend.cost = energyPrices.getElectricityPriceInCent(GlobalTime.currentTime)*(1/(60*60))*specificationToSend.power_h*(1/efficiency);	// ct/kWs
 	}
 }

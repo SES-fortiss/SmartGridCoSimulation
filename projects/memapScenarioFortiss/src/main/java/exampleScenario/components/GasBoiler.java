@@ -20,9 +20,9 @@ public class GasBoiler extends Producer {
 		BuildingRequest request;
 		if (requestContentReceived != null) {
 			request = (BuildingRequest) requestContentReceived;
-			specificationToSend.power_h = request.consumption.getDHWValue() + request.consumption.getHeatValue();
+			specificationToSend.power_h = request.consumption.getDhw() + request.consumption.getHeat();
 		}
-		specificationToSend.cost = 0.06*specificationToSend.power_h*(1/efficiency);
+		specificationToSend.cost = 6*(1/(60*60))*specificationToSend.power_h*(1/efficiency);	// ct/kWs
 	}
 
 }

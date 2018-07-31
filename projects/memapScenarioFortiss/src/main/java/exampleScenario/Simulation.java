@@ -22,8 +22,8 @@ public class Simulation {
 	
 	private ActorTopology topology;
 	
-	public static LocalDateTime startTime = LocalDateTime.of(2014,7,1,7,5);
-	public static LocalDateTime endTime = LocalDateTime.of(2014,7,6,7,21);
+	public static LocalDateTime startTime = LocalDateTime.of(2018,7,9,0,0);
+	public static LocalDateTime endTime = LocalDateTime.of(2018,7,16,0,0);
 	public static Duration timeInterval = Duration.ofSeconds(1);
 	
 	
@@ -33,10 +33,10 @@ public class Simulation {
 		System.setProperty("org.eclipse.jetty.LEVEL", "OFF");
 		
 		topology = Topology.createTopology();
-		SimulationStarter.saveGridTopologyPlot(topology);   
+		//SimulationStarter.saveGridTopologyPlot(topology);   
 		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
         //SimulationStarter.startSimulation(actorSystem,startTime, endTime, timeInterval);
-		SimulationStarter.startSimulation(actorSystem, LocalDate.now(), timeInterval);
+        SimulationStarter.startSimulation(actorSystem, LocalDate.now(), timeInterval);
 	}
 	
 	public static void main(String[] args){

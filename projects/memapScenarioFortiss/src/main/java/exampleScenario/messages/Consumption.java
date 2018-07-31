@@ -20,15 +20,15 @@ public class Consumption implements AnswerContent {
 		this.dhw += consumption.dhw;
 	}
 	
-	public double getHeatValue() {
+	public double getHeat() {
 		return heat;
 	}
 	
-	public double getElectricalValue() {
+	public double getElectrical() {
 		return electrical;
 	}
 	
-	public double getDHWValue() {
+	public double getDhw() {
 		return dhw;
 	}
 }

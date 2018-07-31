@@ -1,7 +1,6 @@
 package exampleScenario.components;
 
 import akka.systemActors.GlobalTime;
-import exampleScenario.helper.EnergyPrices;
 import exampleScenario.helper.SolarRadiation;
 
 public class PV extends Producer {
@@ -18,10 +17,9 @@ public class PV extends Producer {
 	@Override
 	public void makeDecision() {
 		super.makeDecision();
-		EnergyPrices energyPrices = new EnergyPrices();
 		
-		specificationToSend.cost = -energyPrices.getElectricityPriceInCent(GlobalTime.currentTime);
 		specificationToSend.power_el = SolarRadiation.getRadiation(GlobalTime.currentTime)*area*efficiency;
+		specificationToSend.cost = 0.0;
 	}
 	
 

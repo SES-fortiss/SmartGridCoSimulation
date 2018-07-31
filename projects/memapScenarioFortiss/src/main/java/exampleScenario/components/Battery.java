@@ -20,7 +20,7 @@ public class Battery extends Storage {
 		
 		if (requestContentReceived != null) {
 			request = (BuildingRequest) requestContentReceived;
-			diff = request.getElectricalProduction() - request.consumption.getElectricalValue();
+			diff = request.getElectricalProduction() - request.consumption.getElectrical();
 			
 			// production > consumption -> charge battery
 			if (diff > 0) {
