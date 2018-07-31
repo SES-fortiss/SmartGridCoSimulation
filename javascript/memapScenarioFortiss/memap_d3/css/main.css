@@ -1,0 +1,244 @@
+body {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+}
+
+#header{
+    margin-left:auto;
+    margin-right:auto;
+    width: 1200px;
+}
+
+h1{
+    text-align: center;
+}
+
+#line-below-header{
+    width: 100%;
+    height: 1px;
+    background: #000000;
+}
+
+#building-info{
+    height: 220px;
+    width: 250px;
+    margin: 7% 2.5%;
+    padding: 0.5%;
+    border: 2px solid black;
+    float: left;
+    font-family: 'Raleway', sans-serif;
+    font-size: 18px;
+    background-color: #f1f1f1;
+    overflow: auto;
+    position: fixed;
+}
+
+
+.house {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+}
+
+.house_txt {
+    display: inline-block;
+    margin-left: 60px;
+    margin-top: 20px;
+}
+
+.house_img {
+    display: inline-block;
+    position: absolute;
+    top: 8px;
+    margin-left: 5px;
+    float: left;
+}
+
+.devices {
+    margin-top: 30px;
+    margin-left: 20px;
+}
+
+table {
+    border-spacing: 10px;
+}
+
+
+
+#time{
+    margin-top: 20px;
+    width: 70%;
+    height: 40px;
+    margin-left: 22%;
+    margin-right: 30%;
+    text-align: center;
+    position: fixed;
+}
+
+#realtime{
+    margin-left: 200px;
+    font-size: 20px;
+    background-color: white;
+}
+
+#timeperiod{
+    margin-left: 200px;
+    font-size: 20px;
+    background-color: white;
+}
+
+#charts{
+    height: 800px;
+    width: 70%;
+    margin-left: 22%;
+    margin-right: 30%;
+    margin-top: 70px;
+    text-align: center;
+}
+
+.line {
+    fill: none;
+    stroke: #000;
+    stroke-width: 2px;
+}
+
+.title {
+    text-anchor: middle;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.label {
+    text-anchor: middle;
+    font-size: 16px;
+}
+/* Style the tab */
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.button {
+    background-color: inherit;
+    color: black;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+    font-family: 'Raleway', sans-serif;
+}
+
+/* Change background color of buttons on hover */
+.button:hover {
+    background-color: #dddddd;
+}
+
+/* Create an active/current tablink class */
+.button.active {
+    background-color: #dddddd;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 14px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 17px;
+    font-family: 'Raleway', sans-serif;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #dddddd}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .button {
+    background-color: #dddddd;
+}
+
+
+#storage
+{
+    width: 400px;
+    margin: 100px auto;
+    padding-left: 200px;
+}
+.chart-filled
+{
+    fill: steelblue;
+}
+.chart-empty
+{
+    fill: #dedede;
+}
+
+.needle, .needle-center
+{
+    fill: #464A4F;
+}
+
+
+.reload
+{
+    font-family: Lucida Sans Unicode;
+    font-weight: bold;
+    font-size: 17px;
+}
+
+/* sankey */
+.node {
+    pointer-events: none;
+    text-shadow: 0 1px 0 #fff;
+    font-size: 16px;
+    font-family: 'Raleway', sans-serif;
+}
+
+.link {
+    fill: none;
+    stroke: #000;
+    stroke-opacity: .2;
+}
+
+.link:hover {
+    stroke-opacity: .5;
+}
+
+[class*="area"] {
+    fill-opacity: 0.5;
+    stroke-opacity: 0;
+    position:absolute;
+}
+
+[class*="area"]:hover {
+    fill-opacity: 1;
+    z-index: 100;
+}
+
+rect {
+    stroke-width: 2;
+}

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Energiemonitor</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="js/lib/d3-sankey.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+</head>
+
+<body>
+
+<div id = "header">
+    <h1>Energiemonitor</h1>
+</div>
+<div id = "line-below-header"></div>
+<div id = "main-site">
+    <div class="tab">
+        <button id="live_tab" class="button">Live</button><div class="dropdown">
+            <button id="history_tab" class="button">Statistik</button>
+            <div class="dropdown-content">
+                <a id = "history_area_tab" href="javascript:void(0);">Area</a>
+                <a id = "history_profile_tab" href="javascript:void(0);">Profile</a>
+                <a id = "history_sankey_tab" href="javascript:void(0);">Sankey</a>
+                <a id = "history_cost_tab" href="javascript:void(0);">Kosten</a>
+            </div>
+        </div>
+    </div>
+
+    <div id = "building-info">
+        <div class = "house">
+            <img class = "house_img" src="icons/house.png" alt="Haus" style="width:50px;height:50px;">
+            <select class = "house_txt" id="building">
+                <option value=1>1</option>
+                <option value=2>2</option>
+                <option value=3>3</option>
+                <option value=4>4</option>
+                <option value=5>5</option>
+            </select>
+            <button onclick="changeBuilding()"><span class=reload>&#x21bb;</span></button>
+        </div>
+
+        <div class = "devices"></div>
+    </div>
+
+    <div id = "time">
+        <span id = "realtime"></span>
+        <div id = "timeperiod">
+            Von:
+            <input type="date" id="start_date" min="2018-07-09" max="2018-07-16" value="2018-07-09">
+            <input type="time" id="start_time" value="00:00">
+            Bis:
+            <input type="date" id="end_date" min="2018-07-09" max="2018-07-16" value="2018-07-10">
+            <input type="time" id="end_time" value="00:00">
+            <button onclick="update_history_charts()"><span class=reload>&#x21bb;</span></button>
+        </div>
+    </div>
+
+    <div id = "charts">
+        <div id = "history">
+
+            <div id="profile_consumption"></div>
+            <div id="profile_production_el"></div>
+            <div id="profile_production_h"></div>
+
+            <div id="area_electricity"></div>
+            <div id="area_heat"></div>
+
+            <div id="sankey"></div>
+
+            <div id="cost"></div>
+        </div>
+        <div id = "profile">
+            <div id="consumption"></div>
+            <div id="production_el"></div>
+            <div id="production_h"></div>
+            <div id="storage"></div>
+        </div>
+    </div>
+</div>
+
+<script src="js/main.js"></script>
+<script src="js/get_building_info.js"></script>
+<script src="js/time_format.js"></script>
+<script src="js/lib/legend_area.js"></script>
+<script src="js/lib/legend_profile.js"></script>
+<script src="js/lib/gauge.js"></script>
+<script src="js/charts/live_profile_chart.js"></script>
+<script src="js/charts/history_area_chart.js"></script>
+<script src="js/charts/history_sankey_chart.js"></script>
+<script src="js/charts/history_profile_chart.js"></script>
+<script src="js/charts/history_cost_chart.js"></script>
+
+
+</body>
+</html>
