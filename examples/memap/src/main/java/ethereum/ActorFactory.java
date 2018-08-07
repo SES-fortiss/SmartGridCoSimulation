@@ -63,7 +63,7 @@ public abstract class ActorFactory {
 	public static ActorOptions createBattery(String name, double qdot_max_in, double qdot_max_out, double capacity, int port){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new Battery(name, qdot_max_in, qdot_max_out, capacity, port));	
+				new Battery(name, qdot_max_in, qdot_max_out, 1, capacity, port));	
 		return result;
 	}
 	

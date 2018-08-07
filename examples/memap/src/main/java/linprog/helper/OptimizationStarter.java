@@ -1,7 +1,5 @@
 package linprog.helper;
 
-import java.util.concurrent.TimeUnit;
-
 import com.joptimizer.optimizers.LPOptimizationRequest;
 import com.joptimizer.optimizers.LPPrimalDualMethod;
 

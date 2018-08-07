@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import com.google.gson.Gson;
-
 import linprog.Simulation;
 import meritorder.helper.ReadMemapFiles;
 import simulation.SimulationStarter;

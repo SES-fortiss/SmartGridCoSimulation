@@ -141,23 +141,20 @@ public abstract class MatrixBuildup {
 				problem.x_ub[n_index+i] = 999.9;  
 				// limits for JOptimizer: selling or buying of heat
 				problem.x_lb[2*n+n_index+i] = 0.0;  
-				problem.x_ub[2*n+n_index+i] = 0.0;   
+				problem.x_ub[2*n+n_index+i] = 999.0;   
 				
 				for(int j = 0; j < n; j++) {
 
-					if (i == n+j) {
-						problem.a_eq[i][n_index+j] = -1.;  	// buying of electricity
-						problem.a_eq[i][n_index+n+j] = 1.;	// selling of electricity
-					}
-					if (i+2*n == j) {
-						problem.a_eq[i+2*n][j] = 0.0;  	// buying of heat - not possibel at the moment
-						problem.a_eq[i+2*n][n+j] = 1.;		// selling of heat
-					}
+					problem.a_eq[n+j][n_index+j] = -1.;  	// buying of electricity
+					problem.a_eq[n+j][n_index+n+j] = 1.;	// selling of electricity
+					problem.a_eq[j][n_index+2*n+j] = -1.;  	// buying of heat - not possible at the moment
+					problem.a_eq[j][n_index+3*n+j] = 1.;		// selling of heat
+
 					// Extended price vector for market
 					problem.lambda[n_index+j] = energyPrices.getElectricityPriceInEuro(j);			// electricity buy price
 					problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInEuro(j)*0.5;   // electricity sell price
-					problem.lambda[n_index+2*n+j] = 0.0;											// heat buy price - placeholder
-					problem.lambda[n_index+3*n+j] = 0.0;     										// heat sell price
+					problem.lambda[n_index+2*n+j] = EnergyPrices.getHeatPriceInEuro(j);				// heat buy price - placeholder
+					problem.lambda[n_index+3*n+j] = -0.0;											// heat sell price
 				}	
 
 			}
@@ -195,23 +192,20 @@ public abstract class MatrixBuildup {
 				problem.x_ub[n_index+i] = 999.9;  
 				// limits for JOptimizer: selling or buying of heat
 				problem.x_lb[2*n+n_index+i] = 0.0;  
-				problem.x_ub[2*n+n_index+i] = 0.0;   
+				problem.x_ub[2*n+n_index+i] = 999.0;   
 				
 				for(int j = 0; j < n; j++) {
 
-					if (i == n+j) {
-						problem.a_eq[i][n_index+j] = -1.;  	// buying of electricity
-						problem.a_eq[i][n_index+n+j] = 1.;	// selling of electricity
-					}
-					if (i+2*n == j) {
-						problem.a_eq[i+2*n][j] = 0.0;  	// buying of heat - not possibel at the moment
-						problem.a_eq[i+2*n][n+j] = 1.;		// selling of heat
-					}
+					problem.a_eq[n+j][n_index+j] = -1.;  	// buying of electricity
+					problem.a_eq[n+j][n_index+n+j] = 1.;	// selling of electricity
+					problem.a_eq[j][n_index+2*n+j] = -1.;  	// buying of heat - not possible at the moment
+					problem.a_eq[j][n_index+3*n+j] = 1.;		// selling of heat
+
 					// Extended price vector for market
 					problem.lambda[n_index+j] = energyPrices.getElectricityPriceInEuro(j);			// electricity buy price
 					problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInEuro(j)*0.5;   // electricity sell price
-					problem.lambda[n_index+2*n+j] = 0.0;											// heat buy price - placeholder
-					problem.lambda[n_index+3*n+j] = 0.0;     										// heat sell price
+					problem.lambda[n_index+2*n+j] = EnergyPrices.getHeatPriceInEuro(j);				// heat buy price - placeholder
+					problem.lambda[n_index+3*n+j] = -0.0;											// heat sell price
 				}	
 
 			}

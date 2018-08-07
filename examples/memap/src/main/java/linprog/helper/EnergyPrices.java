@@ -28,7 +28,7 @@ public class EnergyPrices {
 	}
 	
 	/**
-	 * Returns the gas price in cents per kWh at any given point in time. For now, it constantly returns .0017ct/kJ,
+	 * Returns the gas price in Euro per kWh at any given point in time. For now, it constantly returns .0017ct/kJ,
 	 * which equals 6.12 ct/kWh, but here CSV-files or web services or other mechanisms could be plugged in.
 	 * 
 	 * @param time the point in time for which to get the gas price
@@ -61,6 +61,17 @@ public class EnergyPrices {
 	 */
 	public static double getGasPriceInEuro(int timestep) {
 		return 0.0612d;
+	}
+	
+	/**
+	 * Returns the heat price in Euro per kWh at any given timestep. For now, it constantly returns 
+	 * 5,34 ct/kWh (Stadtwerke Würzburg), but here CSV-files or web services or other mechanisms could be plugged in.
+	 * 
+	 * @param time the timestep for which to get the gas price
+	 * @return gas price in ct/kWh at specified timestep
+	 */
+	public static double getHeatPriceInEuro(int timestep) {
+		return 0.08d;
 	}
 	
 	/**

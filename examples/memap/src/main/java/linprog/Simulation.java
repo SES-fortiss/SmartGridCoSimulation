@@ -10,8 +10,8 @@ public class Simulation {
 
 	private ActorTopology topology;
 
-	public static final int N_STEPS = 4*24; // 15 min timestep
-	public static final double N_DAYS = 1; // 24 hours
+	public static final int N_STEPS = 24; // 15 min timestep
+	public static final double N_DAYS = 2; // 24 hours
 	
 	public static final int TIMESTEPS_PER_ITERATION = N_STEPS; //equals N_STEPS for case of overall optimization, smaller for reactive case
 	private static final int NR_OF_ITERATIONS = 1;
@@ -23,7 +23,9 @@ public class Simulation {
 	
 	
 	private void run() {
-		topology = Topology.createTopology();
+		// Test-Topology:
+		topology = Topology2Houses.createTopology();
+//		topology = Topology.createTopology();
 		SimulationStarter.saveGridTopologyPlot(topology);   
 		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
         SimulationStarter.startSimulation(actorSystem, 0, NR_OF_ITERATIONS);
