@@ -24,8 +24,8 @@ public class Simulation {
 	
 	private void run() {
 		// Test-Topology:
-		topology = Topology2Houses.createTopology();
-//		topology = Topology.createTopology();
+//		topology = Topology2Houses.createTopology();
+		topology = Topology.createTopology();
 		SimulationStarter.saveGridTopologyPlot(topology);   
 		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
         SimulationStarter.startSimulation(actorSystem, 0, NR_OF_ITERATIONS);

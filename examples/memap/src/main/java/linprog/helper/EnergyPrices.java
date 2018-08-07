@@ -71,7 +71,7 @@ public class EnergyPrices {
 	 * @return gas price in ct/kWh at specified timestep
 	 */
 	public static double getHeatPriceInEuro(int timestep) {
-		return 0.08d;
+		return 0.0534d;
 	}
 	
 	/**

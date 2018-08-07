@@ -90,20 +90,25 @@ public class Topology {
 		building5.addActorAsChild(building5Name + "/SolarThermic", ActorFactory.createSolarThermic("SolarThermic", AREA_SOLARTHERMIC, EFFICIENCY_SOLARTHERMIC, port++));		
 		building5.addActorAsChild(building5Name + "/ThermalStorage", ActorFactory.createThermalStorage("ThermalStorage", QDOT_MAX_THERMALSTORAGE_IN, QDOT_MAX_THERMALSTORAGE_OUT, CAPACITY_THERMALSTORAGE, EFFICIENCY_THERMALSTORAGE, port++));		
 		
-		String building6Name = "Building6";		
-		ActorTopology building6 = new ActorTopology(building6Name);		
-		building6.addActor(building6Name, ActorFactory.createBuilding(building6Name, port++));
-		building6.addActorAsChild(building6Name + "/Consumption", ActorFactory.createConsumer("Consumption", consumptionProfiles, 4, port++));
-		building6.addActorAsChild(building6Name + "/SolarThermic", ActorFactory.createSolarThermic("SolarThermic", AREA_SOLARTHERMIC, EFFICIENCY_SOLARTHERMIC, port++));
-		building6.addActorAsChild(building6Name + "/Battery", ActorFactory.createBattery("Battery", P_MAX_BATTERY_IN, P_MAX_BATTERY_OUT, EFFICIENCY_BAT, CAPACITY_BATTERY, PORT_UNDEFINED));
-		building6.addActorAsChild(building6Name + "/OilBoiler", ActorFactory.createOilBoiler("OilBoiler", QDOT_MAX_OILBOILER, EFFICIENCY_OILBOILER, PORT_UNDEFINED));
+//		String building6Name = "Building6";		
+//		ActorTopology building6 = new ActorTopology(building6Name);		
+//		building6.addActor(building6Name, ActorFactory.createBuilding(building6Name, port++));
+//		building6.addActorAsChild(building6Name + "/Consumption", ActorFactory.createConsumer("Consumption", consumptionProfiles, 4, port++));
+//		building6.addActorAsChild(building6Name + "/SolarThermic", ActorFactory.createSolarThermic("SolarThermic", AREA_SOLARTHERMIC, EFFICIENCY_SOLARTHERMIC, port++));
+//		building6.addActorAsChild(building6Name + "/Battery", ActorFactory.createBattery("Battery", P_MAX_BATTERY_IN, P_MAX_BATTERY_OUT, EFFICIENCY_BAT, CAPACITY_BATTERY, PORT_UNDEFINED));
+//		building6.addActorAsChild(building6Name + "/OilBoiler", ActorFactory.createOilBoiler("OilBoiler", QDOT_MAX_OILBOILER, EFFICIENCY_OILBOILER, PORT_UNDEFINED));
+		
+		String districtStorageName = "DistrictStorage";
+		ActorTopology districtStorage = new ActorTopology(districtStorageName);	
+		districtStorage.addActor(districtStorageName, ActorFactory.createBattery("Battery", 10*P_MAX_BATTERY_IN, 10*P_MAX_BATTERY_OUT, EFFICIENCY_BAT, 10*CAPACITY_BATTERY, PORT_UNDEFINED));
+		
 		
 		top.addSubTopology(simulationName, building3);
 		top.addSubTopology(simulationName, building2);
 		top.addSubTopology(simulationName, building1);
 		top.addSubTopology(simulationName, building4);
 		top.addSubTopology(simulationName, building5);
-		top.addSubTopology(simulationName, building6);
+		top.addSubTopology(simulationName, districtStorage);
 		
 		
 		return top;
