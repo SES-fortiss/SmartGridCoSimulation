@@ -31,7 +31,7 @@ public class Building extends BehaviorModel {
 	
 	public BuildingSpec specificationToSend = new BuildingSpec();
 
-	public Building(String name, int port, boolean FDHeating, int heatTransportLength) {
+	public Building(String name, int port, boolean LDHeating, int heatTransportLength) {
 		
 		//duplicated from Device.java
 		if(name == null) {
@@ -39,7 +39,7 @@ public class Building extends BehaviorModel {
 		}
 		this.name = name;
 		this.port = port;
-		this.LDHeating = FDHeating;
+		this.LDHeating = FLDHeating;
 		this.heatTransportLength = heatTransportLength;
 		
 		display = new M2MDisplay(port); // add port in to display a json

@@ -89,10 +89,10 @@ public abstract class ActorFactory {
 		return result;
 	}
 	
-	public static ActorOptions createBuilding(String name, int port, boolean FDHeating, int heatTransportLength){
+	public static ActorOptions createBuilding(String name, int port, boolean LDHeating, int heatTransportLength){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new Building(name, port, FDHeating, heatTransportLength));	
+				new Building(name, port, LDHeating, heatTransportLength));	
 		return result;
 	}
 	

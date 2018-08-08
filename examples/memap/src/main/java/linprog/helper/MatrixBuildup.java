@@ -53,7 +53,7 @@ public abstract class MatrixBuildup {
 	
 	public static OptimizationProblem memapMatrices(int nrOfProducers, int nrOfStorages, 
 			ArrayList<BuildingSpec> buildingSpecs, ArrayList<Consumption> consumptionProfiles, 
-			ArrayList<ProducerSpec> producerSpecs, ArrayList<StorageSpec> storageSpecs, boolean FDHeating) {
+			ArrayList<ProducerSpec> producerSpecs, ArrayList<StorageSpec> storageSpecs, boolean LDHeating) {
 		
 		OptimizationProblem problem = new OptimizationProblem(n, nrOfProducers, nrOfStorages);
 
@@ -83,13 +83,13 @@ public abstract class MatrixBuildup {
 		for(BuildingSpec buildingSpec : buildingSpecs) {
 			
 			for(ProducerSpec producerSpec : buildingSpec.producers) {
-				addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, FDHeating);
+				addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, LDHeating);
 				producersHandled++;
 				System.out.println("Prod-Nr.: " + producersHandled + ", " + buildingSpec.name+ ", " + producerSpec.name);
 			}	
 			
 			for(StorageSpec storageSpec : buildingSpec.storages) {
-				addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled, FDHeating);
+				addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled, LDHeating);
 				storagesHandled++;
 				System.out.println("Stor-Nr.: " + storagesHandled + ", " + buildingSpec.name+ ", " + storageSpec.name);
 			}	
