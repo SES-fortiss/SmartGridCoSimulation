@@ -118,7 +118,7 @@ public class LinProgBehavior extends BehaviorModel {
 		System.out.println("Total Producer: " + nrOfProducers);
 		
 		OptimizationProblem problem = MatrixBuildup.memapMatrices(nrOfProducers,nrOfStorages,
-				buildingSpecs,consumptionProfiles,producerSpecs,storageSpecs);
+				buildingSpecs,consumptionProfiles,producerSpecs,storageSpecs, Simulation.MEMAP_LDHeating);
 		double[] sol = OptimizationStarter.runLinProg(problem);
 
 		display.update(gson.toJson(sol));

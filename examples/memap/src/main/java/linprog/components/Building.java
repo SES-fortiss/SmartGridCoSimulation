@@ -24,9 +24,14 @@ public class Building extends BehaviorModel {
 	protected Gson gson = new Gson();
 	public int port;
 	
+	// NEW(7.8.18 by JMr): Long-distance heating supply
+	public boolean LDHeating;
+	public int heatTransportLength;
+	// ================================
+	
 	public BuildingSpec specificationToSend = new BuildingSpec();
 
-	public Building(String name, int port) {
+	public Building(String name, int port, boolean FDHeating, int heatTransportLength) {
 		
 		//duplicated from Device.java
 		if(name == null) {
@@ -34,6 +39,9 @@ public class Building extends BehaviorModel {
 		}
 		this.name = name;
 		this.port = port;
+		this.LDHeating = FDHeating;
+		this.heatTransportLength = heatTransportLength;
+		
 		display = new M2MDisplay(port); // add port in to display a json
 		display.run();
 	}
@@ -41,8 +49,11 @@ public class Building extends BehaviorModel {
 
 	@Override
 	public void makeDecision() {
-	//	specificationToSend = new BuildingSpec();
+
 		specificationToSend.name = name;
+		specificationToSend.LDHeating = LDHeating;
+		specificationToSend.heatTransportLength = heatTransportLength;
+		
 		for(BasicAnswer basicAnswer : answerListReceived) {			
 			AnswerContent answerContent = basicAnswer.answerContent;
 			if(answerContent instanceof Consumption) {

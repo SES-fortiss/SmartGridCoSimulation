@@ -22,29 +22,26 @@ public abstract class MatrixBuildup {
 		int nrOfStorages = buildingSpec.getNrOfStorages();
 		int nrOfProducers = buildingSpec.getNrOfProducers();
 		OptimizationProblem problem = new OptimizationProblem(n, nrOfProducers, nrOfStorages);
+		Consumption b_kopp = new Consumption();	
+
+		// ======= BUILD CONSUMPTION VECTOR b =========
+		// account for heat transport Losses:
+		problem.b_eq = b_kopp.CalcHeatLosses(buildingSpec);
 		
-		/**
-		 *  ======= BUILD CONSUMPTION VECTOR b =========
-		 */	
-		problem.b_eq = buildingSpec.consumption.getVector();
-		
-		
-		/**
-		 *  ====== BUILD PRODUCER & STORAGES Matrices =========
-		 */
+		// ====== BUILD PRODUCER & STORAGES Matrices =========
 		int producersHandled = 0;
 		int storagesHandled = 0;
 		
 		System.out.println(" << " + buildingSpec.name + " >> ");
 		
 		for(ProducerSpec producerSpec : buildingSpec.producers) {
-			addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled);
+			addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, buildingSpec.LDHeating);
 			producersHandled++;
 			System.out.println("Prod-Nr.: " + producersHandled + ", " + producerSpec.name);
 		}	
 		
 		for(StorageSpec storageSpec : buildingSpec.storages) {
-			addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled);
+			addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled, buildingSpec.LDHeating);
 			storagesHandled++;
 			System.out.println("Stor-Nr.: " + storagesHandled + ", " + storageSpec.name);
 		}
@@ -55,23 +52,25 @@ public abstract class MatrixBuildup {
 	
 	
 	public static OptimizationProblem memapMatrices(int nrOfProducers, int nrOfStorages, 
-			ArrayList<BuildingSpec> buildingSpecs, ArrayList<Consumption> consumptionProfiles, ArrayList<ProducerSpec> producerSpecs, ArrayList<StorageSpec> storageSpecs) {
+			ArrayList<BuildingSpec> buildingSpecs, ArrayList<Consumption> consumptionProfiles, 
+			ArrayList<ProducerSpec> producerSpecs, ArrayList<StorageSpec> storageSpecs, boolean FDHeating) {
 		
 		OptimizationProblem problem = new OptimizationProblem(n, nrOfProducers, nrOfStorages);
 
 		/**
 		 *  ======= BUILD CONSUMPTION VECTOR b =========
 		 */		
-		Consumption h_kopp = new Consumption();	
+		Consumption b_kopp = new Consumption();	
 		// Sum of Consumption over all Buildings
 		for(BuildingSpec buildingSpec : buildingSpecs) {
-			h_kopp.addConsumption(buildingSpec.consumption.getVector());
+			// account for heat transport Losses:
+			b_kopp.addConsumption(b_kopp.CalcHeatLosses(buildingSpec));
 		}		
-		// Adding Non-building consumers
+		// Adding Non-building consumers - without heat losses
 		for(Consumption consumption : consumptionProfiles) {
-			h_kopp.addConsumption(consumption.getVector());
+			b_kopp.addConsumption(consumption.getVector());
 		}
-		problem.b_eq = h_kopp.getVector();
+		problem.b_eq = b_kopp.getVector();
 
 		/**
 		 *  ====== BUILD PRODUCER & STORAGES Matrices =========
@@ -84,13 +83,13 @@ public abstract class MatrixBuildup {
 		for(BuildingSpec buildingSpec : buildingSpecs) {
 			
 			for(ProducerSpec producerSpec : buildingSpec.producers) {
-				addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled);
+				addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, FDHeating);
 				producersHandled++;
 				System.out.println("Prod-Nr.: " + producersHandled + ", " + buildingSpec.name+ ", " + producerSpec.name);
 			}	
 			
 			for(StorageSpec storageSpec : buildingSpec.storages) {
-				addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled);
+				addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled, FDHeating);
 				storagesHandled++;
 				System.out.println("Stor-Nr.: " + storagesHandled + ", " + buildingSpec.name+ ", " + storageSpec.name);
 			}	
@@ -98,13 +97,13 @@ public abstract class MatrixBuildup {
 		
 		
 		for(ProducerSpec producerSpec : producerSpecs) {
-			addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled);
+			addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, false);
 			producersHandled++;
 			System.out.println("Ext. Prod-Nr.: " + producersHandled + ", " + producerSpec.name + ", UB: " + producerSpec.upperBound[0]);
 		}	
 		
 		for(StorageSpec storageSpec : storageSpecs) {
-			addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled);
+			addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled, false);
 			storagesHandled++;
 			System.out.println("Ext. Stor-Nr.: " + storagesHandled + ", " + storageSpec.name + ", UB: " + storageSpec.upperBound[0]);
 		}		
@@ -116,7 +115,7 @@ public abstract class MatrixBuildup {
 
 
 	private static void addProducerToProblem(ProducerSpec producerSpec, OptimizationProblem problem, int producersHandledSoFar,
-			int storagesHandledSoFar) {
+			int storagesHandledSoFar, boolean LDHeating) {
 						
 		int n_index = n*(producersHandledSoFar+2*storagesHandledSoFar);
 		for(int i = 0; i < n; i++) {
@@ -141,30 +140,33 @@ public abstract class MatrixBuildup {
 				problem.x_ub[n_index+i] = 999.9;  
 				// limits for JOptimizer: selling or buying of heat
 				problem.x_lb[2*n+n_index+i] = 0.0;  
-				problem.x_ub[2*n+n_index+i] = 999.0;   
+				if (LDHeating) {
+					problem.x_ub[2*n+n_index+i] = 999.0;	// able to purchase heat
+				} else {
+					problem.x_ub[2*n+n_index+i] = 0.0;   
+				}
 			}	
 			
 			for(int j = 0; j < n; j++) {
 
-				problem.a_eq[n+j][n_index+j] = -1.;  	// buying of electricity
-				problem.a_eq[n+j][n_index+n+j] = 1.;	// selling of electricity
-				problem.a_eq[j][n_index+2*n+j] = -1.;  	// buying of heat - not possible at the moment
-				problem.a_eq[j][n_index+3*n+j] = 1.;		// selling of heat
+				problem.a_eq[n+j][n_index+j] = -1.0;  	// buying of electricity
+				problem.a_eq[n+j][n_index+n+j] = 1.0;	// selling of electricity
+				problem.a_eq[j][n_index+2*n+j] = -1.0;  	// buying of heat
+				problem.a_eq[j][n_index+3*n+j] = 1.0;	// selling/disposing of heat
 
 				// Extended price vector for market
 				problem.lambda[n_index+j] = energyPrices.getElectricityPriceInEuro(j);			// electricity buy price
 				problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInEuro(j)*0.5;   // electricity sell price
-				problem.lambda[n_index+2*n+j] = EnergyPrices.getHeatPriceInEuro(j);				// heat buy price - placeholder
+				problem.lambda[n_index+2*n+j] = EnergyPrices.getHeatPriceInEuro(j);				// heat buy price
 				problem.lambda[n_index+3*n+j] = -0.0;											// heat sell price
 			}	
-
 			
 		}
 		
 	}
 	
 	private static void addStorageToProblem(StorageSpec storageSpec, OptimizationProblem problem, int producersHandledSoFar,
-			int storagesHandledSoFar) {
+			int storagesHandledSoFar, boolean LDHeating) {
 		int n_index = n*(producersHandledSoFar+2*storagesHandledSoFar);
 		for(int i = 0; i < n; i++) {
 			if(i < n) {
@@ -192,21 +194,25 @@ public abstract class MatrixBuildup {
 				problem.x_lb[n_index+i] = 0.0; 
 				problem.x_ub[n_index+i] = 999.9;  
 				// limits for JOptimizer: selling or buying of heat
-				problem.x_lb[2*n+n_index+i] = 0.0;  
-				problem.x_ub[2*n+n_index+i] = 999.0;   
+				problem.x_lb[2*n+n_index+i] = 0.0; 
+				if (LDHeating) {
+					problem.x_ub[2*n+n_index+i] = 999.0;	// able to purchase heat
+				} else {
+					problem.x_ub[2*n+n_index+i] = 0.0;   
+				}
 			}	
 			
 			for(int j = 0; j < n; j++) {
 
-				problem.a_eq[n+j][n_index+j] = -1.;  	// buying of electricity
-				problem.a_eq[n+j][n_index+n+j] = 1.;	// selling of electricity
-				problem.a_eq[j][n_index+2*n+j] = -1.;  	// buying of heat - not possible at the moment
-				problem.a_eq[j][n_index+3*n+j] = 1.;		// selling of heat
+				problem.a_eq[n+j][n_index+j] = -1.0;  	// buying of electricity
+				problem.a_eq[n+j][n_index+n+j] = 1.0;	// selling of electricity
+				problem.a_eq[j][n_index+2*n+j] = -1.0;  	// buying of heat - not possible at the moment
+				problem.a_eq[j][n_index+3*n+j] = 1.0;		// selling of heat
 
 				// Extended price vector for market
 				problem.lambda[n_index+j] = energyPrices.getElectricityPriceInEuro(j);			// electricity buy price
 				problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInEuro(j)*0.5;   // electricity sell price
-				problem.lambda[n_index+2*n+j] = EnergyPrices.getHeatPriceInEuro(j);				// heat buy price - placeholder
+				problem.lambda[n_index+2*n+j] = EnergyPrices.getHeatPriceInEuro(j);				// heat buy price
 				problem.lambda[n_index+3*n+j] = -0.0;											// heat sell price
 			}	
 
