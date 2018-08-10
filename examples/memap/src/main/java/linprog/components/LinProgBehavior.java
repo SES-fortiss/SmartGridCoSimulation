@@ -95,8 +95,12 @@ public class LinProgBehavior extends BehaviorModel {
 			OptimizationProblem problem = MatrixBuildup.SingleBuilding(buildingSpec);
 			double[] sol = OptimizationStarter.runLinProg(problem);
 			
+			// Print consumption and calculate energy autarky
+			double autarky = SolutionHandler.calcAutarky(problem, sol);
+			
 			costsPerBuilding[counter] = SolutionHandler.exportCosts(sol, problem.lambda, "CostGEB" + (counter+1) + ".csv");		
 			System.out.println("COSTS: " + String.format("%.02f", costsPerBuilding[counter]));
+			System.out.println("Energy autarky: " + String.format("%.02f", autarky) + " %");
 			System.out.println("****************************************************************");	
 			
 			nrOfStorages += buildingSpec.getNrOfStorages();
@@ -110,6 +114,8 @@ public class LinProgBehavior extends BehaviorModel {
 			SolutionHandler.exportMatrix(problem.a_eq, "CouplingMatrixGEB" + (counter) + ".csv");
 			SolutionHandler.exportMatrix(problem.g, "CapacityMatrixGEB" + (counter) + ".csv");
 		}
+		
+		
 
 		// ------------ MEMAP - OPTIMIZATION ------------ 
 
@@ -120,7 +126,10 @@ public class LinProgBehavior extends BehaviorModel {
 		OptimizationProblem problem = MatrixBuildup.memapMatrices(nrOfProducers,nrOfStorages,
 				buildingSpecs,consumptionProfiles,producerSpecs,storageSpecs, Simulation.MEMAP_LDHeating);
 		double[] sol = OptimizationStarter.runLinProg(problem);
-
+		
+		// Print consumption and calculate energy autarky
+		double autarkyMEMAP = SolutionHandler.calcAutarky(problem, sol);
+					
 		display.update(gson.toJson(sol));
 		
 	
@@ -146,35 +155,12 @@ public class LinProgBehavior extends BehaviorModel {
 		System.out.println("****************************************************************");	
 		System.out.println("COSTS without MEMAP: " + String.format("%.02f", buildingsTotalCosts));
 		System.out.println("COSTS with MEMAP: " + String.format("%.02f", costsMEMAP));
+		System.out.println("Energy autarky: " + String.format("%.02f", autarkyMEMAP) + " %");
 		System.out.println("****************************************************************");	
 
 
- 		
-		int nrOfStorages2 = 0;
-		int nrOfProducers2 = 0;
-		int building = 0;
-		int range1 = 0;
-		int range2 = 0;
-		int marketmatrices = 4; // selling/buying(2) of electricity/heat(2)
-		
-		System.out.println(" << New Costs (to grid) >>");
-					
-		for(BuildingSpec buildingSpec : buildingSpecs) {
-			double newBuildingCosts = 0;
-			nrOfProducers2 += buildingSpec.getNrOfProducers();
-			nrOfStorages2 += buildingSpec.getNrOfStorages();	
-			range2 = n*(nrOfProducers2+2*nrOfStorages2+marketmatrices);
-			for (int j=range1; j<range2; j++) {
-				newBuildingCosts += problem.lambda[j]*sol[j];
-			}	
-			range1=range2;
-			building++;
-			
-			System.out.println("Building " + building + ": " + String.format("%.02f", newBuildingCosts));
-			
-		}
-		
-		
+ 		SolutionHandler.calcNewCosts(problem, sol, buildingSpecs);
+
 		
 		System.out.println("****************************************************************");
 //		System.out.println(" --- Reading result for Producer and Storages: --- ");

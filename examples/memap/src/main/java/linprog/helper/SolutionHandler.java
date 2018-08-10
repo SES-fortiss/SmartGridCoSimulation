@@ -4,7 +4,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import linprog.Simulation;
+import linprog.messages.BuildingSpec;
 import meritorder.helper.ReadMemapFiles;
 
 public abstract class SolutionHandler {
@@ -173,4 +176,74 @@ public abstract class SolutionHandler {
 
 		return;	
 	}
+	
+	public static double calcAutarky(OptimizationProblem problem, double[] sol) {
+		
+		double summeB_H = 0 ;
+		double summeB_el = 0 ;
+		for (int j=0; j<problem.b_eq.length/2; j++) {
+			summeB_H += problem.b_eq[j];
+			summeB_el += problem.b_eq[Simulation.N_STEPS+j];
+		}
+		
+		System.out.println("Predicted Heat Consumption: " + -(int)summeB_H + " kWh in " + Simulation.N_DAYS + " days"); // + " - ok.");
+		System.out.println("Predicted Elec Consumption: " + -(int)summeB_el + " kWh in " + Simulation.N_DAYS + " days"); // + " - ok.");	
+		System.out.println(" --- Optimization running ---");	
+		
+		int n = Simulation.N_STEPS;
+		int x1 = (int)(sol.length-4*n);
+		double purchase_el = 0;
+		double purchase_H = 0;
+		
+		
+		for (int i=x1; i < x1+n ; i++ ) {
+			purchase_el += sol[n+i]-sol[i];		 //difference between purchased and sold electricity
+			purchase_H += sol[3*n+i]-sol[2*n+i]; //difference between purchased and sold heat
+		}
+		
+		double purchasedEnergy = purchase_el + purchase_H;
+		double consumption = summeB_H + summeB_el;
+		
+		double autarky = (consumption-purchasedEnergy)/consumption; // in %
+		
+		return 100*autarky;
+		
+	}
+
+	public static void calcNewCosts(OptimizationProblem problem, double[] sol, ArrayList<BuildingSpec> buildingSpecs) {
+		
+		int nrOfStorages2 = 0;
+		int nrOfProducers2 = 0;
+		int building = 0;
+		int range1 = 0;
+		int range2 = 0;
+		double tradingCosts = 0;
+		
+		System.out.println(" << New Costs >>");
+					
+		for(BuildingSpec buildingSpec : buildingSpecs) {
+			double newBuildingCosts = 0;
+			nrOfProducers2 += buildingSpec.getNrOfProducers();
+			nrOfStorages2 += buildingSpec.getNrOfStorages();	
+			range2 = Simulation.N_STEPS*(nrOfProducers2+2*nrOfStorages2);
+			for (int j=range1; j<range2; j++) {
+				newBuildingCosts += problem.lambda[j]*sol[j];
+			}	
+			range1=range2;
+			building++;
+			
+			System.out.println("Building " + building + ": " + String.format("%.02f", newBuildingCosts));
+			
+		}
+		
+		for (int j=range1; j<problem.lambda.length; j++) {
+			tradingCosts += problem.lambda[j]*sol[j];
+		}	
+		
+		System.out.println("Trading with energy supplier: " + String.format("%.02f", tradingCosts));
+		
+	}
+
+	
+	
 }

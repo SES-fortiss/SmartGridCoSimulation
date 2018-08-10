@@ -99,13 +99,13 @@ public abstract class MatrixBuildup {
 		for(ProducerSpec producerSpec : producerSpecs) {
 			addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, false);
 			producersHandled++;
-			System.out.println("Ext. Prod-Nr.: " + producersHandled + ", " + producerSpec.name + ", UB: " + producerSpec.upperBound[0]);
+			System.out.println("Ext. Prod-Nr.: " + producersHandled + ", " + producerSpec.name);
 		}	
 		
 		for(StorageSpec storageSpec : storageSpecs) {
 			addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled, false);
 			storagesHandled++;
-			System.out.println("Ext. Stor-Nr.: " + storagesHandled + ", " + storageSpec.name + ", UB: " + storageSpec.upperBound[0]);
+			System.out.println("Ext. Stor-Nr.: " + storagesHandled + ", " + storageSpec.name);
 		}		
 		
 		return problem;

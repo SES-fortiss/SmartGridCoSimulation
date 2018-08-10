@@ -39,7 +39,7 @@ public class Building extends BehaviorModel {
 		}
 		this.name = name;
 		this.port = port;
-		this.LDHeating = FLDHeating;
+		this.LDHeating = LDHeating;
 		this.heatTransportLength = heatTransportLength;
 		
 		display = new M2MDisplay(port); // add port in to display a json

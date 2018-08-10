@@ -18,8 +18,8 @@ public abstract class GridArchitectConfiguration {
 	public static boolean logResults = false;
 	
 	// Configuration of the time for a response
-	public static int rootActorResponseTime = 600000;
-	public static int childrenResponseTime = 600000;
+	public static int rootActorResponseTime = 1200000;
+	public static int childrenResponseTime = 1200000;
 
 	// Delay if the simulation is to quick 
 	public static long demoDelay = 0;	

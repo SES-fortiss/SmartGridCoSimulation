@@ -22,7 +22,7 @@ public class PV extends Producer {
 		
 //		Calendar currentTime = startTime;
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = 0.0000001;
+			specificationToSend.cost[i] = 0.00001;
 //			currentTime.add(Calendar.SECOND, stepSize);
 			for (int j = 0; j < n; j++) {
 				specificationToSend.couplingMatrix_H[i][j] = 0.0;

@@ -140,9 +140,9 @@ public class EnergyPrices {
 		
 		double[] yi = Interpolation.interpLinear(x, y, xi);
     			
-		SolutionHandler.exportData(x, "XpriceOrig.csv");
-		SolutionHandler.exportData(y, "YpriceOrig.csv");
-		SolutionHandler.exportData(xi, "XIpriceOrig.csv");
+//		SolutionHandler.exportData(x, "XpriceOrig.csv");
+//		SolutionHandler.exportData(y, "YpriceOrig.csv");
+//		SolutionHandler.exportData(xi, "XIpriceOrig.csv");
 		SolutionHandler.exportData(yi, "YIpriceOrig.csv");
 		
     	for (int k = 0; k < yi.length; k++) {
