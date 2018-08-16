@@ -100,15 +100,15 @@ public class Topology {
 		building5.addActorAsChild(building5Name + "/SolarThermic", ActorFactory.createSolarThermic("SolarThermic", AREA_SOLARTHERMIC, EFFICIENCY_SOLARTHERMIC, port++));		
 		building5.addActorAsChild(building5Name + "/ThermalStorage", ActorFactory.createThermalStorage("ThermalStorage", QDOT_MAX_THERMALSTORAGE_IN, QDOT_MAX_THERMALSTORAGE_OUT, CAPACITY_THERMALSTORAGE, EFFICIENCY_THERMALSTORAGE, port++));		
 		
-		String building6Name = "Building6";	
-		Boolean LDHeatingB6 = false;
-		Integer heatTransportLengthB6 = 550;
-		ActorTopology building6 = new ActorTopology(building6Name);		
-		building6.addActor(building6Name, ActorFactory.createBuilding(building6Name, port++, LDHeatingB6, heatTransportLengthB6));
-		building6.addActorAsChild(building6Name + "/Consumption", ActorFactory.createConsumer("Consumption", consumptionProfiles, 4, port++));
-		building6.addActorAsChild(building6Name + "/SolarThermic", ActorFactory.createSolarThermic("SolarThermic", AREA_SOLARTHERMIC, EFFICIENCY_SOLARTHERMIC, port++));
-		building6.addActorAsChild(building6Name + "/HeatPump", ActorFactory.createHeatPump("HeatPump", P_MAX_HEATPUMP, EFFICIENCY_HEATPUMP, PORT_UNDEFINED));
-		building6.addActorAsChild(building6Name + "/OilBoiler", ActorFactory.createOilBoiler("OilBoiler", QDOT_MAX_OILBOILER, EFFICIENCY_OILBOILER, PORT_UNDEFINED));
+//		String building6Name = "Building6";	
+//		Boolean LDHeatingB6 = false;
+//		Integer heatTransportLengthB6 = 550;
+//		ActorTopology building6 = new ActorTopology(building6Name);		
+//		building6.addActor(building6Name, ActorFactory.createBuilding(building6Name, port++, LDHeatingB6, heatTransportLengthB6));
+//		building6.addActorAsChild(building6Name + "/Consumption", ActorFactory.createConsumer("Consumption", consumptionProfiles, 4, port++));
+//		building6.addActorAsChild(building6Name + "/SolarThermic", ActorFactory.createSolarThermic("SolarThermic", AREA_SOLARTHERMIC, EFFICIENCY_SOLARTHERMIC, port++));
+//		building6.addActorAsChild(building6Name + "/HeatPump", ActorFactory.createHeatPump("HeatPump", P_MAX_HEATPUMP, EFFICIENCY_HEATPUMP, PORT_UNDEFINED));
+//		building6.addActorAsChild(building6Name + "/OilBoiler", ActorFactory.createOilBoiler("OilBoiler", QDOT_MAX_OILBOILER, EFFICIENCY_OILBOILER, PORT_UNDEFINED));
 		
 //		String districtStorageName = "DistrictStorage";
 //		ActorTopology districtStorage = new ActorTopology(districtStorageName);	
@@ -120,7 +120,7 @@ public class Topology {
 		top.addSubTopology(simulationName, building1);
 		top.addSubTopology(simulationName, building4);
 		top.addSubTopology(simulationName, building5);
-		top.addSubTopology(simulationName, building6);
+//		top.addSubTopology(simulationName, building6);
 //		top.addSubTopology(simulationName, districtStorage);
 		
 		

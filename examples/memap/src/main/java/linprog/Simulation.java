@@ -16,9 +16,9 @@ public class Simulation {
 	public static final int TIMESTEPS_PER_ITERATION = N_STEPS; //equals N_STEPS for case of overall optimization, smaller for reactive case
 	private static final int NR_OF_ITERATIONS = 1;
 	
-	// Does MEMAP has a long-district heating connection to buy heat ?
+	// Does MEMAP has a long-distance heating connection to buy heat ?
 	public static final boolean MEMAP_LDHeating = true;
-	
+	public static final double HEAT_LOSSES = 1.015;
 	
 	//For the moment, the following 3 parameters need to stay as defined to match data input
 //	public static LocalDateTime startTime = LocalDateTime.of(2014,7,1,11,0);

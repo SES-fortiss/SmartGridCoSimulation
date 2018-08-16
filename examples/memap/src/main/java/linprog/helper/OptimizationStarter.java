@@ -3,9 +3,6 @@ package linprog.helper;
 import com.joptimizer.optimizers.LPOptimizationRequest;
 import com.joptimizer.optimizers.LPPrimalDualMethod;
 
-import linprog.Simulation;
-
-
 public abstract class OptimizationStarter {
 
 	
