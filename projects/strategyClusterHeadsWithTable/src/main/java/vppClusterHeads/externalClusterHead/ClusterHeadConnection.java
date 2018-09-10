@@ -20,8 +20,8 @@ public class ClusterHeadConnection {
     URL url;
     URLConnection urlconn;
     
-    String urlString = "http://192.168.1.162:8080/";
-    //String urlString = "http://localhost:8080/";
+    //String urlString = "http://192.168.1.162:8080/";
+    String urlString = "http://localhost:8080";
     
     int timeout = 1000; // in ms
     
