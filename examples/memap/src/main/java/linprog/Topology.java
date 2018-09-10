@@ -14,35 +14,38 @@ public class Topology {
 	
 	private static String simulationName = "LinProg";
 	public static final int NR_OF_CONSUMERS = 5;
+
 	
-	// Efficiencies
-	private static final double EFFICIENCY_CHP_H = .6;
-	private static final double EFFICIENCY_CHP_EL = .25;
-	private static final double EFFICIENCY_THERMALSTORAGE = 1.;
-	private static final double EFFICIENCY_GASBOILER = .65;
-	private static final double EFFICIENCY_OILBOILER = .65;
-	private static final double EFFICIENCY_SOLARTHERMIC = .5;
-	private static final double EFFICIENCY_HEATPUMP = 3.8;
+	// BHKW
+	private static final double EFFICIENCY_CHP_H = .71;
+	private static final double EFFICIENCY_CHP_EL = .32;  // angepasst, runterskalieren?
+	private static final double QDOT_MAX_CHP = 80.; // eher kleiner
+	
+	private static final double EFFICIENCY_BAT = 1.;	
+	
+	private static final double EFFICIENCY_THERMALSTORAGE = 0.9; 	
+	private static final double EFFICIENCY_GASBOILER = 1.; // angepasst    --> Gas etwas günstiger als Öl 5,5 pro kwH, 6,0 kWh
+	private static final double EFFICIENCY_OILBOILER = 0.95; // angepasst
+	private static final double EFFICIENCY_SOLARTHERMIC = .75; // vier mal pv --> in das Dokument (Latex)
+	private static final double EFFICIENCY_HEATPUMP = 2.5;  // Mittelwert wobei Wasser / Wasser besser ist.
 	private static final double EFFICIENCY_PV = .2;
-	private static final double EFFICIENCY_BAT = 1.;
 
 	// Capacities
-	private static final double QDOT_MAX_THERMALSTORAGE_IN = 5.;
-	private static final double QDOT_MAX_THERMALSTORAGE_OUT = 5.;
-	private static final double QDOT_MAX_GASBOILER = 40.;
+	private static final double CAPACITY_THERMALSTORAGE = 100000.; // anpassen in KJ, 1000 L Speicher kann maximal 60kWh Wärme speichern
+	private static final double QDOT_MAX_THERMALSTORAGE_IN = 60.;  // Beladung eines speichers, 90grad maximal temperatur
+	private static final double QDOT_MAX_THERMALSTORAGE_OUT = 60.;
+	private static final double QDOT_MAX_GASBOILER = 40.; // eigentlich nur für Spitzenlast wichtig
 	private static final double QDOT_MAX_OILBOILER = 40.;
 	private static final double P_MAX_BATTERY_IN = 5.;
 	private static final double P_MAX_BATTERY_OUT = 5.;
-	private static final double QDOT_MAX_CHP = 80.;
-	private static final double AREA_SOLARTHERMIC = 6.;
-	//private static final double QDOT_MAX_SOLARTHERMIC = 3.;
-	private static final double AREA_PV = 8.;
-	private static final double P_MAX_HEATPUMP = 20.;
-	private static final double CAPACITY_THERMALSTORAGE = 100000.;
+	
+	private static final double AREA_SOLARTHERMIC = 6.; // ab 8 qm kann zur heizungsunterstützungs genommen werden.
+	private static final double AREA_PV = 20.; // aber  größer auch ok
+	private static final double P_MAX_HEATPUMP = 10.;
+	
+	// Efficiencies
 	private static final double CAPACITY_BATTERY = 40000.;
-	private static final int PORT_UNDEFINED = 0;
-	
-	
+	private static final int PORT_UNDEFINED = 0;	
 	
 	public static ActorTopology createTopology(){
 		int port = 8081;
