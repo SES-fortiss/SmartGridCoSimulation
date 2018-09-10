@@ -3,7 +3,7 @@
   <artifactId>basicExample</artifactId>
   <name>siemensSmartMeter</name>
   <groupId>org.fortiss</groupId>
-  <version>0.1</version>s  
+  <version>0.1</version>
   	<dependencies>
   		<dependency>
   			<groupId>org.fortiss</groupId>

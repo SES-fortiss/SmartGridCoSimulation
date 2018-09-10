@@ -45,7 +45,7 @@ public class FileToLocalDiskHelper {
 		
 		String fs = System.getProperty("file.separator");				
 		File homedir = new File(System.getProperty("user.home"));
-		File filedir = new File(homedir, "www" + fs);
+		File filedir = new File(homedir, "/Documents/www" + fs);
 		File file = new File(filedir, "data.txt");
 		
 		try {

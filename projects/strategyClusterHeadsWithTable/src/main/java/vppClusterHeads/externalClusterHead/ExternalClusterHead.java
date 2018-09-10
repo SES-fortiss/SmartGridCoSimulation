@@ -67,7 +67,7 @@ public class ExternalClusterHead extends BehaviorModel{
 				System.out.println(this.actorName + ": No connection to DemoTableCluster - all values will be set to 0");
 			}
     	}
-    	double scalingfactor = 1000;
+    	double scalingfactor = 1;
     	
 		answerContentToSend.solar = cluster.solar * scalingfactor;
 		answerContentToSend.wind = cluster.wind * scalingfactor;
