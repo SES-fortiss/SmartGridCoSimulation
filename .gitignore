@@ -1,9 +1,8 @@
-/javascript/memapScenarioFortiss/memap_all_d3/.idea
-/examples/memap/*.classpath
-/target/
-/.settings/
-/.classpath
-/.project
+target/
+bin/
+.settings/
+.svn/
 *.project
-*
 *.classpath
+*.class
+*.log

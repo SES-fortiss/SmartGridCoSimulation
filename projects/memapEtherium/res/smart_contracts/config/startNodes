@@ -1,0 +1,15 @@
+cd test-chain
+
+geth --datadir ./datadir --rpc --rpcport "8081" --rpccorsdomain "*" --port "30301" --networkid 1994 --minerthreads=1 --gasprice=1 --targetgaslimit=8000000 --unlock '0x627306090abaB3A6e1400e9345bC60c78a8BEf57' --password accounts/password console 2>> timekeeper.log
+
+enode_id=
+
+geth --datadir ./building1datadir --rpc --rpcport "8082" --rpccorsdomain "*" --port "30302" --networkid 1994 --mine --minerthreads=10 --gasprice=1 --targetgaslimit=8000000 --bootnodes enode://${enode_id}@127.0.0.1:30301 --unlock '0xf17f52151EbEF6C7334FAD080c5704D77216b732' --password accounts/password 2>> building1.log
+
+geth --datadir ./building2datadir --rpc --rpcport "8083" --rpccorsdomain "*" --port "30303" --networkid 1994 --mine --minerthreads=1 --gasprice=1 --targetgaslimit=8000000 --bootnodes enode://${enode_id}@127.0.0.1:30301 --unlock '0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef' --password accounts/password 2>> building2.log
+
+geth --datadir ./building3datadir --rpc --rpcport "8084" --rpccorsdomain "*" --port "30304" --networkid 1994 --mine --minerthreads=1 --gasprice=1 --targetgaslimit=8000000 --bootnodes enode://${enode_id}@127.0.0.1:30301 --unlock '0x821aEa9a577a9b44299B9c15c88cf3087F3b5544' --password accounts/password 2>> building3.log
+
+geth --datadir ./building4datadir --rpc --rpcport "8085" --rpccorsdomain "*" --port "30305" --networkid 1994 --mine --minerthreads=1 --gasprice=1 --targetgaslimit=8000000 --bootnodes enode://${enode_id}@127.0.0.1:30301 --unlock '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' --password accounts/password 2>> building4.log
+
+geth --datadir ./building5datadir --rpc --rpcport "8086" --rpccorsdomain "*" --port "30306" --networkid 1994 --mine --minerthreads=1 --gasprice=1 --targetgaslimit=8000000 --bootnodes enode://${enode_id}@127.0.0.1:30301 --unlock '0x2932b7A2355D6fecc4b5c0B6BD44cC31df247a2e' --password accounts/password 2>> building5.log
