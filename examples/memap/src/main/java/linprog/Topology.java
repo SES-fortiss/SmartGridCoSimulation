@@ -16,12 +16,12 @@ public class Topology {
 	public static final int NR_OF_CONSUMERS = 5;
 
 	
-	// BHKW
+	// Efficiencies
 	private static final double EFFICIENCY_CHP_H = .71;
 	private static final double EFFICIENCY_CHP_EL = .32;  // angepasst, runterskalieren?
 	private static final double QDOT_MAX_CHP = 80.; // eher kleiner
 	
-	private static final double EFFICIENCY_BAT = 1.;	
+	private static final double EFFICIENCY_BAT = 1.;
 	
 	private static final double EFFICIENCY_THERMALSTORAGE = 0.9; 	
 	private static final double EFFICIENCY_GASBOILER = 1.; // angepasst    --> Gas etwas günstiger als Öl 5,5 pro kwH, 6,0 kWh
@@ -70,7 +70,7 @@ public class Topology {
 		ActorTopology building2 = new ActorTopology(building2Name);		
 		building2.addActor(building2Name, ActorFactory.createBuilding(building2Name, port++, LDHeatingB2, heatTransportLengthB2));
 		building2.addActorAsChild(building2Name + "/Consumption", ActorFactory.createConsumer("Consumption", consumptionProfiles, 1, PORT_UNDEFINED));
-		building2.addActorAsChild(building2Name + "/PV", ActorFactory.createPV("PV", AREA_PV, EFFICIENCY_PV, PORT_UNDEFINED));
+		building2.addActorAsChild(building2Name + "/PV", ActorFactory.createPV("PV", AREA_PV*3, EFFICIENCY_PV, PORT_UNDEFINED));
 		building2.addActorAsChild(building2Name + "/HeatPump", ActorFactory.createHeatPump("HeatPump", P_MAX_HEATPUMP, EFFICIENCY_HEATPUMP, PORT_UNDEFINED));
 		building2.addActorAsChild(building2Name + "/ThermalStorage", ActorFactory.createThermalStorage("ThermalStorage", QDOT_MAX_THERMALSTORAGE_IN, QDOT_MAX_THERMALSTORAGE_OUT, CAPACITY_THERMALSTORAGE, EFFICIENCY_THERMALSTORAGE, PORT_UNDEFINED));
 		
@@ -80,7 +80,7 @@ public class Topology {
 		ActorTopology building3 = new ActorTopology(building3Name);		
 		building3.addActor(building3Name, ActorFactory.createBuilding(building3Name, port++, LDHeatingB3, heatTransportLengthB3));
 		building3.addActorAsChild(building3Name + "/Consumption", ActorFactory.createConsumer("Consumption", consumptionProfiles, 2, PORT_UNDEFINED));
-		building3.addActorAsChild(building3Name + "/PV", ActorFactory.createPV("PV", AREA_PV, .2, PORT_UNDEFINED));
+		building3.addActorAsChild(building3Name + "/PV", ActorFactory.createPV("PV", AREA_PV, EFFICIENCY_PV, PORT_UNDEFINED));
 		building3.addActorAsChild(building3Name + "/Battery", ActorFactory.createBattery("Battery", P_MAX_BATTERY_IN, P_MAX_BATTERY_OUT, EFFICIENCY_BAT, CAPACITY_BATTERY, PORT_UNDEFINED));
 		building3.addActorAsChild(building3Name + "/GasBoiler", ActorFactory.createGasBoiler("GasBoiler", QDOT_MAX_GASBOILER, EFFICIENCY_GASBOILER, PORT_UNDEFINED));
 
