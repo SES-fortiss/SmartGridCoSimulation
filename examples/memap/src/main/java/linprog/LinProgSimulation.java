@@ -6,11 +6,11 @@ import akka.actor.ActorSystem;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 
-public class Simulation {
+public class LinProgSimulation {
 
 	private ActorTopology topology;
 
-	public static final int N_STEPS = 96; // 15 min timestep
+	public static final int N_STEPS = 3; // 15 min timestep
 	public static final double N_DAYS = 1; // 24 hours
 	
 	public static final int TIMESTEPS_PER_ITERATION = N_STEPS; //equals N_STEPS for case of overall optimization, smaller for reactive case
@@ -37,7 +37,7 @@ public class Simulation {
 	}
 	
 	public static void main(String[] args){
-		new Simulation().run();
+		new LinProgSimulation().run();
 		
 	}
 	
