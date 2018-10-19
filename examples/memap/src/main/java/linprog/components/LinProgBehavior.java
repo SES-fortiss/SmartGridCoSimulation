@@ -12,7 +12,7 @@ import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
-import linprog.Simulation;
+import linprog.LinProgSimulation;
 import linprog.helper.MatrixBuildup;
 import linprog.helper.OptimizationProblem;
 import linprog.helper.OptimizationStarter;
@@ -31,7 +31,7 @@ public class LinProgBehavior extends BehaviorModel {
 	Gson gson = new Gson();
 	
 	public Calendar startTime;
-	public final int n = Simulation.TIMESTEPS_PER_ITERATION;
+	public final int n = LinProgSimulation.TIMESTEPS_PER_ITERATION;
 	
 	public LinProgBehavior() {
 		display = new M2MDisplay(8080); // add port in to display a json
@@ -54,8 +54,8 @@ public class LinProgBehavior extends BehaviorModel {
 	@Override
 	public void makeDecision() {
 		
-		System.out.println("Stepsize: " + Simulation.stepLength(TimeUnit.HOURS) + " hours.");
-		System.out.println("Horizon: " + Simulation.N_DAYS*24 + " hours (" + Simulation.N_DAYS + " days)");
+		System.out.println("Stepsize: " + LinProgSimulation.stepLength(TimeUnit.HOURS) + " hours.");
+		System.out.println("Horizon: " + LinProgSimulation.N_DAYS*24 + " hours (" + LinProgSimulation.N_DAYS + " days)");
 		System.out.println("****************************************************************");
 		
 		// Sort the received answers in 'Buildings' and/or 'free consumer/Storage/Producers'
@@ -124,32 +124,25 @@ public class LinProgBehavior extends BehaviorModel {
 		System.out.println("Total Producer: " + nrOfProducers);
 		
 		OptimizationProblem problem = MatrixBuildup.memapMatrices(nrOfProducers,nrOfStorages,
-				buildingSpecs,consumptionProfiles,producerSpecs,storageSpecs, Simulation.MEMAP_LDHeating);
+				buildingSpecs,consumptionProfiles,producerSpecs,storageSpecs, LinProgSimulation.MEMAP_LDHeating);
 		double[] sol = OptimizationStarter.runLinProg(problem);
 		
 		// Print consumption and calculate energy autarky
 		double autarkyMEMAP = SolutionHandler.calcAutarky(problem, sol);
-					
-		display.update(gson.toJson(sol));
-		
-	
-		
-// ================= Handling the result ================== 	
 
 		
-//		double[] productionExport = SolutionHandler.matrixMultiplication(problem.a_eq, sol);
-//		SolutionHandler.exportData(productionExport, "PruductionMEMAP.csv");
-		
+		// CSV Export functions
 		SolutionHandler.exportData(sol, "XvectorMEMAP.csv");
-		
 		SolutionHandler.exportMatrix(problem.a_eq, "CouplingMatrix.csv");
 		SolutionHandler.exportData(problem.b_eq, "ConsumptionMEMAP.csv");
-
+//		double[] productionExport = SolutionHandler.matrixMultiplication(problem.a_eq, sol);
+//		SolutionHandler.exportData(productionExport, "PruductionMEMAP.csv");
 		
 		double buildingsTotalCosts = 0;
 		for (int i=0; i<buildingSpecs.size(); i++) {
 			buildingsTotalCosts += costsPerBuilding[i];
 		}
+		
 		double costsMEMAP = SolutionHandler.exportCosts(sol, problem.lambda, "CostVectorMEMAP.csv");
 		
 		System.out.println("****************************************************************");	
@@ -159,14 +152,21 @@ public class LinProgBehavior extends BehaviorModel {
 		System.out.println("****************************************************************");	
 
 
- 		SolutionHandler.calcNewCosts(problem, sol, buildingSpecs);
-
 		
-		System.out.println("****************************************************************");
+		
+		
+		
+		
+// ================= AnswerContentToSend ================== 		
+		
+
 //		System.out.println(" --- Reading result for Producer and Storages: --- ");
 		int index = 0;
+		int indexStorage = 0;
 		
 		for(BuildingSpec buildingSpec : buildingSpecs) {
+								
+			
 			for(ProducerSpec producerSpec: buildingSpec.producers) {
 				double[] producerResult = new double[n];
 				for(int i = 0; i < n; i++) {
@@ -175,20 +175,36 @@ public class LinProgBehavior extends BehaviorModel {
 //				System.out.println(buildingSpec.name+ ", " + producerSpec.name + " read.");
 				ans.resultMap.put(buildingSpec.name + ": " + producerSpec.name, producerResult);
 			}
+			
+			 
 			for(StorageSpec storageSpec: buildingSpec.storages) {
+				
 				double[] storageResult_in = new double[n];
 				double[] storageResult_out = new double[n];
+				double[] newStateOfCharge = new double[n];
+				
 				for(int i = 0; i < n; i++) {
 					storageResult_in[i] = sol[index++];
-				}
-//				System.out.println(buildingSpec.name+ ", " + storageSpec.name + " read.");
-				
+				}				
 				ans.resultMap.put(buildingSpec.name + ": " + storageSpec.name + " Input", storageResult_in);
 				for(int i = 0; i < n; i++) {
 					storageResult_out[i] = sol[index++];
 				}
 				ans.resultMap.put(buildingSpec.name + ": " + storageSpec.name + " Output", storageResult_out);
-			}			
+				for(int i = 0; i < n; i++) {
+					newStateOfCharge[i] = problem.h[(2*n*indexStorage)+i] + storageResult_in[i]-storageResult_out[i];
+				}
+				ans.resultMap.put(buildingSpec.name + ": " + storageSpec.name + " SOC", newStateOfCharge);
+
+//				System.out.println(indexStorage + "- KAP (" + storageSpec.name + "): " + String.format("%.04f", problem.h[n*(2*indexStorage+1)]));
+				
+//				System.out.println(buildingSpec.name+ ", " + storageSpec.name + ", in:" 
+//						+ String.format("%.02f", storageResult_in[0]) + ", out:" 
+//						+ String.format("%.02f", storageResult_out[0]));
+				
+				indexStorage++;
+			}
+		
 		}
 		
 		for(ProducerSpec producerSpec: producerSpecs) {
@@ -199,16 +215,123 @@ public class LinProgBehavior extends BehaviorModel {
 			ans.resultMap.put(producerSpec.name, producerResult);
 		}
 		for(StorageSpec storageSpec: storageSpecs) {
-			double[] storageResult = new double[2*n];
+			double[] storageResult_in = new double[n];
+			double[] storageResult_out = new double[n];
+			double[] newStateOfCharge = new double[n];
 			for(int i = 0; i < n; i++) {
-				storageResult[i] = sol[index++];
+				storageResult_in[i] = sol[index++];
 			}
-			for(int i = n; i < 2*n; i++) {
-				storageResult[i] = sol[index++];
+			ans.resultMap.put(storageSpec.name + " Input", storageResult_in);
+			for(int i = 0; i < n; i++) {
+				storageResult_out[i] = sol[index++];
 			}
-			ans.resultMap.put(storageSpec.name, storageResult);
+			
+			ans.resultMap.put(storageSpec.name + " Output", storageResult_out);
+			for(int i = 0; i < n; i++) {
+				newStateOfCharge[i] = problem.h[i] + storageResult_in[i]-storageResult_out[i];
+			}
+			ans.resultMap.put(storageSpec.name + " SOC", newStateOfCharge);
 		}
-				
+	
+		// Marktmatrizen auslesen
+		double[] electricity_buy = new double[n];
+		double[] electricity_sell = new double[n];
+		double[] heat_buy = new double[n];
+		double[] heat_sell = new double[n];
+		
+		for(int i = 0; i < n; i++) {
+			electricity_buy[i] = sol[index++];
+		}
+		ans.marketMap.put("Electricity Buy", electricity_buy);
+		for(int i = 0; i < n; i++) {
+			electricity_sell[i] = sol[index++];
+		}
+		ans.marketMap.put("Electricity Sell", electricity_sell);
+		for(int i = 0; i < n; i++) {
+			heat_buy[i] = sol[index++];
+		}
+		ans.marketMap.put("Heat Buy", heat_buy);
+		for(int i = 0; i < n; i++) {
+			heat_sell[i] = sol[index++];
+		}
+		ans.marketMap.put("Heat Sell", heat_sell);
+		
+		
+		// independent Keys
+		double[] heat_consumption = new double[n];
+		double[] electric_consumption = new double[n];
+		for(int i = 0; i < n; i++) {
+			heat_consumption[i] = problem.b_eq[i];
+			electric_consumption[i] = problem.b_eq[n+i];
+		}
+
+		ans.basicsMap.put("Total Electric Consumption", electric_consumption);
+		ans.basicsMap.put("Total Heat Consumption", heat_consumption);
+		
+		display.update(gson.toJson(ans));
+		
+
+// ================================================================================
+		
+		// Wer hat wem wieviel Wärme / Strom geliefert
+		
+		
+ 		SolutionHandler.calcNewCosts(problem, sol, buildingSpecs);	
+ 		
+// ================================================================================ 		
+		
+		
+//
+//		
+//		System.out.println("****************************************************************");
+////		System.out.println(" --- Reading result for Producer and Storages: --- ");
+//		int index = 0;
+//		
+//		for(BuildingSpec buildingSpec : buildingSpecs) {
+//			for(ProducerSpec producerSpec: buildingSpec.producers) {
+//				double[] producerResult = new double[n];
+//				for(int i = 0; i < n; i++) {
+//					producerResult[i] = sol[index++];
+//				}
+////				System.out.println(buildingSpec.name+ ", " + producerSpec.name + " read.");
+//				ans.resultMap.put(buildingSpec.name + ": " + producerSpec.name, producerResult);
+//			}
+//			for(StorageSpec storageSpec: buildingSpec.storages) {
+//				double[] storageResult_in = new double[n];
+//				double[] storageResult_out = new double[n];
+//				for(int i = 0; i < n; i++) {
+//					storageResult_in[i] = sol[index++];
+//				}
+////				System.out.println(buildingSpec.name+ ", " + storageSpec.name + " read.");
+//				
+//				ans.resultMap.put(buildingSpec.name + ": " + storageSpec.name + " Input", storageResult_in);
+//				for(int i = 0; i < n; i++) {
+//					storageResult_out[i] = sol[index++];
+//				}
+//				ans.resultMap.put(buildingSpec.name + ": " + storageSpec.name + " Output", storageResult_out);
+//			}			
+//		}
+//		
+//		for(ProducerSpec producerSpec: producerSpecs) {
+//			double[] producerResult = new double[n];
+//			for(int i = 0; i < n; i++) {
+//				producerResult[i] = sol[index++];
+//			}
+//			ans.resultMap.put(producerSpec.name, producerResult);
+//		}
+//		for(StorageSpec storageSpec: storageSpecs) {
+//			double[] storageResult = new double[2*n];
+//			for(int i = 0; i < n; i++) {
+//				storageResult[i] = sol[index++];
+//			}
+//			for(int i = n; i < 2*n; i++) {
+//				storageResult[i] = sol[index++];
+//			}
+//			ans.resultMap.put(storageSpec.name, storageResult);
+//		}
+//		
+		
+		
 	}
 		
 

@@ -8,7 +8,7 @@ import com.google.gson.Gson;
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
-import linprog.Simulation;
+import linprog.LinProgSimulation;
 import memap.external.M2MDisplay;
 
 public abstract class Device extends BehaviorModel {
@@ -20,7 +20,7 @@ public abstract class Device extends BehaviorModel {
 	public int port;
 	
 	public Calendar startTime;
-	public int n = Simulation.TIMESTEPS_PER_ITERATION;
+	public int n = LinProgSimulation.TIMESTEPS_PER_ITERATION;
 	
 	public Device(String name, int port) {
 		if(name == null) {

@@ -15,7 +15,7 @@ public class ReadTest {
 	
 	
 	private static final int NR_OF_CONSUMERS_JAN = 5;
-	private static final int N = Simulation.N_STEPS;
+	private static final int N = LinProgSimulation.N_STEPS;
 	
 	
 	public static void main(String[] args) {

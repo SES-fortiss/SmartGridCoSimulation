@@ -13,6 +13,32 @@
 
   <dependencies>
   <dependency>
+		<groupId>org.eclipse.milo</groupId>
+		<artifactId>opc-ua-sdk</artifactId>
+		<version>0.2.1</version>
+		<type>pom</type>
+	</dependency>
+	<dependency>
+		<groupId>org.eclipse.milo</groupId>
+		<artifactId>sdk-core</artifactId>
+		<version>0.2.1</version>
+	</dependency>
+	<dependency>
+		<groupId>org.eclipse.milo</groupId>
+		<artifactId>sdk-client</artifactId>
+		<version>0.2.1</version>
+	</dependency>
+	<dependency>
+		<groupId>org.eclipse.milo</groupId>
+		<artifactId>sdk-server</artifactId>
+		<version>0.2.1</version>
+	</dependency>
+	<dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.7.5</version>
+ 		</dependency>
+  <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
       <version>1.8.1</version>

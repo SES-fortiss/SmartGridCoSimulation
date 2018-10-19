@@ -16,7 +16,7 @@ public class Topology2HousesMPC {
 	private static String simulationName = "LinProg";
 	public static final int NR_OF_CONSUMERS = 5;
 	
-	// Efficiencies
+	// Efficiencies [kWh]
 	private static final double EFFICIENCY_CHP_H = .6;
 	private static final double EFFICIENCY_CHP_EL = .25;
 	private static final double EFFICIENCY_THERMALSTORAGE = 1.;
@@ -27,19 +27,19 @@ public class Topology2HousesMPC {
 	private static final double EFFICIENCY_PV = .2;
 	private static final double EFFICIENCY_BAT = 1.;
 
-	// Capacities
+	// Capacities [kW or kWh]
 	private static final double QDOT_MAX_THERMALSTORAGE_IN = 5.;
 	private static final double QDOT_MAX_THERMALSTORAGE_OUT = 5.;
 	private static final double QDOT_MAX_GASBOILER = 40.;
 	private static final double QDOT_MAX_OILBOILER = 40.;
-	private static final double P_MAX_BATTERY_IN = 5.;
-	private static final double P_MAX_BATTERY_OUT = 5.;
-	private static final double QDOT_MAX_CHP = 80.;
-	private static final double AREA_SOLARTHERMIC = 6.;
+	private static final double P_MAX_BATTERY_IN = 3.3;
+	private static final double P_MAX_BATTERY_OUT = 3.3;
+	private static final double QDOT_MAX_CHP = 12.;
+	private static final double AREA_SOLARTHERMIC = 3.;
 	//private static final double QDOT_MAX_SOLARTHERMIC = 3.;
 	private static final double AREA_PV = 8.;
-	private static final double P_MAX_HEATPUMP = 20.;
-	private static final double CAPACITY_THERMALSTORAGE = 270.;
+	private static final double P_MAX_HEATPUMP = 10.;
+	private static final double CAPACITY_THERMALSTORAGE = 20;
 	private static final double CAPACITY_BATTERY = 12.;
 	private static final int PORT_UNDEFINED = 0;
 	

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import linprog.Simulation;
+import linprog.LinProgSimulation;
 import meritorder.helper.ReadMemapFiles;
 import simulation.SimulationStarter;
 
@@ -138,11 +138,11 @@ public class SolarRadiation {
     		y[i]=originalValues.get(i);
     	}
 		
-		int timestepsPerDay = (int)(Simulation.N_STEPS/Simulation.N_DAYS);
+		int timestepsPerDay = (int)(LinProgSimulation.N_STEPS/LinProgSimulation.N_DAYS);
     	
 		double[] xi = new double[timestepsPerDay];
 		for (int j1 = 0; j1 < timestepsPerDay ; j1++) {
-    		xi[j1]=j1*Simulation.stepLength(TimeUnit.MINUTES);    
+    		xi[j1]=j1*LinProgSimulation.stepLength(TimeUnit.MINUTES);    
     	}	   		
 		
 		double[] yi = Interpolation.interpLinear(x, y, xi);

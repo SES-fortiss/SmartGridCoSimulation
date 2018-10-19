@@ -35,11 +35,11 @@ public class Topology2Houses {
 	private static final double P_MAX_BATTERY_IN = 3.3;
 	private static final double P_MAX_BATTERY_OUT = 3.3;
 	private static final double QDOT_MAX_CHP = 12.;
-	private static final double AREA_SOLARTHERMIC = 6.;
+	private static final double AREA_SOLARTHERMIC = 3.;
 	//private static final double QDOT_MAX_SOLARTHERMIC = 3.;
 	private static final double AREA_PV = 8.;
 	private static final double P_MAX_HEATPUMP = 10.;
-	private static final double CAPACITY_THERMALSTORAGE = 100.;
+	private static final double CAPACITY_THERMALSTORAGE = 20;
 	private static final double CAPACITY_BATTERY = 12.;
 	private static final int PORT_UNDEFINED = 0;
 	

@@ -1,7 +1,7 @@
 package linprog.helper;
 
 import java.util.ArrayList;
-import linprog.Simulation;
+import linprog.LinProgSimulation;
 
 import linprog.messages.BuildingSpec;
 import linprog.messages.Consumption;
@@ -14,7 +14,7 @@ import linprog.messages.StorageSpec;
 public abstract class MatrixBuildup {
 	
 	//  =========================== Matrix Filling ==============================
-	final static int n = Simulation.TIMESTEPS_PER_ITERATION;
+	final static int n = LinProgSimulation.TIMESTEPS_PER_ITERATION;
 	
 		
 	public static OptimizationProblem SingleBuilding(BuildingSpec buildingSpec) {

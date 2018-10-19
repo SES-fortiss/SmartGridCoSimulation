@@ -6,7 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import linprog.Simulation;
+import linprog.LinProgSimulation;
 import linprog.messages.BuildingSpec;
 import meritorder.helper.ReadMemapFiles;
 
@@ -183,14 +183,14 @@ public abstract class SolutionHandler {
 		double summeB_el = 0 ;
 		for (int j=0; j<problem.b_eq.length/2; j++) {
 			summeB_H += problem.b_eq[j];
-			summeB_el += problem.b_eq[Simulation.N_STEPS+j];
+			summeB_el += problem.b_eq[LinProgSimulation.N_STEPS+j];
 		}
 		
-		System.out.println("Predicted Heat Consumption: " + -(int)summeB_H + " kWh in " + Simulation.N_DAYS + " days"); // + " - ok.");
-		System.out.println("Predicted Elec Consumption: " + -(int)summeB_el + " kWh in " + Simulation.N_DAYS + " days"); // + " - ok.");	
+		System.out.println("Predicted Heat Consumption: " + -(int)summeB_H + " kWh in " + LinProgSimulation.N_DAYS + " days"); // + " - ok.");
+		System.out.println("Predicted Elec Consumption: " + -(int)summeB_el + " kWh in " + LinProgSimulation.N_DAYS + " days"); // + " - ok.");	
 		System.out.println(" --- Optimization running ---");	
 		
-		int n = Simulation.N_STEPS;
+		int n = LinProgSimulation.N_STEPS;
 		int x1 = (int)(sol.length-4*n);
 		double purchase_el = 0;
 		double purchase_H = 0;
@@ -225,7 +225,7 @@ public abstract class SolutionHandler {
 			double newBuildingCosts = 0;
 			nrOfProducers2 += buildingSpec.getNrOfProducers();
 			nrOfStorages2 += buildingSpec.getNrOfStorages();	
-			range2 = Simulation.N_STEPS*(nrOfProducers2+2*nrOfStorages2);
+			range2 = LinProgSimulation.N_STEPS*(nrOfProducers2+2*nrOfStorages2);
 			for (int j=range1; j<range2; j++) {
 				newBuildingCosts += problem.lambda[j]*sol[j];
 			}	

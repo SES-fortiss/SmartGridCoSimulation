@@ -10,19 +10,14 @@ public class LinProgSimulation {
 
 	private ActorTopology topology;
 
-<<<<<<< Updated upstream:examples/memap/src/main/java/linprog/LinProgSimulation.java
-	public static final int N_STEPS = 3; // 15 min timestep
-	public static final double N_DAYS = 1; // 24 hours
-=======
-	public static final int N_STEPS = 96; // 15 min timestep
+	public static final int N_STEPS = 192; // 15 min timestep
 	public static final double N_DAYS = 2; // 24 hours
->>>>>>> Stashed changes:examples/memap/src/main/java/linprog/Simulation.java
 	
 	public static final int TIMESTEPS_PER_ITERATION = N_STEPS; //equals N_STEPS for case of overall optimization, smaller for reactive case
 	private static final int NR_OF_ITERATIONS = 1;
 	
 	// Does MEMAP has a long-distance heating connection to buy heat ?
-	public static final boolean MEMAP_LDHeating = false;
+	public static final boolean MEMAP_LDHeating = true;
 	public static final double HEAT_LOSSES = 1.000;
 	
 	//For the moment, the following 3 parameters need to stay as defined to match data input
@@ -33,8 +28,8 @@ public class LinProgSimulation {
 	
 	private void run() {
 		// Test-Topology:
-		topology = Topology2Houses.createTopology();
-//		topology = Topology.createTopology();
+//		topology = Topology2Houses.createTopology();
+		topology = Topology.createTopology();
 		SimulationStarter.saveGridTopologyPlot(topology);   
 		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
         SimulationStarter.startSimulation(actorSystem, 0, NR_OF_ITERATIONS);

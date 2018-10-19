@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.fortiss.smg.actuatorclient.opcua.impl.ActuatorClientImpl;
+
 import com.google.gson.Gson;
 
 import akka.advancedMessages.ErrorAnswerContent;
@@ -13,6 +15,8 @@ import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
 import linprogMPC.Simulation;
+import linprogMPC.OPCUA.ReadNode;
+import linprogMPC.OPCUA.opcuaClient;
 import linprogMPC.messages.BuildingSpec;
 import linprogMPC.messages.Consumption;
 import linprogMPC.messages.OptimizationResult;
@@ -31,7 +35,17 @@ public class Building extends BehaviorModel {
 	protected Gson gson = new Gson();
 	public int port;
 	
+	// Establish OPC UA Client - Server
+	public String host = "0.0.0.0";
+	public String opcPort = "4840";
 	
+	ReadNode reader = new ReadNode();
+	opcuaClient MemapOpcuaClient = new opcuaClient(reader);
+	
+	
+	
+//	ReadNode reader = new ReadNode();	
+//    public void opcuaClient(reader).run();
 	
 	// NEW(7.8.18 by JMr): Long-distance heating supply
 	public boolean LDHeating;
@@ -90,7 +104,9 @@ public class Building extends BehaviorModel {
 		
 		display.update(gson.toJson(specificationToSend));
 
-//		=======================  DECIDING =======================	
+//		=======================  OPCUA =======================	
+		
+		
 		
 		
 

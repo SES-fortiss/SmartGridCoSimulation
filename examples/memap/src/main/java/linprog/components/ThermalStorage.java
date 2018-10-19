@@ -2,7 +2,7 @@ package linprog.components;
 
 import java.util.concurrent.TimeUnit;
 
-import linprog.Simulation;
+import linprog.LinProgSimulation;
 
 public class ThermalStorage extends Storage {
 	
