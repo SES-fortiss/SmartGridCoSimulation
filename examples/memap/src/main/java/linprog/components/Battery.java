@@ -32,7 +32,7 @@ public class Battery extends Storage {
 		}
 		for (int i = n; i < 2*n; i++) {
 			specificationToSend.cost[i] = 0.00001; 
-			specificationToSend.vector[i] = capacity/Simulation.stepLength(TimeUnit.SECONDS);
+			specificationToSend.vector[i] = capacity;
 		}
 	
 		display.update(gson.toJson(specificationToSend));

@@ -40,7 +40,7 @@ public class ThermalStorage extends Storage {
 		System.out.println("SOC (TS) : " + String.format("%.04f", specificationToSend.vector[0])); 
 		for (int i = n; i < 2*n; i++) {
 			specificationToSend.cost[i] = 0.00001; 
-			specificationToSend.vector[i] = capacity/Simulation.stepLength(TimeUnit.SECONDS);
+			specificationToSend.vector[i] = capacity;
 		}
 		
 //		display.update(gson.toJson(specificationToSend));

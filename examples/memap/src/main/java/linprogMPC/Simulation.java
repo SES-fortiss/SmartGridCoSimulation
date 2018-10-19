@@ -21,7 +21,7 @@ public class Simulation {
 	
 	
 	// Does MEMAP has a long-distance heating connection to buy heat ?
-	public static final boolean MEMAP_LDHeating = true;
+	public static final boolean MEMAP_LDHeating = false;
 	public static final double HEAT_LOSSES = 1.0;
 	
 	//For the moment, the following 3 parameters need to stay as defined to match data input
