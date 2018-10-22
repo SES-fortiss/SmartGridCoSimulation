@@ -54,8 +54,6 @@ public class opcuaClient {
 
     public opcuaClient(MemapClient memapClient, String clientName, String clientURI, NodeId nodeid) throws Exception {
         this.memapClient = memapClient;
-//        this.host = host;
-//        this.opcPort = opcPort;
         this.clientName = clientName;
         this.clientURI = clientURI;
         this.nodeid = nodeid;
@@ -67,6 +65,7 @@ public class opcuaClient {
 //			// TODO Auto-generated catch block
 //			logger.error(e.getStackTrace().toString());
 //		}
+        
     }
 
     /**
@@ -138,7 +137,7 @@ public class opcuaClient {
 
                 try {
                     client.disconnect().get();
-          
+                    System.out.println("Client Disconnected");
                     Stack.releaseSharedResources();
                 } catch (InterruptedException | ExecutionException e) {
                     logger.error("Error disconnecting:", e.getMessage(), e);

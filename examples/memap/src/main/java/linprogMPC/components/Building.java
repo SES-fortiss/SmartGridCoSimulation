@@ -48,7 +48,7 @@ public class Building extends BehaviorModel {
 	
 	TestClient testClient= new TestClient();
 	NodeId node1 = new NodeId(2,30);
-	
+	NodeId node2 = new NodeId(2,27);
 	
 
 	
@@ -96,9 +96,13 @@ public class Building extends BehaviorModel {
 
 		try {
 			testClient.startClient(clientName, clientURI, node1);
+			double testValue = testClient.getData();
+			System.out.println("OPC Client read value " + testValue);
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("OPC Client read failed");
 		}
 		
 	

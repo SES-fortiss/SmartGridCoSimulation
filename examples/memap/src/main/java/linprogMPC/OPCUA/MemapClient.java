@@ -13,7 +13,7 @@ public interface MemapClient {
 	
 
 	    default String getEndpointUrl() {
-	        return "opc.tcp://0.0.0.0:4842";
+	        return "opc.tcp://0.0.0.0:4840";
 //	        return "opc.tcp://localhost:12686/example";
 	    }
 
