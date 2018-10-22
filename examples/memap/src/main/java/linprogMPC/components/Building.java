@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.fortiss.smg.actuatorclient.opcua.impl.ActuatorClientImpl;
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
 import com.google.gson.Gson;
 
@@ -16,6 +19,7 @@ import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
 import linprogMPC.Simulation;
 import linprogMPC.OPCUA.ReadNode;
+import linprogMPC.OPCUA.TestClient;
 import linprogMPC.OPCUA.opcuaClient;
 import linprogMPC.messages.BuildingSpec;
 import linprogMPC.messages.Consumption;
@@ -35,14 +39,24 @@ public class Building extends BehaviorModel {
 	protected Gson gson = new Gson();
 	public int port;
 	
+	
+	public String clientName = "name";
+	public String clientURI = "URI";
+	
 	// Establish OPC UA Client - Server
-	public String host = "0.0.0.0";
-	public String opcPort = "4840";
+//	private TestClient client = new TestClient();
 	
-	ReadNode reader = new ReadNode();
-	opcuaClient MemapOpcuaClient = new opcuaClient(reader);
+	TestClient testClient= new TestClient();
+	NodeId node1 = new NodeId(2,30);
 	
 	
+
+	
+	// create Client
+	
+	// Read Node
+//    new ReadNode(MemapOpcuaClient, node1).run();
+
 	
 //	ReadNode reader = new ReadNode();	
 //    public void opcuaClient(reader).run();
@@ -79,7 +93,14 @@ public class Building extends BehaviorModel {
 	@Override
 	public void makeDecision() {
 		
-	
+
+		try {
+			testClient.startClient(clientName, clientURI, node1);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	
 //		=======================  RECEIVING =======================	
 			

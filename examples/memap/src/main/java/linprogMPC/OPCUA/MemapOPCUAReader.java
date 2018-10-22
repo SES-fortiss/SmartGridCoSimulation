@@ -19,7 +19,7 @@ public class MemapOPCUAReader implements MemapClient {
 	
 	
 	@Override
-	public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
+	public void run(OpcUaClient client, NodeId nodeid) throws Exception {
 		// TODO Auto-generated method stub
 		
 		client.connect().get();

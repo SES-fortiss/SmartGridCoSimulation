@@ -1,3 +1,4 @@
+
 package linprogMPC.OPCUA;
 
 import java.util.concurrent.CompletableFuture;
@@ -6,12 +7,13 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface MemapClient {
 	
 
 	    default String getEndpointUrl() {
-	        return "opc.tcp://0.0.0.0:4840";
+	        return "opc.tcp://0.0.0.0:4842";
 //	        return "opc.tcp://localhost:12686/example";
 	    }
 
@@ -23,6 +25,7 @@ public interface MemapClient {
 	        return new AnonymousProvider();
 	    }
 
-	    void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception;
+	    void run(OpcUaClient client, NodeId nodeid) throws Exception;
+//	    void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception;
 
 }

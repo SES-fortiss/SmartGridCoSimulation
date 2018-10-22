@@ -36,10 +36,11 @@ public class opcuaClient {
     }
 
 	private OpcUaClient client;
-	private String host;
-	private String opcPort;
+//	private String host;
+//	private String opcPort;
 	private String clientName;
 	private String clientURI;
+	private NodeId nodeid;
 	
 	
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -51,20 +52,21 @@ public class opcuaClient {
     private final MemapClient memapClient;
 //    private final boolean serverRequired = 0;
 
-    public opcuaClient(MemapClient memapClient, String host, String opcPort, String clientName, String clientURI) throws Exception {
+    public opcuaClient(MemapClient memapClient, String clientName, String clientURI, NodeId nodeid) throws Exception {
         this.memapClient = memapClient;
-        this.host = host;
-        this.opcPort = opcPort;
+//        this.host = host;
+//        this.opcPort = opcPort;
         this.clientName = clientName;
         this.clientURI = clientURI;
+        this.nodeid = nodeid;
         		
         
-        try {
-			client = createClient(clientName, clientURI);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getStackTrace().toString());
-		}
+//        try {
+//			client = createClient(clientName, clientURI);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			logger.error(e.getStackTrace().toString());
+//		}
     }
 
     /**
@@ -72,11 +74,11 @@ public class opcuaClient {
 	 *  
 	 * @return none
 	 */
-    public DataValue ReadNodeValue(OpcUaClient client, NodeId nodeid) throws Exception {
-//    	ReadValueId readValueID= new ReadValueId(nodeid,AttributeId.Value.uid(), null, null);
-//    	return client.read(0, TimestampsToReturn.Both, Arrays.asList(readValueID)).get();
-    	return client.readValue(0, TimestampsToReturn.Both, nodeid).get();
-    }
+//    public DataValue ReadNodeValue(OpcUaClient client, NodeId nodeid) throws Exception {
+////    	ReadValueId readValueID= new ReadValueId(nodeid,AttributeId.Value.uid(), null, null);
+////    	return client.read(0, TimestampsToReturn.Both, Arrays.asList(readValueID)).get();
+//    	return client.readValue(0, TimestampsToReturn.Both, nodeid).get();
+//    }
     
 
     private OpcUaClient createClient(String clientName, String clientURI) throws Exception {
@@ -127,7 +129,7 @@ public class opcuaClient {
 
     public void run() {
         try {
-            OpcUaClient client = createClient("memap opcua client","urn:memap:opcua:client");
+            OpcUaClient client = createClient(clientName, clientURI);
 
             future.whenComplete((c, ex) -> {
                 if (ex != null) {
@@ -136,9 +138,7 @@ public class opcuaClient {
 
                 try {
                     client.disconnect().get();
-//                    if (serverRequired && exampleServer != null) {
-//                        exampleServer.shutdown().get();
-//                    }
+          
                     Stack.releaseSharedResources();
                 } catch (InterruptedException | ExecutionException e) {
                     logger.error("Error disconnecting:", e.getMessage(), e);
@@ -153,10 +153,10 @@ public class opcuaClient {
             });
 
             try {
-            	memapClient.run(client, future);
+                memapClient.run(client, nodeid);
                 future.get(15, TimeUnit.SECONDS);
             } catch (Throwable t) {
-                logger.error("Error running client example: {}", t.getMessage(), t);
+                logger.error("Error running Memap client: {}", t.getMessage(), t);
                 future.completeExceptionally(t);
             }
         } catch (Throwable t) {
@@ -177,6 +177,10 @@ public class opcuaClient {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+    
+    public static DataValue ReadNodeValue(OpcUaClient client, NodeId nodeid) throws Exception {
+    	return client.readValue(0, TimestampsToReturn.Both, nodeid).get();
     }
     
 }
