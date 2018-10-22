@@ -1,21 +1,16 @@
 package linprogMPC.OPCUA;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-import com.google.common.collect.ImmutableList;
+import java.util.concurrent.Callable;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public abstract class ReadNode { //implements Runnable {
+public abstract class ReadNode implements Callable<DataValue> {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 //	private static org.slf4j.Logger logger = LoggerFactory
@@ -34,7 +29,7 @@ public abstract class ReadNode { //implements Runnable {
 	public void run() {	
 		
 		try {
-			ReadNodeValue( client,  nodeid);
+			ReadNodeValue( client, nodeid);
 		} catch (Exception e) {
 			logger.error("exeptionr", e);
 		}

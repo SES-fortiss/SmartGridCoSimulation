@@ -1,15 +1,7 @@
 package linprogMPC.components;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Set;
-
-import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
-
 import com.google.gson.Gson;
 
 import akka.advancedMessages.ErrorAnswerContent;
@@ -17,10 +9,7 @@ import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
-import linprogMPC.Simulation;
-import linprogMPC.OPCUA.ReadNode;
 import linprogMPC.OPCUA.TestClient;
-import linprogMPC.OPCUA.opcuaClient;
 import linprogMPC.messages.BuildingSpec;
 import linprogMPC.messages.Consumption;
 import linprogMPC.messages.OptimizationResult;
@@ -43,23 +32,10 @@ public class Building extends BehaviorModel {
 	public String clientName = "name";
 	public String clientURI = "URI";
 	
-	// Establish OPC UA Client - Server
-//	private TestClient client = new TestClient();
-	
+	// Establish OPC UA Client 
 	TestClient testClient= new TestClient();
 	NodeId node1 = new NodeId(2,30);
 	NodeId node2 = new NodeId(2,27);
-	
-
-	
-	// create Client
-	
-	// Read Node
-//    new ReadNode(MemapOpcuaClient, node1).run();
-
-	
-//	ReadNode reader = new ReadNode();	
-//    public void opcuaClient(reader).run();
 	
 	// NEW(7.8.18 by JMr): Long-distance heating supply
 	public boolean LDHeating;
@@ -89,15 +65,15 @@ public class Building extends BehaviorModel {
 
 
 	
-	
 	@Override
 	public void makeDecision() {
 		
-
+//		=======================  OPC UA Read  =======================	
+		
 		try {
-			testClient.startClient(clientName, clientURI, node1);
+			testClient.startClient(clientName, clientURI, node2);
 			double testValue = testClient.getData();
-			System.out.println("OPC Client read value " + testValue);
+			System.out.println("[OPC UA] heat consumption " + name + ": " + testValue);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -128,12 +104,6 @@ public class Building extends BehaviorModel {
 		}
 		
 		display.update(gson.toJson(specificationToSend));
-
-//		=======================  OPCUA =======================	
-		
-		
-		
-		
 
 	}
 
