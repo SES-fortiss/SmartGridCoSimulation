@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public abstract class ReadNode implements Callable<DataValue> {
+public abstract class TESTReadNode implements Callable<DataValue> {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 //	private static org.slf4j.Logger logger = LoggerFactory
@@ -19,7 +19,7 @@ public abstract class ReadNode implements Callable<DataValue> {
 	private OpcUaClient client;
 	private NodeId nodeid;
     
-	public ReadNode(OpcUaClient client, NodeId nodeid) {
+	public TESTReadNode(OpcUaClient client, NodeId nodeid) {
 //        this(memapClient, true);
 		this.client = client;
 		this.nodeid = nodeid;

@@ -10,10 +10,10 @@ import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 
 public interface MemapClient {
 	
-
 	    default String getEndpointUrl() {
-	        return "opc.tcp://0.0.0.0:4840";
-//	        return "opc.tcp://localhost:12686/example";
+	    	
+	    	return "opc.tcp://0.0.0.0:4840"; // Local Python Server
+//	    	return "opc.tcp://192.168.21.198:48040"; // Sauter Server
 	    }
 
 	    default SecurityPolicy getSecurityPolicy() {
@@ -24,7 +24,6 @@ public interface MemapClient {
 	        return new AnonymousProvider();
 	    }
 
-//	    void run(OpcUaClient client, NodeId nodeid) throws Exception;
 	    void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception;
 
 }

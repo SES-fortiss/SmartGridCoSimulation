@@ -9,7 +9,7 @@ import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
-import linprogMPC.OPCUA.TestClient;
+import linprogMPC.OPCUA.ReadClient;
 import linprogMPC.messages.BuildingSpec;
 import linprogMPC.messages.Consumption;
 import linprogMPC.messages.OptimizationResult;
@@ -32,11 +32,7 @@ public class Building extends BehaviorModel {
 	public String clientName = "name";
 	public String clientURI = "URI";
 	
-	// Establish OPC UA Client 
-	TestClient testClient= new TestClient();
-	NodeId node1 = new NodeId(2,30);
-	NodeId node2 = new NodeId(2,27);
-	
+
 	// NEW(7.8.18 by JMr): Long-distance heating supply
 	public boolean LDHeating;
 	public int heatTransportLength;
@@ -70,10 +66,14 @@ public class Building extends BehaviorModel {
 		
 //		=======================  OPC UA Read  =======================	
 		
+		// Define Node(s) to read --> extend to List<NodeID> 
+		NodeId node1 = new NodeId(2,30);
+		
 		try {
-			testClient.startClient(clientName, clientURI, node2);
-			double testValue = testClient.getData();
-			System.out.println("[OPC UA] heat consumption " + name + ": " + testValue);
+			ReadClient.startClient(clientName, clientURI, node1);
+			// Output:
+			String readValue = ReadClient.getData();
+			System.out.println("[OPC UA] heat consumption " + name + ": " + readValue);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
