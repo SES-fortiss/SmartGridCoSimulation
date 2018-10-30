@@ -125,4 +125,9 @@ public abstract class BehaviorModel {
 	public String toString() {
 		return ("BehaviorParameter: {" + "behaviorType=" + behaviorType + "}");
 	}
+
+	/**
+	 * Can be overwritten, to clean recourses, when the actor stops.
+	 */
+	public void stop() {}
 }

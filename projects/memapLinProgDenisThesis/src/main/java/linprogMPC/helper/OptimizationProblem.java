@@ -54,15 +54,17 @@ public class OptimizationProblem {
 	@Override
 	public String toString() {
 		String result = "";
-		
+		/*
 		result += "OptimizationProblem:\n";
 		result += "Producers: "+this.nrOfProducers;
 		result += " Storages: "+this.nrOfStorages;
 		result += " Couplers: "+this.nrOfCouplers + "\n";
-		
+		*/
 		result += "A: " + a_eq.length + " x " + a_eq[0].length  + "\n";
+		
 		result += "b: " + b_eq.length  + "\n";
 		
+		/*
 		result += "h: " + h.length  + "\n";
 		
 		if (g.length == 0) {
@@ -72,6 +74,7 @@ public class OptimizationProblem {
 		
 		result += "lb: " + x_lb.length  + "\n";
 		result += "ub: " + x_ub.length  + "\n";
+		*/
 		
 		return result;
 	}

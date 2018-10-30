@@ -2,7 +2,6 @@ package linprogMPC.components;
 
 import java.util.concurrent.TimeUnit;
 
-import akka.systemActors.GlobalTime;
 import linprogMPC.Simulation;
 import linprogMPC.messages.OptimizationResult;
 

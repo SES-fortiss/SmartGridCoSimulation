@@ -12,7 +12,7 @@ import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
-import linprog.Simulation;
+import linprog.LinProgSimulation;
 import linprog.helper.MatrixBuildup;
 import linprog.helper.OptimizationProblem;
 import linprog.helper.OptimizationStarter;
@@ -31,7 +31,7 @@ public class LinProgBehavior extends BehaviorModel {
 	Gson gson = new Gson();
 	
 	public Calendar startTime;
-	public final int n = Simulation.TIMESTEPS_PER_ITERATION;
+	public final int n = LinProgSimulation.TIMESTEPS_PER_ITERATION;
 	
 	public LinProgBehavior() {
 		display = new M2MDisplay(8080); // add port in to display a json
@@ -54,8 +54,8 @@ public class LinProgBehavior extends BehaviorModel {
 	@Override
 	public void makeDecision() {
 		
-		System.out.println("Stepsize: " + Simulation.stepLength(TimeUnit.HOURS) + " hours.");
-		System.out.println("Horizon: " + Simulation.N_DAYS*24 + " hours (" + Simulation.N_DAYS + " days)");
+		System.out.println("Stepsize: " + LinProgSimulation.stepLength(TimeUnit.HOURS) + " hours.");
+		System.out.println("Horizon: " + LinProgSimulation.N_DAYS*24 + " hours (" + LinProgSimulation.N_DAYS + " days)");
 		System.out.println("****************************************************************");
 		
 		// Sort the received answers in 'Buildings' and/or 'free consumer/Storage/Producers'
@@ -93,6 +93,16 @@ public class LinProgBehavior extends BehaviorModel {
 		for(BuildingSpec buildingSpec : buildingSpecs) {
 			
 			OptimizationProblem problem = MatrixBuildup.SingleBuilding(buildingSpec);
+			
+			System.out.println("lambda.length double[]: " + problem.lambda.length);
+			System.out.println("h.length double[]: " + problem.h.length);
+			System.out.println("g.length double[]: " + problem.g.length);
+			System.out.println("b_eq.length double[]: " + problem.b_eq.length);
+			System.out.println("a_eq.length double[]: " + problem.a_eq.length);
+			System.out.println("x_lb.length double[]: " + problem.x_lb.length);
+			System.out.println("x_ub.length double[]: " + problem.x_ub.length);
+			
+			
 			double[] sol = OptimizationStarter.runLinProg(problem);
 			
 			// Print consumption and calculate energy autarky
@@ -124,7 +134,7 @@ public class LinProgBehavior extends BehaviorModel {
 		System.out.println("Total Producer: " + nrOfProducers);
 		
 		OptimizationProblem problem = MatrixBuildup.memapMatrices(nrOfProducers,nrOfStorages,
-				buildingSpecs,consumptionProfiles,producerSpecs,storageSpecs, Simulation.MEMAP_LDHeating);
+				buildingSpecs,consumptionProfiles,producerSpecs,storageSpecs, LinProgSimulation.MEMAP_LDHeating);
 		double[] sol = OptimizationStarter.runLinProg(problem);
 		
 		// Print consumption and calculate energy autarky

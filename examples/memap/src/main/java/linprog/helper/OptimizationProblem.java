@@ -14,8 +14,7 @@ public class OptimizationProblem {
 	int nrOfStorages;
 	int marketmatrices = 4; // selling/buying(2) of electricity/heat(2)
 
-	public OptimizationProblem(int n, int nrOfProducers, int nrOfStorages) {
-	
+	public OptimizationProblem(int n, int nrOfProducers, int nrOfStorages) {		
 		this.nrOfProducers = nrOfProducers;
 		this.nrOfStorages = nrOfStorages;
 		
@@ -29,8 +28,6 @@ public class OptimizationProblem {
 		
 		x_lb = new double[n*(nrOfProducers+(2*nrOfStorages)+marketmatrices)];
 		x_ub = new double[n*(nrOfProducers+(2*nrOfStorages)+marketmatrices)];
-		
-		
 	}
 	
 	public int getNumberofProducers() {

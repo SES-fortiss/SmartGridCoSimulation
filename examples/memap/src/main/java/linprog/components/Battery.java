@@ -2,7 +2,7 @@ package linprog.components;
 
 import java.util.concurrent.TimeUnit;
 
-import linprog.Simulation;
+import linprog.LinProgSimulation;
 //import linprog.helper.EnergyPrices;
 
 public class Battery extends Storage {
@@ -32,7 +32,7 @@ public class Battery extends Storage {
 		}
 		for (int i = n; i < 2*n; i++) {
 			specificationToSend.cost[i] = 0.00001; 
-			specificationToSend.vector[i] = capacity/Simulation.stepLength(TimeUnit.SECONDS);
+			specificationToSend.vector[i] = capacity/LinProgSimulation.stepLength(TimeUnit.SECONDS);
 		}
 	
 		display.update(gson.toJson(specificationToSend));

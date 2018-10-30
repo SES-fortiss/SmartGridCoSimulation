@@ -5,16 +5,19 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
+import helper.IoHelper;
 import linprogMPC.ThesisTopologySimple;
 import linprogMPC.messages.BuildingMessage;
-import linprogMPC.messages.StorageMessage;
+import linprogMPC.messages.individualParts.planning.StorageMessage;
  
 
 public class SolutionHandler {
-	final static int nMPC = ThesisTopologySimple.N_STEPS_MPC;
 	
-	public static void exportVector(double[] data, String filename) {
+	int nMPC = ThesisTopologySimple.N_STEPS_MPC;
+	
+	public void exportVector(double[] data, String filename) {
 		BufferedWriter bw = null;
 		try {
 			String source = "res/results/" + filename;
@@ -61,7 +64,7 @@ public class SolutionHandler {
 		}
 	}
 	
-	public static double exportCostsFull(double[] sol, double[] lambda, String filename) {
+	public double exportCostsFull(double[] sol, double[] lambda, String filename) {
 
 		// The Costs are evaluated only for the first timestep of the MPC calculation
 		double[] costVector = new double[lambda.length];
@@ -72,11 +75,11 @@ public class SolutionHandler {
 			costs += costVector[i];
 		}
 			
-		SolutionHandler.exportVector(costVector, filename);
+		exportVector(costVector, filename);
 		return costs;	
 	}
 	
-	public static double[] calculateTimeStepCosts(double[] sol, double[] lambda) {
+	public double[] calculateTimeStepCosts(double[] sol, double[] lambda) {
 		// The Costs are evaluated only for the first timestep of the MPC calculation
 		double[] costVector = new double[nMPC];
 		
@@ -90,7 +93,7 @@ public class SolutionHandler {
 	
 	}
 
-	public static double[] matrixMultiplication(double[][] matrix, double[] vec) throws IOException {		
+	public double[] matrixMultiplication(double[][] matrix, double[] vec) throws IOException {		
 		if (matrix[0].length == vec.length) {
 			double[] result = new double[matrix[0].length];
 					 
@@ -105,7 +108,7 @@ public class SolutionHandler {
  
 	}
 
-	public static void exportMatrix(double[][] data, String filename) {
+	public void exportMatrix(double[][] data, String filename) {
 
 		BufferedWriter bw = null;
 
@@ -167,11 +170,11 @@ public class SolutionHandler {
 		
 	}
 
-	public static void exportProduction(double[][] matrixA, double[] sol, String filename) {
+	public void exportProduction(double[][] matrixA, double[] sol, String filename) {
 
 		try {
-			double[] result = SolutionHandler.matrixMultiplication(matrixA, sol);
-			SolutionHandler.exportVector(result, filename);
+			double[] result = matrixMultiplication(matrixA, sol);
+			exportVector(result, filename);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -179,7 +182,7 @@ public class SolutionHandler {
 		return;	
 	}
 	
-	public static double calcAutarky(OptimizationProblem problem, double[] sol) {
+	public double calcAutarky(OptimizationProblem problem, double[] sol) {
 		
 		double summeB_H = 0 ;
 		double summeB_el = 0 ;
@@ -210,7 +213,7 @@ public class SolutionHandler {
 		
 	}
 
-	public static void calcNewCosts(OptimizationProblem problem, double[] sol, ArrayList<BuildingMessage> buildingSpecs) {
+	public void calcNewCosts(OptimizationProblem problem, double[] sol, ArrayList<BuildingMessage> buildingSpecs) {
 		
 		int nrOfStorages2 = 0;
 		int nrOfProducers2 = 0;
@@ -244,7 +247,7 @@ public class SolutionHandler {
 		
 	}
 
-	public static double[] getSolutionForThisTimeStep(double[] optSolution, int nStepsMPC) {
+	public double[] getSolutionForThisTimeStep(double[] optSolution, int nStepsMPC) {
 		
 		double[] result = new double[optSolution.length / nStepsMPC];
 		
@@ -255,7 +258,7 @@ public class SolutionHandler {
 		return result;
 	}
 
-	public static String[] getNamesForThisTimeStep(OptimizationProblem problem, int nStepsMPC) {
+	public String[] getNamesForThisTimeStep(OptimizationProblem problem, int nStepsMPC) {
 		String[] result = new String[problem.namesUB.length / nStepsMPC];
 		
 		for (int i = 0; i < result.length; i++) {
@@ -265,7 +268,7 @@ public class SolutionHandler {
 		return result;
 	}
 
-	public static double[] getDemandForThisTimestep(OptimizationProblem problem, int nStepsMPC) {
+	public double[] getDemandForThisTimestep(OptimizationProblem problem, int nStepsMPC) {
 		double[] result = new double[problem.b_eq.length / nStepsMPC];
 		
 		for (int i = 0; i < result.length; i++) {
@@ -275,7 +278,7 @@ public class SolutionHandler {
 		return result;
 	}
 
-	public static double[] getCurrentSOC(ArrayList<StorageMessage> storages) {
+	public double[] getCurrentSOC(ArrayList<StorageMessage> storages) {
 		double[] result = new double[storages.size()];
 		
 		for (int i = 0; i < result.length; i++) {
@@ -285,17 +288,17 @@ public class SolutionHandler {
 		return result;
 	}
 	
-	public static double[] getCurrentSOCs(ArrayList<BuildingMessage> buildingMessageList) {
+	public double[] getCurrentSOCs(ArrayList<BuildingMessage> buildingMessageList) {
 		ArrayList<StorageMessage> storeMessageList = new ArrayList<StorageMessage>();
 		
 		for (BuildingMessage bm : buildingMessageList) {
-			storeMessageList.addAll(bm.storages);
+			storeMessageList.addAll(bm.storageList);
 		}
 		
 		return getCurrentSOC(storeMessageList);
 	}
 
-	public static String[] getNamesForSOC(ArrayList<StorageMessage> storages) {
+	public String[] getNamesForSOC(ArrayList<StorageMessage> storages) {
 		String[] result = new String[storages.size()];
 		
 		for (int i = 0; i < result.length; i++) {
@@ -305,11 +308,11 @@ public class SolutionHandler {
 		return result;
 	}
 	
-	public static String[] getNamesForSOCs(ArrayList<BuildingMessage> buildingMessageList) {
+	public String[] getNamesForSOCs(ArrayList<BuildingMessage> buildingMessageList) {
 		ArrayList<StorageMessage> storeMessageList = new ArrayList<StorageMessage>();
 		
 		for (BuildingMessage bm : buildingMessageList) {
-			storeMessageList.addAll(bm.storages);
+			storeMessageList.addAll(bm.storageList);
 		}
 		return getNamesForSOC(storeMessageList);
 	}
@@ -322,7 +325,7 @@ public class SolutionHandler {
 	 * @param filename
 	 * @param header
 	 */
-	public static void exportMatrixWithHeader(double[][] data, String filename, String[] header) {
+	public void exportMatrixWithHeader(double[][] data, String filename, String[] header) {
 
 		BufferedWriter bw = null;
 
@@ -330,10 +333,13 @@ public class SolutionHandler {
 			String source = "res/results/" + filename;
 			String location = ReadMemapFiles.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			location = location.replace("%20", " ");
-			location = location.substring(0, location.length() - 15);
+			location = location.substring(1, location.length() - 15);
 			location = location + source;
 
 			// Specify the file name and path here
+			
+			System.out.println("Try Filelocation: " + location);
+			IoHelper.createParentFolders(location);
 			File file = new File(location);
 
 			/*
@@ -360,18 +366,18 @@ public class SolutionHandler {
 				if (index == data.length - 1){
 					for (int j=0; j< data[0].length; j++) {
 						if (j == data[0].length -1) {
-							bw.write(String.valueOf(data[index][j]));
+							bw.write( String.format(Locale.US, "%1$,.2f", data[index][j])   );
 						} else {
-							bw.write(String.valueOf(data[index][j]) + ";");
+							bw.write( String.format(Locale.US, "%1$,.2f", data[index][j]) + ";");
 						}
 					}
 			    }
 			    else {
 			    	for (int j=0; j< data[0].length; j++) {
 			    		if (j == data[0].length -1) {
-							bw.write(String.valueOf(data[index][j]));
+							bw.write(  String.format(Locale.US, "%.2f", data[index][j])  );
 						} else {
-							bw.write(String.valueOf(data[index][j]) + ";");
+							bw.write( String.format(Locale.US, "%.2f", data[index][j]) + ";");
 						}
 			    	}
 					bw.newLine();

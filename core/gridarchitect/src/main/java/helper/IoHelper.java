@@ -62,7 +62,7 @@ public class IoHelper {
     }
 
 
-    protected static File createParentFolders(String folderPath) {
+    public static File createParentFolders(String folderPath) {
         try {
             File destination = new File(folderPath);
             destination.getParentFile().mkdirs();

@@ -23,7 +23,7 @@ public class CHP extends Coupler {
 		
 		int cts = GlobalTime.getCurrentTimeStep();
 		couplerMessage.name = this.actorName;
-		couplerMessage.cost = 0.00001 + EnergyPrices.getGasPriceInEuro(cts);		
+		couplerMessage.operationalCostEUR = 0.00001 + EnergyPrices.getGasPriceInEuro(cts);		
 		couplerMessage.efficiencyElec = efficiencyElec;
 		couplerMessage.efficiencyHeat = efficiencyHeat;
 		couplerMessage.installedPower = installedPower;

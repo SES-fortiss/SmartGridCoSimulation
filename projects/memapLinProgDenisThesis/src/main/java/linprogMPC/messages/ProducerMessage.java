@@ -1,6 +1,7 @@
 package linprogMPC.messages;
 
 import akka.basicMessages.AnswerContent;
+import linprogMPC.messages.types.NetworkType;
 
 public class ProducerMessage implements AnswerContent {
 	

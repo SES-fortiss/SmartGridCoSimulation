@@ -3,6 +3,12 @@ package linprogMPC.messages;
 import java.util.ArrayList;
 
 import akka.basicMessages.AnswerContent;
+import linprogMPC.messages.individualParts.planning.CouplerMessage;
+import linprogMPC.messages.individualParts.planning.DemandMessage;
+import linprogMPC.messages.individualParts.planning.StorageMessage;
+import linprogMPC.messages.individualParts.realTime.AvailableFlexibilities;
+import linprogMPC.messages.individualParts.realTime.CurrentMeterValues;
+import linprogMPC.messages.individualParts.realTime.CurrentSetPoints;
 
 public class BuildingMessage implements AnswerContent {
 	
@@ -14,21 +20,30 @@ public class BuildingMessage implements AnswerContent {
 	public int heatTransportLength;
 	public boolean ack  = true;
 	// ================================
-	public ConsumptionMessage consumption = new ConsumptionMessage();
-	public ArrayList<ProducerMessage> producers = new ArrayList<ProducerMessage>();
-	public ArrayList<StorageMessage> storages = new ArrayList<StorageMessage>();
-	public ArrayList<CouplerMessage> couplers = new ArrayList<CouplerMessage>();
+	
+	public ArrayList<CurrentMeterValues> currentMeterValueList = new ArrayList<CurrentMeterValues>();
+	public ArrayList<CurrentSetPoints> currentSetPointList = new ArrayList<CurrentSetPoints>();
+	public ArrayList<AvailableFlexibilities> availableFlexibilitiesList = new ArrayList<AvailableFlexibilities>();
+	
+	public DemandMessage consumption = new DemandMessage(); // TODO remove
+	
+	public ArrayList<DemandMessage> demandList = new ArrayList<DemandMessage>();
+	public ArrayList<ProducerMessage> volatileProducerList = new ArrayList<ProducerMessage>(); // TODO adapt
+	public ArrayList<ProducerMessage> controllableProducerList = new ArrayList<ProducerMessage>(); // TODO adapt
+	public ArrayList<StorageMessage> storageList = new ArrayList<StorageMessage>(); // ok
+	public ArrayList<CouplerMessage> couplerList = new ArrayList<CouplerMessage>(); // ok
+	
+	
 	
 	public int getNrOfProducers() {
-		return producers.size();
+		return volatileProducerList.size() + controllableProducerList.size();
 	}
 	
 	public int getNrOfStorages() {
-		return storages.size();
+		return storageList.size();
 	}
 	
 	public int getNrOfCouplers() {
-		return couplers.size();
+		return couplerList.size();
 	}
-
 }

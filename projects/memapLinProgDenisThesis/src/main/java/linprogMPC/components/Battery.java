@@ -1,6 +1,6 @@
 package linprogMPC.components;
 
-import linprogMPC.messages.NetworkType;
+import linprogMPC.messages.types.NetworkType;
 
 public class Battery extends Storage {	
 		
@@ -27,7 +27,7 @@ public class Battery extends Storage {
 	public void makeDecision() {		
 		// alle parameter mit schicken.
 		storageMessage.networkType = NetworkType.ELECTRICITY;
-		storageMessage.cost = 0.0001;						
+		storageMessage.operationalPriceEURO = 0.0001;						
 		storageMessage.capacity = this.capacity;		
 		storageMessage.maxLoad = this.max_charging;
 		storageMessage.maxDischarge = this.max_discharging;

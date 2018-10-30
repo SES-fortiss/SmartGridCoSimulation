@@ -1,8 +1,8 @@
 package linprogMPC.components;
 
 import akka.basicMessages.AnswerContent;
-import linprogMPC.messages.CouplerMessage;
-import linprogMPC.messages.OptimizationResult;
+import linprogMPC.messages.OptimizationResultMessage;
+import linprogMPC.messages.individualParts.planning.CouplerMessage;
 
 public abstract class Coupler extends Device {
 
@@ -32,9 +32,9 @@ public abstract class Coupler extends Device {
 	
 	@Override
 	public void handleRequest() {
-		if(requestContentReceived instanceof OptimizationResult) {
+		if(requestContentReceived instanceof OptimizationResultMessage) {
 			
-			OptimizationResult optResult = ((OptimizationResult) requestContentReceived);
+			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
 			for (String key : optResult.resultMap.keySet()) {		
 				if (key.contains(this.actorName)) {
 					mpcSignal = optResult.resultMap.get(key);

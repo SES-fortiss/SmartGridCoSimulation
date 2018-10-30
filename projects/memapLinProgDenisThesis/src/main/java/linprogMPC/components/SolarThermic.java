@@ -3,8 +3,8 @@ package linprogMPC.components;
 import akka.basicMessages.AnswerContent;
 import akka.systemActors.GlobalTime;
 import linprogMPC.helper.SolarRadiation;
-import linprogMPC.messages.NetworkType;
-import linprogMPC.messages.VolatileProducerMessage;
+import linprogMPC.messages.individualParts.planning.VolatileProducerMessage;
+import linprogMPC.messages.types.NetworkType;
 
 /**
  * Achtung SolarTheric ist ein Clon von PV, mit dem Unterschied, dass die geschickte message, den NetworkType Heat hat.

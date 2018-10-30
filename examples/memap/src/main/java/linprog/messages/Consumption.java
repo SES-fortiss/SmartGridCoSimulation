@@ -1,7 +1,7 @@
 package linprog.messages;
 
 import akka.basicMessages.AnswerContent;
-import linprog.Simulation;
+import linprog.LinProgSimulation;
 
 public class Consumption implements AnswerContent {
 	
@@ -42,7 +42,7 @@ public class Consumption implements AnswerContent {
 		double[] ConsumptionVector = buildingSpec.consumption.getVector();
 		
 		// 1.5 % Verlust auf 100 Metern Leitung
-		double losses = Math.pow(Simulation.HEAT_LOSSES,buildingSpec.heatTransportLength/100);
+		double losses = Math.pow(LinProgSimulation.HEAT_LOSSES,buildingSpec.heatTransportLength/100);
 				
 		for (int j = 0; j < ConsumptionVector.length/2; j++) {
 			ConsumptionVector[j] = losses*ConsumptionVector[j];

@@ -10,13 +10,14 @@ import topology.ActorTopology;
  * @author andreas.thut
  *
  */
+@SuppressWarnings("unused")
 public class Topology {	
 	
 	private static String simulationName = "LinProg";
 	public static final int NR_OF_CONSUMERS = 5;
 
 	
-	// Efficiencies
+	// Efficiencies	
 	private static final double EFFICIENCY_CHP_H = .71;
 	private static final double EFFICIENCY_CHP_EL = .32;  // angepasst, runterskalieren?
 	private static final double QDOT_MAX_CHP = 80.; // eher kleiner
@@ -63,7 +64,8 @@ public class Topology {
 		building1.addActor(building1Name, ActorFactory.createBuilding(building1Name, port++, LDHeatingB1, heatTransportLengthB1));
 		building1.addActorAsChild(building1Name + "/OilBoiler", ActorFactory.createOilBoiler("OilBoiler", QDOT_MAX_OILBOILER, EFFICIENCY_OILBOILER, PORT_UNDEFINED));
 		building1.addActorAsChild(building1Name + "/Consumption", ActorFactory.createConsumer("Consumption", consumptionProfiles, 0, PORT_UNDEFINED));
-			
+
+/*
 		String building2Name = "Building2";	
 		Boolean LDHeatingB2 = false;
 		Integer heatTransportLengthB2 = 150;
@@ -102,6 +104,8 @@ public class Topology {
 		building5.addActorAsChild(building5Name + "/CHP", ActorFactory.createCHP("CHP", QDOT_MAX_CHP, EFFICIENCY_CHP_EL, EFFICIENCY_CHP_H, port++));
 		building5.addActorAsChild(building5Name + "/SolarThermic", ActorFactory.createSolarThermic("SolarThermic", AREA_SOLARTHERMIC, EFFICIENCY_SOLARTHERMIC, port++));		
 		building5.addActorAsChild(building5Name + "/ThermalStorage", ActorFactory.createThermalStorage("ThermalStorage", QDOT_MAX_THERMALSTORAGE_IN, QDOT_MAX_THERMALSTORAGE_OUT, CAPACITY_THERMALSTORAGE, EFFICIENCY_THERMALSTORAGE, port++));		
+*/
+		
 		
 //		String building6Name = "Building6";	
 //		Boolean LDHeatingB6 = false;
@@ -118,11 +122,11 @@ public class Topology {
 //		districtStorage.addActor(districtStorageName, ActorFactory.createBattery("Battery", 10*P_MAX_BATTERY_IN, 10*P_MAX_BATTERY_OUT, EFFICIENCY_BAT, 10*CAPACITY_BATTERY, PORT_UNDEFINED));
 		
 		
-		top.addSubTopology(simulationName, building3);
-		top.addSubTopology(simulationName, building2);
+//		top.addSubTopology(simulationName, building3);
+//		top.addSubTopology(simulationName, building2);
 		top.addSubTopology(simulationName, building1);
-		top.addSubTopology(simulationName, building4);
-		top.addSubTopology(simulationName, building5);
+//		top.addSubTopology(simulationName, building4);
+//		top.addSubTopology(simulationName, building5);
 //		top.addSubTopology(simulationName, building6);
 //		top.addSubTopology(simulationName, districtStorage);
 		

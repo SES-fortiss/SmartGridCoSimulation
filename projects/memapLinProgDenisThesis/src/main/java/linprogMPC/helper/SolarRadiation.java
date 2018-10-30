@@ -14,7 +14,9 @@ import simulation.SimulationStarter;
 
 public class SolarRadiation {
 		
-	private static final String SOLARPRODUCTION_FILENAME = "Discovergy_PVAnlage15kWp.csv";	
+	private static String SOLARPRODUCTION_FILENAME = "Discovergy_PVAnlage15kWp.csv";	
+	//private static final String SOLARPRODUCTION_FILENAME = "Discovergy_PVAnlage15kWp_badDay.csv";
+	
 	private ArrayList<Double> solarProductionPerKWp;
 	
 	public SolarRadiation() {
@@ -96,6 +98,6 @@ public class SolarRadiation {
 			solarProductionPerKWp.add(yi[k]);
     	}
 	    br.close();	    	   
-    	SolutionHandler.exportVector(yi, "Solarradiation_1Day.csv");
+    	//SolutionHandler.exportVector(yi, "Solarradiation_1Day.csv");
 	}
 }

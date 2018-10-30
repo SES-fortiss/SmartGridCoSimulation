@@ -1,7 +1,6 @@
 package linprogMPC.components;
 
 import akka.basicMessages.AnswerContent;
-import linprogMPC.messages.OptimizationResult;
 import linprogMPC.messages.StorageSpec;
 
 public abstract class Storage extends Device {

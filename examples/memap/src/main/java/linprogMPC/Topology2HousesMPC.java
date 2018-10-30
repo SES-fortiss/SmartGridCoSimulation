@@ -11,6 +11,7 @@ import topology.ActorTopology;
  * @author andreas.thut
  *
  */
+@SuppressWarnings("unused")
 public class Topology2HousesMPC {	
 	
 	private static String simulationName = "LinProg";

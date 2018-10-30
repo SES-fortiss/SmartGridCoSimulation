@@ -1,9 +1,6 @@
 package linprogMPC.components;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Set;
 
 import com.google.gson.Gson;
 
@@ -12,7 +9,6 @@ import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
-import linprogMPC.Simulation;
 import linprogMPC.messages.BuildingSpec;
 import linprogMPC.messages.Consumption;
 import linprogMPC.messages.OptimizationResult;

@@ -153,7 +153,7 @@ public abstract class SimulationStarter {
 	@SuppressWarnings("deprecation")
 	private static void startNow(ActorSystem actorSystem, StartMessage message) {
     	// Maximal time to wait until simulation ends in TimeUnis.* (see below)
-    	int deadline = 1000; 
+    	int deadline = 100000; 
     	
         /*
          * NOTE:

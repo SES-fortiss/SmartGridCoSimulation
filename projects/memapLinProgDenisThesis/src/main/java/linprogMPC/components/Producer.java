@@ -1,7 +1,7 @@
 package linprogMPC.components;
 
 import akka.basicMessages.AnswerContent;
-import linprogMPC.messages.OptimizationResult;
+import linprogMPC.messages.OptimizationResultMessage;
 import linprogMPC.messages.ProducerMessage;
 
 public abstract class Producer extends Device {
@@ -30,9 +30,9 @@ public abstract class Producer extends Device {
 	
 	@Override
 	public void handleRequest() {
-		if(requestContentReceived instanceof OptimizationResult) {
+		if(requestContentReceived instanceof OptimizationResultMessage) {
 			
-			OptimizationResult linprogResult = ((OptimizationResult) requestContentReceived);
+			OptimizationResultMessage linprogResult = ((OptimizationResultMessage) requestContentReceived);
 			for (String key : linprogResult.resultMap.keySet()) {		
 				if (key.contains(this.actorName)) {
 					linprogAdvice = linprogResult.resultMap.get(key);

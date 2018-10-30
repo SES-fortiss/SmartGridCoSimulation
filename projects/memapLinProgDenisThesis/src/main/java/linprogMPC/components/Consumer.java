@@ -3,7 +3,7 @@ package linprogMPC.components;
 import akka.basicMessages.AnswerContent;
 import akka.systemActors.GlobalTime;
 import linprogMPC.helper.ConsumptionProfiles;
-import linprogMPC.messages.ConsumptionMessage;
+import linprogMPC.messages.individualParts.planning.DemandMessage;
 
 
 /**
@@ -17,7 +17,7 @@ import linprogMPC.messages.ConsumptionMessage;
  */
 public class Consumer extends Device {
 	
-	public ConsumptionMessage consumptionMessage = new ConsumptionMessage();
+	public DemandMessage consumptionMessage = new DemandMessage();
 	public final int consumerIndex;
 	private final ConsumptionProfiles consumptionProfiles;
 

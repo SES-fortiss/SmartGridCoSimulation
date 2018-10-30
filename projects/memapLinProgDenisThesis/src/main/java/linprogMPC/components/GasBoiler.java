@@ -1,6 +1,6 @@
 package linprogMPC.components;
 
-import linprogMPC.messages.NetworkType;
+import linprogMPC.messages.types.NetworkType;
 
 public class GasBoiler extends Producer {
 	

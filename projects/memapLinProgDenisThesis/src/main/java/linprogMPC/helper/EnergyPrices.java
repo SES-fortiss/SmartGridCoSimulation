@@ -17,7 +17,8 @@ import simulation.SimulationStarter;
  */
 public class EnergyPrices {
 	
-	private static final String STROMPREISE_CSV_FILENAME = "Strompreise_7Tage.csv";
+	private static String STROMPREISE_CSV_FILENAME = "Strompreise_7Tage_simple.csv";
+	//private static String STROMPREISE_CSV_FILENAME = "Strompreise_7Tage.csv";
 	
 	private ArrayList<Double> electricityPrices;
 
@@ -118,7 +119,7 @@ public class EnergyPrices {
 //		SolutionHandler.exportData(x, "XpriceOrig.csv");
 //		SolutionHandler.exportData(y, "YpriceOrig.csv");
 //		SolutionHandler.exportData(xi, "XIpriceOrig.csv");
-		SolutionHandler.exportVector(yi, "YIpriceOrig.csv");
+//		SolutionHandler.exportVector(yi, "YIpriceOrig.csv");
 		
     	for (int k = 0; k < yi.length; k++) {
     		electricityPrices.add(yi[k]);

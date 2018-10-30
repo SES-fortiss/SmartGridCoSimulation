@@ -487,4 +487,10 @@ public class BasicActor extends UntypedActor {
 	public int getCurrentTimeStep() {
 		return GlobalTime.currentTimeStep;
 	}
+	
+	@Override
+	public void postStop() throws Exception {
+		actorOptions.behaviorModel.stop();
+		super.postStop();
+	}
 }

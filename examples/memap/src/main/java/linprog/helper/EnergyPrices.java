@@ -10,7 +10,7 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import linprog.Simulation;
+import linprog.LinProgSimulation;
 import meritorder.helper.ReadMemapFiles;
 import simulation.SimulationStarter;
 
@@ -132,10 +132,10 @@ public class EnergyPrices {
     		y[i]=originalValues.get(i);
     	}
 		
-    	double[] xi = new double[Simulation.N_STEPS];
+    	double[] xi = new double[LinProgSimulation.N_STEPS];
     	
-		for (int j = 0; j < Simulation.N_STEPS ; j++) {
-    		xi[j]=j*Simulation.stepLength(TimeUnit.HOURS);    
+		for (int j = 0; j < LinProgSimulation.N_STEPS ; j++) {
+    		xi[j]=j*LinProgSimulation.stepLength(TimeUnit.HOURS);    
     	}	   		
 		
 		double[] yi = Interpolation.interpLinear(x, y, xi);

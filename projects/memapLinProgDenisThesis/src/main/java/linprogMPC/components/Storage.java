@@ -4,8 +4,8 @@ import java.util.concurrent.TimeUnit;
 
 import akka.basicMessages.AnswerContent;
 import linprogMPC.helper.MyTimeUnit;
-import linprogMPC.messages.OptimizationResult;
-import linprogMPC.messages.StorageMessage;
+import linprogMPC.messages.OptimizationResultMessage;
+import linprogMPC.messages.individualParts.planning.StorageMessage;
 
 public abstract class Storage extends Device {
 
@@ -51,8 +51,8 @@ public abstract class Storage extends Device {
 	
 	@Override
 	public void handleRequest() {
-		if(requestContentReceived instanceof OptimizationResult) {			
-			OptimizationResult linprogResult = ((OptimizationResult) requestContentReceived);			
+		if(requestContentReceived instanceof OptimizationResultMessage) {			
+			OptimizationResultMessage linprogResult = ((OptimizationResultMessage) requestContentReceived);			
 						
 			String key = this.actorName + "Discharge";
 			if (linprogResult.resultMap.containsKey(key)) {

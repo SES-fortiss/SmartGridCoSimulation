@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import linprog.Simulation;
+import linprog.LinProgSimulation;
 import meritorder.helper.ReadMemapFiles;
 import simulation.SimulationStarter;
 
@@ -112,7 +112,7 @@ public class ConsumptionProfiles {
 			}
 			i++;
 			// Sum up consumption over the number of minutes per timestep
-			if ( (i == (k+1)*Simulation.stepLength(TimeUnit.MINUTES)) && (buffer.length != 0) ) {
+			if ( (i == (k+1)*LinProgSimulation.stepLength(TimeUnit.MINUTES)) && (buffer.length != 0) ) {
 				try {
 					for(int j = 0; j < buffer.length; j++) {
 						dailyProfiles.get(j).add(consumptionBuffer[j]);
@@ -128,7 +128,7 @@ public class ConsumptionProfiles {
 	    br.close();  
 
 	 // the heat profile of one day is copied for n_days;  ( k = N_STEPS/N_Days )
-	    for (int m = 0; m < (Simulation.N_STEPS/k); m++) {
+	    for (int m = 0; m < (LinProgSimulation.N_STEPS/k); m++) {
 	    	for(int j = 0; j < nrOfProfiles; j++) {
 	    		for (int v=0; v<dailyProfiles.get(1).size(); v++) {
 	    			profiles.get(j).add(dailyProfiles.get(j).get(v));

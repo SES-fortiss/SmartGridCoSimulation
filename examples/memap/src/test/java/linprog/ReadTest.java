@@ -1,9 +1,5 @@
 package linprog;
 
-import java.util.concurrent.TimeUnit;
-
-import com.google.gson.Gson;
-
 import linprog.helper.ConsumptionProfiles;
 import linprog.helper.EnergyPrices;
 
@@ -15,12 +11,10 @@ public class ReadTest {
 	
 	
 	private static final int NR_OF_CONSUMERS_JAN = 5;
-	private static final int N = Simulation.N_STEPS;
+	private static final int N = LinProgSimulation.N_STEPS;
 	
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		Gson gson = new Gson();
 		
 		
 		ConsumptionProfiles consumptionProfiles = new ConsumptionProfiles(NR_OF_CONSUMERS_JAN);

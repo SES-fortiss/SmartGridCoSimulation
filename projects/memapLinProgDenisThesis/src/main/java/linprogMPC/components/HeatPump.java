@@ -10,7 +10,7 @@ public class HeatPump extends Coupler {
 	public void makeDecision() {			
 		couplerMessage.name = this.actorName;
 		
-		couplerMessage.cost = 0.00001;
+		couplerMessage.operationalCostEUR = 0.00001;
 		couplerMessage.efficiencyElec = efficiencyElec;
 		couplerMessage.efficiencyHeat = efficiencyHeat;
 		couplerMessage.installedPower = installedPower;

@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import akka.systemActors.GlobalTime;
 import linprogMPC.ThesisTopologySimple;
 import linprogMPC.messages.BuildingMessage;
-import linprogMPC.messages.ConsumptionMessage;
-import linprogMPC.messages.CouplerMessage;
-import linprogMPC.messages.NetworkType;
 import linprogMPC.messages.ProducerMessage;
-import linprogMPC.messages.StorageMessage;
-import linprogMPC.messages.VolatileProducerMessage;
+import linprogMPC.messages.individualParts.planning.CouplerMessage;
+import linprogMPC.messages.individualParts.planning.DemandMessage;
+import linprogMPC.messages.individualParts.planning.StorageMessage;
+import linprogMPC.messages.individualParts.planning.VolatileProducerMessage;
+import linprogMPC.messages.types.NetworkType;
 
 
 
@@ -18,7 +18,11 @@ import linprogMPC.messages.VolatileProducerMessage;
 public class MatrixBuildup {
 	
 	//  =========================== Matrix Filling ==============================
-	final static int nStepsMPC = ThesisTopologySimple.N_STEPS_MPC;	
+	int nStepsMPC = 0;
+	
+	public MatrixBuildup() {
+		 nStepsMPC = ThesisTopologySimple.N_STEPS_MPC;
+	}
 		
 	public OptimizationProblem singleBuilding(BuildingMessage buildingMessage) {		
 		
@@ -27,7 +31,7 @@ public class MatrixBuildup {
 		int nrOfCouplers = buildingMessage.getNrOfCouplers();
 		
 		OptimizationProblem problem = new OptimizationProblem(nStepsMPC, nrOfProducers, nrOfStorages, nrOfCouplers);
-		ConsumptionMessage b_kopp = new ConsumptionMessage();
+		DemandMessage b_kopp = new DemandMessage();
 
 		// ======= BUILD CONSUMPTION VECTOR b =========
 		
@@ -45,7 +49,7 @@ public class MatrixBuildup {
 			System.out.println(" << " + buildingMessage.name + " >> ");
 		}
 		
-		for(ProducerMessage producerMessage : buildingMessage.producers) {
+		for(ProducerMessage producerMessage : buildingMessage.volatileProducerList) {
 			addProducerToProblem(producerMessage, problem, producersHandled, storagesHandled, couplersHandled);
 			producersHandled++;
 			if (GlobalTime.getCurrentTimeStep() == 0) {
@@ -53,7 +57,7 @@ public class MatrixBuildup {
 			}
 		}	
 		
-		for(StorageMessage storageMessage : buildingMessage.storages) {
+		for(StorageMessage storageMessage : buildingMessage.storageList) {
 			addStorageToProblem(storageMessage, problem, producersHandled, storagesHandled, couplersHandled);
 			storagesHandled++;
 			if (GlobalTime.getCurrentTimeStep() == 0) {
@@ -61,7 +65,7 @@ public class MatrixBuildup {
 			}
 		}
 		
-		for(CouplerMessage couplerMessage : buildingMessage.couplers) {
+		for(CouplerMessage couplerMessage : buildingMessage.couplerList) {
 			addCouplerToProblem(couplerMessage, problem, producersHandled, storagesHandled, couplersHandled);
 			couplersHandled++;
 			if (GlobalTime.getCurrentTimeStep() == 0) {
@@ -74,8 +78,7 @@ public class MatrixBuildup {
 		return problem;
 	}
 		
-	public static OptimizationProblem multipleBuildings(ArrayList<BuildingMessage> buildingMessageList, boolean LDHeating) {	
-		
+	public OptimizationProblem multipleBuildings(ArrayList<BuildingMessage> buildingMessageList, boolean LDHeating) {			
 		
 		int nrOfProducers = 0;
 		int nrOfStorages = 0;
@@ -88,11 +91,11 @@ public class MatrixBuildup {
 		}
 		
 		OptimizationProblem problem = new OptimizationProblem(nStepsMPC, nrOfProducers, nrOfStorages, nrOfCouplers); // initiert nur die vektoren, matrizen, ohne füllung
-
+		
 		/**
 		 *  ======= BUILD CONSUMPTION VECTOR b =========
 		 */		
-		ConsumptionMessage b_kopp = new ConsumptionMessage();	
+		DemandMessage b_kopp = new DemandMessage();		
 		// Sum of Consumption over all Buildings
 		for(BuildingMessage buildingMessage : buildingMessageList) {
 			// account for heat transport Losses:
@@ -100,6 +103,9 @@ public class MatrixBuildup {
 		}
 		problem.b_eq = b_kopp.getDemandVector();
 
+		
+		
+		
 		/**
 		 *  ====== BUILD PRODUCER & STORAGES Matrices =========
 		 */
@@ -111,25 +117,25 @@ public class MatrixBuildup {
 		int storagesHandled = 0;
 		int couplersHandled = 0;
 		
-		for(BuildingMessage buildingSpec : buildingMessageList) {
+		for(BuildingMessage buildingMessage : buildingMessageList) {
 			
-			for(ProducerMessage producerSpec : buildingSpec.producers) {
+			for(ProducerMessage producerSpec : buildingMessage.volatileProducerList) {
 				addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, couplersHandled);
 				producersHandled++;
 				if (GlobalTime.getCurrentTimeStep() == 0) {
-					System.out.println("Prod-Nr.: " + producersHandled + ", " + buildingSpec.name+ ", " + producerSpec.name);
+					System.out.println("Prod-Nr.: " + producersHandled + ", " + buildingMessage.name+ ", " + producerSpec.name);
 				}
 			}	
 			
-			for(StorageMessage storageSpec : buildingSpec.storages) {
+			for(StorageMessage storageSpec : buildingMessage.storageList) {
 				addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled, couplersHandled);
 				storagesHandled++;
 				if (GlobalTime.getCurrentTimeStep() == 0) {
-					System.out.println("Stor-Nr.: " + storagesHandled + ", " + buildingSpec.name+ ", " + storageSpec.name);
+					System.out.println("Stor-Nr.: " + storagesHandled + ", " + buildingMessage.name+ ", " + storageSpec.name);
 				}
 			}
 			
-			for(CouplerMessage couplerMessage : buildingSpec.couplers) {
+			for(CouplerMessage couplerMessage : buildingMessage.couplerList) {
 				addCouplerToProblem(couplerMessage, problem, producersHandled, storagesHandled, couplersHandled);
 				couplersHandled++;
 				if (GlobalTime.getCurrentTimeStep() == 0) {
@@ -147,7 +153,7 @@ public class MatrixBuildup {
 		return problem;
 	}		
 
-	private static void addProducerToProblem(
+	private void addProducerToProblem(
 			ProducerMessage producerMessage,
 			OptimizationProblem optProblem,
 			int producersHandledSoFar,
@@ -204,7 +210,7 @@ public class MatrixBuildup {
 		}
 	}
 	
-	private static void addCouplerToProblem(
+	private void addCouplerToProblem(
 			CouplerMessage couplerMessage,
 			OptimizationProblem optProblem,
 			int producersHandledSoFar,
@@ -224,7 +230,7 @@ public class MatrixBuildup {
 		int n_index = nStepsMPC*(producersHandledSoFar+2*storagesHandledSoFar + couplersHandledSoFar);
 		
 		for(int i = 0; i < nStepsMPC; i++) {
-			lambda[i] = couplerMessage.cost;
+			lambda[i] = couplerMessage.operationalCostEUR;
 			lb[i] = 0;
 			// Achtung hier spielen die Effizienzen eine Rolle, wegen den angegeben Leistungen.
 			// Z.b. brauch eine 10kW Wärmepumpe keine 10kW Strom.
@@ -255,7 +261,7 @@ public class MatrixBuildup {
 		}
 	}
 	
-	private static void addStorageToProblem(
+	private void addStorageToProblem(
 			StorageMessage storageMessage, 
 			OptimizationProblem problem, 
 			int producersHandledSoFar, 
@@ -273,8 +279,8 @@ public class MatrixBuildup {
 		double[][] couplingMatrix_el = new double[nStepsMPC][2*nStepsMPC];		
 		
 		for(int i = 0; i < nStepsMPC; i++) { // zuerst kommt das ent-laden (produzieren), dann das be-laden (verbrauchen)
-			lambda[i] = storageMessage.cost;
-			lambda[nStepsMPC+i] = storageMessage.cost;
+			lambda[i] = storageMessage.operationalPriceEURO;
+			lambda[nStepsMPC+i] = storageMessage.operationalPriceEURO;
 			lb[i] = 0;
 			lb[nStepsMPC+i] = 0;
 			ub[i] = storageMessage.maxDischarge;
@@ -289,7 +295,7 @@ public class MatrixBuildup {
 		if (storageMessage.networkType.equals(NetworkType.HEAT)) {
 			for(int i = 0; i < nStepsMPC; i++) {
 				couplingMatrix_H[i][i] = -1;
-				couplingMatrix_H[i][nStepsMPC + i] = 1;				
+				couplingMatrix_H[i][nStepsMPC + i] = 1;
 				/*
 				couplingMatrix_H[i][i] = -effOUT;
 				couplingMatrix_H[i][nStepsMPC + i] = effIN;
@@ -316,22 +322,31 @@ public class MatrixBuildup {
 		double[][] capacityMatrix2 = new double[nStepsMPC][2*nStepsMPC];
 		
 		double maxDischargeCapacity = storageMessage.stateOfCharge;
-		if (maxDischargeCapacity >= storageMessage.capacity) maxDischargeCapacity = storageMessage.capacity;
-		if (maxDischargeCapacity <= 0) maxDischargeCapacity = 0.0001;
+		if (maxDischargeCapacity >= storageMessage.capacity) {
+			maxDischargeCapacity = storageMessage.capacity;
+		}
+		if (maxDischargeCapacity <= 0) {
+			maxDischargeCapacity = 0.0001;
+		}
 		
 		double maxChargeCapacity = storageMessage.capacity - storageMessage.stateOfCharge;
 		if (maxChargeCapacity <= 0.0) {
 			maxChargeCapacity = 0.0001;
 		}
-		if (maxChargeCapacity >= storageMessage.capacity) maxChargeCapacity = storageMessage.capacity;
+		if (maxChargeCapacity >= storageMessage.capacity) {
+			maxChargeCapacity = storageMessage.capacity;
+		}
+		
+		
+		double factor = 24.0 / ThesisTopologySimple.TIMESTEPS_PER_DAY; // = 0.25 für 96 Schritte /Tag
 		
 		for(int i = 0; i < nStepsMPC; i++) {		
 			for(int j = 0; j <= i; j++) {
-				capacityMatrix1[i][j] = 1/effOUT;
-				capacityMatrix2[i][j] = -1/effOUT;
+				capacityMatrix1[i][j] = 1/effOUT * factor; 
+				capacityMatrix2[i][j] = -1/effOUT * factor;
 				
-				capacityMatrix1[i][j+nStepsMPC] = -effIN;
-				capacityMatrix2[i][j+nStepsMPC] = effIN;
+				capacityMatrix1[i][j+nStepsMPC] = -effIN * factor;
+				capacityMatrix2[i][j+nStepsMPC] = effIN * factor;
 			}
 			
 			h_vector[i] = maxDischargeCapacity;
@@ -348,7 +363,7 @@ public class MatrixBuildup {
 					problem.a_eq[nStepsMPC+i][n_index+j] = couplingMatrix_el[i][j];
 					problem.g[nStepsMPC*(2*storagesHandledSoFar)+i][n_index+j] = capacityMatrix1[i][j];
 					problem.g[nStepsMPC*(1+2*storagesHandledSoFar)+i][n_index+j] = capacityMatrix2[i][j];
-					problem.lambda[n_index+j] = storageMessage.cost;
+					problem.lambda[n_index+j] = storageMessage.operationalPriceEURO;
 					problem.x_lb[n_index+j] = lb[j];
 					problem.x_ub[n_index+j] = ub[j];
 					problem.namesUB[n_index+j] = namesUB[j];
@@ -359,7 +374,7 @@ public class MatrixBuildup {
 		}
 	}
 	
-	private static void addMarkets(
+	private void addMarkets(
 			OptimizationProblem problem, 
 			int producersHandled, int storagesHandled, int couplersHandled, 
 			boolean lDHeating) {		
