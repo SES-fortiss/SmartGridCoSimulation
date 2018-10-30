@@ -1,6 +1,10 @@
 package linprogMPC.components;
 
+import java.util.concurrent.TimeUnit;
+
 import akka.basicMessages.AnswerContent;
+import linprogMPC.Simulation;
+import linprogMPC.messages.OptimizationResult;
 import linprogMPC.messages.StorageSpec;
 
 public abstract class Storage extends Device {
@@ -53,13 +57,15 @@ public abstract class Storage extends Device {
 			}
 			specificationToSend.vector[i] = 0.0;
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = qdot_max_in;
+			specificationToSend.upperBound[i] = qdot_max_in*Simulation.stepLength(TimeUnit.HOURS);
+			
 		}
 		for(int i = n; i < 2*n; i++) {				
 			specificationToSend.vector[i] = 0.0;
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = qdot_max_out;
+			specificationToSend.upperBound[i] = qdot_max_out*Simulation.stepLength(TimeUnit.HOURS);
 		}
+//		System.out.println("x_ub = " + qdot_max_in*Simulation.stepLength(TimeUnit.HOURS) + ", " +qdot_max_out*Simulation.stepLength(TimeUnit.HOURS));
 	}
 
 	@Override

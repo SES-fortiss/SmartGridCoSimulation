@@ -166,7 +166,8 @@ public class LinProgBehavior extends BehaviorModel {
 //		double[] productionExport = SolutionHandler.matrixMultiplication(problem.a_eq, sol);
 //		SolutionHandler.exportData(productionExport, "PruductionMEMAP.csv");
 		
-//		SolutionHandler.exportData(sol, "XvectorMEMAP.csv");
+		SolutionHandler.exportData(sol, "XvectorMEMAP.csv");
+		SolutionHandler.exportData(problem.h, "HVecMEMAP.csv");
 		
 //		SolutionHandler.exportMatrix(problem.a_eq, "CouplingMatrix.csv");
 //		SolutionHandler.exportData(problem.b_eq, "ConsumptionMEMAP.csv");
@@ -183,7 +184,7 @@ public class LinProgBehavior extends BehaviorModel {
 				totalCostsBuildings += buildingsTotalCosts[j];
 			}
 			
-//			SolutionHandler.exportMatrix(problem.g, "GMatrixMEMAP.csv");
+			SolutionHandler.exportMatrix(problem.g, "GMatrixMEMAP.csv");
 			SolutionHandler.exportData(costsMEMAP, "COSTS_MEMAP_MPC.csv");
 			SolutionHandler.exportData(buildingsTotalCosts, "COSTS_EMS_MPC.csv");
 			
@@ -246,6 +247,8 @@ public class LinProgBehavior extends BehaviorModel {
 				}
 				ans.resultMap.put(buildingSpec.name + ": " + storageSpec.name + " SOC", newStateOfCharge);
 
+//				System.out.println(indexStorage + "- KAP (" + storageSpec.name + "): " + String.format("%.04f", problem.h[n*(2*indexStorage+1)]));
+				
 				System.out.println(buildingSpec.name+ ", " + storageSpec.name + ", in:" 
 						+ String.format("%.02f", storageResult_in[0]) + ", out:" 
 						+ String.format("%.02f", storageResult_out[0]));
@@ -317,6 +320,8 @@ public class LinProgBehavior extends BehaviorModel {
 		ans.basicsMap.put("Total Heat Consumption", heat_consumption);
 		
 		ans.basicsMap.put("MEMAP Costs", memapCostPerTimestep);
+		
+		System.out.println("Costs Timestep: " + memapCostPerTimestep);
 		
 		display.update(gson.toJson(ans));
 		

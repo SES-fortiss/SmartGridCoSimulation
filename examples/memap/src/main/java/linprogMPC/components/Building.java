@@ -1,7 +1,7 @@
 package linprogMPC.components;
 
 import java.util.LinkedList;
-
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import com.google.gson.Gson;
 
 import akka.advancedMessages.ErrorAnswerContent;
@@ -9,6 +9,7 @@ import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
+import linprogMPC.OPCUA.ReadClient;
 import linprogMPC.messages.BuildingSpec;
 import linprogMPC.messages.Consumption;
 import linprogMPC.messages.OptimizationResult;
@@ -28,7 +29,10 @@ public class Building extends BehaviorModel {
 	public int port;
 	
 	
+	public String clientName = "name";
+	public String clientURI = "URI";
 	
+
 	// NEW(7.8.18 by JMr): Long-distance heating supply
 	public boolean LDHeating;
 	public int heatTransportLength;
@@ -57,11 +61,26 @@ public class Building extends BehaviorModel {
 
 
 	
-	
 	@Override
 	public void makeDecision() {
 		
-	
+//		=======================  OPC UA Read  =======================	
+		
+		// Define Node(s) to read --> extend to List<NodeID> 
+		NodeId node1 = new NodeId(2,30);
+		
+		try {
+			ReadClient.startClient(clientName, clientURI, node1);
+			// Output:
+			String readValue = ReadClient.getData();
+			System.out.println("[OPC UA] heat consumption " + name + ": " + readValue);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("OPC Client read failed");
+		}
+		
 	
 //		=======================  RECEIVING =======================	
 			
@@ -85,10 +104,6 @@ public class Building extends BehaviorModel {
 		}
 		
 		display.update(gson.toJson(specificationToSend));
-
-//		=======================  DECIDING =======================	
-		
-		
 
 	}
 

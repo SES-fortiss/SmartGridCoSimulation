@@ -58,7 +58,7 @@ public class Topology {
 //		top.addActorAsChild(simulationName + "/Consumption", ActorFactory.createConsumer("/Consumption", port++));
 
 		String building1Name = "Building1";		
-		Boolean LDHeatingB1 = true;
+		Boolean LDHeatingB1 = false;
 		Integer heatTransportLengthB1 = 50;
 		ActorTopology building1 = new ActorTopology(building1Name);		
 		building1.addActor(building1Name, ActorFactory.createBuilding(building1Name, port++, LDHeatingB1, heatTransportLengthB1));
