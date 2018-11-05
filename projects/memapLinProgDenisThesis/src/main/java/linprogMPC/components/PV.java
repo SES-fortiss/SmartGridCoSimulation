@@ -2,9 +2,10 @@ package linprogMPC.components;
 
 import akka.basicMessages.AnswerContent;
 import akka.systemActors.GlobalTime;
+import linprogMPC.components.prototypes.Producer;
 import linprogMPC.helper.SolarRadiation;
-import linprogMPC.messages.individualParts.planning.VolatileProducerMessage;
-import linprogMPC.messages.types.NetworkType;
+import linprogMPC.messages.extension.NetworkType;
+import linprogMPC.messages.planning.VolatileProducerMessage;
 
 public class PV extends Producer {
 
@@ -19,8 +20,9 @@ public class PV extends Producer {
 	@Override
 	public void makeDecision() {		
 		int cts = GlobalTime.getCurrentTimeStep();	
-		volatileProducerMessage.name = this.actorName;		
-		volatileProducerMessage.cost = 0.00001;
+		volatileProducerMessage.name = this.actorName;
+		volatileProducerMessage.id = this.fullActorPath;		
+		volatileProducerMessage.operationalPriceEURO = 0.00001;
 		volatileProducerMessage.efficiency = efficiency;
 		volatileProducerMessage.installedPower = installedPower;
 		volatileProducerMessage.networkType = NetworkType.ELECTRICITY;

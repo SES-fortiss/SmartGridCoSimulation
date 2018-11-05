@@ -5,15 +5,12 @@ import java.util.ArrayList;
 import akka.systemActors.GlobalTime;
 import linprogMPC.ThesisTopologySimple;
 import linprogMPC.messages.BuildingMessage;
-import linprogMPC.messages.ProducerMessage;
-import linprogMPC.messages.individualParts.planning.CouplerMessage;
-import linprogMPC.messages.individualParts.planning.DemandMessage;
-import linprogMPC.messages.individualParts.planning.StorageMessage;
-import linprogMPC.messages.individualParts.planning.VolatileProducerMessage;
-import linprogMPC.messages.types.NetworkType;
-
-
-
+import linprogMPC.messages.extension.NetworkType;
+import linprogMPC.messages.planning.CouplerMessage;
+import linprogMPC.messages.planning.DemandMessage;
+import linprogMPC.messages.planning.ProducerMessage;
+import linprogMPC.messages.planning.StorageMessage;
+import linprogMPC.messages.planning.VolatileProducerMessage;
 
 public class MatrixBuildup {
 	
@@ -30,11 +27,10 @@ public class MatrixBuildup {
 		int nrOfProducers = buildingMessage.getNrOfProducers();
 		int nrOfCouplers = buildingMessage.getNrOfCouplers();
 		
-		OptimizationProblem problem = new OptimizationProblem(nStepsMPC, nrOfProducers, nrOfStorages, nrOfCouplers);
-		DemandMessage b_kopp = new DemandMessage();
+		OptimizationProblem problem = new OptimizationProblem(nStepsMPC, nrOfProducers, nrOfStorages, nrOfCouplers);	
 
 		// ======= BUILD CONSUMPTION VECTOR b =========
-		
+		DemandMessage b_kopp = new DemandMessage();
 		// account for heat transport Losses:
 		problem.b_eq = b_kopp.calcHeatLosses(buildingMessage);
 		
@@ -55,7 +51,15 @@ public class MatrixBuildup {
 			if (GlobalTime.getCurrentTimeStep() == 0) {
 				System.out.println("Prod-Nr.: " + producersHandled + ", " + producerMessage.name);
 			}
-		}	
+		}
+		
+		for(ProducerMessage producerMessage : buildingMessage.controllableProducerList) {
+			addProducerToProblem(producerMessage, problem, producersHandled, storagesHandled, couplersHandled);
+			producersHandled++;
+			if (GlobalTime.getCurrentTimeStep() == 0) {
+				System.out.println("Prod-Nr.: " + producersHandled + ", " + producerMessage.name);
+			}
+		}
 		
 		for(StorageMessage storageMessage : buildingMessage.storageList) {
 			addStorageToProblem(storageMessage, problem, producersHandled, storagesHandled, couplersHandled);
@@ -125,6 +129,14 @@ public class MatrixBuildup {
 				if (GlobalTime.getCurrentTimeStep() == 0) {
 					System.out.println("Prod-Nr.: " + producersHandled + ", " + buildingMessage.name+ ", " + producerSpec.name);
 				}
+			}
+			
+			for(ProducerMessage producerSpec : buildingMessage.controllableProducerList) {
+				addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, couplersHandled);
+				producersHandled++;
+				if (GlobalTime.getCurrentTimeStep() == 0) {
+					System.out.println("Prod-Nr.: " + producersHandled + ", " + buildingMessage.name+ ", " + producerSpec.name);
+				}
 			}	
 			
 			for(StorageMessage storageSpec : buildingMessage.storageList) {
@@ -172,7 +184,7 @@ public class MatrixBuildup {
 				
 		// fill the basic vectors and matrices
 		for(int i = 0; i < nStepsMPC; i++) {
-			lambda[i] = producerMessage.cost;
+			lambda[i] = producerMessage.operationalPriceEURO;
 			lb[i] = 0;
 			ub[i] = producerMessage.installedPower;		
 			namesUB[i] = producerMessage.name;

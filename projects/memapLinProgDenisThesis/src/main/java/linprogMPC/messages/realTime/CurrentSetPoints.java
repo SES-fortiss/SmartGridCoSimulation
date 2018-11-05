@@ -1,6 +1,6 @@
-package linprogMPC.messages.individualParts.realTime;
+package linprogMPC.messages.realTime;
 
-import linprogMPC.messages.types.NetworkType;
+import linprogMPC.messages.extension.NetworkType;
 
 public class CurrentSetPoints {
 	

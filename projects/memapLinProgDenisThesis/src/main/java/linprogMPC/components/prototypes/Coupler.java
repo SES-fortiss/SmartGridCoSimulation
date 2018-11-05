@@ -1,8 +1,8 @@
-package linprogMPC.components;
+package linprogMPC.components.prototypes;
 
 import akka.basicMessages.AnswerContent;
 import linprogMPC.messages.OptimizationResultMessage;
-import linprogMPC.messages.individualParts.planning.CouplerMessage;
+import linprogMPC.messages.planning.CouplerMessage;
 
 public abstract class Coupler extends Device {
 
@@ -18,8 +18,7 @@ public abstract class Coupler extends Device {
 		super(port);
 		this.installedPower = installedPower;
 		this.efficiencyHeat = efficiencyHeat;
-		this.efficiencyElec = efficiencyElec;		
-		couplerMessage.name = this.actorName;
+		this.efficiencyElec = efficiencyElec;
 	}
 
 	@Override
@@ -27,6 +26,7 @@ public abstract class Coupler extends Device {
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
+		couplerMessage.id = this.fullActorPath;
 		return couplerMessage;
 	}
 	

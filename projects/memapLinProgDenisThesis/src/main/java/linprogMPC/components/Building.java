@@ -1,7 +1,10 @@
 package linprogMPC.components;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+
+import com.google.gson.Gson;
 
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
@@ -19,16 +22,22 @@ import linprogMPC.helper.SolutionHandler;
 import linprogMPC.helperOPCua.OpcServerContextGenerator;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.OptimizationResultMessage;
-import linprogMPC.messages.ProducerMessage;
-import linprogMPC.messages.individualParts.planning.CouplerMessage;
-import linprogMPC.messages.individualParts.planning.DemandMessage;
-import linprogMPC.messages.individualParts.planning.StorageMessage;
+import linprogMPC.messages.extension.ChildSpecification;
+import linprogMPC.messages.extension.NetworkType;
+import linprogMPC.messages.planning.CouplerMessage;
+import linprogMPC.messages.planning.DemandMessage;
+import linprogMPC.messages.planning.ProducerMessage;
+import linprogMPC.messages.planning.StorageMessage;
+import linprogMPC.messages.planning.VolatileProducerMessage;
+import linprogMPC.messages.realTime.CurrentMeterValues;
+import opcMEMAP.MemapOpcServerStarter;
 
 public class Building extends BehaviorModel {
 	
 	
+	protected Gson gson = new Gson();
+	private MemapOpcServerStarter mServer;
 	
-	//protected Gson gson = new Gson();
 	public int port;
 	
 	// some long term values
@@ -45,36 +54,42 @@ public class Building extends BehaviorModel {
 	
 	// ================================
 	
-	public OptimizationResultMessage optResult = new OptimizationResultMessage();
-	
 	public BuildingMessage buildingMessage = new BuildingMessage();
-	public OptimizationResultMessage requestContentToSend = new OptimizationResultMessage();	
+	public OptimizationResultMessage optResult = new OptimizationResultMessage(); // optResult = selbst berechnet
+	public OptimizationResultMessage requestContentToSend = new OptimizationResultMessage();
 
-	public Building(int port, boolean LDHeating, int heatTransportLength) {		
+	public Building(int port, boolean LDHeating, int heatTransportLength) {
+		this.port = port;
 		this.LDHeating = LDHeating;
-		this.heatTransportLength = heatTransportLength;
+		this.heatTransportLength = heatTransportLength;	
 	}
-
-
-	
 	
 	@Override
 	public void makeDecision() {	
-	//	=======================  RECEIVING =======================		
-		buildingMessage = new BuildingMessage();		
+		
+		//	=======================  RECEIVING =======================				
+		buildingMessage = new BuildingMessage();
+		buildingMessage.id = this.fullActorPath;
 		buildingMessage.name = this.actorName;
 		buildingMessage.LDHeating = LDHeating;
 		buildingMessage.heatTransportLength = heatTransportLength;
 		
-		for(BasicAnswer basicAnswer : answerListReceived) {			
+		this.actor.getContext().getChildren().forEach(child -> 
+			buildingMessage.childrenList.add(new ChildSpecification(this.fullActorPath + "/" + child.path().name())));		
+		
+		for(BasicAnswer basicAnswer : answerListReceived) {
 			AnswerContent answerContent = basicAnswer.answerContent;
 			if(answerContent instanceof DemandMessage) {
-				DemandMessage cm = (DemandMessage) answerContent;
-				buildingMessage.consumption.addConsumption(cm.getDemandVector());
+				DemandMessage dm = (DemandMessage) answerContent;
+				buildingMessage.demandList.add( (DemandMessage) dm);
 			}
 			
-			if(answerContent instanceof ProducerMessage) {
-				buildingMessage.volatileProducerList.add((ProducerMessage) answerContent);
+			if(answerContent instanceof ProducerMessage) {				
+				if(answerContent instanceof VolatileProducerMessage) {
+					buildingMessage.volatileProducerList.add((VolatileProducerMessage) answerContent);
+				} else {
+					buildingMessage.controllableProducerList.add((ProducerMessage) answerContent);
+				}				
 			}
 			
 			if(answerContent instanceof StorageMessage) {
@@ -83,12 +98,47 @@ public class Building extends BehaviorModel {
 			if(answerContent instanceof CouplerMessage) {
 				buildingMessage.couplerList.add((CouplerMessage) answerContent);
 			}
+		}		
+		refactorDemandList();
+		
+		if (!ThesisTopologySimple.MEMAP_ON) {			
+			solveOptProblem();
+			
+			double costTotal = 0;
+			for (int i = 0; i < buildingsTotalCosts.length; i++) {
+				costTotal += buildingsTotalCosts[i];
+			}
+			System.out.println(this.actorName+" cost = " + costTotal);
 		}
 		
+		buildingMessage = addMetering(buildingMessage);
+	}
+	
+	private BuildingMessage addMetering(BuildingMessage bmIn) {
+		
+		BuildingMessage result = bmIn;
+		
+		for (DemandMessage demand : bmIn.demandList) {
+			CurrentMeterValues cm = new CurrentMeterValues();			
+			if (demand.networkType == NetworkType.HEAT) {
+				cm.name = "HEATDemand";
+				cm.id = this.fullActorPath + "/HEATDemand";
+			}			
+			if (demand.networkType == NetworkType.ELECTRICITY) {
+				cm.name = "ELECTRICITYDemand";
+				cm.id = this.fullActorPath + "/ELECTRICITYDemand";
+			}									
+			cm.networkType = demand.networkType;
+			cm.powerInjection = demand.getDemandVector()[0];						
+			result.currentMeterValueList.add(cm);
+		}		
+		return result;
+	}
+
+	private void solveOptProblem() {
 		OptimizationProblem problem = null;
-		if (!ThesisTopologySimple.MEMAP_ON) {
-					
 		try {
+			
 			// ******* Optimierung ********************************
 			MatrixBuildup mb = new MatrixBuildup();			
 			problem = mb.singleBuilding(buildingMessage);
@@ -98,8 +148,7 @@ public class Building extends BehaviorModel {
 			// ******** Ermittlung der Kosten *********************
 			double[] buildingCostPerTimestep = new double[nStepsMPC];
 			buildingCostPerTimestep = solHandler.calculateTimeStepCosts(optSolution, problem.lambda);		
-			buildingsTotalCosts[GlobalTime.getCurrentTimeStep()] += buildingCostPerTimestep[0];									
-			
+			buildingsTotalCosts[GlobalTime.getCurrentTimeStep()] += buildingCostPerTimestep[0];			
 
 			// ******** Erstellung des Ergebnisvektors *********************
 			double[] currentStep = {getActualTimeStep()};
@@ -155,27 +204,93 @@ public class Building extends BehaviorModel {
 			System.out.println("b: " + Arrays.toString(problem.b_eq));
 			System.out.println("ub: " + Arrays.toString(problem.x_ub));
 			System.out.println("h: " + Arrays.toString(problem.h));
-			
-			
-		}
+		}		
 		
-		}
-		
-		if (!ThesisTopologySimple.MEMAP_ON) {
-			double costTotal = 0;
-			for (int i = 0; i < buildingsTotalCosts.length; i++) {
-				costTotal += buildingsTotalCosts[i];
-			}
-			System.out.println(this.actorName+" cost = " + costTotal);
-		}
 	}
 
-	
+	private void refactorDemandList() {		
+		BuildingMessage bm = this.buildingMessage;
+		
+		ArrayList<DemandMessage> newDemandList = new ArrayList<DemandMessage>(); 
+		
+		for (DemandMessage demandMessage : bm.demandList) {
+			
+			if (demandMessage.networkType == NetworkType.DEMANDWITHBOTH) {
+				// Zwei draus machen
+				
+				DemandMessage a = new DemandMessage();
+				DemandMessage b = new DemandMessage();
+				
+				a.forecastType = demandMessage.forecastType;
+				b.forecastType = demandMessage.forecastType;
+				
+				a.id = demandMessage.id + "HEAT";
+				b.id = demandMessage.id + "ELECTRICITY";
+				
+				a.name = "HEAT_" + demandMessage.name;
+				b.name = "ELECTRICITY_" + demandMessage.name;
+				
+				a.networkType = NetworkType.HEAT;
+				b.networkType = NetworkType.ELECTRICITY;
+				
+				a.optimizationCriteria = demandMessage.optimizationCriteria;
+				b.optimizationCriteria = demandMessage.optimizationCriteria;
+				
+				int length = demandMessage.getDemandVector().length / 2;
+				double[] aInput =  new double[length];
+				double[] bInput =  new double[length];
+				
+				for (int i = 0; i < length; i++) {
+					aInput[i] = demandMessage.getDemandVector()[i];
+					bInput[i] = demandMessage.getDemandVector()[length+i];
+				}
+				
+				a.setDemandVector(aInput);
+				b.setDemandVector(bInput);
+				
+				newDemandList.add(a);
+				newDemandList.add(b);
+			}
+			
+			if (demandMessage.networkType == NetworkType.ELECTRICITY) {
+				newDemandList.add(demandMessage);
+			}
+			
+			if (demandMessage.networkType == NetworkType.HEAT) {
+				newDemandList.add(demandMessage);
+			}
+		}
+		
+		buildingMessage.demandList = newDemandList;
+		
+	}
+
 	@Override
-	public AnswerContent returnAnswerContentToSend() {
+	public AnswerContent returnAnswerContentToSend() {		
+		
 		if (this.getActualTimeStep() == 0) {
+			//String filePath = "src/main/java/Building1.json";
+			
+			if (port != 0) {
+				this.mServer = new MemapOpcServerStarter(false, gson.toJson(buildingMessage), port);
+				try {
+					this.mServer.start();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}						
 			OpcServerContextGenerator.generateJson(this.actorName, buildingMessage);
 		}
+		
+		if(port != 0) {
+			try {				
+				mServer.update(gson.toJson(buildingMessage));
+				Thread.sleep(1000);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}		
+		
 		return buildingMessage;
 	}
 
@@ -194,12 +309,12 @@ public class Building extends BehaviorModel {
 	}
 	
 	@Override
-	public void stop() {	
+	public void stop() {
+		if(port != 0) {
+			mServer.stop();
+		}		
 		super.stop();
 	}
-
-
-
 
 	@Override
 	public void handleError(LinkedList<ErrorAnswerContent> errors) {}

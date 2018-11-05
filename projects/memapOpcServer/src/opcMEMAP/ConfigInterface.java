@@ -1,16 +1,21 @@
-package opcMEMAP.serverConfigurationClassesJSON;
+package opcMEMAP;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class ServerJsonConfig {
+import opcMEMAP.serverConfigurationClassesJSON.MyFolderNode;
+import opcMEMAP.serverConfigurationClassesJSON.MyVariableNode;
+
+public class ConfigInterface {
 	
 	private String host = "localhost";	
 	private int port = 9999;
 	private String uri = "urn:fortiss:opc:sever:memap" + UUID.randomUUID();
 	private String namespace = "sessim";
-	private double minSamplingInterval = 1000;
+	private double minSamplingInterval = 499;
+	private ServerConfigurationImpl serverReference = null;
+
 	private List<MyFolderNode> folderNodeList = new ArrayList<>();
 	private List<MyVariableNode> variableNodeList = new ArrayList<>();
 		
@@ -40,5 +45,17 @@ public class ServerJsonConfig {
 
 	public double getMinSamplingInterval() {
 		return minSamplingInterval;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public ServerConfigurationImpl getServerReference() {
+		return serverReference;
+	}
+
+	public void setServerReference(ServerConfigurationImpl serverReference) {
+		this.serverReference = serverReference;
 	}
 }

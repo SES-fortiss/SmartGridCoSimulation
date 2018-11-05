@@ -1,11 +1,11 @@
-package linprogMPC.components;
+package linprogMPC.components.prototypes;
 
 import java.util.concurrent.TimeUnit;
 
 import akka.basicMessages.AnswerContent;
 import linprogMPC.helper.MyTimeUnit;
 import linprogMPC.messages.OptimizationResultMessage;
-import linprogMPC.messages.individualParts.planning.StorageMessage;
+import linprogMPC.messages.planning.StorageMessage;
 
 public abstract class Storage extends Device {
 
@@ -46,6 +46,9 @@ public abstract class Storage extends Device {
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
+		
+		this.storageMessage.id = this.fullActorPath;
+		
 		return storageMessage;
 	}
 	

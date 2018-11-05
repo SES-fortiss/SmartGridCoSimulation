@@ -1,9 +1,10 @@
-package linprogMPC.messages.individualParts.planning;
+package linprogMPC.messages.planning;
 
 import akka.basicMessages.AnswerContent;
-import linprogMPC.messages.types.NetworkType;
+import linprogMPC.messages.extension.NetworkType;
 
-public class ControllableGenerationMessage implements AnswerContent {
+//@Deprecated
+public class ProducerMessage implements AnswerContent {
 	
 	public String id;
 	public String name;

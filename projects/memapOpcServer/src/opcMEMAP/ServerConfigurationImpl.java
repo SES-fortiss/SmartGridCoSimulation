@@ -45,9 +45,8 @@ import com.google.common.collect.Lists;
 
 import opcMEMAP.serverConfigurationClassesJSON.MyFolderNode;
 import opcMEMAP.serverConfigurationClassesJSON.MyVariableNode;
-import opcMEMAP.serverConfigurationClassesJSON.ServerJsonConfig;
 
-public class ServerNameSpace implements Namespace {
+public class ServerConfigurationImpl implements Namespace {
 	
     private final SubscriptionModel subscriptionModel;
     private final NodeFactory nodeFactory;
@@ -55,20 +54,27 @@ public class ServerNameSpace implements Namespace {
     private final UShort namespaceIndex;
     private final String nsName;
     private List<UaFolderNode> folderNodesList;
+    
+    private ArrayList<AnalogItemNode> analogNodeList = new ArrayList<AnalogItemNode>();
 
 	private static org.slf4j.Logger logger = LoggerFactory
-			.getLogger(ServerNameSpace.class);
+			.getLogger(ServerConfigurationImpl.class);
 	
-	private ServerJsonConfig jsonConfig;
+	private ConfigInterface configInterface;
+	
+	//public ReadContext myReadContext = null; // wurde mal ausprobiert, kann teoretisch bald weg.
     
     //constructor of the class
-    public ServerNameSpace(OpcUaServer server, UShort namespaceIndex, ServerJsonConfig jsonConfig) {
+    public ServerConfigurationImpl(OpcUaServer server, UShort namespaceIndex, ConfigInterface configInterface) {
+    	
     	
         this.server = server;
-        this.namespaceIndex = namespaceIndex; //  index of Namespace that is counted. Usually=2;
-        this.nsName = jsonConfig.getNamespace();
+        this.configInterface = configInterface;
+        this.configInterface.setServerReference(this);
         
-        this.jsonConfig = jsonConfig;
+        this.namespaceIndex = namespaceIndex; //  index of the namespace. Usually=2;
+        this.nsName = configInterface.getNamespace();
+        
         
         subscriptionModel = new SubscriptionModel(server, this);
 
@@ -93,11 +99,11 @@ public class ServerNameSpace implements Namespace {
     private void addFolderNodes() {
     	folderNodesList = new ArrayList<UaFolderNode>();
 
-    	//System.out.println("Begin configuration of server from created Configuration");
+    	// System.out.println("Begin configuration of server from created Configuration");
     	// achtung reihenfolge wird wichtig sein!!!
     	
     	try {
-	    	for(MyFolderNode node : jsonConfig.getFolderNodeList() )	{
+	    	for(MyFolderNode node : configInterface.getFolderNodeList() )	{
 	    		
 		    	//System.out.println("Folder: nodeID="+node.nodeID+" namespace=" + node.namespace);
 		    	//System.out.println("Folder: nodeDescription="+node.description);	
@@ -163,13 +169,11 @@ public class ServerNameSpace implements Namespace {
      * Add desired Nodes to Namespace under the folder of rootnode
      * @param rootNode
      */
-    private void addNodes() {
-    	
+    private void addNodes() {    	
         try {
         	
-	    	for(MyVariableNode node : jsonConfig.getVariableNodeList()){
-	    		
-	    		System.out.println("Variable nodeID: " + node.nodeID);
+	    	for(MyVariableNode node : configInterface.getVariableNodeList()){	    		
+	    		logger.info("Variable nodeID: " + node.nodeID);
 	    		NodeId nodeId = new NodeId(namespaceIndex, node.nodeID);
 	   			
 				AnalogItemNode itemNode = nodeFactory.createVariable(
@@ -187,9 +191,12 @@ public class ServerNameSpace implements Namespace {
 		        itemNode.setValue(new DataValue(new Variant(node.getValueWithDataType())));
 		        //node1.setEURange(new Range(0.0, 100.0));
 		        itemNode.setMinimumSamplingInterval(node.getMinSamplingInterval());
-		        itemNode.setHistorizing(node.isHistorizing());	        
-				        
-		        server.getNodeMap().addNode(itemNode);    		      
+		        itemNode.setHistorizing(node.isHistorizing());	
+		        
+		        server.getNodeMap().addNode(itemNode); 
+		        // this list directly contains all itemNodes, to allow access from any JAVA class
+		        analogNodeList.add(itemNode);
+		        
 		        // Make sure our new folder shows up under the server's Objects folder
 		        
 		        NodeId parent = null;
@@ -225,58 +232,7 @@ public class ServerNameSpace implements Namespace {
         } catch (UaException e) {
 			e.printStackTrace();
 		}    	
-    } 
-    
-    /**
-     *TODO create a deligate for setting value of node sent by a client and call any additional functions if required.
-     * 
-     */    
-    /*
-    public AttributeDelegate getValueDelegate_Http() {
-    	
-    	AttributeDelegate test = new AttributeDelegate() {
-            @Override
-            public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
-            	//**** Write your  datavalue logic here and return ****
-            	//dosomething()
-            	System.out.println(this.getClass() + " i'm at 296");
-                return new DataValue(new Variant(1));
-            }
-        };        
-    	
-        // hier wird die eigene Klasse gebraucht
-    	AttributeDelegate readValueDelegate = AttributeDelegateChain.create(    			
-                test, ValueLoggingDelegate::new);
-    	
-    	return readValueDelegate;
-    }
-    */
-    
-    /**
-     *TODO create a deligate for setting value of node sent by a client and call any additional functions if required.
-     * 
-     */
-    /*
-    public AttributeDelegate setValueDelegate_Http() {
-    	AttributeDelegate setValueDelegate = AttributeDelegateChain.create(
-                new AttributeDelegate() {
-                    @Override
-                    public void setValue(AttributeContext context, VariableNode node, DataValue value) throws UaException {
-                    	//set value of the node that has been received from a client
-                    	node.setValue(value);
-                    	//**** Write your  datavalue logic (eg. may be turn on the switch ****
-                    	//executor = Executors.newSingleThreadScheduledExecutor();
-    		            //executor.execute(new MqttPublisher(topic,value.getValue().getValue().toString(), qos, broker, clientId, userName, password));
-    		            //executor.shutdown();
-                    }
-                },
-                ValueLoggingDelegate::new
-            );
-    	return setValueDelegate;
-    }
-    */
-    
-    
+    }     
     
     /**
      * Diese Methode wird aufgerufen, wenn man die Struktur abfragt (aus dem UaExpert)
@@ -300,6 +256,8 @@ public class ServerNameSpace implements Namespace {
         Double maxAge,
         TimestampsToReturn timestamps,
         List<ReadValueId> readValueIds) {
+    	    	
+    	// myReadContext = context;
 
         List<DataValue> results = Lists.newArrayListWithCapacity(readValueIds.size());
 
@@ -327,17 +285,25 @@ public class ServerNameSpace implements Namespace {
 
     /**
      * methodoverwrite: this method is called when ever there a client try to write a node value into this server namespace
-     * generally you dont have to touch this method unless you wanna perform some advanced operations.
+     * generally you do not have to touch this method unless you wanna perform some advanced operations.
      */
     @Override
     public void write(WriteContext context, List<WriteValue> writeValues) {
         List<StatusCode> results = Lists.newArrayListWithCapacity(writeValues.size());
         
-        // Das Problem ist hier, dass diese methode für alle Nodes gilt!!!
+        // Das Problem ist hier, dass diese methode den richtigen context benötigt.
+        // Ich habe noch nicht rausgefunden, wie man das richtig einsetzt.
         
         for (WriteValue writeValue : writeValues) {
+        	
+        	/*
+        	System.out.println("NodeID: " + writeValue.getNodeId());
+        	System.out.println("AttributeId: " + writeValue.getAttributeId());
+        	System.out.println("IndexRange: " + writeValue.getIndexRange());
+        	System.out.println("Value: " + writeValue.getValue());
+        	*/
+        	
             ServerNode node = server.getNodeMap().get(writeValue.getNodeId());
-
             if (node != null) {
                 try {
                     node.writeAttribute(
@@ -405,5 +371,9 @@ public class ServerNameSpace implements Namespace {
 	@Override
 	public String getNamespaceUri() {		
 		return nsName;
+	}
+
+	public ArrayList<AnalogItemNode> getAnalogNodeList() {
+		return analogNodeList;
 	}
 }

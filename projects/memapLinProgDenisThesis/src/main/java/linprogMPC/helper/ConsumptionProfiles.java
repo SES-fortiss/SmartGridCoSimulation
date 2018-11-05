@@ -17,7 +17,6 @@ public class ConsumptionProfiles {
 
 	private HashMap<Integer, ArrayList<Double>> heatProfiles = new HashMap<Integer, ArrayList<Double>>();
 	private HashMap<Integer, ArrayList<Double>> electricityProfile = new HashMap<Integer, ArrayList<Double>>();
-//	private ArrayList<Double> electricityProfile = new ArrayList<Double>();
 	private final int nrOfProfiles;
 	
 	public ConsumptionProfiles(int nrOfProfiles) {
@@ -26,6 +25,13 @@ public class ConsumptionProfiles {
 		// kWh / Minute - für 24 Stunden, 1440 Minuten = Einträge
 		heatProfiles = readConsumption("WaermeVerbraeucheAngepasst.csv", nrOfProfiles);
 		electricityProfile = readConsumption("StromVerbraeucheAngepasst.csv", nrOfProfiles);
+		
+		/*
+		heatProfiles = readConsumption("WaermeVerbraeuche.csv", nrOfProfiles);
+		electricityProfile = readConsumption("StromVerbraeuche.csv", nrOfProfiles);
+		*/
+		
+		System.out.println("heatProfiles: " + heatProfiles.get(0).size());
 	}
 	
 	/**
@@ -36,18 +42,19 @@ public class ConsumptionProfiles {
 	 * 
 	 * @param time the timestep for which to get the heat consumption
 	 * @return heat consumption at given timestep
+	 * @throws Exception 
 	 */
 	
-	public double getHeatConsumption(int consumptionIndex, int timestep) {
+	public double getHeatConsumption(int consumptionIndex, int timestep) throws Exception {
 		if (consumptionIndex > nrOfProfiles) {
-			//TODO throw Exception;
+			throw new Exception();
 		}
 		return heatProfiles.get(consumptionIndex).get(timestep)/60;
 	}
 	
-	public double getElectricConsumption(int consumptionIndex, int timestep) {
+	public double getElectricConsumption(int consumptionIndex, int timestep) throws Exception {
 		if (consumptionIndex > nrOfProfiles) {
-			//TODO throw Exception;
+			throw new Exception();
 		}
 		return electricityProfile.get(consumptionIndex).get(timestep)/60;
 	}
@@ -89,6 +96,16 @@ public class ConsumptionProfiles {
 	}
 	
 	
+	/**
+	 * 
+	 * this reads and interpolates!!!
+	 * 
+	 * @param br
+	 * @param dailyProfiles
+	 * @param profiles
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private void read(BufferedReader br, HashMap<Integer, ArrayList<Double>> dailyProfiles, HashMap<Integer, ArrayList<Double>> profiles) throws IOException, ParseException{
 	    
 		String zeile;
@@ -118,7 +135,7 @@ public class ConsumptionProfiles {
 						
 						double deltaOverMinute = indexZeile - (k+1) * MyTimeUnit.stepLength(TimeUnit.MINUTES);
 						double abzug = nf.parse(buffer[j]).doubleValue() * deltaOverMinute;
-						consumptionBuffer[j] = consumptionBuffer[j] - abzug;					
+						consumptionBuffer[j] = consumptionBuffer[j] - abzug;
 						
 						//*********Anpassung abgeschlossen
 						
@@ -139,7 +156,10 @@ public class ConsumptionProfiles {
 	    // Calculate the consumption for one day longer than necessary because of MPC horizon
 	    int daysToConsider = (int) Math.round(ThesisTopologySimple.N_STEPS/k + 0.5);
 	    System.out.println("Days to Consider because of MPC: " + daysToConsider);
-	 // the heat profile of one day is copied for n_days;  ( k = N_STEPS/N_Days )
+
+	    // TODO das kommt doppelt vor
+	    
+	    // the heat profile of one day is copied for n_days;  ( k = N_STEPS/N_Days )
 	    for (int m = 0; m < daysToConsider; m++) {
 	    	for(int j = 0; j < nrOfProfiles; j++) {
 	    		for (int v=0; v<dailyProfiles.get(1).size(); v++) {

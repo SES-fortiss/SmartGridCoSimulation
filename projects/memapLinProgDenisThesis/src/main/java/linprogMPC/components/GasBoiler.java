@@ -1,6 +1,7 @@
 package linprogMPC.components;
 
-import linprogMPC.messages.types.NetworkType;
+import linprogMPC.components.prototypes.Producer;
+import linprogMPC.messages.extension.NetworkType;
 
 public class GasBoiler extends Producer {
 	
@@ -13,8 +14,9 @@ public class GasBoiler extends Producer {
 	
 	@Override
 	public void makeDecision() {
+		producerMessage.id = this.fullActorPath;
 		producerMessage.name = this.actorName;		
-		producerMessage.cost = this.cost;
+		producerMessage.operationalPriceEURO = this.cost;
 		producerMessage.efficiency = efficiency;
 		producerMessage.installedPower = installedPower;
 		producerMessage.networkType = NetworkType.HEAT;

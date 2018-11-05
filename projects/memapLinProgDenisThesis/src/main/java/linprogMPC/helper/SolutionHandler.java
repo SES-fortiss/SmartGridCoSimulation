@@ -10,7 +10,7 @@ import java.util.Locale;
 import helper.IoHelper;
 import linprogMPC.ThesisTopologySimple;
 import linprogMPC.messages.BuildingMessage;
-import linprogMPC.messages.individualParts.planning.StorageMessage;
+import linprogMPC.messages.planning.StorageMessage;
  
 
 public class SolutionHandler {

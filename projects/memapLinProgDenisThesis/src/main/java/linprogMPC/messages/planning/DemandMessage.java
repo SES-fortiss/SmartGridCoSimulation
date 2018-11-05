@@ -1,20 +1,19 @@
-package linprogMPC.messages.individualParts.planning;
+package linprogMPC.messages.planning;
 
 import akka.basicMessages.AnswerContent;
 import linprogMPC.ThesisTopologySimple;
 import linprogMPC.messages.BuildingMessage;
-import linprogMPC.messages.types.NetworkType;
+import linprogMPC.messages.extension.NetworkType;
 
-public class DemandMessage implements AnswerContent {
+public class DemandMessage implements AnswerContent {	
 	
+	private double[] demandForecast; // das beinhaltet durchaus auch beides
 	
-	private double[] demandForecast;
-	
-	private String optimizationCriteria;
-	private String forecastType;
-	private NetworkType networkType;
-	private String ID;
-	private String name;
+	public String optimizationCriteria;
+	public String forecastType;
+	public NetworkType networkType;
+	public String id;
+	public String name;
 	
 	public DemandMessage() {
 		demandForecast = null;
@@ -50,8 +49,8 @@ public class DemandMessage implements AnswerContent {
 	 * 
 	 * TODO: This function should move to another part of the code. Messages should have no functions!
 	 */
-	public double[] calcHeatLosses(BuildingMessage buildingSpec) {		
-		double[] consumptionVector = buildingSpec.consumption.getDemandVector();		
+	public double[] calcHeatLosses(BuildingMessage buildingSpec) {
+		double[] consumptionVector = buildingSpec.getCombinedDemandVector();		
 		// 1.5 % Verlust auf 100 Metern Leitung
 		double losses = Math.pow(ThesisTopologySimple.HEAT_LOSSES,buildingSpec.heatTransportLength/100);		
 		for (int j = 0; j < consumptionVector.length/2; j++) {
@@ -60,5 +59,4 @@ public class DemandMessage implements AnswerContent {
 				
 		return consumptionVector;
 	}
-
 }

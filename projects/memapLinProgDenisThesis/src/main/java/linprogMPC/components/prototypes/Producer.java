@@ -1,8 +1,8 @@
-package linprogMPC.components;
+package linprogMPC.components.prototypes;
 
 import akka.basicMessages.AnswerContent;
 import linprogMPC.messages.OptimizationResultMessage;
-import linprogMPC.messages.ProducerMessage;
+import linprogMPC.messages.planning.ProducerMessage;
 
 public abstract class Producer extends Device {
 
@@ -15,16 +15,16 @@ public abstract class Producer extends Device {
 	
 	public Producer(double installedPower, double efficiency, int port) {
 		super(port);
+		
 		this.installedPower = installedPower;
-		this.efficiency = efficiency;
-		producerMessage.name = this.actorName;
+		this.efficiency = efficiency;				
 	}
 
 	@Override
 	public void makeDecision() {}
 
 	@Override
-	public AnswerContent returnAnswerContentToSend() {
+	public AnswerContent returnAnswerContentToSend() {		
 		return producerMessage;
 	}
 	

@@ -4,6 +4,7 @@ import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USE
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_USERNAME;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -23,74 +24,87 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableList;
 
 import opcMEMAP.serverConfigurationClassesJSON.GenericJsonReader;
-import opcMEMAP.serverConfigurationClassesJSON.ServerJsonConfig;
 
 
 
-public class StartOPCUAServer implements Runnable{	
-	private static org.slf4j.Logger logger = LoggerFactory.getLogger(StartOPCUAServer.class);
+public class MyOpcUaServer implements Runnable{	
+	private static org.slf4j.Logger logger = LoggerFactory.getLogger(MyOpcUaServer.class);
 		
 	private OpcUaServer server;
-	private SecurityConfig securityConfig;
-	private ServerJsonConfig jsonConfig = new ServerJsonConfig();
-	private String path = null;
+	private ServerUpdater serverUpdater;
+	private SecurityConfig securityConfig;	
+	private int port = 0;
+	private boolean serverStarted = false;
 	
-	public StartOPCUAServer(String interfacePath) {
-		path = interfacePath;
+	private String interfaceString = null;
+	private boolean createFromFile = true;
+	
+	
+	public MyOpcUaServer(boolean createFromFile, String interfacePath, int port) {
+		this(interfacePath);
+		this.port = port;
+		this.createFromFile = createFromFile;
 	}
-	
-	public StartOPCUAServer() { path = "src/Building2.json";}
+
+	public MyOpcUaServer(String interfacePath) {
+		interfaceString = interfacePath;
+	}
 
 	@Override
-	public void run() {
-		
-		try {			
-			jsonConfig = createConfig(path);
+	public void run() {		
+		try {
+			ConfigInterface jsonInterface = null;
+			if (createFromFile) {
+				jsonInterface = createInterfaceFromFile(interfaceString);
+			} else {
+				jsonInterface = createInterfaceFromJson(interfaceString);
+			}
+			 
 			
+			if (port != 0) {
+				jsonInterface.setPort(this.port);
+			}			
 			securityConfig = prepareSecurityConfiguration();
-			server = prepareServerNodesConfiguration();
+			server = prepareServerNodesConfiguration(jsonInterface);			
 		    server.startup().get(); 			// hier wird der Server gestartet.		    		     
 		    
-		    
+		    serverStarted = true;
+		    serverUpdater = new ServerUpdater(server, jsonInterface.getServerReference());
+		    		    
 		    // start: bin mir nicht unsicher, ob das überhaupt gebraucht wird.
 		    final CompletableFuture<Void> future = new CompletableFuture<>();
 		    Runtime.getRuntime().addShutdownHook(new Thread(() -> future.complete(null)));
-		    future.get();		    
+		    future.get();
 		    // ende: bin mir unsicher
 
 		}  catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e.getMessage());
 		}
 		
 
 	}	
 
-	private ServerJsonConfig createConfig(String path) {
-		ServerJsonConfig result = null;
-		
-		try {    
-			result = GenericJsonReader.readFileAndCreateConfig(path);
-		}
-		catch (Exception e) {
-			e.printStackTrace(); 
-		}
-										
-		return result;
+	private ConfigInterface createInterfaceFromFile(String path) throws IOException {
+		return GenericJsonReader.createConfigFromFile(path);
 	}
 	
-	private OpcUaServer prepareServerNodesConfiguration() {
+	private ConfigInterface createInterfaceFromJson(String json) throws IOException {
+		return GenericJsonReader.createConfigFromString(json);
+	}
+	
+	private OpcUaServer prepareServerNodesConfiguration(ConfigInterface jsonInterface) {
+		
 		List<String> bindAddresses = new ArrayList<String>();
-	    bindAddresses.add(jsonConfig.getHost());
+	    bindAddresses.add(jsonInterface.getHost());
 	
 	    List<String> endpointAddresses = new ArrayList<String>();	    
-	    endpointAddresses.add(jsonConfig.getHost());	    
-	    String applicationUri = jsonConfig.getUri();	    
+	    endpointAddresses.add(jsonInterface.getHost());	    
+	    String applicationUri = jsonInterface.getUri();	    
 	    
 	    OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
 	        .setApplicationUri(applicationUri)
 	        .setApplicationName(LocalizedText.english("MEMAP-OPC-UA-Server"))
-	        .setBindPort(jsonConfig.getPort())
+	        .setBindPort(jsonInterface.getPort())
 	        .setBindAddresses(bindAddresses)
 	        .setEndpointAddresses(endpointAddresses)
 	        .setBuildInfo(
@@ -112,18 +126,21 @@ public class StartOPCUAServer implements Runnable{
 	                USER_TOKEN_POLICY_USERNAME))
 	        .build();
 
-	    server = new OpcUaServer(serverConfig);
-	    
-	    // magic here, hier werden vermutlich die Nodes gesetzt???
-	    
-	    server.getNamespaceManager()
-	    	.registerAndAdd(
-	    		"urn:memap:opcua:server:"+jsonConfig.getNamespace(),
-	    		namespaceIndex -> new ServerNameSpace(server, namespaceIndex, jsonConfig)
-	    		);
+	    server = new OpcUaServer(serverConfig);	    	    
+	    server = configureNodes(jsonInterface);	    
 		return server;
 	}
 	
+	private OpcUaServer configureNodes(ConfigInterface jsonInterface) {
+		// here happens a lot!
+		server.getNamespaceManager()
+    	.registerAndAdd(
+    		"urn:memap:opcua:server:"+jsonInterface.getNamespace(),
+    		namespaceIndex -> new ServerConfigurationImpl(server, namespaceIndex, jsonInterface)
+    		);
+		return server;
+	}
+
 	@SuppressWarnings("resource")
 	private SecurityConfig prepareSecurityConfiguration() throws Exception {
 		File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
@@ -132,13 +149,13 @@ public class StartOPCUAServer implements Runnable{
 	        throw new Exception("unable to create security temp dir: " + securityTempDir);
 	    }
 	    
-	    LoggerFactory.getLogger(getClass()).info("security temp dir: {}", securityTempDir.getAbsolutePath());
+	    logger.info("security temp dir: {}", securityTempDir.getAbsolutePath());
 	
 		DefaultCertificateManager certificateManager = new DefaultCertificateManager();
 		
 		File pkiDir = securityTempDir.toPath().resolve("pki").toFile();
 		DirectoryCertificateValidator certificateValidator = new DirectoryCertificateValidator(pkiDir);
-		LoggerFactory.getLogger(getClass()).info("pki dir: {}", pkiDir.getAbsolutePath());
+		logger.info("pki dir: {}", pkiDir.getAbsolutePath());
 		
 		UsernameIdentityValidator identityValidator = new UsernameIdentityValidator(
 		    true,
@@ -170,12 +187,22 @@ public class StartOPCUAServer implements Runnable{
 	public CompletableFuture<OpcUaServer> shutdown() {
 	    return server.shutdown();
 	}
+	
+	public boolean isServerRunning() {
+		return serverStarted;
+	}
+	
+	public void updateServer(String json) {
+		try {
+			serverUpdater.update(json);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
 
 class SecurityConfig{
-
 	public UsernameIdentityValidator identValidatior;
 	public DirectoryCertificateValidator certValidator;
-	public DefaultCertificateManager certManager;
-	
+	public DefaultCertificateManager certManager;	
 }

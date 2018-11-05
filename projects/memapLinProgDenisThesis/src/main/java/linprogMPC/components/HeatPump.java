@@ -1,5 +1,7 @@
 package linprogMPC.components;
 
+import linprogMPC.components.prototypes.Coupler;
+
 public class HeatPump extends Coupler {
 	
 	public HeatPump(double installedPower, double efficiencyHeat, double efficiencyElec, int port) {
@@ -9,6 +11,7 @@ public class HeatPump extends Coupler {
 	@Override
 	public void makeDecision() {			
 		couplerMessage.name = this.actorName;
+		couplerMessage.id = this.fullActorPath;
 		
 		couplerMessage.operationalCostEUR = 0.00001;
 		couplerMessage.efficiencyElec = efficiencyElec;

@@ -1,4 +1,4 @@
-package linprogMPC.components;
+package linprogMPC.components.prototypes;
 
 import java.util.LinkedList;
 

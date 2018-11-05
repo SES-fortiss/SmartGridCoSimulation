@@ -2,8 +2,10 @@ package linprogMPC.components;
 
 import akka.basicMessages.AnswerContent;
 import akka.systemActors.GlobalTime;
+import linprogMPC.components.prototypes.Device;
 import linprogMPC.helper.ConsumptionProfiles;
-import linprogMPC.messages.individualParts.planning.DemandMessage;
+import linprogMPC.messages.extension.NetworkType;
+import linprogMPC.messages.planning.DemandMessage;
 
 
 /**
@@ -18,6 +20,7 @@ import linprogMPC.messages.individualParts.planning.DemandMessage;
 public class Consumer extends Device {
 	
 	public DemandMessage consumptionMessage = new DemandMessage();
+	
 	public final int consumerIndex;
 	private final ConsumptionProfiles consumptionProfiles;
 
@@ -32,11 +35,24 @@ public class Consumer extends Device {
 		double[] demandVectorB = new double[2*nStepsMPC];
 		int cts = GlobalTime.getCurrentTimeStep();
 		for (int i = 0; i < nStepsMPC; i++) {
-			demandVectorB[i] = -consumptionProfiles.getHeatConsumption(consumerIndex, cts+i);
-			demandVectorB[nStepsMPC+i] = -consumptionProfiles.getElectricConsumption(consumerIndex, cts+i);
+			
+			try {
+				demandVectorB[i] = -consumptionProfiles.getHeatConsumption(consumerIndex, cts+i);
+				demandVectorB[nStepsMPC+i] = -consumptionProfiles.getElectricConsumption(consumerIndex, cts+i);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			
 		}
 		
-		consumptionMessage.setDemandVector(demandVectorB);		
+		consumptionMessage.setDemandVector(demandVectorB);
+		consumptionMessage.networkType = NetworkType.DEMANDWITHBOTH;
+		consumptionMessage.name = this.actorName;
+		consumptionMessage.id = this.fullActorPath;
+		consumptionMessage.forecastType = "Profile";
+		consumptionMessage.optimizationCriteria = "Price";
+		
 		super.updateDisplay(consumptionMessage);
 	}
 

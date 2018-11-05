@@ -1,7 +1,7 @@
-package linprogMPC.messages.individualParts.planning;
+package linprogMPC.messages.planning;
 
 import akka.basicMessages.AnswerContent;
-import linprogMPC.messages.types.NetworkType;
+import linprogMPC.messages.extension.NetworkType;
 
 public class StorageMessage implements AnswerContent {
 	

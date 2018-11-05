@@ -1,6 +1,7 @@
 package linprogMPC.components;
 
-import linprogMPC.messages.types.NetworkType;
+import linprogMPC.components.prototypes.Storage;
+import linprogMPC.messages.extension.NetworkType;
 
 public class ThermalStorage extends Storage {
 
@@ -30,6 +31,7 @@ public class ThermalStorage extends Storage {
 		// alle parameter ändern sich nicht während der laufzeit.
 		storageMessage.networkType = NetworkType.HEAT;
 		storageMessage.name = this.actorName;
+		storageMessage.id = this.fullActorPath;
 		storageMessage.operationalPriceEURO = 0.0001;						
 		storageMessage.capacity = this.capacity;		
 		storageMessage.maxLoad = this.max_charging;

@@ -1,6 +1,7 @@
 package linprogMPC.components;
 
-import linprogMPC.messages.types.NetworkType;
+import linprogMPC.components.prototypes.Storage;
+import linprogMPC.messages.extension.NetworkType;
 
 public class Battery extends Storage {	
 		
@@ -35,6 +36,7 @@ public class Battery extends Storage {
 		storageMessage.efficiencyDischarge = this.effOUT;		
 		storageMessage.stateOfCharge = myStateOfCharge;
 		storageMessage.name = this.actorName;
+		storageMessage.id = this.fullActorPath;
 	}
 	
 }

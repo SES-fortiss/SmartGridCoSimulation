@@ -15,7 +15,7 @@ public class ThesisTopologySimpleSingle {
 	public static String simulationName = "2MEMAP";	
 	
 	// ================= Model Predictive Control (MPC) =================
-	public static int N_STEPS_MPC = 1;
+	public static int N_STEPS_MPC = 2;
 			; //equals N_STEPS for case of overall optimization, smaller for case of MPC
 	public static int PREDICTION_UNCERTAINTY = 0;
 	
@@ -29,6 +29,8 @@ public class ThesisTopologySimpleSingle {
 	public static int NR_OF_CONSUMERS = 5;
 	private static int PORT_UNDEFINED = 0;
 	
+	@SuppressWarnings("unused")
+	private static int port = 9999;	
 	
 	// Does MEMAP has a long-distance heating connection to buy heat ?
 	public static boolean MEMAP_LDHeating = false;
@@ -45,13 +47,13 @@ public class ThesisTopologySimpleSingle {
 
 		String building1Name = "Building1";
 		ActorTopology building1 = new ActorTopology(building1Name);
-		building1.addActor(building1Name, ActorFactory.createBuilding(PORT_UNDEFINED, false, 50));
+		building1.addActor(building1Name, ActorFactory.createBuilding(port++, false, 50));
 		building1.addActorAsChild(building1Name + "/Consumption", ActorFactory.createConsumer(consumptionProfiles, 0, PORT_UNDEFINED));
 		building1.addActorAsChild(building1Name + "/GasBoiler1", ActorFactory.createGasBoiler(20, 0.95, 0.0685, PORT_UNDEFINED));		
 		
 		String building2Name = "Building2";
 		ActorTopology building2 = new ActorTopology(building2Name);
-		building2.addActor(building2Name, ActorFactory.createBuilding(PORT_UNDEFINED, false, 50));
+		building2.addActor(building2Name, ActorFactory.createBuilding(port, false, 50));
 		building2.addActorAsChild(building2Name + "/Consumption", ActorFactory.createConsumer(consumptionProfiles, 1, PORT_UNDEFINED));
 		building2.addActorAsChild(building2Name + "/GasBoiler2", ActorFactory.createGasBoiler(20, 0.99, 0.0591, PORT_UNDEFINED));
 		building2.addActorAsChild(building2Name + "/PV2", ActorFactory.createPV(5, PORT_UNDEFINED));
@@ -82,11 +84,11 @@ public class ThesisTopologySimpleSingle {
 		building5.addActorAsChild(building5Name + "/ThermalStorage5", ActorFactory.createThermalStorage(100, 60, 60, 0.9, 0.9, PORT_UNDEFINED));
 		building5.addActorAsChild(building5Name + "/SolarThermic5", ActorFactory.createSolarThermic(10, PORT_UNDEFINED));
 		
-		//top.addSubTopology(simulationName, building1);
+		top.addSubTopology(simulationName, building1);
 		top.addSubTopology(simulationName, building2);
 		top.addSubTopology(simulationName, building3);
-		//top.addSubTopology(simulationName, building4);
-		//top.addSubTopology(simulationName, building5);
+		top.addSubTopology(simulationName, building4);
+		top.addSubTopology(simulationName, building5);
 	
 		return top;
 		

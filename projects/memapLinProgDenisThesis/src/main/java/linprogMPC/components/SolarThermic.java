@@ -2,9 +2,10 @@ package linprogMPC.components;
 
 import akka.basicMessages.AnswerContent;
 import akka.systemActors.GlobalTime;
+import linprogMPC.components.prototypes.Producer;
 import linprogMPC.helper.SolarRadiation;
-import linprogMPC.messages.individualParts.planning.VolatileProducerMessage;
-import linprogMPC.messages.types.NetworkType;
+import linprogMPC.messages.extension.NetworkType;
+import linprogMPC.messages.planning.VolatileProducerMessage;
 
 /**
  * Achtung SolarTheric ist ein Clon von PV, mit dem Unterschied, dass die geschickte message, den NetworkType Heat hat.
@@ -25,7 +26,8 @@ public class SolarThermic extends Producer {
 	public void makeDecision() {		
 		int cts = GlobalTime.getCurrentTimeStep();	
 		volatileProducerMessage.name = this.actorName;
-		volatileProducerMessage.cost = 0.00001;
+		volatileProducerMessage.id = this.fullActorPath;
+		volatileProducerMessage.operationalPriceEURO = 0.00001;
 		volatileProducerMessage.efficiency = efficiency;
 		volatileProducerMessage.installedPower = installedPower;
 		volatileProducerMessage.networkType = NetworkType.HEAT;
