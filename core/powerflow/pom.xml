@@ -87,11 +87,6 @@
             	<version>3.1</version>
             </dependency>
             <dependency>
-            	<groupId>org.eclipse.jetty</groupId>
-            	<artifactId>jetty-server</artifactId>
-            	<version>9.1.2.v20140210</version>
-            </dependency>
-            <dependency>
             	<groupId>jgraph</groupId>
             	<artifactId>jgraph</artifactId>
             	<version>5.13.0.0</version>
