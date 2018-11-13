@@ -40,7 +40,7 @@ public class Topology2HousesMPC {
 	//private static final double QDOT_MAX_SOLARTHERMIC = 3.;
 	private static final double AREA_PV = 8.;
 	private static final double P_MAX_HEATPUMP = 10.;
-	private static final double CAPACITY_THERMALSTORAGE = 20;
+	private static final double CAPACITY_THERMALSTORAGE = 20.;
 	private static final double CAPACITY_BATTERY = 12.;
 	private static final int PORT_UNDEFINED = 0;
 	
@@ -55,7 +55,7 @@ public class Topology2HousesMPC {
 //		top.addActorAsChild(simulationName + "/Consumption", ActorFactory.createConsumer("/Consumption", port++));
 
 		String building1Name = "Building1";	
-		Boolean LDHeatingB1 = false;
+		Boolean LDHeatingB1 = true;
 		Integer heatTransportLengthB1 = 50;
 		ActorTopology building1 = new ActorTopology(building1Name);		
 		building1.addActor(building1Name, ActorFactory.createBuilding(building1Name, port++, LDHeatingB1, heatTransportLengthB1));
@@ -66,7 +66,7 @@ public class Topology2HousesMPC {
 		
 		
 		String building2Name = "Building2";	
-		Boolean LDHeatingB2 = false;
+		Boolean LDHeatingB2 = true;
 		Integer heatTransportLengthB2 = 300;
 		ActorTopology building2 = new ActorTopology(building2Name);		
 		building2.addActor(building2Name, ActorFactory.createBuilding(building2Name, port++, LDHeatingB2, heatTransportLengthB2));

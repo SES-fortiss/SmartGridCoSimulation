@@ -1,5 +1,9 @@
 package linprog.components;
 
+import java.util.concurrent.TimeUnit;
+
+import linprog.LinProgSimulation;
+
 public class HeatPump extends Producer {
 
 	public final double efficiency;
@@ -30,7 +34,7 @@ public class HeatPump extends Producer {
 			// Electricity for heat pump is added to electricity consumption:
 			specificationToSend.couplingMatrix_el[i][i] = 1.0;
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = qdot_max;
+			specificationToSend.upperBound[i] = (qdot_max/efficiency)*LinProgSimulation.stepLength(TimeUnit.HOURS);
 		}
 		
 		display.update(gson.toJson(specificationToSend));

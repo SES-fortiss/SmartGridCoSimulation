@@ -4,7 +4,6 @@ import java.util.concurrent.TimeUnit;
 
 import akka.basicMessages.AnswerContent;
 import linprogMPC.Simulation;
-import linprogMPC.messages.OptimizationResult;
 import linprogMPC.messages.StorageSpec;
 
 public abstract class Storage extends Device {

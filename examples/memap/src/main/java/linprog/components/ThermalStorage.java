@@ -1,9 +1,5 @@
 package linprog.components;
 
-import java.util.concurrent.TimeUnit;
-
-import linprog.LinProgSimulation;
-
 public class ThermalStorage extends Storage {
 	
 	public final double efficiency;

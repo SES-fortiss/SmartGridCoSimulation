@@ -10,16 +10,17 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 public class ReadClient implements MemapClient{
 
 	public static DataValue value = null;
+	public static Object NewValue = new Object();
 	
-	// Make this to be a List<NodID>
+	// Make this to be a List<NodID> for more reading
 	public static NodeId nodeToRead;
 	
-	public static void startClient(String clientName, String clientURI, NodeId nodeid) throws Exception {
+	public static void startClient(NodeId nodeid) throws Exception {
 		nodeToRead = nodeid;
-		ReadClient example = new ReadClient();
+		ReadClient readClient = new ReadClient();
 
 		//  configure and launch OPC UA Client
-        new opcuaClient(example, clientName, clientURI).run();
+        new opcuaClient(readClient).run();
     		
     }
 
@@ -28,18 +29,34 @@ public class ReadClient implements MemapClient{
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
         
     	// synchronous connect
-        client.connect().get();
-        
+    	try {
+    		client.connect().get();
+    		System.out.println("[OPC UA] Client connection successful!");
+    	} catch (Exception e) {
+			System.out.println("[OPC UA] Client connection failed!");
+			e.printStackTrace();
+		}
+    	
         NodeId node1 = nodeToRead;
-        value = client.readValue(0, TimestampsToReturn.Both, node1)
-                .get();
-        System.out.println("Current heat demand: " + value.getValue().getValue());
-     
+        value = client.readValue(0,TimestampsToReturn.Both, node1)
+        		.get();
+        
+        System.out.println("[OPC UA] Client getValue successful! (DataType = " + value.getValue().getValue().getClass() + ")");
+//        System.out.println("Value: " + value.getValue().getValue());
+
+        NewValue = value.getValue().getValue();
+        
         future.complete(client);
     }
     
-	public static String getData() {
-		return (String) value.getValue().getValue().toString();
+    
+	public static Object getData() {
+		try {
+			return NewValue;
+		} catch (Exception e) {
+			System.out.println("[OPC UA] Client getValue failed");
+			return null;
+		}
 	}
  
 }    

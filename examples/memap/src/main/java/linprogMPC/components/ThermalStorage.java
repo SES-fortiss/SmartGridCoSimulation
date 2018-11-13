@@ -1,8 +1,5 @@
 package linprogMPC.components;
 
-import java.util.concurrent.TimeUnit;
-
-import linprogMPC.Simulation;
 import linprogMPC.messages.OptimizationResult;
 
 public class ThermalStorage extends Storage {
@@ -36,7 +33,7 @@ public class ThermalStorage extends Storage {
 				specificationToSend.vector[i] = 0.0000001;
 			}
 		}
-		System.out.println("SOC (TS) : " + String.format("%.04f", specificationToSend.vector[0])); 
+//		System.out.println("SOC (TS) : " + String.format("%.04f", specificationToSend.vector[0])); 
 		for (int i = n; i < 2*n; i++) {
 			specificationToSend.cost[i] = 0.00001; 
 			specificationToSend.vector[i] = capacity;

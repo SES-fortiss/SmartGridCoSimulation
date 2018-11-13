@@ -32,7 +32,7 @@ public class SolarThermic extends Producer {
 			}
 			specificationToSend.couplingMatrix_H[i][i] = -efficiency;
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = solarRadiation.getSolarProductionPerKWp(cts+i)*area;
+			specificationToSend.upperBound[i] = area*solarRadiation.getSolarProductionPerKWp(cts+i)/0.2; // area x incidend power (converted from PV production) 
 //			currentTime.add(Calendar.SECOND, stepSize);
 		}
 		

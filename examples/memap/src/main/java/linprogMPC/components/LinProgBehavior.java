@@ -188,6 +188,7 @@ public class LinProgBehavior extends BehaviorModel {
 			SolutionHandler.exportData(costsMEMAP, "COSTS_MEMAP_MPC.csv");
 			SolutionHandler.exportData(buildingsTotalCosts, "COSTS_EMS_MPC.csv");
 			
+			System.out.println("================================================================");	
 			System.out.println(" << Optimization Result (MPC) >> ");	
 			System.out.println("COSTS without MEMAP: " + String.format("%.02f", totalCostsBuildings));
 			System.out.println("COSTS with MEMAP: " + String.format("%.02f", totalCostsMEMAP));
@@ -249,9 +250,9 @@ public class LinProgBehavior extends BehaviorModel {
 
 //				System.out.println(indexStorage + "- KAP (" + storageSpec.name + "): " + String.format("%.04f", problem.h[n*(2*indexStorage+1)]));
 				
-				System.out.println(buildingSpec.name+ ", " + storageSpec.name + ", in:" 
-						+ String.format("%.02f", storageResult_in[0]) + ", out:" 
-						+ String.format("%.02f", storageResult_out[0]));
+//				System.out.println(buildingSpec.name+ ", " + storageSpec.name + ", in:" 
+//						+ String.format("%.02f", storageResult_in[0]) + ", out:" 
+//						+ String.format("%.02f", storageResult_out[0]));
 				
 				indexStorage++;
 			}
@@ -321,7 +322,7 @@ public class LinProgBehavior extends BehaviorModel {
 		
 		ans.basicsMap.put("MEMAP Costs", memapCostPerTimestep);
 		
-		System.out.println("Costs Timestep: " + memapCostPerTimestep);
+//		System.out.println("Costs Timestep: " + memapCostPerTimestep);
 		
 		display.update(gson.toJson(ans));
 		

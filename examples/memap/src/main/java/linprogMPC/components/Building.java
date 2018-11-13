@@ -27,11 +27,6 @@ public class Building extends BehaviorModel {
 	
 	protected Gson gson = new Gson();
 	public int port;
-	
-	
-	public String clientName = "name";
-	public String clientURI = "URI";
-	
 
 	// NEW(7.8.18 by JMr): Long-distance heating supply
 	public boolean LDHeating;
@@ -67,18 +62,23 @@ public class Building extends BehaviorModel {
 //		=======================  OPC UA Read  =======================	
 		
 		// Define Node(s) to read --> extend to List<NodeID> 
-		NodeId node1 = new NodeId(2,30);
+		
+//		UUID b001SBL = UUID.fromString("8079fb3f-f138-4864-b096-b2242ff4c875");
+//		NodeId node1 = new NodeId(2, b001SBL);
+//		NodeId node1 = new NodeId(2,30);
+//		NodeId node1 = new NodeId(1, 50190); //smartpi-forte
+		NodeId node1 = new NodeId(0, 2259); // server Status
 		
 		try {
-			ReadClient.startClient(clientName, clientURI, node1);
+			ReadClient.startClient(node1);
 			// Output:
-			String readValue = ReadClient.getData();
-			System.out.println("[OPC UA] heat consumption " + name + ": " + readValue);
+			int readValue = (int) ReadClient.getData();
+			System.out.println("[OPC UA] Read Status " + name + " Server: " + readValue );
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println("OPC Client read failed");
+			System.out.println("[OPC UA] Client read failed");
 		}
 		
 	

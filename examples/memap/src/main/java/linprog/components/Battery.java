@@ -1,10 +1,5 @@
 package linprog.components;
 
-import java.util.concurrent.TimeUnit;
-
-import linprog.LinProgSimulation;
-//import linprog.helper.EnergyPrices;
-
 public class Battery extends Storage {
 	
 	

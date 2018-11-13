@@ -1,6 +1,9 @@
 package linprogMPC.components;
 
+import java.util.concurrent.TimeUnit;
+
 import akka.systemActors.GlobalTime;
+import linprog.LinProgSimulation;
 import linprogMPC.helper.EnergyPrices;
 
 public class CHP extends Producer {
@@ -36,7 +39,7 @@ public class CHP extends Producer {
 			specificationToSend.couplingMatrix_H[i][i] = -efficiency_H;
 			specificationToSend.couplingMatrix_el[i][i] = -efficiency_el;
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = qdot_max;
+			specificationToSend.upperBound[i] = (qdot_max/efficiency_H)*LinProgSimulation.stepLength(TimeUnit.HOURS);
 		}
 		
 		display.update(gson.toJson(specificationToSend));
