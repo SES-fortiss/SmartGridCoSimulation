@@ -30,7 +30,7 @@ public class PV extends Producer {
 			}
 			specificationToSend.couplingMatrix_el[i][i] = -efficiency;
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = solarRadiation.getSolarProductionPerKWp(i)*area;
+			specificationToSend.upperBound[i] = area*solarRadiation.getSolarProductionPerKWp(i)/efficiency;
 			
 		}
 		display.update(gson.toJson(specificationToSend));

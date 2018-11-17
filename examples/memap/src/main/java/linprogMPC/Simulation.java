@@ -17,12 +17,13 @@ public class Simulation {
 	public static final int TIMESTEPS_PER_DAY = 12; // 120 min timestep
 	public static final int NR_OF_ITERATIONS =  2*TIMESTEPS_PER_DAY; // 2 Days
 	public static final int N_STEPS = NR_OF_ITERATIONS + N_STEPS_MPC; 
-	//public static final double N_DAYS = 2; // 24 hours
+
 	
 	
 	// Does MEMAP has a long-distance heating connection to buy heat ?
-	public static final boolean MEMAP_LDHeating = false;
+	public static final boolean MEMAP_LDHeating = true;
 	public static final double HEAT_LOSSES = 1.0;
+	
 	
 	//For the moment, the following 3 parameters need to stay as defined to match data input
 //	public static LocalDateTime startTime = LocalDateTime.of(2014,7,1,11,0);

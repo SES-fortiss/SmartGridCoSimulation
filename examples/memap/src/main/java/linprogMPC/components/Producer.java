@@ -28,7 +28,7 @@ public abstract class Producer extends Device {
 		
 		for (int i = 0; i < n; i++) {
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = qdot_max;			
+//			specificationToSend.upperBound[i] = (qdot_max)*LinProgSimulation.stepLength(TimeUnit.HOURS);			
 		}
 	}
 

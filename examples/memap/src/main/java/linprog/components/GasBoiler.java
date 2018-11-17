@@ -1,5 +1,8 @@
 package linprog.components;
 
+import java.util.concurrent.TimeUnit;
+
+import linprog.LinProgSimulation;
 import linprog.helper.EnergyPrices;
 
 public class GasBoiler extends Producer {
@@ -28,7 +31,7 @@ public class GasBoiler extends Producer {
 			}
 			specificationToSend.couplingMatrix_H[i][i] = -efficiency;
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = qdot_max;
+			specificationToSend.upperBound[i] = (qdot_max/efficiency)*LinProgSimulation.stepLength(TimeUnit.HOURS);
 		}
 		
 		display.update(gson.toJson(specificationToSend));

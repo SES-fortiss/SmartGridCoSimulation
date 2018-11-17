@@ -30,6 +30,7 @@ public class LinProgSimulation {
 		// Test-Topology:
 //		topology = Topology2Houses.createTopology();
 		topology = Topology.createTopology();
+//		topology = TopologyCoSES.createTopology();
 		SimulationStarter.saveGridTopologyPlot(topology);   
 		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
         SimulationStarter.startSimulation(actorSystem, 0, NR_OF_ITERATIONS);
