@@ -63,6 +63,11 @@
  
    <build>
     <finalName>Memap</finalName>
+    <resources>
+    	<resource>
+       		<directory>res</directory>
+     	</resource>
+   	</resources>
 	<plugins>
 		<plugin>
 			<artifactId>maven-compiler-plugin</artifactId>
