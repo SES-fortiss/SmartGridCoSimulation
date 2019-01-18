@@ -3,13 +3,18 @@ package opcMEMAP;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.net.InetAddress;
+import java.net.DatagramSocket;
+
 
 import opcMEMAP.serverConfigurationClassesJSON.MyFolderNode;
 import opcMEMAP.serverConfigurationClassesJSON.MyVariableNode;
 
+
 public class ConfigInterface {
 	
-	private String host = "localhost";	
+	private String ip;
+	//private String host = "localhost";
 	private int port = 9999;
 	private String uri = "urn:fortiss:opc:sever:memap" + UUID.randomUUID();
 	private String namespace = "sessim";
@@ -20,7 +25,13 @@ public class ConfigInterface {
 	private List<MyVariableNode> variableNodeList = new ArrayList<>();
 		
 	public String getHost() {
-		return host;
+		try(final DatagramSocket socket = new DatagramSocket()){
+		  socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+		  ip = socket.getLocalAddress().getHostAddress();
+		} catch (Exception e) {
+			System.out.println("Invalid IP!");
+		}
+		return ip;
 	}
 	
 	public int getPort() {
