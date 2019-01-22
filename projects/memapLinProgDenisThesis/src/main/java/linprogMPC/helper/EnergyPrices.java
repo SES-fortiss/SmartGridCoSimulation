@@ -69,17 +69,21 @@ public class EnergyPrices {
 	
 	
 	
-	private ArrayList<Double> readElectricityPrices(String filename){
+	private ArrayList<Double> readElectricityPrices(String filename) {
 		ArrayList<Double> electricityPrices = new ArrayList<Double>();
 		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/" + filename)));
-		    read(br, electricityPrices);	
+			// Retrieve ElectricityPrices from res folder. Note that actual path
+			// to res folder varies across different systems and using explicit paths
+			// is therefore not recommended.
+			BufferedReader br = new BufferedReader(
+					new InputStreamReader(this.getClass().getResourceAsStream("/" + filename)));
+			read(br, electricityPrices);
 		} catch (IOException | ParseException e1) {
-				e1.printStackTrace();
-				SimulationStarter.stopSimulation();
-				return null;
+			e1.printStackTrace();
+			SimulationStarter.stopSimulation();
+			return null;
 		}
-		
+
 		return electricityPrices;
 	}
 	

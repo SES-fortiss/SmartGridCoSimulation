@@ -68,22 +68,25 @@ public class ConsumptionProfiles {
 		return nrOfProfiles;
 	}
 	
-	private HashMap<Integer, ArrayList<Double>> readConsumption(String filename, int nrOfProfiles){
-		
+	private HashMap<Integer, ArrayList<Double>> readConsumption(String filename, int nrOfProfiles) {
+
 		HashMap<Integer, ArrayList<Double>> profiles = new HashMap<Integer, ArrayList<Double>>();
 		HashMap<Integer, ArrayList<Double>> dailyProfiles = new HashMap<Integer, ArrayList<Double>>();
-		for(int i = 0; i < nrOfProfiles; i++) {
-	    	profiles.put(i, new ArrayList<Double>());
-	    	dailyProfiles.put(i, new ArrayList<Double>());
-	    }
-	    
+		for (int i = 0; i < nrOfProfiles; i++) {
+			profiles.put(i, new ArrayList<Double>());
+			dailyProfiles.put(i, new ArrayList<Double>());
+		}
 		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/" + filename)));
+			// Retrieve Consumptionprofiles from res folder. Note that actual path
+			// to res folder varies across different systems
+			// and using explicit paths is therefore not recommended.
+			BufferedReader br = new BufferedReader(
+					new InputStreamReader(this.getClass().getResourceAsStream("/" + filename)));
 			read(br, dailyProfiles, profiles);
 		} catch (IOException | ParseException e1) {
-				e1.printStackTrace();
-				SimulationStarter.stopSimulation();
-				return null;
+			e1.printStackTrace();
+			SimulationStarter.stopSimulation();
+			return null;
 		}
 		return profiles;
 	}

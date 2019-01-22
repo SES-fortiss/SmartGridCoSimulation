@@ -5,16 +5,13 @@ import java.util.List;
 import java.util.UUID;
 import java.net.InetAddress;
 import java.net.DatagramSocket;
-
-
 import opcMEMAP.serverConfigurationClassesJSON.MyFolderNode;
 import opcMEMAP.serverConfigurationClassesJSON.MyVariableNode;
 
-
 public class ConfigInterface {
 	
-	private String ip;
 	//private String host = "localhost";
+	private String host;
 	private int port = 9999;
 	private String uri = "urn:fortiss:opc:sever:memap" + UUID.randomUUID();
 	private String namespace = "sessim";
@@ -24,14 +21,22 @@ public class ConfigInterface {
 	private List<MyFolderNode> folderNodeList = new ArrayList<>();
 	private List<MyVariableNode> variableNodeList = new ArrayList<>();
 		
+	/**
+	 * Creates an UDP socket and returns the corresponding IP address. Retrieving
+	 * the IP address of a server is a cumbersome and this might not work on all
+	 * systems. Please refer to this discussion:
+	 * stackoverflow.com/questions/9481865/getting-the-ip-address-of-the-current-machine-using-java
+	 * 
+	 * @return host IP-address
+	 */
 	public String getHost() {
-		try(final DatagramSocket socket = new DatagramSocket()){
-		  socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
-		  ip = socket.getLocalAddress().getHostAddress();
+		try (final DatagramSocket socket = new DatagramSocket()) {
+			socket.connect(InetAddress.getByName("8.8.8.8"), 10002); // 8.8.8.8. can be unreachable, which is ok
+			host = socket.getLocalAddress().getHostAddress();
 		} catch (Exception e) {
 			System.out.println("Invalid IP!");
 		}
-		return ip;
+		return host;
 	}
 	
 	public int getPort() {

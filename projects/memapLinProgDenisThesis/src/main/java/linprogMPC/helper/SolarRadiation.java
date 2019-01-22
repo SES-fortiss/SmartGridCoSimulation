@@ -33,6 +33,9 @@ public class SolarRadiation {
 	private ArrayList<Double> readSolarProduction(String filename) {
 		ArrayList<Double> solarProductionPerKWp = new ArrayList<Double>();
 		try {
+			// Retrieve Consumptionprofiles from res folder. Note that actual path
+			// to res folder varies across different systems and using explicit paths 
+			// is therefore not recommended.
 			BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/" + filename)));
 		    readProd(br, solarProductionPerKWp);	
 		} catch (IOException | ParseException e1) {
