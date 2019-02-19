@@ -11,8 +11,8 @@ import opcMEMAP.serverConfigurationClassesJSON.MyVariableNode;
 public class ConfigInterface {
 	
 	//private String host = "localhost";
-	private String host;
-	private int port = 9999;
+	private static String host;
+	private static int port = 9999;
 	private String uri = "urn:fortiss:opc:sever:memap" + UUID.randomUUID();
 	private String namespace = "sessim";
 	private double minSamplingInterval = 499;
@@ -27,9 +27,9 @@ public class ConfigInterface {
 	 * systems. Please refer to this discussion:
 	 * stackoverflow.com/questions/9481865/getting-the-ip-address-of-the-current-machine-using-java
 	 * 
-	 * @return host IP-address
+	 * @return String hostIP-address
 	 */
-	public String getHost() {
+	public static String getHost() {
 		try (final DatagramSocket socket = new DatagramSocket()) {
 			socket.connect(InetAddress.getByName("8.8.8.8"), 10002); // 8.8.8.8. can be unreachable, which is ok
 			host = socket.getLocalAddress().getHostAddress();
@@ -39,7 +39,7 @@ public class ConfigInterface {
 		return host;
 	}
 	
-	public int getPort() {
+	public static int getPort() {
 		return port;
 	}
 

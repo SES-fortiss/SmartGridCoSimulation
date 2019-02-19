@@ -35,10 +35,46 @@ public class ThesisSimulation {
 	}
 	
 	public static void main(String[] args){
-		try {
-			new ThesisSimulation().run();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		String server = opcMEMAP.ConfigInterface.getHost();
+		int port = opcMEMAP.ConfigInterface.getPort();
+		String help = "Hi there, this is MEMAP.\n"
+				+ "To reach the OPC-UA server on this machine, please use opc.tcp://" + server + ":" + port + "/sessim\n"
+				+ "\n"
+				+ "Use these commands to run the simulation (i.e. use MemapServer.jar [command]: \n"
+				+ "    start : runs the simulation once \n"
+				+ "    loop  : runs the simulation in an indefinite loop \n"
+				+ "    help  : show the help screen \n";
+		
+		// Show the help screen by default
+		String arg = "help";
+		if (args.length == 1) {
+			arg = args[0];
+		}
+
+		switch (arg) {
+		case "help": case "h":
+			System.out.println(help);
+			break;
+		case "start": case "s":	
+			try {
+				new ThesisSimulation().run();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			break;
+		case "loop": case "l":
+			boolean loop = true;
+			while(loop) {
+				try {
+					new ThesisSimulation().run();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			break;
+		default: 
+			System.out.println(help);
+			break;
 		}
 	}
 }
