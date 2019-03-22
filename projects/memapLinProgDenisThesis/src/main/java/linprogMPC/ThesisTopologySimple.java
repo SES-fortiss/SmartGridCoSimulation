@@ -30,7 +30,7 @@ public class ThesisTopologySimple {
     public static int NR_OF_ITERATIONS = 7 * TIMESTEPS_PER_DAY; // X Days
     public static int N_STEPS = NR_OF_ITERATIONS + N_STEPS_MPC; // benötigt man damit der Optimierer funktioniert.
 
-    public static boolean MEMAP_ON = false;
+    public static boolean MEMAP_ON = true;
 
     // ================= Components =================
     public static int NR_OF_CONSUMERS = 5;

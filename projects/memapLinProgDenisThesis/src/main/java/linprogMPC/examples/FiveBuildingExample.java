@@ -21,8 +21,9 @@ public abstract class FiveBuildingExample {
 
     public static ActorTopology exampleTopology() {
 	final int PORT_UNDEFINED = 0;
+	final int nrMPCsteps = 2;
 
-	TopologyController topologyController = new TopologyController("MEMAP", 1, false, 0);
+	TopologyController topologyController = new TopologyController("2MEMAP", nrMPCsteps, true, 0);
 	ConsumptionProfiles consumptionProfiles = new ConsumptionProfiles(5);
 
 	Consumer consumer1 = new Consumer(consumptionProfiles, 0, 0);
