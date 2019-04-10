@@ -1,9 +1,9 @@
 package linprogMPC;
 
-import akka.actor.ActorSystem;
-import linprogMPC.examples.FiveBuildingExample;
+import linprogMPC.controller.BuildingController;
+import linprogMPC.controller.CSVExampleController;
+import linprogMPC.controller.TopologyController;
 import opcMEMAP.ConfigInterface;
-import simulation.SimulationStarter;
 import topology.ActorTopology;
 
 public class ThesisSimulation {
@@ -57,13 +57,20 @@ public class ThesisSimulation {
     }
 
     private void run() throws InterruptedException {
+	TopologyController memap = new TopologyController("MEMAP", false, 2, 96, 7, 0);
+
+	BuildingController building3 = new CSVExampleController("building3", memap,
+		"WaermeVerbraeucheAngepasstGebaeude3.csv", "StromVerbraeucheAngepasstGebaeude3.csv", false, 50, null);
+
+	System.out.print(building3.getHeatConsumption(4));
+
 	// Testing of new Implementation
-	int[] mpcTimeSteps = { 2 };
-	for (int i = 0; i < mpcTimeSteps.length; i++) {
-	    topology = FiveBuildingExample.exampleTopology();
-	    ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
-	    SimulationStarter.startSimulation(actorSystem, 0, 7 * 96);
-	}
+//	int[] mpcTimeSteps = { 2 };
+//	for (int i = 0; i < mpcTimeSteps.length; i++) {
+//	    topology = FiveBuildingExample.exampleTopology();
+//	    ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
+//	    SimulationStarter.startSimulation(actorSystem, 0, 7 * 96);
+//	}
 	// **************MEMAP OFF *******************
 
 	// int[] mpcTimeSteps = { 1, 4, 12, 24, 36, 48, 60, 72 };

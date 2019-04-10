@@ -12,4 +12,8 @@ public interface BuildingController {
     public int getHeatTransportLength();
 
     public Set<? extends Device> getDevices();
+
+    public double getHeatConsumption(int timeStep);
+
+    public double getElectricityConsumption(int timeStep);
 }

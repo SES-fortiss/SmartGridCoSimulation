@@ -15,16 +15,21 @@ public class TopologyController {
     public boolean memapOn;
     public int portUndefined;
     public String name;
+    public int timeStepsPerDay;
+    public int nrDays;
 
     public Set<BuildingController> managedBuildings = new HashSet<>();
 
     public ActorTopology top;
 
-    public TopologyController(String name, int nrStepsMPC, boolean memapOn, int portUndefined) {
+    public TopologyController(String name, boolean memapOn, int nrStepsMPC, int timeStepsPerDay, int nrDays,
+	    int portUndefined) {
 	this.name = name;
 	this.nrStepsMPC = nrStepsMPC;
 	this.memapOn = memapOn;
 	this.portUndefined = portUndefined;
+	this.timeStepsPerDay = timeStepsPerDay;
+	this.nrDays = nrDays;
     }
 
     public void attachBuilding(BuildingController buildingController) {
@@ -55,6 +60,10 @@ public class TopologyController {
 
     public ActorTopology getTopology() {
 	return top;
+    }
+
+    public int getTotalOptimizerSteps() {
+	return nrStepsMPC + nrDays * timeStepsPerDay;
     }
 
 }
