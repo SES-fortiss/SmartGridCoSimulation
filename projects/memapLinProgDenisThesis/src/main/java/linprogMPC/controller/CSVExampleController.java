@@ -6,11 +6,13 @@ import java.io.InputStreamReader;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import linprogMPC.ThesisTopologySimple;
+import linprogMPC.components.Consumer;
 import linprogMPC.components.prototypes.Device;
 import linprogMPC.helper.MyTimeUnit;
 
@@ -19,18 +21,20 @@ public class CSVExampleController implements BuildingController {
     public String name;
     public boolean hasLDHeating;
     public int heatTransportLength;
-    public Set<Device> devices;
+    private Set<Device> devices = new HashSet<Device>();
     private ArrayList<Double> heatConsumption;
     private ArrayList<Double> electricityConsumption;
 
     public CSVExampleController(String name, String csvHeatFileName, String csvElectricityFileName,
-	    boolean hasLDHeating, int heatTransportLength, Set<Device> devices) {
+	    boolean hasLDHeating, int heatTransportLength) {
 	this.name = name;
 	this.hasLDHeating = hasLDHeating;
 	this.heatTransportLength = heatTransportLength;
-	this.devices = devices;
 	this.heatConsumption = readCSVFile(csvHeatFileName);
 	this.electricityConsumption = readCSVFile(csvElectricityFileName);
+
+	// adding Consumers from CSV files
+	devices.add(new Consumer(heatConsumption, electricityConsumption, 0));
     }
 
     @Override
@@ -54,13 +58,8 @@ public class CSVExampleController implements BuildingController {
     }
 
     @Override
-    public double getHeatConsumption(int timeStep) {
-	return heatConsumption.get(timeStep) / 60;
-    }
-
-    @Override
-    public double getElectricityConsumption(int timeStep) {
-	return electricityConsumption.get(timeStep) / 60;
+    public void attach(Device device) {
+	this.devices.add(device);
     }
 
     private ArrayList<Double> readCSVFile(String csvFileName) {

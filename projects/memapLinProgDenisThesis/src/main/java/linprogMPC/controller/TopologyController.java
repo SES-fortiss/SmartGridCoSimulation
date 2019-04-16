@@ -10,7 +10,7 @@ import linprogMPC.components.LinProgBehavior;
 import linprogMPC.components.prototypes.Device;
 import topology.ActorTopology;
 
-public class TopologyController {
+public class TopologyController extends ThesisTopologySimple {
 
     public int nrStepsMPC;
     public boolean memapOn;
@@ -35,21 +35,27 @@ public class TopologyController {
 	this.nrDays = nrDays;
 	this.predUncertainty = predUncertainty;
 	this.hasLDHeating = hasLDHeating;
-    }
 
-    public void attachBuilding(BuildingController buildingController) {
-	managedBuildings.add(buildingController);
-    }
-
-    public void createTopology() {
-	// Setting Topology Parameters
 	ThesisTopologySimple.setStepsMPC(nrStepsMPC);
 	ThesisTopologySimple.setTimeStepsPerDay(timeStepsPerDay);
 	ThesisTopologySimple.setPredUncertainty(predUncertainty);
 	ThesisTopologySimple.setMemapLDHeating(hasLDHeating);
 	ThesisTopologySimple.setMemapOn(memapOn);
 	ThesisTopologySimple.setNrOfDays(nrDays);
+	ThesisTopologySimple.calcNrIterations();
+	ThesisTopologySimple.calcNrSteps();
+    }
 
+    public void attach(BuildingController buildingController) {
+	managedBuildings.add(buildingController);
+    }
+
+    public ActorTopology getTopology() throws NullPointerException {
+	createTopology();
+	return top;
+    }
+
+    private void createTopology() {
 	// Creating Actor Topology
 	this.top = new ActorTopology(this.name);
 	LinProgBehavior linProg = new LinProgBehavior();
@@ -72,10 +78,4 @@ public class TopologyController {
 	}
     }
 
-    public ActorTopology getTopology() throws NullPointerException {
-	if (top == null) {
-	    throw new NullPointerException("You need to create the Topology first. Use createTopology()");
-	}
-	return top;
-    }
 }

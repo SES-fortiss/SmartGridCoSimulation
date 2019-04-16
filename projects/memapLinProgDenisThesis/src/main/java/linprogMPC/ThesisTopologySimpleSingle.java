@@ -15,7 +15,7 @@ public class ThesisTopologySimpleSingle {
     public static String simulationName = "2MEMAP";
 
     // ================= Model Predictive Control (MPC) =================
-    public static int N_STEPS_MPC = 2;; // equals N_STEPS for case of overall optimization, smaller for case of MPC
+    public static int N_STEPS_MPC = 2; // equals N_STEPS for case of overall optimization, smaller for case of MPC
     public static int PREDICTION_UNCERTAINTY = 0;
 
     public static int TIMESTEPS_PER_DAY = 96; // Timesteps muss ganze Minuten ergeben.
