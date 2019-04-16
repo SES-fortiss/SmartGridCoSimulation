@@ -11,17 +11,9 @@ public class ThesisSimulation {
     private ActorTopology topology;
 
     public static void main(String[] args) {
-	ConfigInterface jsonInterface = new ConfigInterface();
-	String server = jsonInterface.getHost();
-	int port = jsonInterface.getPort();
-	String help = "Hi there, this is MEMAP.\n" + "To reach the OPC-UA server on this machine, please use opc.tcp://"
-		+ server + ":" + port + "/sessim\n" + "\n"
-		+ "Use these commands to run the simulation (i.e. use MemapServer.jar [command]: \n"
-		+ "    start : runs the simulation once \n" + "    loop  : runs the simulation in an indefinite loop \n"
-		+ "    help  : show the help screen \n";
-
-	// Show the help screen by default
+	// show help by default
 	String arg = "help";
+	// if argument is passed, use argument instead
 	if (args.length == 1) {
 	    arg = args[0];
 	}
@@ -29,8 +21,9 @@ public class ThesisSimulation {
 	switch (arg) {
 	case "help":
 	case "h":
-	    System.out.println(help);
+	    System.out.println(showHelp());
 	    break;
+	// run the simulation
 	case "start":
 	case "s":
 	    try {
@@ -39,6 +32,7 @@ public class ThesisSimulation {
 		e.printStackTrace();
 	    }
 	    break;
+	// run the simulation in a loop
 	case "loop":
 	case "l":
 	    boolean loop = true;
@@ -51,7 +45,7 @@ public class ThesisSimulation {
 	    }
 	    break;
 	default:
-	    System.out.println(help);
+	    System.out.println(showHelp());
 	    break;
 	}
     }
@@ -80,6 +74,17 @@ public class ThesisSimulation {
 //	    ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
 //	    SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimple.NR_OF_ITERATIONS);
 //	}
+    }
 
+    private static String showHelp() {
+	ConfigInterface jsonInterface = new ConfigInterface();
+	String server = jsonInterface.getHost();
+	int port = jsonInterface.getPort();
+	String help = "Hi there, this is MEMAP.\n" + "To reach the OPC-UA server on this machine, please use opc.tcp://"
+		+ server + ":" + port + "/sessim\n" + "\n"
+		+ "Use these commands to run the simulation (i.e. use MemapServer.jar [command]: \n"
+		+ "    start : runs the simulation once \n" + "    loop  : runs the simulation in an indefinite loop \n"
+		+ "    help  : show the help screen \n";
+	return help;
     }
 }
