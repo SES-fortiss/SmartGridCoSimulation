@@ -1,6 +1,6 @@
 package linprogMPC.components;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import akka.basicMessages.AnswerContent;
 import akka.systemActors.GlobalTime;
@@ -18,30 +18,30 @@ import linprogMPC.messages.planning.DemandMessage;
  * @version reviewed by DB, on 28.9.18, sollte soweit passen.
  *
  */
-public class Consumer extends Device {
+public abstract class Consumer extends Device {
+
+    public Consumer(int port) {
+	super(port);
+	// TODO Auto-generated constructor stub
+    }
 
     public DemandMessage consumptionMessage = new DemandMessage();
-    private ArrayList<Double> heatProfile;
-    private ArrayList<Double> electricityProfile;
 
     // public final int consumerIndex;
     // private final ConsumptionProfiles consumptionProfiles;
-
-    public Consumer(ArrayList<Double> heatProfile, ArrayList<Double> electricityProfile, int port) {
-	super(port);
-	this.heatProfile = heatProfile;
-	this.electricityProfile = electricityProfile;
-    }
 
     @Override
     public void makeDecision() {
 	double[] demandVectorB = new double[2 * nStepsMPC];
 	int cts = GlobalTime.getCurrentTimeStep();
+	// Getting the HeatProfiles at the current timestep with predictions
+	List<Double> currentHeatProfile = getHeatProfile(cts, nStepsMPC);
+	List<Double> currentElectricityProfile = getElectricityProfile(cts, nStepsMPC);
+	// Creating demand vector
 	for (int i = 0; i < nStepsMPC; i++) {
-
 	    try {
-		demandVectorB[i] = -heatProfile.get(cts + i) / 60;
-		demandVectorB[nStepsMPC + i] = -electricityProfile.get(cts + i) / 60;
+		demandVectorB[i] = -currentHeatProfile.get(0 + i) / 60;
+		demandVectorB[nStepsMPC + i] = -currentElectricityProfile.get(0 + i) / 60;
 	    } catch (Exception e) {
 		e.printStackTrace();
 	    }
@@ -62,5 +62,25 @@ public class Consumer extends Device {
     public AnswerContent returnAnswerContentToSend() {
 	return consumptionMessage;
     }
+
+    /**
+     * Implement this method to retrieve the current heat consumption together with
+     * a prediction of up to mpcHorizon timesteps.
+     * 
+     * @param timeStep
+     * @param mpcHorizon
+     * @return heatConsumption prediction for mpcHorison timeSteps
+     */
+    public abstract List<Double> getHeatProfile(int timeStep, int mpcHorizon);
+
+    /**
+     * Implement this method to retrieve the current electrcity consumption together
+     * with a prediction of up to mpcHorizon timesteps.
+     * 
+     * @param timeStep
+     * @param mpcHorizon
+     * @return electricityConsumption for mpcHorizon timeSteps
+     */
+    public abstract List<Double> getElectricityProfile(int timeStep, int mpcHorizon);
 
 }

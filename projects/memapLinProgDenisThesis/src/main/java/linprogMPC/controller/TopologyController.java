@@ -10,6 +10,18 @@ import linprogMPC.components.LinProgBehavior;
 import linprogMPC.components.prototypes.Device;
 import topology.ActorTopology;
 
+/**
+ * This class is used to handle the topology of the optimization. This includes
+ * 1) Setting the static fields of ThesisTopologysimple 2) Attaching Buildings
+ * to the Topology.
+ * 
+ * Note: Because ThesisTopologySimple is using static fields, creating a new
+ * TopologyController will change these fields for ALL topologies. Therefore: Do
+ * not try to use more than one TopologyController at the same time!
+ * 
+ * @author Adrian.Krueger
+ *
+ */
 public class TopologyController extends ThesisTopologySimple {
 
     public int nrStepsMPC;
@@ -50,7 +62,7 @@ public class TopologyController extends ThesisTopologySimple {
 	managedBuildings.add(buildingController);
     }
 
-    public ActorTopology getTopology() throws NullPointerException {
+    public ActorTopology getTopology() {
 	createTopology();
 	return top;
     }
