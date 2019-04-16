@@ -10,23 +10,22 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import linprogMPC.ThesisTopologySimple;
 import linprogMPC.components.prototypes.Device;
 import linprogMPC.helper.MyTimeUnit;
 
 public class CSVExampleController implements BuildingController {
 
     public String name;
-    public TopologyController topology;
     public boolean hasLDHeating;
     public int heatTransportLength;
     public Set<Device> devices;
     private ArrayList<Double> heatConsumption;
     private ArrayList<Double> electricityConsumption;
 
-    public CSVExampleController(String name, TopologyController topology, String csvHeatFileName,
-	    String csvElectricityFileName, boolean hasLDHeating, int heatTransportLength, Set<Device> devices) {
+    public CSVExampleController(String name, String csvHeatFileName, String csvElectricityFileName,
+	    boolean hasLDHeating, int heatTransportLength, Set<Device> devices) {
 	this.name = name;
-	this.topology = topology;
 	this.hasLDHeating = hasLDHeating;
 	this.heatTransportLength = heatTransportLength;
 	this.devices = devices;
@@ -101,7 +100,7 @@ public class CSVExampleController implements BuildingController {
 	    br.close();
 	    // Calculate the consumption for one day longer than necessary because of MPC
 	    // horizon
-	    int daysToConsider = (int) Math.round(topology.getTotalOptimizerSteps() / k + 0.5);
+	    int daysToConsider = (int) Math.round(ThesisTopologySimple.N_STEPS / k + 0.5);
 	    System.out.println("Days to Consider because of MPC: " + daysToConsider);
 
 	    // the heat profile of one day is copied for n_days; ( k = N_STEPS/N_Days )

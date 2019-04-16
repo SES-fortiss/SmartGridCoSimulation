@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import linprogMPC.ActorFactory;
+import linprogMPC.ThesisTopologySimple;
 import linprogMPC.components.Building;
 import linprogMPC.components.LinProgBehavior;
 import linprogMPC.components.prototypes.Device;
@@ -17,19 +18,23 @@ public class TopologyController {
     public String name;
     public int timeStepsPerDay;
     public int nrDays;
+    public int predUncertainty;
+    public boolean hasLDHeating;
 
     public Set<BuildingController> managedBuildings = new HashSet<>();
 
     public ActorTopology top;
 
     public TopologyController(String name, boolean memapOn, int nrStepsMPC, int timeStepsPerDay, int nrDays,
-	    int portUndefined) {
+	    int predUncertainty, boolean hasLDHeating, int portUndefined) {
 	this.name = name;
 	this.nrStepsMPC = nrStepsMPC;
 	this.memapOn = memapOn;
 	this.portUndefined = portUndefined;
 	this.timeStepsPerDay = timeStepsPerDay;
 	this.nrDays = nrDays;
+	this.predUncertainty = predUncertainty;
+	this.hasLDHeating = hasLDHeating;
     }
 
     public void attachBuilding(BuildingController buildingController) {
@@ -37,6 +42,15 @@ public class TopologyController {
     }
 
     public void createTopology() {
+	// Setting Topology Parameters
+	ThesisTopologySimple.setStepsMPC(nrStepsMPC);
+	ThesisTopologySimple.setTimeStepsPerDay(timeStepsPerDay);
+	ThesisTopologySimple.setPredUncertainty(predUncertainty);
+	ThesisTopologySimple.setMemapLDHeating(hasLDHeating);
+	ThesisTopologySimple.setMemapOn(memapOn);
+	ThesisTopologySimple.setNrOfDays(nrDays);
+
+	// Creating Actor Topology
 	this.top = new ActorTopology(this.name);
 	LinProgBehavior linProg = new LinProgBehavior();
 	top.addActor(this.name, ActorFactory.createDevice(linProg));
@@ -58,12 +72,10 @@ public class TopologyController {
 	}
     }
 
-    public ActorTopology getTopology() {
+    public ActorTopology getTopology() throws NullPointerException {
+	if (top == null) {
+	    throw new NullPointerException("You need to create the Topology first. Use createTopology()");
+	}
 	return top;
     }
-
-    public int getTotalOptimizerSteps() {
-	return nrStepsMPC + nrDays * timeStepsPerDay;
-    }
-
 }
