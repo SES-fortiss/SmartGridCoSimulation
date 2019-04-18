@@ -57,9 +57,7 @@ public class ThesisSimulation {
 
 	// **************MEMAP OFF *******************
 
-	// int[] mpcTimeSteps = { 1, 4, 12, 24, 36, 48, 60, 72 };
-
-	// int[] mpcTimeSteps = { 4 };
+		// int[] mpcTimeSteps = { 4 };
 	// for (int i = 0; i < mpcTimeSteps.length; i++) {
 	// topology = ThesisTopologySimple.createTopology(mpcTimeSteps[i], false);
 	// ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
@@ -74,7 +72,6 @@ public class ThesisSimulation {
 //	    ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
 //	    SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimple.NR_OF_ITERATIONS);
 //	}
-    }
 
     private static String showHelp() {
 	ConfigInterface jsonInterface = new ConfigInterface();

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+
 import com.google.gson.Gson;
 
 import akka.advancedMessages.ErrorAnswerContent;
@@ -13,6 +15,7 @@ import akka.basicMessages.RequestContent;
 import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import linprogMPC.ThesisTopologySimple;
+import linprogMPC.helperOPCua.ReadClient;
 import linprogMPC.helper.EnergyPrices;
 import linprogMPC.helper.HelperConcat;
 import linprogMPC.helper.MatrixBuildup;
@@ -66,6 +69,37 @@ public class Building extends BehaviorModel {
 	
 	@Override
 	public void makeDecision() {	
+		
+        //	======================  OPC UA Read  =====================	
+		
+		// Get BuildingNumber from String e.g. "Building2"
+		int BuildingNumber = Integer.parseInt(this.actorName.substring(8)); 
+		
+		
+		if (BuildingNumber > 3) {
+			BuildingNumber = 3;	
+		}
+		System.out.println("GebäudeNummer= " + BuildingNumber);
+		
+//		NodeId BuildingNode = new NodeId(2, (4*BuildingNumber+2));
+//		System.out.println("Node= " + (4*BuildingNumber+2));
+		// OPCUA Data only available for 3 Buildings - Node IDs are 4,8 and 12
+		// +1 Elektro, +2 Heizung, +3 Kälte
+		
+		
+		
+		try {
+			
+			ReadClient.startClient(new NodeId(2, (4*BuildingNumber+2)));
+			// Output:
+			int readValue = (int) ReadClient.getData();
+		//	System.out.println("[OPC UA] Read Status " + name + " Server: " + readValue );
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("[OPC UA] Client read failed");
+		}
 		
 		//	=======================  RECEIVING =======================				
 		buildingMessage = new BuildingMessage();
