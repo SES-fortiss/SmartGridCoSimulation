@@ -24,6 +24,10 @@ import linprogMPC.helperOPCua.BasicClient;
 public class ClientConsumer extends Consumer {
     public BasicClient client;
     public NodeId nodeId;
+    public List<Double> heatProfile;
+    public List<Double> electricityProfile;
+    public List<UaMonitoredItem> itemsHeat;
+    public List<UaMonitoredItem> itemsElectricity;
 
     public ClientConsumer(BasicClient client, NodeId nodeIdHeat, NodeId nodeIdElectricity, int port) {
 	super(port);
@@ -67,27 +71,21 @@ public class ClientConsumer extends Consumer {
 
 	try {
 	    subscriptionHeat = client.getSubscriptionManager().createSubscription(1000.0).get();
-	    List<UaMonitoredItem> itemsHeat = subscriptionHeat
+	    itemsHeat = subscriptionHeat
 		    .createMonitoredItems(TimestampsToReturn.Both, Arrays.asList(requestHeat), onItemCreatedHeat).get();
-	} catch (InterruptedException | ExecutionException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
 
-	try {
 	    subscriptionElectricity = client.getSubscriptionManager().createSubscription(1000.0).get();
-	    List<UaMonitoredItem> itemsElectricity = subscriptionElectricity
-		    .createMonitoredItems(TimestampsToReturn.Both, Arrays.asList(requestHeat), onItemCreatedElectricity)
-		    .get();
+	    itemsElectricity = subscriptionElectricity.createMonitoredItems(TimestampsToReturn.Both,
+		    Arrays.asList(requestElectricity), onItemCreatedElectricity).get();
 	} catch (InterruptedException | ExecutionException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
-
     }
 
     @Override
     public List<Double> getHeatProfile(int timeStep, int mpcHorizon) {
+	System.out.println(itemsHeat.get(0).getReadValueId().toString().toString());
 	return null;
     }
 

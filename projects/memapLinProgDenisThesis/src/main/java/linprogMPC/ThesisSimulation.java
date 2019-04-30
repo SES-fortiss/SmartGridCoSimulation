@@ -51,7 +51,12 @@ public class ThesisSimulation {
     private void run() throws InterruptedException {
 	UaExampleServerBuildingController sampleClient = new UaExampleServerBuildingController("SampleClient",
 		"opc.tcp://opcuaserver.com:48010", 0);
-	System.out.println("Hat der Air conditioner LDHeating? " + sampleClient.hasLDHeaeting());
+	System.out.println("Has Building (AirConditioner) LDHeating? " + sampleClient.hasLDHeaeting());
+	System.out.println("Show me devices attached to the Building?" + sampleClient.getDevices());
+
+	sampleClient.getEndpointURI();
+	sampleClient.getName();
+	sampleClient.getDevices();
 
 	// topology = FiveBuildingExample.exampleTopology(true);
 	// ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);

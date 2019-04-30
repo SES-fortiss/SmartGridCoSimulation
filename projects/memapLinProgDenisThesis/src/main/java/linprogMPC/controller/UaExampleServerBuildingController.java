@@ -56,8 +56,7 @@ public class UaExampleServerBuildingController implements BuildingController {
 
     @Override
     public Set<? extends Device> getDevices() {
-	// TODO Auto-generated method stub
-	return null;
+	return devices;
     }
 
     @Override
