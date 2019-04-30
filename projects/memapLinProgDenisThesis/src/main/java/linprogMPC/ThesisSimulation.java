@@ -1,9 +1,7 @@
 package linprogMPC;
 
-import akka.actor.ActorSystem;
-import linprogMPC.examples.FiveBuildingExample;
+import linprogMPC.controller.UaExampleServerBuildingController;
 import opcMEMAP.ConfigInterface;
-import simulation.SimulationStarter;
 import topology.ActorTopology;
 
 public class ThesisSimulation {
@@ -51,9 +49,14 @@ public class ThesisSimulation {
     }
 
     private void run() throws InterruptedException {
-	topology = FiveBuildingExample.exampleTopology(true);
-	ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
-	SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimple.NR_OF_ITERATIONS);
+	UaExampleServerBuildingController sampleClient = new UaExampleServerBuildingController("SampleClient",
+		"opc.tcp://opcuaserver.com:48010", 0);
+	System.out.println("Hat der Air conditioner LDHeating? " + sampleClient.hasLDHeaeting());
+
+	// topology = FiveBuildingExample.exampleTopology(true);
+	// ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
+	// SimulationStarter.startSimulation(actorSystem, 0,
+	// ThesisTopologySimple.NR_OF_ITERATIONS);
 
 	// **************MEMAP OFF *******************
 

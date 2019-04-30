@@ -25,7 +25,7 @@ public class ReadClient implements MemapClient{
 		ReadClient readClient = new ReadClient();
 
 		//  configure and launch OPC UA Client
-        new opcuaClient(readClient).run();
+        new OpcuaClient(readClient).run();
     		
     }
 
