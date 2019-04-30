@@ -1,7 +1,9 @@
 package linprogMPC;
 
-import linprogMPC.controller.UaExampleServerBuildingController;
+import akka.actor.ActorSystem;
+import linprogMPC.examples.FiveBuildingExample;
 import opcMEMAP.ConfigInterface;
+import simulation.SimulationStarter;
 import topology.ActorTopology;
 
 public class ThesisSimulation {
@@ -49,19 +51,15 @@ public class ThesisSimulation {
     }
 
     private void run() throws InterruptedException {
-	UaExampleServerBuildingController sampleClient = new UaExampleServerBuildingController("SampleClient",
-		"opc.tcp://opcuaserver.com:48010", 0);
-	System.out.println("Has Building (AirConditioner) LDHeating? " + sampleClient.hasLDHeaeting());
-	System.out.println("Show me devices attached to the Building?" + sampleClient.getDevices());
+	// To test the UaExample Client, maybe try this:
+//	UaExampleServerBuildingController sampleClient = new UaExampleServerBuildingController("SampleClient",
+//		"opc.tcp://opcuaserver.com:48010", 0);
+//	System.out.println("Has Building (AirConditioner) LDHeating? " + sampleClient.hasLDHeaeting());
 
-	sampleClient.getEndpointURI();
-	sampleClient.getName();
-	sampleClient.getDevices();
-
-	// topology = FiveBuildingExample.exampleTopology(true);
-	// ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
-	// SimulationStarter.startSimulation(actorSystem, 0,
-	// ThesisTopologySimple.NR_OF_ITERATIONS);
+	// To test the optimizer with csv files, maybe try this:
+	topology = FiveBuildingExample.exampleTopology(true);
+	ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
+	SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimple.NR_OF_ITERATIONS);
 
 	// **************MEMAP OFF *******************
 

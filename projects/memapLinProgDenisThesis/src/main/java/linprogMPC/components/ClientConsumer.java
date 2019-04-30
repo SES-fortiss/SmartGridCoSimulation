@@ -3,6 +3,7 @@ package linprogMPC.components;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
@@ -13,6 +14,7 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
@@ -24,8 +26,8 @@ import linprogMPC.helperOPCua.BasicClient;
 public class ClientConsumer extends Consumer {
     public BasicClient client;
     public NodeId nodeId;
-    public List<Double> heatProfile;
-    public List<Double> electricityProfile;
+    public List<Double> heatProfile = new LinkedList<Double>();
+    public List<Double> electricityProfile = new LinkedList<Double>();
     public List<UaMonitoredItem> itemsHeat;
     public List<UaMonitoredItem> itemsElectricity;
 
@@ -53,11 +55,28 @@ public class ClientConsumer extends Consumer {
 	MonitoredItemCreateRequest requestElectricity = new MonitoredItemCreateRequest(readValueIdElectricity,
 		MonitoringMode.Reporting, parametersElectricity);
 
-	// The actual consumer
-	BiConsumer<UaMonitoredItem, DataValue> consumerHeat = (item, value) -> System.out.format("%s -> %s%n", item,
-		value);
-	BiConsumer<UaMonitoredItem, DataValue> consumerElectricity = (item, value) -> System.out.format("%s -> %s%n",
-		item, value);
+	// The actual consumer. Methods on call are implemented here
+	BiConsumer<UaMonitoredItem, DataValue> consumerHeat = (item, value) -> {
+	    Variant var = value.getValue();
+	    if (var.getValue() instanceof Double) {
+		heatProfile.add((Double) value.getValue().getValue());
+		System.out.println("New heatProfileProfile" + heatProfile);
+	    } else {
+		System.out.println("Value " + value + " is not in double format");
+	    }
+	    System.out.format("%s -> %s%n", item, value);
+	};
+
+	BiConsumer<UaMonitoredItem, DataValue> consumerElectricity = (item, value) -> {
+	    Variant var = value.getValue();
+	    if (var.getValue() instanceof Double) {
+		electricityProfile.add((Double) value.getValue().getValue());
+		System.out.println("New electricityProfile" + electricityProfile);
+	    } else {
+		System.out.println("Value " + value + " is not in double format");
+	    }
+	    System.out.format("%s -> %s%n", item, value);
+	};
 
 	// setting the consumer after the subscription creation
 	BiConsumer<UaMonitoredItem, Integer> onItemCreatedHeat = (monitoredItem, id) -> monitoredItem
@@ -85,14 +104,12 @@ public class ClientConsumer extends Consumer {
 
     @Override
     public List<Double> getHeatProfile(int timeStep, int mpcHorizon) {
-	System.out.println(itemsHeat.get(0).getReadValueId().toString().toString());
-	return null;
+	return heatProfile;
     }
 
     @Override
     public List<Double> getElectricityProfile(int timeStep, int mpcHorizon) {
-	// TODO Auto-generated method stub
-	return null;
+	return electricityProfile;
     }
 
 }
