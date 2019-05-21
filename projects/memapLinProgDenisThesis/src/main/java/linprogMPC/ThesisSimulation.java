@@ -1,9 +1,15 @@
 package linprogMPC;
 
-import akka.actor.ActorSystem;
-import linprogMPC.examples.FiveBuildingExample;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+
+import com.github.cliftonlabs.json_simple.JsonException;
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsoner;
+
+import linprogMPC.controller.BuildingController;
+import linprogMPC.controller.OpcUaBuildingController;
 import opcMEMAP.ConfigInterface;
-import simulation.SimulationStarter;
 import topology.ActorTopology;
 
 public class ThesisSimulation {
@@ -51,15 +57,23 @@ public class ThesisSimulation {
     }
 
     private void run() throws InterruptedException {
-	// To test the UaExample Client, maybe try this:
-//	UaExampleServerBuildingController sampleClient = new UaExampleServerBuildingController("SampleClient",
-//		"opc.tcp://opcuaserver.com:48010", 0);
-//	System.out.println("Has Building (AirConditioner) LDHeating? " + sampleClient.hasLDHeaeting());
+	FileReader fileReaderEndpoint;
+	try {
+	    fileReaderEndpoint = new FileReader("src/main/java/linprogMPC/controller/ExampleOpcUaEndpoint.json");
+	    FileReader fileReaderNodes = new FileReader("src/main/java/linprogMPC/controller/ExampleOpcUaNodes.json");
+
+	    JsonObject jsonEndpoint = (JsonObject) Jsoner.deserialize(fileReaderEndpoint);
+	    JsonObject jsonNodes = (JsonObject) Jsoner.deserialize(fileReaderNodes);
+	    BuildingController sampleBuilding = new OpcUaBuildingController(jsonEndpoint, jsonNodes);
+	} catch (FileNotFoundException | JsonException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 
 	// To test the optimizer with csv files, maybe try this:
-	topology = FiveBuildingExample.exampleTopology(true);
-	ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
-	SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimple.NR_OF_ITERATIONS);
+//	topology = FiveBuildingExample.exampleTopology(true);
+//	ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
+//	SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimple.NR_OF_ITERATIONS);
 
 	// **************MEMAP OFF *******************
 
