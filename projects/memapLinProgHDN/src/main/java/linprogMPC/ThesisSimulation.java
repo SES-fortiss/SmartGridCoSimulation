@@ -14,7 +14,7 @@ public class ThesisSimulation {
 		
 		//int[] mpcTimeSteps = {1,4,12,24,36,48,60,72};
 		
-		int[] mpcTimeSteps = {};
+		int[] mpcTimeSteps = {4};
 		for (int i = 0; i < mpcTimeSteps.length; i++) {
 			topology = ThesisTopologySimpleSingle.createTopology(mpcTimeSteps[i], false);
 			ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
@@ -23,7 +23,8 @@ public class ThesisSimulation {
 		
 		
 		// **************MEMAP ON ********************
-		//int[] mpcTimeSteps2 = {1,4,12,24,36,48,60,72};
+		//int[] mpcTimeSteps2 = {1,4,12,24};
+		
 		int[] mpcTimeSteps2 = {};
 		for (int i = 0; i < mpcTimeSteps2.length; i++) {
 			topology = ThesisTopologySimple.createTopology(mpcTimeSteps2[i], true);

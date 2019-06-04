@@ -240,6 +240,7 @@ public class MatrixBuildup {
 			optProblem.x_lb[n_index+i] = lb[i];
 			optProblem.x_ub[n_index+i] = ub[i];
 			optProblem.namesUB[n_index+i] = namesUB[i];
+			optProblem.etas[n_index+i] = producerMessage.efficiency;
 			
 			for(int j = 0; j < nStepsMPC; j++) {
 				optProblem.a_eq[b_index+i][n_index +j] = couplingMatrix_H[i][j];
@@ -295,6 +296,7 @@ public class MatrixBuildup {
 			optProblem.x_lb[n_index+i] = lb[i];
 			optProblem.x_ub[n_index+i] = ub[i];
 			optProblem.namesUB[n_index+i] = namesUB[i];
+			optProblem.etas[n_index+i] = couplerMessage.efficiencyHeat;
 			
 			for(int j = 0; j < nStepsMPC; j++) {
 				optProblem.a_eq[b_index+i][n_index +j] = couplingMatrix_H[i][j];
@@ -413,6 +415,7 @@ public class MatrixBuildup {
 					problem.x_lb[n_index+j] = lb[j];
 					problem.x_ub[n_index+j] = ub[j];
 					problem.namesUB[n_index+j] = namesUB[j];
+					problem.etas[n_index+j] = storageMessage.efficiencyCharge;
 					
 					problem.h[nStepsMPC*(2*storagesHandledSoFar)+j] = h_vector[j];	
 				}
@@ -431,6 +434,7 @@ public class MatrixBuildup {
 			double[] lb = new double[2*nStepsMPC];
 			double[] ub = new double[2*nStepsMPC];
 			String[] namesUB = new String[2*nStepsMPC];
+			double[] etas = new double[2*nStepsMPC];
 			
 			double[][] couplingMatrix_H_i = new double[nStepsMPC][2*nStepsMPC];
 			double[][] couplingMatrix_H_j = new double[nStepsMPC][2*nStepsMPC];
@@ -442,6 +446,8 @@ public class MatrixBuildup {
 				ub[nStepsMPC + i] = connectionMessage.maxIn;
 				namesUB[i] = connectionMessage.name+"_"+(buildingsHandledSoFar+1)+connectionMessage.connectedBuilding;
 				namesUB[nStepsMPC+i] = connectionMessage.name+"_"+connectionMessage.connectedBuilding+(buildingsHandledSoFar+1);
+				etas[i] = connectionMessage.efficiencyOut;
+				etas[nStepsMPC+i] = connectionMessage.efficiencyIn;
 				
 				couplingMatrix_H_i[i][i] = 1;
 				couplingMatrix_H_i[i][nStepsMPC + i] = -connectionMessage.efficiencyIn;
@@ -460,6 +466,7 @@ public class MatrixBuildup {
 						problem.x_lb[n_index+j] = lb[j];
 						problem.x_ub[n_index+j] = ub[j];
 						problem.namesUB[n_index+j] = namesUB[j];
+						problem.etas[n_index+j] = etas[j];
 					}
 				}
 			}
@@ -510,13 +517,18 @@ public class MatrixBuildup {
 				
 				problem.a_eq[buildingsHandled*nStepsMPC+i][n_index+b_index+i] = -1.0;  			// matrix: buying of electricity
 				problem.namesUB[n_index+b_index+i] = "ElecBuy";
+				problem.etas[n_index+b_index+i] = 1;
 				
 				problem.a_eq[buildingsHandled*nStepsMPC+i][n_index+b_index+nStepsMPC+i] = 1.0;	// matrix: selling of electricity
 				problem.namesUB[nStepsMPC+n_index+b_index+i] = "ElecSell";
+				problem.etas[nStepsMPC+n_index+b_index+i] = -1;
 				
 				// Extended price vector for market
 				problem.lambda[n_index+b_index+i] = energyPrices.getElectricityPriceInEuro(cts+i);					// electricity buy price
 				problem.lambda[n_index+b_index+nStepsMPC+i] = -energyPrices.getElectricityPriceInEuro(cts+i)*0.5;   // electricity sell price
+				
+				
+				
 			}
 		}		
 	}

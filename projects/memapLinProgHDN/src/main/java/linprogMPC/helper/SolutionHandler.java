@@ -259,12 +259,33 @@ public class SolutionHandler {
 		
 		return result;
 	}
+	
+	public double[] getEffSolutionForThisTimeStep(double[] optSolution, OptimizationProblem problem, int nStepsMPC) {
+		
+		double[] result = new double[optSolution.length / nStepsMPC];
+		
+		for (int i = 0; i < result.length; i++) {
+			result[i] = optSolution[i*nStepsMPC]*problem.etas[i*nStepsMPC];
+		}
+		
+		return result;
+	}
 
 	public String[] getNamesForThisTimeStep(OptimizationProblem problem, int nStepsMPC) {
 		String[] result = new String[problem.namesUB.length / nStepsMPC];
 		
 		for (int i = 0; i < result.length; i++) {
 			result[i] = problem.namesUB[i*nStepsMPC];
+		}
+		
+		return result;
+	}
+	
+	public String[] getEffNamesForThisTimeStep(OptimizationProblem problem, int nStepsMPC) {
+		String[] result = new String[problem.namesUB.length / nStepsMPC];
+		
+		for (int i = 0; i < result.length; i++) {
+			result[i] = "plus"+problem.namesUB[i*nStepsMPC];
 		}
 		
 		return result;
@@ -277,6 +298,17 @@ public class SolutionHandler {
 			result[i] = problem.b_eq[i*nStepsMPC];
 		}
 		
+		return result;
+	}
+	
+	public double[] getPositiveDemandForThisTimestep(OptimizationProblem problem, int nStepsMPC) {
+		double[] result = new double[problem.b_eq.length / nStepsMPC + 1];
+		
+		for (int i = 0; i < result.length-2; i++) {
+			result[i] = -problem.b_eq[i*nStepsMPC];
+			result[result.length-2] += result[i];
+		}
+		result[result.length-1] = -problem.b_eq[(result.length-2)*nStepsMPC];
 		return result;
 	}
 

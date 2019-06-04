@@ -17,8 +17,8 @@ import simulation.SimulationStarter;
  */
 public class EnergyPrices {
 	
-	//private static String STROMPREISE_CSV_FILENAME = "Strompreise_7Tage_simple.csv";
-	private static String STROMPREISE_CSV_FILENAME = "Strompreise_7Tage.csv";
+	private static String STROMPREISE_CSV_FILENAME = "Strompreise_7Tage_simple.csv";
+	//private static String STROMPREISE_CSV_FILENAME = "Strompreise_7Tage.csv";
 	
 	private ArrayList<Double> electricityPrices;
 

@@ -47,10 +47,13 @@ public class ThesisTopologySimple {
 		building1.addActor(building1Name, ActorFactory.createBuilding(PORT_UNDEFINED, MEMAP_LDHeating, 50));
 		building1.addActorAsChild(building1Name + "/Consumption", ActorFactory.createConsumer(consumptionProfiles, 0, PORT_UNDEFINED));
 		building1.addActorAsChild(building1Name + "/OilBoiler1", ActorFactory.createGasBoiler(20, 0.95, 0.0685, PORT_UNDEFINED));	
-		building1.addActorAsChild(building1Name + "/Connection12", ActorFactory.createThermalConnection(2, 999.0, 999.0, 50, PORT_UNDEFINED));
-		//building1.addActorAsChild(building1Name + "/Connection13", ActorFactory.createThermalConnection(3, 999.0, 999.0, 2*50, PORT_UNDEFINED));
-		//building1.addActorAsChild(building1Name + "/Connection14", ActorFactory.createThermalConnection(4, 999.0, 999.0, 3*50, PORT_UNDEFINED));
-		//building1.addActorAsChild(building1Name + "/Connection15", ActorFactory.createThermalConnection(5, 999.0, 999.0, 4*50, PORT_UNDEFINED));
+		//building1.addActorAsChild(building1Name + "/Connection12", ActorFactory.createThermalConnection(2, 999.0, 999.0, 50, PORT_UNDEFINED));
+		
+		building1.addActorAsChild(building1Name + "/Connection12", ActorFactory.createThermalConnection(2, 999.0, 999.0, 120, PORT_UNDEFINED));
+		building1.addActorAsChild(building1Name + "/Connection13", ActorFactory.createThermalConnection(3, 999.0, 999.0, 200, PORT_UNDEFINED));
+		building1.addActorAsChild(building1Name + "/Connection14", ActorFactory.createThermalConnection(4, 999.0, 999.0, 50, PORT_UNDEFINED));
+		building1.addActorAsChild(building1Name + "/Connection15", ActorFactory.createThermalConnection(5, 999.0, 999.0, 120, PORT_UNDEFINED));
+		
 		
 		String building2Name = "Building2";
 		ActorTopology building2 = new ActorTopology(building2Name);
@@ -61,9 +64,13 @@ public class ThesisTopologySimple {
 		building2.addActorAsChild(building2Name + "/PV2", ActorFactory.createPV(5, PORT_UNDEFINED));
 		building2.addActorAsChild(building2Name + "/Battery2", ActorFactory.createBattery(12.0, 9, 9, 0.98, 0.98, PORT_UNDEFINED));
 		//building2.addActorAsChild(building2Name + "/Battery2", ActorFactory.createBattery(12.0, 9, 9, 0.95, 0.95, PORT_UNDEFINED));
-		building2.addActorAsChild(building2Name + "/Connection23", ActorFactory.createThermalConnection(3, 999.0, 999.0, 50, PORT_UNDEFINED));
-		//building2.addActorAsChild(building2Name + "/Connection24", ActorFactory.createThermalConnection(4, 999.0, 999.0, 2*50, PORT_UNDEFINED));
-		//building2.addActorAsChild(building2Name + "/Connection25", ActorFactory.createThermalConnection(5, 999.0, 999.0, 3*50, PORT_UNDEFINED));
+		//building2.addActorAsChild(building2Name + "/Connection23", ActorFactory.createThermalConnection(3, 999.0, 999.0, 50, PORT_UNDEFINED));
+		
+		building2.addActorAsChild(building2Name + "/Connection23", ActorFactory.createThermalConnection(3, 999.0, 999.0, 80, PORT_UNDEFINED));
+		building2.addActorAsChild(building2Name + "/Connection24", ActorFactory.createThermalConnection(4, 999.0, 999.0, 150, PORT_UNDEFINED));
+		building2.addActorAsChild(building2Name + "/Connection25", ActorFactory.createThermalConnection(5, 999.0, 999.0, 40, PORT_UNDEFINED));
+		 
+		
 		
 		String building3Name = "Building3";
 		ActorTopology building3 = new ActorTopology(building3Name);
@@ -74,8 +81,12 @@ public class ThesisTopologySimple {
 		building3.addActorAsChild(building3Name + "/HeatPump3", ActorFactory.createHeatPump(25, 2.5, -1, PORT_UNDEFINED));
 		building3.addActorAsChild(building3Name + "/GasBoiler3", ActorFactory.createGasBoiler(20, 0.98, 0.0591, PORT_UNDEFINED));
 		building3.addActorAsChild(building3Name + "/ThermalStorage3", ActorFactory.createThermalStorage(100, 60, 60, 0.9, 0.9, PORT_UNDEFINED));
-		building3.addActorAsChild(building3Name + "/Connection34", ActorFactory.createThermalConnection(4, 999.0, 999.0, 50, PORT_UNDEFINED));
-		//building3.addActorAsChild(building3Name + "/Connection35", ActorFactory.createThermalConnection(5, 999.0, 999.0, 2*50, PORT_UNDEFINED));
+		//building3.addActorAsChild(building3Name + "/Connection34", ActorFactory.createThermalConnection(4, 999.0, 999.0, 50, PORT_UNDEFINED));
+		
+		building3.addActorAsChild(building3Name + "/Connection34", ActorFactory.createThermalConnection(4, 999.0, 999.0, 230, PORT_UNDEFINED));
+		building3.addActorAsChild(building3Name + "/Connection35", ActorFactory.createThermalConnection(5, 999.0, 999.0, 120, PORT_UNDEFINED));
+		
+		
 		
 		String building4Name = "Building4";
 		ActorTopology building4 = new ActorTopology(building4Name);
@@ -83,7 +94,9 @@ public class ThesisTopologySimple {
 		building4.addActorAsChild(building4Name + "/Consumption", ActorFactory.createConsumer(consumptionProfiles, 3, PORT_UNDEFINED));
 		building4.addActorAsChild(building4Name + "/CHP4", ActorFactory.createCHP(43, 0.61, 0.29, PORT_UNDEFINED));
 		building4.addActorAsChild(building4Name + "/ThermalStorage4", ActorFactory.createThermalStorage(100, 60, 60, 0.9, 0.9, PORT_UNDEFINED));
-		building4.addActorAsChild(building4Name + "/Connection45", ActorFactory.createThermalConnection(5, 999.0, 999.0, 500, PORT_UNDEFINED));
+		//building4.addActorAsChild(building4Name + "/Connection45", ActorFactory.createThermalConnection(5, 999.0, 999.0, 50, PORT_UNDEFINED));
+		
+		building4.addActorAsChild(building4Name + "/Connection45", ActorFactory.createThermalConnection(5, 999.0, 999.0, 150, PORT_UNDEFINED));
 		
 		String building5Name = "Building5";
 		ActorTopology building5 = new ActorTopology(building5Name);

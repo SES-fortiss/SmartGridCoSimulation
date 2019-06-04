@@ -110,32 +110,45 @@ public class LinProgBehavior extends BehaviorModel {
 			
 			double[] memapCostPerTimestep = solHandler.calculateTimeStepCosts(sol, problem.lambda);
 			System.out.println();
-			/*
+			
 			if (GlobalTime.getCurrentTimeStep() == 0) {
 				solHandler.exportMatrix(problem.a_eq, "A_eq.csv");
 			}
-			*/
+			
 			
 			costForTimestepMEMAP[GlobalTime.getCurrentTimeStep()] = memapCostPerTimestep[0];
 			
 			// ******** Erstellung des Ergebnisvektors *********************
+			double[] currentStep = {getActualTimeStep()};
 			double[] currentOptVector = solHandler.getSolutionForThisTimeStep(sol, nStepsMPC);
 			double[] currentDemand = solHandler.getDemandForThisTimestep(problem, nStepsMPC);
 			double[] currentSOC = solHandler.getCurrentSOCs(buildingMessageList);
 			double[] currentCost = {memapCostPerTimestep[0]};
 			
-			double[] vectorAll = HelperConcat.concatAlldoubles(currentDemand, currentOptVector, currentSOC, currentCost);
+			double[] currentPosDemand = solHandler.getPositiveDemandForThisTimestep(problem, nStepsMPC);
+			double[] currentEffOptVector = solHandler.getEffSolutionForThisTimeStep(sol, problem, nStepsMPC);
 			
+			//double[] vectorAll = HelperConcat.concatAlldoubles(currentDemand, currentOptVector, currentSOC, currentCost);
+			double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, currentPosDemand, currentEffOptVector);
+			
+			String[] timeStep = {"timeStep"};
 			String[] currentNamesPartly = solHandler.getNamesForThisTimeStep(problem, nStepsMPC);
+			String[] currentEffNames= solHandler.getEffNamesForThisTimeStep(problem, nStepsMPC);
 			String[] demandStrings = new String[nrOfBuildings+1];
+			String[] posDemandStrings = new String[nrOfBuildings+2]; 
 			for (int i = 0; i < nrOfBuildings; i++) {
 				demandStrings[i] = "demandHeat"+(i+1);
+				posDemandStrings[i] = "positiveDemandHeat"+(i+1);
 			}
 			demandStrings[nrOfBuildings] = "demandElectricity";
+			posDemandStrings[nrOfBuildings] = "demandHeat";
+			posDemandStrings[nrOfBuildings+1] = "positiveDemandElectricity";
 			String[] storageNames = solHandler.getNamesForSOCs(buildingMessageList);
 			String[] costName = {"Cost"}; 
 			
-			String[] namesAll = HelperConcat.concatAllObjects(demandStrings, currentNamesPartly, storageNames, costName);
+			
+			
+			String[] namesAll = HelperConcat.concatAllObjects(timeStep, demandStrings, currentNamesPartly, storageNames, costName, posDemandStrings, currentEffNames);
 						
 			System.out.println(this.actorName + " " + Arrays.toString(namesAll));
 			System.out.println(this.actorName + " " + Arrays.toString(vectorAll));									

@@ -10,6 +10,7 @@ public class OptimizationProblem {
 	public double[] x_lb;
 	public double[] x_ub;
 	public String[] namesUB;
+	public double[] etas;
 	
 	int nrOfBuildings;
 	int nrOfProducers;
@@ -46,6 +47,7 @@ public class OptimizationProblem {
 		x_ub = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];		
 		
 		namesUB = new String[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
+		etas = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
 		
 		//System.out.println(nStepsMPC + " * ( " + nrOfProducers + " " + nrOfStorages + " " + nrOfCouplers + " und " + marketmatrices + ")");
 		

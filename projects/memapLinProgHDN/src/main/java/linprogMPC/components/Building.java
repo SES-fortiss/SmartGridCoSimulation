@@ -162,17 +162,24 @@ public class Building extends BehaviorModel {
 			double[] currentDemand = solHandler.getDemandForThisTimestep(problem, nStepsMPC);
 			double[] currentSOC = solHandler.getCurrentSOC(buildingMessage.storageList);
 			double[] currentCost = {buildingCostPerTimestep[0]};
+			
+			double[] currentPosDemand = solHandler.getPositiveDemandForThisTimestep(problem, nStepsMPC);
+			double[] currentEffOptVector = solHandler.getEffSolutionForThisTimeStep(optSolution, problem, nStepsMPC);
+			
 			double[] electricalPrice = {energyPrices.getElectricityPriceInEuro(this.getActualTimeStep())};			
-			double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, electricalPrice);
+			//double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, electricalPrice);
+			double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, electricalPrice, currentPosDemand, currentEffOptVector);
 			
 			String[] timeStep = {"timeStep"};
 			String[] currentNamesPartly = solHandler.getNamesForThisTimeStep(problem, nStepsMPC);
+			String[] currentEffNames= solHandler.getEffNamesForThisTimeStep(problem, nStepsMPC);
 			String[] demandStrings = {"demandHeat", "demandElectricity"};
+			String[] posDemandStrings = {"positiveDemandHeat", "positiveDemandHeatTotal", "positiveDemandElectricity"}; 
 			String[] storageNames = solHandler.getNamesForSOC(buildingMessage.storageList);
 			String[] costName = {"Cost"};
 			String[] priceName = {"Price"};
 			
-			String[] namesAll = HelperConcat.concatAllObjects(timeStep, demandStrings, currentNamesPartly, storageNames, costName, priceName);
+			String[] namesAll = HelperConcat.concatAllObjects(timeStep, demandStrings, currentNamesPartly, storageNames, costName, priceName, posDemandStrings, currentEffNames);
 						
 			//System.out.println(this.actorName + " " + Arrays.toString(namesAll));
 			//System.out.println(this.actorName + " " + Arrays.toString(vectorAll));									
