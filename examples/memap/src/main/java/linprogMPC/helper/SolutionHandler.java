@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import linprogMPC.helper.SolutionHandler;
 import linprogMPC.Simulation;
 import linprogMPC.messages.BuildingSpec;
 import meritorder.helper.ReadMemapFiles;
@@ -98,6 +99,22 @@ public abstract class SolutionHandler {
 
 		return costVector;	
 	
+	}
+	
+	public static double exportCostsStatic(double[] sol, double[] lambda, String filename) {
+
+		double costs = 0;
+		double[] costVector = new double[lambda.length];
+		
+		for (int i=0; i<lambda.length; i++) {
+			costVector[i] = lambda[i]*sol[i];
+			costs += costVector[i];
+		}	
+
+		SolutionHandler.exportData(costVector, filename);
+
+		return costs;	
+
 	}
 	
 //	public static double exportMemapCosts(double[] sol, double[] lambda, String filename) {

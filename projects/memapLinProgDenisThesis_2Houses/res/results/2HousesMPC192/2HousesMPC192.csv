@@ -1,0 +1,2 @@
+demandHeat;demandElectricity;PV;BatteryDischarge;BatteryCharge;HeatPump;SolarThermic;ThermalStorageDischarge;ThermalStorageCharge;CHP;ElecBuy;ElecSell;HeatBuy;HeatSell;BatterySOC;ThermalStorageSOC;Cost;
+-3.32;-0.76;0.00;0.00;0.49;0.05;0.00;0.00;0.00;5.19;0.00;0.00;0.00;0.00;0.00;0.00;0.32

@@ -1,6 +1,9 @@
 package linprogMPC.components;
 
+import java.util.concurrent.TimeUnit;
+
 import akka.systemActors.GlobalTime;
+import linprog.LinProgSimulation;
 import linprogMPC.helper.SolarRadiation;
 
 public class SolarThermic extends Producer {
@@ -32,7 +35,7 @@ public class SolarThermic extends Producer {
 			}
 			specificationToSend.couplingMatrix_H[i][i] = -efficiency;
 			specificationToSend.lowerBound[i] = 0.0;
-			specificationToSend.upperBound[i] = area*solarRadiation.getSolarProductionPerKWp(cts+i)/0.2; // area x incidend power (converted from PV production) 
+			specificationToSend.upperBound[i] = area*solarRadiation.getSolarProductionPerKWp(cts+i)*LinProgSimulation.stepLength(TimeUnit.HOURS); // area x incidend power (converted from PV production) 
 //			currentTime.add(Calendar.SECOND, stepSize);
 		}
 		

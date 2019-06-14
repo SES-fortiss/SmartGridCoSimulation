@@ -179,7 +179,8 @@ public abstract class MatrixBuildup {
 
 				// Extended price vector for market
 				problem.lambda[n_index+j] = energyPrices.getElectricityPriceInEuro(cts+j);			// electricity buy price
-				problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInEuro(cts+j)*0.5;   // electricity sell price
+				problem.lambda[n_index+n+j] = -.1111;
+//				problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInEuro(cts+j)*0.5;   // electricity sell price
 				problem.lambda[n_index+2*n+j] = EnergyPrices.getHeatPriceInEuro(cts+j);				// heat buy price
 				problem.lambda[n_index+3*n+j] = -0.0;											// heat sell price
 			}	
@@ -235,7 +236,8 @@ public abstract class MatrixBuildup {
 
 				// Extended price vector for market
 				problem.lambda[n_index+j] = energyPrices.getElectricityPriceInEuro(cts+j);			// electricity buy price
-				problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInEuro(cts+j)*0.5;   // electricity sell price
+				problem.lambda[n_index+n+j] = -.1111;
+//				problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInEuro(cts+j)*0.5;   // electricity sell price
 				problem.lambda[n_index+2*n+j] = EnergyPrices.getHeatPriceInEuro(cts+j);				// heat buy price
 				problem.lambda[n_index+3*n+j] = -0.0;											// heat sell price
 			}	

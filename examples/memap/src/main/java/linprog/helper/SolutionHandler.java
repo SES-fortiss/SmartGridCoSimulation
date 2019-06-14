@@ -79,7 +79,6 @@ public abstract class SolutionHandler {
 
 		return costs;	
 
-		
 	}
 
 	public static double[] matrixMultiplication(double[][] matrix, double[] vec) throws IOException {

@@ -17,8 +17,8 @@ public class LinProgSimulation {
 	private static final int NR_OF_ITERATIONS = 1;
 	
 	// Does MEMAP has a long-distance heating connection to buy heat ?
-	public static final boolean MEMAP_LDHeating = true;
-	public static final double HEAT_LOSSES = 1.000;
+	public static final boolean MEMAP_LDHeating = false;
+	public static final double HEAT_LOSSES = 1.0;
 	
 	//For the moment, the following 3 parameters need to stay as defined to match data input
 //	public static LocalDateTime startTime = LocalDateTime.of(2014,7,1,11,0);
@@ -28,8 +28,8 @@ public class LinProgSimulation {
 	
 	private void run() {
 		// Test-Topology:
-//		topology = Topology2Houses.createTopology();
-		topology = Topology.createTopology();
+		topology = Topology2Houses.createTopology();
+//		topology = Topology.createTopology();
 //		topology = TopologyCoSES.createTopology();
 		SimulationStarter.saveGridTopologyPlot(topology);   
 		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);

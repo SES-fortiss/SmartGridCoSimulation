@@ -94,13 +94,13 @@ public class LinProgBehavior extends BehaviorModel {
 			
 			OptimizationProblem problem = MatrixBuildup.SingleBuilding(buildingSpec);
 			
-			System.out.println("lambda.length double[]: " + problem.lambda.length);
-			System.out.println("h.length double[]: " + problem.h.length);
-			System.out.println("g.length double[]: " + problem.g.length);
-			System.out.println("b_eq.length double[]: " + problem.b_eq.length);
-			System.out.println("a_eq.length double[]: " + problem.a_eq.length);
-			System.out.println("x_lb.length double[]: " + problem.x_lb.length);
-			System.out.println("x_ub.length double[]: " + problem.x_ub.length);
+//			System.out.println("lambda.length double[]: " + problem.lambda.length);
+//			System.out.println("h.length double[]: " + problem.h.length);
+//			System.out.println("g.length double[]: " + problem.g.length);
+//			System.out.println("b_eq.length double[]: " + problem.b_eq.length);
+//			System.out.println("a_eq.length double[]: " + problem.a_eq.length);
+//			System.out.println("x_lb.length double[]: " + problem.x_lb.length);
+//			System.out.println("x_ub.length double[]: " + problem.x_ub.length);
 			
 			
 			double[] sol = OptimizationStarter.runLinProg(problem);
