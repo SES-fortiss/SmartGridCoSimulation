@@ -3,6 +3,7 @@ package linprogMPC.controller;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -13,6 +14,7 @@ import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonObject;
 
 import linprogMPC.components.ClientConsumer;
+import linprogMPC.components.ClientStorage;
 import linprogMPC.components.prototypes.Device;
 import linprogMPC.helperOPCua.BasicClient;
 
@@ -49,7 +51,12 @@ public class OpcUaBuildingController implements BuildingController {
 
 	// Subscribe to all devices on the OpcUaServer which are referenced in the
 	// nodesConfig File
-	nodesConfigHandler.initDevices();
+	try {
+	    nodesConfigHandler.initDevices();
+	} catch (InterruptedException | ExecutionException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
     }
 
     @Override
@@ -123,7 +130,7 @@ public class OpcUaBuildingController implements BuildingController {
 
     private class NodesConfigHandler {
 
-	private void initDevices() {
+	private void initDevices() throws InterruptedException, ExecutionException {
 	    for (String key : nodesConfig.keySet()) {
 		switch (key) {
 		case "consumer":
@@ -133,7 +140,18 @@ public class OpcUaBuildingController implements BuildingController {
 			attach(new ClientConsumer(client, NodeId.parse((String) consumer.get("heatConsumptionId")),
 				NodeId.parse((String) consumer.get("powerConsumptionId")), heatTransportLength));
 		    }
-		    // TODO: Implement cases for other devices
+		case "storage":
+		    JsonArray storages = (JsonArray) nodesConfig.get("storage");
+		    for (int i = 0; i < storages.size(); i++) {
+			JsonObject storage = (JsonObject) storages.get(i);
+			NodeId capacityId = NodeId.parse((String) storage.get("capacityId"));
+			NodeId maxChargingId = NodeId.parse((String) storage.get("maxChargingId"));
+			NodeId maxDischargingId = NodeId.parse((String) storage.get("maxDischargingId"));
+			NodeId effInId = NodeId.parse((String) storage.get("effInId"));
+			NodeId effOutId = NodeId.parse((String) storage.get("effOutId"));
+			attach(new ClientStorage(client, capacityId, maxChargingId, maxDischargingId, effInId, effOutId,
+				heatTransportLength));
+		    }
 		}
 
 	    }

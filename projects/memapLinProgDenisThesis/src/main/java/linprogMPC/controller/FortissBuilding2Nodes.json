@@ -11,5 +11,13 @@
   "heatpump": [],
   "pv": [],
   "solarthermic": [],
-  "thermalstorage": []
+  "storage": [
+    {
+  	  "capacityId": "ns=2;i=41",
+  	  "maxChargingId": "ns=2;i=43",
+  	  "maxDischargingId": "ns=2;i=44",
+  	  "effInId": "ns=2;i=40",
+  	  "effOutId": "ns=2;i=40"
+    }
+  ]
 }

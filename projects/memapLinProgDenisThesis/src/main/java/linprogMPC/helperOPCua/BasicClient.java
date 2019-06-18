@@ -34,9 +34,21 @@ public class BasicClient {
 	}
     }
 
-    public DataValue readValue(int maxAge, TimestampsToReturn both, NodeId nodeId)
+    public DataValue readValue(int maxAge, TimestampsToReturn timestampstoreturn, NodeId nodeId)
 	    throws InterruptedException, ExecutionException {
-	return client.readValue(maxAge, both, nodeId).get();
+	return client.readValue(maxAge, timestampstoreturn, nodeId).get();
+    }
+
+    public Double readFinalDoubleValue(NodeId nodeId) throws InterruptedException, ExecutionException {
+	Object obj = client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, nodeId).get().getValue()
+		.getValue();
+	if (obj instanceof Number) {
+	    Double value = ((Number) obj).doubleValue();
+	    return value;
+	} else {
+	    System.out.println("This is not a number!");
+	}
+	return null;
     }
 
     public UaSubscriptionManager getSubscriptionManager() {
