@@ -17,6 +17,7 @@ import linprogMPC.components.ClientConsumer;
 import linprogMPC.components.ClientStorage;
 import linprogMPC.components.prototypes.Device;
 import linprogMPC.helperOPCua.BasicClient;
+import linprogMPC.messages.extension.NetworkType;
 
 public class OpcUaBuildingController implements BuildingController {
 
@@ -140,18 +141,31 @@ public class OpcUaBuildingController implements BuildingController {
 			attach(new ClientConsumer(client, NodeId.parse((String) consumer.get("heatConsumptionId")),
 				NodeId.parse((String) consumer.get("powerConsumptionId")), heatTransportLength));
 		    }
-		case "storage":
-		    JsonArray storages = (JsonArray) nodesConfig.get("storage");
-		    for (int i = 0; i < storages.size(); i++) {
-			JsonObject storage = (JsonObject) storages.get(i);
-			NodeId capacityId = NodeId.parse((String) storage.get("capacityId"));
-			NodeId maxChargingId = NodeId.parse((String) storage.get("maxChargingId"));
-			NodeId maxDischargingId = NodeId.parse((String) storage.get("maxDischargingId"));
-			NodeId effInId = NodeId.parse((String) storage.get("effInId"));
-			NodeId effOutId = NodeId.parse((String) storage.get("effOutId"));
+		case "battery":
+		    JsonArray batteries = (JsonArray) nodesConfig.get("battery");
+		    for (int i = 0; i < batteries.size(); i++) {
+			JsonObject battery = (JsonObject) batteries.get(i);
+			NodeId capacityId = NodeId.parse((String) battery.get("capacityId"));
+			NodeId maxChargingId = NodeId.parse((String) battery.get("maxChargingId"));
+			NodeId maxDischargingId = NodeId.parse((String) battery.get("maxDischargingId"));
+			NodeId effInId = NodeId.parse((String) battery.get("effInId"));
+			NodeId effOutId = NodeId.parse((String) battery.get("effOutId"));
 			attach(new ClientStorage(client, capacityId, maxChargingId, maxDischargingId, effInId, effOutId,
-				heatTransportLength));
+				NetworkType.ELECTRICITY, heatTransportLength));
 		    }
+		case "thermalstorage":
+		    JsonArray thermalStorages = (JsonArray) nodesConfig.get("thermalstorage");
+		    for (int i = 0; i < thermalStorages.size(); i++) {
+			JsonObject thermalStorage = (JsonObject) thermalStorages.get(i);
+			NodeId capacityId = NodeId.parse((String) thermalStorage.get("capacityId"));
+			NodeId maxChargingId = NodeId.parse((String) thermalStorage.get("maxChargingId"));
+			NodeId maxDischargingId = NodeId.parse((String) thermalStorage.get("maxDischargingId"));
+			NodeId effInId = NodeId.parse((String) thermalStorage.get("effInId"));
+			NodeId effOutId = NodeId.parse((String) thermalStorage.get("effOutId"));
+			attach(new ClientStorage(client, capacityId, maxChargingId, maxDischargingId, effInId, effOutId,
+				NetworkType.ELECTRICITY, heatTransportLength));
+		    }
+
 		}
 
 	    }
