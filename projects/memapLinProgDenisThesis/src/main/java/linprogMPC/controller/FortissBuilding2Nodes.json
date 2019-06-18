@@ -1,0 +1,15 @@
+{
+  "battery": [],
+  "chp": [],
+  "consumer": [
+    {
+      "heatConsumptionId": "ns=2;i=12",
+      "powerConsumptionId": "ns=2;i=9"
+    }
+  ],
+  "gasboiler": [],
+  "heatpump": [],
+  "pv": [],
+  "solarthermic": [],
+  "thermalstorage": []
+}

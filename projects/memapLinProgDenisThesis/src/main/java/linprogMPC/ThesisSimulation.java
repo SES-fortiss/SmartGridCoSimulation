@@ -59,8 +59,9 @@ public class ThesisSimulation {
     private void run() throws InterruptedException {
 	FileReader fileReaderEndpoint;
 	try {
-	    fileReaderEndpoint = new FileReader("src/main/java/linprogMPC/controller/ExampleOpcUaEndpoint.json");
-	    FileReader fileReaderNodes = new FileReader("src/main/java/linprogMPC/controller/ExampleOpcUaNodes.json");
+	    fileReaderEndpoint = new FileReader("src/main/java/linprogMPC/controller/FortissBuilding2Endpoint.json");
+	    FileReader fileReaderNodes = new FileReader(
+		    "src/main/java/linprogMPC/controller/FortissBuilding2Nodes.json");
 
 	    JsonObject jsonEndpoint = (JsonObject) Jsoner.deserialize(fileReaderEndpoint);
 	    JsonObject jsonNodes = (JsonObject) Jsoner.deserialize(fileReaderNodes);
