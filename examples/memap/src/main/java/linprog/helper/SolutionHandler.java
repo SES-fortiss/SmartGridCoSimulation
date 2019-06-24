@@ -196,8 +196,9 @@ public abstract class SolutionHandler {
 		
 		
 		for (int i=x1; i < x1+n ; i++ ) {
-			purchase_el += sol[n+i]-sol[i];		 //difference between purchased and sold electricity
-			purchase_H += sol[3*n+i]-sol[2*n+i]; //difference between purchased and sold heat
+			purchase_el += -sol[i];		 //purchased  electricity
+			purchase_H += -sol[2*n+i]; //purchased heat
+			// purchase_gas ??
 		}
 		
 		double purchasedEnergy = purchase_el + purchase_H;

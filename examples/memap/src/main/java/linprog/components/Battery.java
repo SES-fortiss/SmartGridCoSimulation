@@ -1,5 +1,7 @@
 package linprog.components;
 
+import linprog.LinProgSimulation;
+
 public class Battery extends Storage {
 	
 	
@@ -16,7 +18,9 @@ public class Battery extends Storage {
 		super.makeDecision();
 //		EnergyPrices energyPrices = new EnergyPrices();
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = 0.00001; 
+			specificationToSend.cost[i] = 0.00001 + LinProgSimulation.CO2_PRICE/1000.0 * 0.0;
+			specificationToSend.costCO2[i] = 0.0; 
+			specificationToSend.cost_plus[i] = 0.0 + LinProgSimulation.CO2_PRICE/1000.0 * 0.0;
 			for (int j = 0; j < 2*n; j++) {
 				specificationToSend.couplingMatrix_H[i][j] = 0.0;
 				specificationToSend.couplingMatrix_el[i][j] = 0.0;
@@ -27,6 +31,8 @@ public class Battery extends Storage {
 		}
 		for (int i = n; i < 2*n; i++) {
 			specificationToSend.cost[i] = 0.00001; 
+			specificationToSend.costCO2[i] = 0.0; 
+			specificationToSend.cost_plus[i] = 0.0; 
 			specificationToSend.vector[i] = capacity;
 		}
 	

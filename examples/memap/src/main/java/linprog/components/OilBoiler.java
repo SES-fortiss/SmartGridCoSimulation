@@ -23,7 +23,9 @@ public class OilBoiler extends Producer {
 		
 //		Calendar currentTime = startTime;
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = 0.00001 + EnergyPrices.getGasPriceInEuro(i);
+			specificationToSend.cost[i] = 0.00001 + EnergyPrices.getGasPriceInEuro(i) + LinProgSimulation.CO2_PRICE/1000 * 0.281;
+			specificationToSend.costCO2[i] = 0.281; // kg CO2/kWh
+			specificationToSend.cost_plus[i] = 1.19*(0.0001 + 0.0001) + LinProgSimulation.CO2_PRICE/1000 * 0.281;
 //			currentTime.add(Calendar.SECOND, stepSize);
 			for (int j = 0; j < n; j++) {
 				specificationToSend.couplingMatrix_H[i][j] = 0.0;

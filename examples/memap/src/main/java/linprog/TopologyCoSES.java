@@ -5,9 +5,9 @@ import topology.ActorTopology;
 
 /**
  *
- * Topology for example with 5 buildings with Linear Programming
+ * Topology for example with 5 buildings (CoSES) with Linear Programming
  * 
- * @author andreas.thut
+ * @author jan.mayer
  *
  */
 @SuppressWarnings("unused")

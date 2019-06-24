@@ -25,6 +25,8 @@ public abstract class Storage extends Device {
 	public void makeDecision() {
 		specificationToSend.name = this.name;
 		specificationToSend.cost = new double[2*n];
+		specificationToSend.costCO2 = new double[2*n];
+		specificationToSend.cost_plus = new double[2*n];
 		specificationToSend.couplingMatrix_H = new double[n][2*n];
 		specificationToSend.couplingMatrix_el = new double[n][2*n];
 		specificationToSend.capacityMatrix1 = new double[n][2*n];
@@ -49,11 +51,13 @@ public abstract class Storage extends Device {
 				specificationToSend.capacityMatrix1[i][j] = 0.0;
 				specificationToSend.capacityMatrix2[i][j] = 0.0;
 			}
+			specificationToSend.costCO2[i] = 0.0;
 			specificationToSend.vector[i] = 0.0;
 			specificationToSend.lowerBound[i] = 0.0;
 			specificationToSend.upperBound[i] = qdot_max_in*Simulation.stepLength(TimeUnit.HOURS);
 		}
 		for(int i = n; i < 2*n; i++) {				
+			specificationToSend.costCO2[i] = 0.0;			
 			specificationToSend.vector[i] = 0.0;
 			specificationToSend.lowerBound[i] = 0.0;
 			specificationToSend.upperBound[i] = qdot_max_out*Simulation.stepLength(TimeUnit.HOURS);

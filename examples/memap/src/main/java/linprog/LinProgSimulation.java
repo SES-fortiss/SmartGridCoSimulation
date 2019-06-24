@@ -20,6 +20,20 @@ public class LinProgSimulation {
 	public static final boolean MEMAP_LDHeating = false;
 	public static final double HEAT_LOSSES = 1.0;
 	
+	// Optimization parameters
+	public static final double MIX_DE_EL = 0.474; // Emissionen deutscher Strommix   kg CO2 / kWh
+	public static final double MIX_DE_H = 0.196; // Emissionen deutscher Fernwärme   kg CO2 / kWh
+	public static final double ESV_DE = 0.1111;  // Einspeisevergütung
+
+	
+	// SET Optimization Criteria
+	// OPT_RATIO * Grenzkosten + Emissionen* CO2_PRICE + (1-OPT_RATIO) * CO2 Emissionen in t
+	public static final double OPT_RATIO = 1;	// 0 = CO2 Emissionen; 1 = Kosten
+	public static final double CO2_PRICE = 180;   // Euro per ton
+	
+	// add cost_plus
+
+	
 	//For the moment, the following 3 parameters need to stay as defined to match data input
 //	public static LocalDateTime startTime = LocalDateTime.of(2014,7,1,11,0);
 //	public static LocalDateTime endTime = LocalDateTime.of(2014,7,1,12,0);
@@ -28,9 +42,10 @@ public class LinProgSimulation {
 	
 	private void run() {
 		// Test-Topology:
-		topology = Topology2Houses.createTopology();
+//		topology = Topology2Houses.createTopology();
 //		topology = Topology.createTopology();
-//		topology = TopologyCoSES.createTopology();
+		topology = TopologyCoSES.createTopology();
+//		topology = Topology5Houses.createTopology();
 		SimulationStarter.saveGridTopologyPlot(topology);   
 		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
         SimulationStarter.startSimulation(actorSystem, 0, NR_OF_ITERATIONS);
