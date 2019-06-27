@@ -29,7 +29,7 @@ public class LinProgSimulation {
 	// SET Optimization Criteria
 	// OPT_RATIO * Grenzkosten + Emissionen* CO2_PRICE + (1-OPT_RATIO) * CO2 Emissionen in t
 	public static final double OPT_RATIO = 1;	// 0 = CO2 Emissionen; 1 = Kosten
-	public static final double CO2_PRICE = 180;   // Euro per ton
+	public static final double CO2_PRICE = 140;   // Euro per ton
 	
 	// add cost_plus
 
@@ -44,8 +44,8 @@ public class LinProgSimulation {
 		// Test-Topology:
 //		topology = Topology2Houses.createTopology();
 //		topology = Topology.createTopology();
-		topology = TopologyCoSES.createTopology();
-//		topology = Topology5Houses.createTopology();
+//		topology = TopologyCoSES.createTopology();
+		topology = Topology5Houses.createTopology();
 		SimulationStarter.saveGridTopologyPlot(topology);   
 		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
         SimulationStarter.startSimulation(actorSystem, 0, NR_OF_ITERATIONS);

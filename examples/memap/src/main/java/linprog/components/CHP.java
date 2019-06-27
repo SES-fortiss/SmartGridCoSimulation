@@ -27,7 +27,7 @@ public class CHP extends Producer {
 		super.makeDecision();
 //		Calendar currentTime = startTime;
 		for (int i = 0; i < n; i++) {
-			specificationToSend.cost[i] = 0.00001 + EnergyPrices.getGasPriceInEuro(i) + LinProgSimulation.CO2_PRICE/1000.0 * 0.202; 
+			specificationToSend.cost[i] = 0.00001 + EnergyPrices.getGasPriceInEuro(i);// + LinProgSimulation.CO2_PRICE/1000.0 * 0.202; 
 			specificationToSend.costCO2[i] = 0.202; // kg CO2/kWh 
 			specificationToSend.cost_plus[i] =1.19*(0.044 + 0.0263) + EnergyPrices.getGasPriceInEuro(i) + LinProgSimulation.CO2_PRICE/1000.0 * 0.202; 
 //			currentTime.add(Calendar.SECOND, stepSize);

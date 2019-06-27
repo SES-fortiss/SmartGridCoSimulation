@@ -121,7 +121,7 @@ public abstract class MatrixBuildup {
 		for(int i = 0; i < n; i++) {
 			problem.lambda1[n_index+i] = producerSpec.cost[i];
 			problem.lambda2[n_index+i] = producerSpec.costCO2[i];
-			problem.lambda[n_index+i] = k* producerSpec.cost[i] + (1-k)*producerSpec.costCO2[i];
+			problem.lambda[n_index+i] = k* (producerSpec.cost[i] + LinProgSimulation.CO2_PRICE/1000 * producerSpec.costCO2[i])+ (1-k)*producerSpec.costCO2[i];
 			
 			problem.x_lb[n_index+i] = producerSpec.lowerBound[i];
 			problem.x_ub[n_index+i] = producerSpec.upperBound[i];
@@ -158,9 +158,9 @@ public abstract class MatrixBuildup {
 				problem.a_eq[j][n_index+3*n+j] = 1.0;	// selling/disposing of heat
 
 				// Extended price vector for market
-				problem.lambda1[n_index+j] = energyPrices.getElectricityPriceInEuro(j) + LinProgSimulation.CO2_PRICE/1000 * LinProgSimulation.MIX_DE_EL ;	// electricity buy price
+				problem.lambda1[n_index+j] = energyPrices.getElectricityPriceInEuro(j);	// electricity buy price
 				problem.lambda1[n_index+n+j] = -LinProgSimulation.ESV_DE;																					// electricity sell price
-				problem.lambda1[n_index+2*n+j] = EnergyPrices.getHeatPriceInEuro(j) + LinProgSimulation.CO2_PRICE/1000 * LinProgSimulation.MIX_DE_H ;		// heat buy price
+				problem.lambda1[n_index+2*n+j] = EnergyPrices.getHeatPriceInEuro(j);		// heat buy price
 				problem.lambda1[n_index+3*n+j] = -0.0;																										// heat sell price
 				
 				problem.lambda2[n_index+j] = LinProgSimulation.MIX_DE_EL;											
@@ -169,9 +169,9 @@ public abstract class MatrixBuildup {
 				problem.lambda2[n_index+3*n+j] = -0.0;											
 
 				// can be modified to be universal
-				problem.lambda[n_index+j] = k * problem.lambda1[n_index+j] + (1-k)*problem.lambda2[n_index+j];		
+				problem.lambda[n_index+j] = k * (problem.lambda1[n_index+j] + LinProgSimulation.CO2_PRICE/1000 * problem.lambda2[n_index+j]) + (1-k)*problem.lambda2[n_index+j];		
 				problem.lambda[n_index+n+j] =k * problem.lambda1[n_index+n+j] + (1-k)*problem.lambda2[n_index+n+j];	
-				problem.lambda[n_index+2*n+j] = k * problem.lambda1[n_index+2*n+j] + (1-k)*problem.lambda2[n_index+2*n+j];	
+				problem.lambda[n_index+2*n+j] = k * (problem.lambda1[n_index+2*n+j] + LinProgSimulation.CO2_PRICE/1000 * problem.lambda2[n_index+2*n+j]) + (1-k)*problem.lambda2[n_index+2*n+j];	
 				problem.lambda[n_index+3*n+j] = k * problem.lambda1[n_index+3*n+j] + (1-k)*problem.lambda2[n_index+3*n+j];
 			}	
 			
@@ -189,9 +189,9 @@ public abstract class MatrixBuildup {
 					problem.a_eq[n+i][n_index+j] = storageSpec.couplingMatrix_el[i][j];
 					problem.g[n*(2*storagesHandledSoFar)+i][n_index+j] = storageSpec.capacityMatrix1[i][j];
 					problem.g[n*(1+2*storagesHandledSoFar)+i][n_index+j] = storageSpec.capacityMatrix2[i][j];
-					problem.lambda1[n_index+i] = storageSpec.cost[i];
-					problem.lambda2[n_index+i] = storageSpec.costCO2[i];
-					problem.lambda[n_index+j] = k*storageSpec.cost[j] + (1-k)*storageSpec.costCO2[j];
+					problem.lambda1[n_index+j] = storageSpec.cost[j];
+					problem.lambda2[n_index+j] = storageSpec.costCO2[j];
+					problem.lambda[n_index+j] = k*(storageSpec.cost[j] + LinProgSimulation.CO2_PRICE/1000 *storageSpec.costCO2[j])+ (1-k)*storageSpec.costCO2[j];
 					problem.x_lb[n_index+j] = storageSpec.lowerBound[j];
 					problem.x_ub[n_index+j] = storageSpec.upperBound[j];
 					
@@ -226,9 +226,9 @@ public abstract class MatrixBuildup {
 				problem.a_eq[j][n_index+3*n+j] = 1.0;		// selling of heat
 
 				// Extended price vector for market
-				problem.lambda1[n_index+j] = energyPrices.getElectricityPriceInEuro(j) + LinProgSimulation.CO2_PRICE/1000 * LinProgSimulation.MIX_DE_EL ;	// electricity buy price
+				problem.lambda1[n_index+j] = energyPrices.getElectricityPriceInEuro(j);	// electricity buy price
 				problem.lambda1[n_index+n+j] = -LinProgSimulation.ESV_DE;																					// electricity sell price
-				problem.lambda1[n_index+2*n+j] = EnergyPrices.getHeatPriceInEuro(j) + LinProgSimulation.CO2_PRICE/1000 * LinProgSimulation.MIX_DE_H ;		// heat buy price
+				problem.lambda1[n_index+2*n+j] = EnergyPrices.getHeatPriceInEuro(j);		// heat buy price
 				problem.lambda1[n_index+3*n+j] = -0.0;																										// heat sell price
 				
 				problem.lambda2[n_index+j] = LinProgSimulation.MIX_DE_EL;											
@@ -237,9 +237,9 @@ public abstract class MatrixBuildup {
 				problem.lambda2[n_index+3*n+j] = -0.0;											
 
 				// can be modified to be universal
-				problem.lambda[n_index+j] = k * problem.lambda1[n_index+j] + (1-k)*problem.lambda2[n_index+j];		
+				problem.lambda[n_index+j] = k * (problem.lambda1[n_index+j] + LinProgSimulation.CO2_PRICE/1000 * problem.lambda2[n_index+j]) + (1-k)*problem.lambda2[n_index+j];		
 				problem.lambda[n_index+n+j] =k * problem.lambda1[n_index+n+j] + (1-k)*problem.lambda2[n_index+n+j];	
-				problem.lambda[n_index+2*n+j] = k * problem.lambda1[n_index+2*n+j] + (1-k)*problem.lambda2[n_index+2*n+j];	
+				problem.lambda[n_index+2*n+j] = k * (problem.lambda1[n_index+2*n+j] + LinProgSimulation.CO2_PRICE/1000 * problem.lambda2[n_index+2*n+j]) + (1-k)*problem.lambda2[n_index+2*n+j];	
 				problem.lambda[n_index+3*n+j] = k * problem.lambda1[n_index+3*n+j] + (1-k)*problem.lambda2[n_index+3*n+j];
 			}	
 

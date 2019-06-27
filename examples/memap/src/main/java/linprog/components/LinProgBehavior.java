@@ -110,9 +110,9 @@ public class LinProgBehavior extends BehaviorModel {
 			// Print consumption and calculate energy autarky
 //			double autarky = SolutionHandler.calcAutarky(problem, sol);
 			
-			OptimizationCostsPerBuilding[counter] = SolutionHandler.exportCosts(sol, problem.lambda, "CostGEB" + (counter+1) + ".csv");	
-			EmissionsPerBuilding[counter] = SolutionHandler.exportCosts(sol, problem.lambda2, "SecCostGEB" + (counter) + ".csv");	
-			ExpansesPerBuilding[counter] = SolutionHandler.exportCosts(sol, problem.lambda1, "TertCostGEB" + (counter) + ".csv");	
+			OptimizationCostsPerBuilding[counter] = SolutionHandler.exportCosts(sol, problem.lambda, "FirstCostGEB" + (counter+1) + ".csv");	
+			EmissionsPerBuilding[counter] = SolutionHandler.exportCosts(sol, problem.lambda2, "SecondCostGEB" + (counter) + ".csv");	
+			ExpansesPerBuilding[counter] = SolutionHandler.exportCosts(sol, problem.lambda1, "MainCostGEB" + (counter) + ".csv");	
 			System.out.println("COSTS: " + String.format("%.02f", OptimizationCostsPerBuilding[counter]) + " EUR / kg");
 //			System.out.println("Energy autarky: " + String.format("%.02f", autarky) + " %");
 			System.out.println("------");
@@ -160,17 +160,17 @@ public class LinProgBehavior extends BehaviorModel {
 			buildingsTotalCosts += OptimizationCostsPerBuilding[i];
 		}
 		
-		double EmissionsMEMAP = SolutionHandler.exportCosts(sol, problem.lambda2, "PrimaryCostVectorMEMAP.csv");
-		double ExpensesMEMAP = SolutionHandler.exportCosts(sol, problem.lambda1, "TertiaryCostVectorMEMAP.csv");
-		double costsMEMAP = SolutionHandler.exportCosts(sol, problem.lambda, "SecondaryCostVectorMEMAP.csv");
+		double EmissionsMEMAP = SolutionHandler.exportCosts(sol, problem.lambda2, "FirstCostVectorMEMAP.csv");
+		double ExpensesMEMAP = SolutionHandler.exportCosts(sol, problem.lambda1, "SecondCostVectorMEMAP.csv");
+		double costsMEMAP = SolutionHandler.exportCosts(sol, problem.lambda, "MainCostVectorMEMAP.csv");
 		
 		System.out.println("****************************************************************");	
 		System.out.println("Costs: " + String.format("%.02f", costsMEMAP) + " EUR / kg");
+		System.out.println("Costs without MEMAP: " + String.format("%.02f", buildingsTotalCosts)+ " EUR");
 //		System.out.println("Energy autarky: " + String.format("%.02f", autarkyMEMAP) + " %");
 		System.out.println("------");
-		System.out.println("Emissions: " + String.format("%.02f", EmissionsMEMAP) + " kg");
-		System.out.println("Expenses without MEMAP: " + String.format("%.02f", buildingsTotalCosts)+ " EUR");
-		System.out.println("Expenses with MEMAP: " + String.format("%.02f", ExpensesMEMAP) + " EUR");
+		System.out.println("Emissions MEMAP: " + String.format("%.02f", EmissionsMEMAP) + " kg");
+		System.out.println("Expenses MEMAP: " + String.format("%.02f", ExpensesMEMAP) + " EUR");
 		System.out.println("****************************************************************");	
 
 
