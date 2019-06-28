@@ -1,0 +1,5 @@
+{
+  "name": "FortissBuilding1",
+  "endpointURL": "opc.tcp://10.10.10.60:4880",
+  "endpointDescriptor": "0"
+}

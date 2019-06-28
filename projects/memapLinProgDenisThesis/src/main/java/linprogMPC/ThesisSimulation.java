@@ -7,9 +7,12 @@ import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 
+import akka.actor.ActorSystem;
 import linprogMPC.controller.BuildingController;
 import linprogMPC.controller.OpcUaBuildingController;
+import linprogMPC.controller.TopologyController;
 import opcMEMAP.ConfigInterface;
+import simulation.SimulationStarter;
 import topology.ActorTopology;
 
 public class ThesisSimulation {
@@ -57,19 +60,38 @@ public class ThesisSimulation {
     }
 
     private void run() throws InterruptedException {
-	FileReader fileReaderEndpoint;
-	try {
-	    fileReaderEndpoint = new FileReader("src/main/java/linprogMPC/controller/FortissBuilding2Endpoint.json");
-	    FileReader fileReaderNodes = new FileReader(
-		    "src/main/java/linprogMPC/controller/FortissBuilding2Nodes.json");
+	TopologyController topologyController = new TopologyController("MEMAP", true, 1, 96, 7, 0, false, 9999);
 
-	    JsonObject jsonEndpoint = (JsonObject) Jsoner.deserialize(fileReaderEndpoint);
-	    JsonObject jsonNodes = (JsonObject) Jsoner.deserialize(fileReaderNodes);
-	    BuildingController sampleBuilding = new OpcUaBuildingController(jsonEndpoint, jsonNodes);
+	try {
+	    FileReader endpoint1 = new FileReader("src/main/java/linprogMPC/controller/FortissBuilding1Endpoint.json");
+	    FileReader nodes1 = new FileReader("src/main/java/linprogMPC/controller/FortissBuilding1Nodes.json");
+	    JsonObject jsonEndpoint1 = (JsonObject) Jsoner.deserialize(endpoint1);
+	    JsonObject jsonNodes1 = (JsonObject) Jsoner.deserialize(nodes1);
+	    BuildingController sampleBuilding1 = new OpcUaBuildingController(jsonEndpoint1, jsonNodes1);
+	    topologyController.attach(sampleBuilding1);
+
 	} catch (FileNotFoundException | JsonException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
+
+	try {
+	    FileReader endpoint2 = new FileReader("src/main/java/linprogMPC/controller/FortissBuilding2Endpoint.json");
+	    FileReader nodes2 = new FileReader("src/main/java/linprogMPC/controller/FortissBuilding2Nodes.json");
+	    JsonObject jsonEndpoint2 = (JsonObject) Jsoner.deserialize(endpoint2);
+	    JsonObject jsonNodes2 = (JsonObject) Jsoner.deserialize(nodes2);
+	    BuildingController sampleBuilding2 = new OpcUaBuildingController(jsonEndpoint2, jsonNodes2);
+	    topologyController.attach(sampleBuilding2);
+
+	} catch (FileNotFoundException | JsonException e) {
+	    e.printStackTrace();
+	}
+
+	Thread.sleep(10000); // Wait so that we get initial values for all devices
+
+	topology = topologyController.getTopology();
+
+	ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
+	SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimple.NR_OF_ITERATIONS);
 
 	// To test the optimizer with csv files, maybe try this:
 //	topology = FiveBuildingExample.exampleTopology(true);

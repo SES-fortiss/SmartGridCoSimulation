@@ -14,7 +14,10 @@ import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonObject;
 
 import linprogMPC.components.ClientConsumer;
+import linprogMPC.components.ClientCoupler;
+import linprogMPC.components.ClientProducer;
 import linprogMPC.components.ClientStorage;
+import linprogMPC.components.ClientVolatileProducer;
 import linprogMPC.components.prototypes.Device;
 import linprogMPC.helperOPCua.BasicClient;
 import linprogMPC.messages.extension.NetworkType;
@@ -36,6 +39,7 @@ public class OpcUaBuildingController implements BuildingController {
     private Logger logger = LoggerFactory.getLogger(OpcUaBuildingController.class);
 
     public OpcUaBuildingController(JsonObject opcUaEndpointConfig, JsonObject opcUaNodesConfig) {
+
 	// Initialize ConfigHandlers to access the Jsons
 	this.endpointConfig = opcUaEndpointConfig;
 	this.nodesConfig = opcUaNodesConfig;
@@ -43,8 +47,8 @@ public class OpcUaBuildingController implements BuildingController {
 	NodesConfigHandler nodesConfigHandler = new NodesConfigHandler();
 
 	// TODO: How should these valued be accessed?
-	heatTransportLength = 50;
-	hasLDHeating = false;
+	this.heatTransportLength = 50;
+	this.hasLDHeating = false;
 
 	// Initialize the client which connects to the OpcUaServer
 	endpointConfigHandler.initEndpoint();
@@ -134,13 +138,6 @@ public class OpcUaBuildingController implements BuildingController {
 	private void initDevices() throws InterruptedException, ExecutionException {
 	    for (String key : nodesConfig.keySet()) {
 		switch (key) {
-		case "consumer":
-		    JsonArray consumers = (JsonArray) nodesConfig.get("consumer");
-		    for (int i = 0; i < consumers.size(); i++) {
-			JsonObject consumer = (JsonObject) consumers.get(i);
-			attach(new ClientConsumer(client, NodeId.parse((String) consumer.get("heatConsumptionId")),
-				NodeId.parse((String) consumer.get("powerConsumptionId")), heatTransportLength));
-		    }
 		case "battery":
 		    JsonArray batteries = (JsonArray) nodesConfig.get("battery");
 		    for (int i = 0; i < batteries.size(); i++) {
@@ -151,8 +148,83 @@ public class OpcUaBuildingController implements BuildingController {
 			NodeId effInId = NodeId.parse((String) battery.get("effInId"));
 			NodeId effOutId = NodeId.parse((String) battery.get("effOutId"));
 			attach(new ClientStorage(client, capacityId, maxChargingId, maxDischargingId, effInId, effOutId,
-				NetworkType.ELECTRICITY, heatTransportLength));
+				NetworkType.ELECTRICITY, 0));
+			System.out.println("Added battery to " + name);
 		    }
+		    break;
+
+		case "chp":
+		    JsonArray chps = (JsonArray) nodesConfig.get("chp");
+		    for (int i = 0; i < chps.size(); i++) {
+			JsonObject chp = (JsonObject) chps.get(i);
+			NodeId installedPowerId = NodeId.parse((String) chp.get("installedPowerId"));
+			NodeId effHeatId = NodeId.parse((String) chp.get("effHeatId"));
+			NodeId effElecId = NodeId.parse((String) chp.get("effElecId"));
+			attach(new ClientCoupler(client, installedPowerId, effHeatId, effElecId, 0));
+			System.out.println("Added chp to " + name);
+		    }
+		    break;
+
+		case "consumer":
+		    JsonArray consumers = (JsonArray) nodesConfig.get("consumer");
+		    for (int i = 0; i < consumers.size(); i++) {
+			JsonObject consumer = (JsonObject) consumers.get(i);
+			attach(new ClientConsumer(client, NodeId.parse((String) consumer.get("heatConsumptionId")),
+				NodeId.parse((String) consumer.get("powerConsumptionId")), 0));
+			System.out.println("Added consumer to " + name);
+		    }
+		    break;
+
+		case "gasboiler":
+		    JsonArray gasboilers = (JsonArray) nodesConfig.get("gasboiler");
+		    for (int i = 0; i < gasboilers.size(); i++) {
+			JsonObject gasboiler = (JsonObject) gasboilers.get(i);
+			NodeId installedPowerId = NodeId.parse((String) gasboiler.get("installedPowerId"));
+			NodeId effId = NodeId.parse((String) gasboiler.get("effId"));
+			NodeId costsId = NodeId.parse((String) gasboiler.get("costsId"));
+			attach(new ClientProducer(client, installedPowerId, effId, costsId, NetworkType.HEAT, 0));
+			System.out.println("Added gasboiler to " + name);
+		    }
+		    break;
+
+		case "heatpump":
+		    JsonArray heatpumps = (JsonArray) nodesConfig.get("heatpump");
+		    for (int i = 0; i < heatpumps.size(); i++) {
+			JsonObject heatpump = (JsonObject) heatpumps.get(i);
+			NodeId installedPowerId = NodeId.parse((String) heatpump.get("installedPowerId"));
+			NodeId effHeatId = NodeId.parse((String) heatpump.get("effHeatId"));
+			NodeId effElecId = NodeId.parse((String) heatpump.get("effElecId"));
+			attach(new ClientCoupler(client, installedPowerId, effHeatId, effElecId, 0));
+			System.out.println("Added heatpump to " + name);
+		    }
+		    break;
+
+		case "PV":
+		    JsonArray pvs = (JsonArray) nodesConfig.get("pc");
+		    for (int i = 0; i < pvs.size(); i++) {
+			JsonObject pv = (JsonObject) pvs.get(i);
+			NodeId installedPowerId = NodeId.parse((String) pv.get("installedPowerId"));
+			NodeId effId = NodeId.parse((String) pv.get("effId"));
+			NodeId productionId = NodeId.parse((String) pv.get("productionId"));
+			attach(new ClientVolatileProducer(client, installedPowerId, effId, productionId,
+				NetworkType.ELECTRICITY, 0));
+			System.out.println("Added pv to " + name);
+		    }
+		    break;
+
+		case "solarthermic":
+		    JsonArray solarthermics = (JsonArray) nodesConfig.get("solarthermic");
+		    for (int i = 0; i < solarthermics.size(); i++) {
+			JsonObject solarthermic = (JsonObject) solarthermics.get(i);
+			NodeId installedPowerId = NodeId.parse((String) solarthermic.get("installedPowerId"));
+			NodeId effId = NodeId.parse((String) solarthermic.get("effId"));
+			NodeId productionId = NodeId.parse((String) solarthermic.get("productionId"));
+			attach(new ClientVolatileProducer(client, installedPowerId, effId, productionId,
+				NetworkType.HEAT, 0));
+			System.out.println("Added solarthermic to " + name);
+		    }
+		    break;
+
 		case "thermalstorage":
 		    JsonArray thermalStorages = (JsonArray) nodesConfig.get("thermalstorage");
 		    for (int i = 0; i < thermalStorages.size(); i++) {
@@ -163,8 +235,10 @@ public class OpcUaBuildingController implements BuildingController {
 			NodeId effInId = NodeId.parse((String) thermalStorage.get("effInId"));
 			NodeId effOutId = NodeId.parse((String) thermalStorage.get("effOutId"));
 			attach(new ClientStorage(client, capacityId, maxChargingId, maxDischargingId, effInId, effOutId,
-				NetworkType.ELECTRICITY, heatTransportLength));
+				NetworkType.ELECTRICITY, 0));
+			System.out.println("Added thermalstorage to " + name);
 		    }
+		    break;
 
 		}
 
