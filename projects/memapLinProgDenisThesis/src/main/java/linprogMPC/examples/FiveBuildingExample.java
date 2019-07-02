@@ -13,7 +13,7 @@ import topology.ActorTopology;
 
 public abstract class FiveBuildingExample {
 
-    public static ActorTopology exampleTopology(boolean memapOn) {
+    public void exampleTopology(boolean memapOn) {
 	final int PORT_UNDEFINED = 0;
 
 	TopologyController topologyController = new TopologyController("MEMAP", memapOn, 2, 96, 7, 0, false, 0);
@@ -51,7 +51,7 @@ public abstract class FiveBuildingExample {
 	topologyController.attach(building4);
 	topologyController.attach(building5);
 
-	return topologyController.getTopology();
+	topologyController.startSimulation();
     }
 
 }
