@@ -9,25 +9,25 @@ import linprogMPC.helperOPCua.BasicClient;
 import linprogMPC.messages.extension.NetworkType;
 
 public class ClientProducer extends Producer {
-    public final double costs;
-    public final NetworkType networkType;
+	public final double costs;
+	public final NetworkType networkType;
 
-    public ClientProducer(BasicClient client, NodeId installedPowerId, NodeId effId, NodeId costsId,
-	    NetworkType networkType, int port) throws InterruptedException, ExecutionException {
+	public ClientProducer(BasicClient client, NodeId installedPowerId, NodeId effId, NodeId costsId,
+			NetworkType networkType, int port) throws InterruptedException, ExecutionException {
 
-	super(client.readFinalDoubleValue(installedPowerId), client.readFinalDoubleValue(effId), port);
+		super(client.readFinalDoubleValue(installedPowerId), client.readFinalDoubleValue(effId), port);
 
-	this.costs = client.readFinalDoubleValue(costsId);
-	this.networkType = networkType;
-    }
+		this.costs = client.readFinalDoubleValue(costsId);
+		this.networkType = networkType;
+	}
 
-    public void makeDecision() {
-	producerMessage.id = this.fullActorPath;
-	producerMessage.name = this.actorName;
-	producerMessage.operationalPriceEURO = this.costs;
-	producerMessage.efficiency = efficiency;
-	producerMessage.installedPower = installedPower;
-	producerMessage.networkType = networkType;
-    }
+	public void makeDecision() {
+		producerMessage.id = this.fullActorPath;
+		producerMessage.name = this.actorName;
+		producerMessage.operationalPriceEURO = this.costs;
+		producerMessage.efficiency = efficiency;
+		producerMessage.installedPower = installedPower;
+		producerMessage.networkType = networkType;
+	}
 
 }
