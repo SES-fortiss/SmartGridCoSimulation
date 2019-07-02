@@ -90,11 +90,8 @@ public class ThesisSimulation {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} // Wait so that we get initial values for all devices
-
-		topology = topologyController.getTopology();
-
-		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
-		SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimple.NR_OF_ITERATIONS);
+		
+		topologyController.startSimulation();
 
 		// To test the optimizer with csv files, maybe try this:
 //	topology = FiveBuildingExample.exampleTopology(true);

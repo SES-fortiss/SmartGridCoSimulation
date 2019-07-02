@@ -3,11 +3,13 @@ package linprogMPC.controller;
 import java.util.HashSet;
 import java.util.Set;
 
+import akka.actor.ActorSystem;
 import linprogMPC.ActorFactory;
 import linprogMPC.ThesisTopologySimple;
 import linprogMPC.components.Building;
 import linprogMPC.components.LinProgBehavior;
 import linprogMPC.components.prototypes.Device;
+import simulation.SimulationStarter;
 import topology.ActorTopology;
 
 /**
@@ -61,10 +63,11 @@ public class TopologyController extends ThesisTopologySimple {
 	public void attach(BuildingController buildingController) {
 		managedBuildings.add(buildingController);
 	}
-
-	public ActorTopology getTopology() {
+	
+	public void startSimulation() {
 		createTopology();
-		return top;
+		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(this.top);
+		SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimple.NR_OF_ITERATIONS);
 	}
 
 	private void createTopology() {
