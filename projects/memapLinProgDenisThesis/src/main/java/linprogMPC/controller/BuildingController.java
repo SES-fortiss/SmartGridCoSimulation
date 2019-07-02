@@ -6,20 +6,58 @@ import linprogMPC.components.prototypes.Device;
 
 /**
  * The BuildingController Interface provides all methods needed for dealing with
- * buildings. As for now, CSV files are used for consumption information, but
- * later this interface might be implemented by a OPCua client.
+ * buildings. Implementations of BuildingControllers guarantee functionality
+ * of @Building.
  * 
  * @see CSVBuildingController
+ * @see OpcUaBuildingController
+ * 
  * @author Adrian.Krueger
  */
 public interface BuildingController {
-    public String getName();
+	/**
+	 * Try to make sure to use unique names for buildings.
+	 * 
+	 * @return name of the building
+	 */
+	public String getName();
 
-    public boolean hasLDHeaeting();
+	/**
+	 * If true, the optimizer will enable long-distance heating for this building.
+	 * 
+	 * @return long-distance heating enabled
+	 */
+	public boolean hasLDHeaeting();
 
-    public int getHeatTransportLength();
+	/**
+	 * Heat transport length is needed by the optimizer to calculate the heat loss of the pipes.
+	 * 
+	 * @return heat transport length to the next building
+	 */
+	public int getHeatTransportLength();
 
-    public Set<? extends Device> getDevices();
+	/**
+	 * Returns a set of devices attached to this building. Options can be found in 
+	 * linprogMPC.components.
+	 * 
+	 * Should contain at least one Consumer object.
+	 * 
+	 * @return set of attached devices
+	 * @see Device
+	 * @see linprogMPC.components
+	 */
+	public Set<? extends Device> getDevices();
 
-    public void attach(Device device);
+	/**
+	 * Attaches a device to the building. Options can be found in linprogMPC.compontens
+	 * 
+	 * Attach at least one consumer.
+	 * 
+	 * Do not attach LinProgBehavior
+	 * 
+	 * @param device device to attach
+	 * @see Device
+	 * @see linprogMPC.components
+	 */
+	public void attach(Device device);
 }
