@@ -7,17 +7,13 @@ import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 
-import akka.actor.ActorSystem;
 import linprogMPC.controller.BuildingController;
 import linprogMPC.controller.OpcUaBuildingController;
 import linprogMPC.controller.TopologyController;
 import opcMEMAP.ConfigInterface;
-import simulation.SimulationStarter;
 import topology.ActorTopology;
 
 public class ThesisSimulation {
-
-	private ActorTopology topology;
 
 	public static void main(String[] args) {
 		// show help by default
