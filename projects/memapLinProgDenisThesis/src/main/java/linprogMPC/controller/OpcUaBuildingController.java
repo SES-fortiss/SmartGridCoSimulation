@@ -22,10 +22,34 @@ import linprogMPC.components.prototypes.Device;
 import linprogMPC.helperOPCua.BasicClient;
 import linprogMPC.messages.extension.NetworkType;
 
+/**
+ * OpcUaBuildingController is an implementation of BuildingController used for
+ * reading data via OPC-UA Clients. OpcUaBuildingController are configured with
+ * JSON Files, which must contain all necessary Client and OPC-Nodes
+ * information. See EndpointConfigHandler and NodesConfigHandler for formatting
+ * the JSON config files.
+ * 
+ * Do not use a single OpcUaBuildingController for multiple buildings, i.e. if
+ * data of multiple buildings is stored on a single OPC-Server, use multiple
+ * OpcUaBuildingController connecting to the same Server.
+ * OpcUaBuildingController can, however, share a single client to connect to
+ * this server.
+ * 
+ * It is okay, if OpcUaBuildingController cannot find all devices from the
+ * JSONNodes-config on the server (they will be ignored).
+ * 
+ * It is not okay, if OpcUaBuildingController cannot connect to the OPC-Server.
+ * An IllegalStateException will be raised in this case.
+ * 
+ * @author Adrian.Krueger
+ * @see BuildingController
+ * @see EndpointConfigHandler
+ * @see NodesConfigHandler
+ */
 public class OpcUaBuildingController implements BuildingController {
 
 	public BasicClient client;
-	private static AtomicInteger nextId = new AtomicInteger(0);
+	private static AtomicInteger nextId = new AtomicInteger(0); // Counter for providing unique names
 
 	public JsonObject endpointConfig;
 	public JsonObject nodesConfig;
@@ -38,6 +62,19 @@ public class OpcUaBuildingController implements BuildingController {
 	private Set<Device> devices = new HashSet<Device>();
 	private Logger logger = LoggerFactory.getLogger(OpcUaBuildingController.class);
 
+	/**
+	 * Initializing the OpcUaBuildingController has two steps: i) Creating a Client
+	 * and connect to the OPC-Server (endpointConfig) ii) Creating
+	 * subscriptions/reading values from the OPc-Server (nodesConfig)
+	 * 
+	 * Creating subscriptions/reading values might fail, but creating the client
+	 * cannot.
+	 * 
+	 * @param opcUaEndpointConfig the endpoint config file (@see
+	 *                            EndpointConfigHandler)
+	 * @param opcUaNodesConfig    the nodes config file (@see NodesConfigHandler)
+	 * @throws IllegalStateException when connection to server cannot be established
+	 */
 	public OpcUaBuildingController(JsonObject opcUaEndpointConfig, JsonObject opcUaNodesConfig)
 			throws IllegalStateException {
 
@@ -90,6 +127,15 @@ public class OpcUaBuildingController implements BuildingController {
 		devices.add(device);
 	}
 
+	/**
+	 * Endpoint JSON config Files must have the following format:
+	 * 
+	 * { "name": "NameOfBuilding", "endpointURL": "opc.tcp://ipAdress:Port",
+	 * "endpointDescriptor": "0, if default" }
+	 * 
+	 * @author Adrian.Krueger
+	 *
+	 */
 	private class EndpointConfigHandler {
 
 		public void initEndpoint() {
@@ -98,6 +144,12 @@ public class OpcUaBuildingController implements BuildingController {
 			endpointDescriptor = getEndpointDescriptor();
 		}
 
+		/**
+		 * Returns the name of the building. If no name is provided, a unique name is
+		 * automatically provided.
+		 * 
+		 * @return name of Building
+		 */
 		private String getName() {
 			if (endpointConfig.containsKey("name")) {
 				String name = (String) endpointConfig.get("name");
@@ -134,6 +186,20 @@ public class OpcUaBuildingController implements BuildingController {
 		}
 	}
 
+	/**
+	 * 
+	 * Nodes JSON config Files must have the following format:
+	 * 
+	 * 
+	 * { "deviceName": [ { "device1Id1" : "ns=X;i=X", "device1Id2": "ns=X;i=X", ...
+	 * }, { "device2Id1" : "ns=X;i=X", "device2Id2": "ns=X;i=X", ... },...}]
+	 * "deviceName:" [...] ... }
+	 * 
+	 * Refer to initDevices() for device names and required Ids.
+	 * 
+	 * @author Adrian.Krueger
+	 *
+	 */
 	private class NodesConfigHandler {
 
 		private void initDevices() {
