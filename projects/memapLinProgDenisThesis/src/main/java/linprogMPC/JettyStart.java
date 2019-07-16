@@ -76,7 +76,6 @@ public class JettyStart {
 					JsonObject jsonEndpoint = (JsonObject) endpointValues.get(i);
 					BuildingController sampleBuilding = new OpcUaBuildingController(jsonEndpoint, jsonNodes1);
 					topologyController.attach(sampleBuilding);
-				
 			
 		} catch (IllegalStateException e2) {
 			System.err.println("WARNING: Failed to create Client. Building has not been initialised");

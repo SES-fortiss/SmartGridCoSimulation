@@ -58,9 +58,9 @@ var wstool = {
     },
 
     setState : function(enabled) {
-//        $('connect').disabled = enabled;
-//        $('close').disabled = !enabled;
-//        $('hello').disabled = !enabled;
+        $('connect').disabled = enabled;
+        $('disconnect').disabled = !enabled;
+        $('add').disabled = enabled;
     },
     
     info : function(message) {
@@ -88,7 +88,7 @@ var wstool = {
     },
     
     _onopen : function() {
-        wstool.setState(true);
+//        wstool.setState(true);
 //        wstool.info("Websocket Connected");
     },
 

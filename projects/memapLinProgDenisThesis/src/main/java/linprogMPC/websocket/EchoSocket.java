@@ -50,6 +50,11 @@ public class EchoSocket extends WebSocketAdapter
 
     public void onWebSocketText(String message)
     {
+        JettyStart js=new JettyStart();
+        System.out.println(message);
+    	if (message.equals("disconnect")) {
+    	} else {
+        
     	//Websocket can only surpass Strings. Hence, message is of type String.
     	//In our case the message consists of a String representing the surpassed JsonArray Therefore, we need to split it first.
 
@@ -74,7 +79,6 @@ public class EchoSocket extends WebSocketAdapter
         }
     	
         // Connection to selected endpoints. Moreover, Simulation can get started.(See JettyStart in linprogMPC)
-        JettyStart js=new JettyStart();
         js.run(messageJsonArray);
 
 
@@ -93,7 +97,7 @@ public class EchoSocket extends WebSocketAdapter
 	  				String name=build.getName();
 	  				getRemote().sendStringByFuture(" ");
 	  				getRemote().sendStringByFuture("Name of Building: " + name);
-	  				getRemote().sendStringByFuture(" Connection Status: Is Connected");
+	  				getRemote().sendStringByFuture(" Connection Status: is connected");
 	  				
 	  				Iterator<? extends Device> devices= build.getDevices().iterator();
 
@@ -140,8 +144,8 @@ public class EchoSocket extends WebSocketAdapter
   		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
   		executor.scheduleAtFixedRate(helloRunnable, 1, 10, TimeUnit.SECONDS);
 
-            LOG.info("Sending: Successful");
-
+            LOG.info("Sending: Successful"); 
+    	} 
     }
 
     @Override

@@ -50,7 +50,7 @@
       <input id="connect" class="button" type="submit" name="connect" value="Submit Data"/>
 <!--        <input id="close" class="button" type="submit" name="close" value="close">
       <input id="hello" class="button" type="submit" name="hello" value="send hello">-->
-            <input id="disconnect" class="button" type="submit" name="disconnect" value="Disconnect"><!-- disabled="disabled"/> --> 
+            <input id="disconnect" class="button" type="submit" name="disconnect" value="Disconnect" disabled="enabled"><!-- disabled="disabled"/> --> 
     </div>
     	</center>
     <script type="text/javascript">
@@ -82,15 +82,16 @@
     
     //Connect submits the JsonArray to the Jetty Server
   $("connect").onclick = function(event) {
-
+      wstool.setState(true);
 	  	wstool.submit(listOfBuildings.toString());
 		document.getElementById('console').innerHTML="loading";
 
   }
     
     $("disconnect").onclick = function(event) { 
-  	  wstool.submit("");
-    	wstool.close(); return false; 
+  	  wstool.submit("disconnect");
+  	 wstool.setState(false);
+//    	wstool.close(); return false; 
     	}
 
     </script>
