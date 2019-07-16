@@ -1,0 +1,98 @@
+<html>
+  <head>
+    <title>MEMAP platform</title>
+    <script type="text/javascript" src="websocket.js"></script>
+    <link rel="stylesheet" type="text/css" href="main.css" media="all" >
+  </head>
+  <body>
+	<center>
+		<h1>MEMAP Platform</h1>
+	
+		Welcome to the MEMAP platform. Please enter the name of your building, the URL of your server, and 
+		the Type of your server:<br><br><br>
+  
+		<!--Textbox containing the intended name of the building that is added-->
+			Name of the building <input type="name" id="BuildingName" value="FortissBuilding" size="20"> 
+			
+				<!--extra spacing-->			
+			&emsp; &emsp; &emsp; &emsp;    
+			
+				<!--Textbox containing the Server IP address of the building that is added-->
+			OPC-UA server address <input type="name" id="IPServer" value="opc.tcp://10.10.10.60:4890"	size="40">
+			
+							<!--extra spacing-->			
+			&emsp; &emsp; &emsp; &emsp; 
+
+				<!--Containing Type of Server-->
+			Server Type		<select id="ServerType">
+								<option value="fortiss">fortiss</option> 
+								<option value="Sauter">Sauter</option> 
+								<option value="TUM">TUM</option>
+								</select>
+
+
+			<br><br>
+			
+			
+			   <div id="buttons">
+      <input id="add" class="button" type="submit" name="add" value="ADD BUILDING"/>
+   			 </div>
+
+				<!--Label displaying the total number of connected houses
+			Total number of connected houses: &emsp; <b><label id="TotalNumber"> 0</label></b>-->
+
+    
+    <br>
+    
+    
+    <div id="console"></div>
+    <div id="buttons">
+      <input id="connect" class="button" type="submit" name="connect" value="Submit Data"/>
+<!--        <input id="close" class="button" type="submit" name="close" value="close">
+      <input id="hello" class="button" type="submit" name="hello" value="send hello">-->
+            <input id="disconnect" class="button" type="submit" name="disconnect" value="Disconnect"><!-- disabled="disabled"/> --> 
+    </div>
+    	</center>
+    <script type="text/javascript">
+    
+    //Add does only add the input to a JsonArray. This JsonArray is not submitted yet.
+    var numberOfClicks=0;
+    $("add").onclick = function(event) {
+    	var buildName=document.getElementById('BuildingName').value;
+    	var serverIP=document.getElementById('IPServer').value;
+    	var serverType=document.getElementById('ServerType').value;
+    	var messageForServer=JSON.stringify({"name": buildName, "endpointURL": serverIP, "endpointDescriptor": "0"});
+    	numberOfClicks=numberOfClicks+1;
+    	if (numberOfClicks==1){
+        	wstool.connect(); 
+        	
+        	setTimeout(function() {
+        		  // Code, der erst nach 0.1 Sekunden ausgeführt wird
+            	wstool.write(messageForServer);
+        		}, 100);
+
+			
+
+    	} 
+    	else {
+    	wstool.write(messageForServer);
+    	}
+    	
+	 }
+    
+    //Connect submits the JsonArray to the Jetty Server
+  $("connect").onclick = function(event) {
+
+	  	wstool.submit(listOfBuildings.toString());
+		document.getElementById('console').innerHTML="loading";
+
+  }
+    
+    $("disconnect").onclick = function(event) { 
+  	  wstool.submit("");
+    	wstool.close(); return false; 
+    	}
+
+    </script>
+  </body>
+</html>

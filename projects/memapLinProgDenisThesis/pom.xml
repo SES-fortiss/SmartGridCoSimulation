@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
+ <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -29,6 +29,22 @@
       <artifactId>jetty-server</artifactId>
       <version>9.4.12.v20180830</version>
     </dependency>
+        <dependency>
+      <groupId>org.eclipse.jetty.websocket</groupId>
+      <artifactId>websocket-server</artifactId>
+      <version>9.4.12.v20180830</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty.websocket</groupId>
+      <artifactId>websocket-servlet</artifactId>
+      <version>9.4.12.v20180830</version>
+    </dependency>
+    <!-- dependencies for javax.websocket (JSR-356) websocket -->
+    <dependency>
+      <groupId>org.eclipse.jetty.websocket</groupId>
+      <artifactId>javax-websocket-server-impl</artifactId>
+      <version>9.4.12.v20180830</version>
+    </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
@@ -50,6 +66,11 @@
       <artifactId>core</artifactId>
       <version>3.3.1</version>
     </dependency>
+        <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+      <version>4.3</version>
+    </dependency>
     <dependency>
       <groupId>memapOpcServer</groupId>
       <artifactId>memapOpcServer</artifactId>
@@ -60,11 +81,8 @@
       <artifactId>json-simple</artifactId>
       <version>3.1.0</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-collections4</artifactId>
-      <version>4.3</version>
-    </dependency>
+    
+ 
   </dependencies>
 
   <organization>
