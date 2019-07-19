@@ -2,9 +2,12 @@ package linprogMPC;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Iterator;
+import java.util.Set;
 
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonException;
+import com.github.cliftonlabs.json_simple.JsonKey;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 
@@ -12,6 +15,8 @@ import akka.actor.ActorSystem;
 import linprogMPC.controller.BuildingController;
 import linprogMPC.controller.OpcUaBuildingController;
 import linprogMPC.controller.TopologyController;
+import linprogMPC.helperOPCua.BasicClient;
+import linprogMPC.helperOPCua.OpcuaClient;
 import opcMEMAP.ConfigInterface;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
@@ -52,13 +57,18 @@ public class JettyStart {
 		return topologyController;
 	}
 	
+	public void stopSimulation() {
+		System.out.println("disconnect");
+//		No Idea
+		}
+	
 	public void run(JsonArray endpointValues) {
 		topologyController = new TopologyController("MEMAP", true, 1, 96, 7, 0, false, 9999);
 
 		
 		
 		//So far, Config Nodes are hard coded. For future versions the Node Json has to be provided by the local EMS
-		JsonObject jsonNodes1=null;
+		/*JsonObject jsonNodes1=null;
 		try {
 			FileReader nodes1 = new FileReader("src/main/java/linprogMPC/controller/FortissBuilding1Nodes.json");
 			jsonNodes1 = (JsonObject) Jsoner.deserialize(nodes1);
@@ -66,15 +76,26 @@ public class JettyStart {
 			System.err.println("WARNING: Failed to read JSON config files. Building has not been initalised.");
 			e1.printStackTrace();
 		}
-
+		*/
 		//Iterating through all the endpoint Jsons inputed in the user interface
 		//generates a building controller for every jsonEndpoint,jsonNodes tuple
 		//Buildings get attached to the topology
+		
+		
 		for (int i=0;i<endpointValues.size();i++) {
 		try {
 				
 					JsonObject jsonEndpoint = (JsonObject) endpointValues.get(i);
-					BuildingController sampleBuilding = new OpcUaBuildingController(jsonEndpoint, jsonNodes1);
+					String NodeConfig=(String) jsonEndpoint.get("config");
+					System.out.println(NodeConfig);
+					JsonObject jsonNodes=null;
+					try {
+						jsonNodes = (JsonObject) Jsoner.deserialize(NodeConfig);
+					} catch (JsonException e) {
+						System.out.println("could not be deserialized");
+						e.printStackTrace();
+					}
+					BuildingController sampleBuilding = new OpcUaBuildingController(jsonEndpoint, jsonNodes);
 					topologyController.attach(sampleBuilding);
 			
 		} catch (IllegalStateException e2) {
@@ -94,7 +115,7 @@ public class JettyStart {
 		
 		//Here, the topology Controller gets started. However, if activated, the thread runs through and thereby blocks our Jetty Server.
 		
-//		topologyController.startSimulation();
+		topologyController.startSimulation();
 
 		// To test the optimizer with csv files, maybe try this:
 //	topology = FiveBuildingExample.exampleTopology(true);

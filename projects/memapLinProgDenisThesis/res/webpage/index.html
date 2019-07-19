@@ -6,36 +6,40 @@
   </head>
   <body>
 	<center>
-		<h1>MEMAP Platform</h1>
+		<img src="MEMAP.png" alt="Picture not available" width="300" height="200">
 	
-		Welcome to the MEMAP platform. Please enter the name of your building, the URL of your server, and 
-		the Type of your server:<br><br><br>
+		<h3>Welcome to the MEMAP platform. Please enter the name of your building, the URL of your server, and 
+		the configuration file of your server of all the buildings you want to connect sequentially.</h3>
+		<br><br><br>
   
 		<!--Textbox containing the intended name of the building that is added-->
-			Name of the building <input type="name" id="BuildingName" value="FortissBuilding" size="20"> 
+			<label class="label">Name of the building</label> <input type="name" class="input name" id="BuildingName" value="FortissBuilding1" size="20"> 
 			
 				<!--extra spacing-->			
 			&emsp; &emsp; &emsp; &emsp;    
 			
 				<!--Textbox containing the Server IP address of the building that is added-->
-			OPC-UA server address <input type="name" id="IPServer" value="opc.tcp://10.10.10.60:4890"	size="40">
+			<label class="label">OPC-UA server address</label> <input type="name" class="input serverIP" id="IPServer" value="opc.tcp://10.10.10.60:4880"	size="40">
 			
-							<!--extra spacing-->			
+							<!--extra spacing			
 			&emsp; &emsp; &emsp; &emsp; 
 
-				<!--Containing Type of Server-->
+				Containing Type of Server
 			Server Type		<select id="ServerType">
 								<option value="fortiss">fortiss</option> 
 								<option value="Sauter">Sauter</option> 
 								<option value="TUM">TUM</option>
 								</select>
+							extra spacing-->			
+			&emsp; &emsp; &emsp; &emsp; 
+			<label class="labelCon" for="config">Select a Config File...</label> <input type="file" id="config" class="inputfile"/>
 
 
 			<br><br>
 			
 			
 			   <div id="buttons">
-      <input id="add" class="button" type="submit" name="add" value="ADD BUILDING"/>
+      <input id="add" class="button add" type="submit" name="add" value="ADD BUILDING"/>
    			 </div>
 
 				<!--Label displaying the total number of connected houses
@@ -47,10 +51,10 @@
     
     <div id="console"></div>
     <div id="buttons">
-      <input id="connect" class="button" type="submit" name="connect" value="Submit Data"/>
+      <input id="connect" class="button connect" type="submit" name="connect" value="Submit Data"/>
 <!--        <input id="close" class="button" type="submit" name="close" value="close">
       <input id="hello" class="button" type="submit" name="hello" value="send hello">-->
-            <input id="disconnect" class="button" type="submit" name="disconnect" value="Disconnect" disabled="enabled"><!-- disabled="disabled"/> --> 
+            <input id="disconnect" class="button disconnect" type="submit" name="disconnect" value="Disconnect" disabled="enabled"><!-- disabled="disabled"/> --> 
     </div>
     	</center>
     <script type="text/javascript">
@@ -60,22 +64,41 @@
     $("add").onclick = function(event) {
     	var buildName=document.getElementById('BuildingName').value;
     	var serverIP=document.getElementById('IPServer').value;
-    	var serverType=document.getElementById('ServerType').value;
-    	var messageForServer=JSON.stringify({"name": buildName, "endpointURL": serverIP, "endpointDescriptor": "0"});
+//    	var serverType=document.getElementById('ServerType').value;
+    	var configFile=document.getElementById('config').files[0];	
+    	var stringConfig=null;
+    	
+        if (configFile) {
+        	if (buildName!=""){
+        		if (serverIP!=""){
+            var readFile = new FileReader();
+            readFile.onload = function(e) { 
+                var contents = e.target.result;
+                var json = JSON.parse(contents);
+                stringConfig=JSON.stringify(json);
+            };
+            readFile.readAsText(configFile);
+	
     	numberOfClicks=numberOfClicks+1;
     	if (numberOfClicks==1){
         	wstool.connect(); 
-        	
+    	}
         	setTimeout(function() {
+    	    	var messageForServer=JSON.stringify({"name": buildName, "endpointURL": serverIP, "endpointDescriptor": "0", "config": stringConfig});
         		  // Code, der erst nach 0.1 Sekunden ausgeführt wird
-            	wstool.write(messageForServer);
+            	wstool._send(messageForServer);
+        		  var clientSees="Name: " + buildName + " , URL: "+serverIP + " , ConfigFile: " + configFile.name;
+        		wstool.write(clientSees);
         		}, 100);
-
-			
-
-    	} 
-    	else {
-    	wstool.write(messageForServer);
+        				}else {
+        					alert("Please enter the URL of your Building")
+        			  		  }
+        			} else {
+        				alert("Please enter the Name of your Building")
+        			}
+        	} else
+    	{
+    	alert("Please enter the ConfigFile");
     	}
     	
 	 }

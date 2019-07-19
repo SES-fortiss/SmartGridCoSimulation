@@ -95,7 +95,7 @@ var wstool = {
     _send : function(message) {
         if (this._ws) {
 //          this._ws.send(message);
-            wstool.infoc(message);
+
             listOfBuildings.push(message);
         }
     },
@@ -107,7 +107,8 @@ var wstool = {
     },
 
     write : function(text) {
-        wstool._send(text);
+        wstool.infoc(text);
+//        wstool._send(text);
     },
     
     submit : function(text) {

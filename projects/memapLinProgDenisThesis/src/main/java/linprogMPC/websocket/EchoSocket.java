@@ -51,35 +51,13 @@ public class EchoSocket extends WebSocketAdapter
     public void onWebSocketText(String message)
     {
         JettyStart js=new JettyStart();
-        System.out.println(message);
     	if (message.equals("disconnect")) {
+    		js.stopSimulation();
     	} else {
         
-    	//Websocket can only surpass Strings. Hence, message is of type String.
-    	//In our case the message consists of a String representing the surpassed JsonArray Therefore, we need to split it first.
-
-    	String[] messageArray=message.split("\\},"); 	
-        for (int i=0; i < messageArray.length -1;i++) {
-        	messageArray[i]=messageArray[i]+"}";	
-        }
-    	
-
-    	
-    	//Transfer Strings to Jsons. 
-        //messageJsonArray is of JsonArray format
-        JsonArray messageJsonArray = new JsonArray();
-        for (int i = 0; i < messageArray.length; i++) {
-			try {
-				JsonObject messageJson = (JsonObject) Jsoner.deserialize(messageArray[i]);
-				messageJsonArray.add(messageJson);
-			} catch (JsonException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }
-    	
-        // Connection to selected endpoints. Moreover, Simulation can get started.(See JettyStart in linprogMPC)
-        js.run(messageJsonArray);
+    			//Transfer String to JsonArray
+    	JsonArray messageJsonArray=	new StringToJsonArray().StringToJsonArray(message);
+    		
 
 
 
@@ -142,7 +120,10 @@ public class EchoSocket extends WebSocketAdapter
   		};
   		
   		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-  		executor.scheduleAtFixedRate(helloRunnable, 1, 10, TimeUnit.SECONDS);
+  		executor.scheduleAtFixedRate(helloRunnable, 10, 10, TimeUnit.SECONDS);
+  		
+        // Connection to selected endpoints. Moreover, Simulation can get started.(See JettyStart in linprogMPC)
+        js.run(messageJsonArray);
 
             LOG.info("Sending: Successful"); 
     	} 
