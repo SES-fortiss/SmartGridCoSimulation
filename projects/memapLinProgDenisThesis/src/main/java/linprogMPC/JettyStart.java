@@ -25,7 +25,9 @@ public class JettyStart {
 
 //	public ActorTopology topology;
 	public TopologyController topologyController;
-
+	public JsonObject errorCode;
+	
+	
 	public void main(String arg, JsonArray endpoint) {
 		// show help by default
 
@@ -56,6 +58,9 @@ public class JettyStart {
 	public TopologyController getTopology() {
 		return topologyController;
 	}
+	public JsonObject getErrorCode() {
+		return errorCode;
+	}
 	
 	public void stopSimulation() {
 		System.out.println("disconnect");
@@ -64,8 +69,7 @@ public class JettyStart {
 	
 	public void run(JsonArray endpointValues) {
 		topologyController = new TopologyController("MEMAP", true, 1, 96, 7, 0, false, 9999);
-
-		
+		errorCode=new JsonObject();
 		
 		//So far, Config Nodes are hard coded. For future versions the Node Json has to be provided by the local EMS
 		/*JsonObject jsonNodes1=null;
@@ -83,11 +87,11 @@ public class JettyStart {
 		
 		
 		for (int i=0;i<endpointValues.size();i++) {
-		try {
+
 				
 					JsonObject jsonEndpoint = (JsonObject) endpointValues.get(i);
+					try {
 					String NodeConfig=(String) jsonEndpoint.get("config");
-					System.out.println(NodeConfig);
 					JsonObject jsonNodes=null;
 					try {
 						jsonNodes = (JsonObject) Jsoner.deserialize(NodeConfig);
@@ -97,10 +101,12 @@ public class JettyStart {
 					}
 					BuildingController sampleBuilding = new OpcUaBuildingController(jsonEndpoint, jsonNodes);
 					topologyController.attach(sampleBuilding);
+					errorCode.put((String) jsonEndpoint.get("name"), 0);
 			
 		} catch (IllegalStateException e2) {
 			System.err.println("WARNING: Failed to create Client. Building has not been initialised");
 			e2.printStackTrace();
+			errorCode.put((String) jsonEndpoint.get("name"), 1);
 		}
 		}
 
@@ -115,7 +121,9 @@ public class JettyStart {
 		
 		//Here, the topology Controller gets started. However, if activated, the thread runs through and thereby blocks our Jetty Server.
 		
-		topologyController.startSimulation();
+			topologyController.startSimulation();
+
+
 
 		// To test the optimizer with csv files, maybe try this:
 //	topology = FiveBuildingExample.exampleTopology(true);

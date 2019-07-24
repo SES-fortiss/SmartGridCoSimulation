@@ -79,6 +79,9 @@ var wstool = {
         this._scount++;
         
 //        var array = JSON.parse(message);
+//        if (message.startsWith("Unconnected Buildings")){
+//        	alert(message);
+//        }
         if (message=="empty"){
         	document.getElementById('console').innerHTML="";
         } else {

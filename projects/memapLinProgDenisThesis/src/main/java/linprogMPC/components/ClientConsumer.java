@@ -62,7 +62,7 @@ public class ClientConsumer extends Consumer {
 		BiConsumer<UaMonitoredItem, DataValue> consumerHeat = (item, value) -> {
 			Variant var = value.getValue();
 			if (var.getValue() instanceof Double) {
-				heatProfile.add((Double) value.getValue().getValue());
+				heatProfile.add(Math.abs((Double) value.getValue().getValue()));
 				// System.out.println("New heatProfileProfile" + heatProfile);
 			} else {
 				System.out.println("Value " + value + " is not in double format");
@@ -73,7 +73,7 @@ public class ClientConsumer extends Consumer {
 		BiConsumer<UaMonitoredItem, DataValue> consumerElectricity = (item, value) -> {
 			Variant var = value.getValue();
 			if (var.getValue() instanceof Double) {
-				electricityProfile.add((Double) value.getValue().getValue());
+				electricityProfile.add(Math.abs((Double) value.getValue().getValue()));
 				// System.out.println("New electricityProfile" + electricityProfile);
 			} else {
 				System.out.println("Value " + value + " is not in double format");

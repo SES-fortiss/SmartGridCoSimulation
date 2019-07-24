@@ -48,7 +48,7 @@ button[disabled=disabled], button:disabled {
 }
 
 .labelCon {
-    font-size: 20px;
+    font-size: 25px;
     font-weight: 700;
     color: white;
     background-color: #ff0000;
@@ -84,6 +84,7 @@ div#console {
     padding: 4px;
     border: 1px solid black;
     text-align: left;
+    border-radius: 12px;
 }
 
 div#console .info {
@@ -91,9 +92,9 @@ div#console .info {
 }
 
 div#console .client {
-	color: green;
+	color: blue;
 }
 
 div#console .server {
-    color: blue;
+    color: green;
 }

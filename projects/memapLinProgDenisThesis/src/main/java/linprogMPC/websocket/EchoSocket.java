@@ -1,6 +1,7 @@
 package linprogMPC.websocket;
 
 import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -59,23 +60,42 @@ public class EchoSocket extends WebSocketAdapter
     	JsonArray messageJsonArray=	new StringToJsonArray().StringToJsonArray(message);
     		
 
-
-
         // Regular Update (every 10 sec) of current Building data.
         //Every Building is iterated through
         //Every Device in every Building is iterated through
         //Key Values of each device are displayed
     	  		Runnable helloRunnable = new Runnable() {
   		    public void run() {
+  		    	JsonObject connectionStatus=js.getErrorCode();
   		    	Iterator<BuildingController> iterator=js.getTopology().managedBuildings.iterator();
 		    		getRemote().sendStringByFuture("empty");
+		    		getRemote().sendStringByFuture("Connection Status:");
+		    		Iterator<String> key=connectionStatus.keySet().iterator();
+		    		while (key.hasNext()) {
+		    			String nameOfBuilding=key.next();
+		    			int status=(int) connectionStatus.get(nameOfBuilding);
+		    			String statusDisplay=null;
+		    			switch(status){ 
+		    	        case 0: 
+		    	            statusDisplay="Connected"; 
+		    	            break; 
+		    	        case 1: 
+		    	            statusDisplay="Not Connected"; 
+		    	            break; 
+		    	        default: 
+		    	            System.out.println("Something strange happened"); 
+		    	        } 
+		  				getRemote().sendStringByFuture(nameOfBuilding+": "+statusDisplay);
+		    		}
 		    		
   		    	while (iterator.hasNext()) {
 	  				BuildingController build=iterator.next();
 	  				String name=build.getName();
 	  				getRemote().sendStringByFuture(" ");
 	  				getRemote().sendStringByFuture("Name of Building: " + name);
-	  				getRemote().sendStringByFuture(" Connection Status: is connected");
+//	  				getRemote().sendStringByFuture(" Connection Status:");
+	  				//(js.getErrorCode()).get(name).toString());
+//	  				unconnectedBuildings.remove(name);
 	  				
 	  				Iterator<? extends Device> devices= build.getDevices().iterator();
 
@@ -91,19 +111,19 @@ public class EchoSocket extends WebSocketAdapter
 	  				if (device instanceof ClientCoupler) {
 	  				    ClientCoupler coupler = (ClientCoupler) device;
 	  				    getRemote().sendStringByFuture("    Coupler");
-	  				    String output="        Efficiency Elec: "+coupler.efficiencyElec+" Efficiency Heat: "+ coupler.efficiencyHeat;
+	  				    String output="        Efficiency Elec: "+coupler.efficiencyElec+" Efficiency Heat: "+ coupler.efficiencyHeat + " Installed Power: "+ coupler.installedPower;
 	  				    getRemote().sendStringByFuture(output);
 	  				}
 	  				if (device instanceof ClientProducer) {
 	  				    ClientProducer producer = (ClientProducer) device;
 	  				    getRemote().sendStringByFuture("    Producer");
-	  				    String output="        Costs: "+producer.costs+" Efficiency: "+producer.efficiency;
+	  				    String output="        Costs: "+producer.costs+" Efficiency: "+producer.efficiency + " Installed Power: " + producer.installedPower;
 	  				    getRemote().sendStringByFuture(output);
 	  				}
 	  				if (device instanceof ClientStorage) {
 	  				    ClientStorage storage = (ClientStorage) device;
 	  				    getRemote().sendStringByFuture("    Storage");
-	  				    String output="        State of Charge: "+ storage.myStateOfCharge+" Capacity " + storage.capacity;
+	  				    String output="        State of Charge: "+ storage.myStateOfCharge+" Capacity: " + storage.capacity + " Efficiency: "+ storage.effIN;
 	  				    getRemote().sendStringByFuture(output);
 	  				}
 	  				if (device instanceof ClientVolatileProducer) {
@@ -111,11 +131,11 @@ public class EchoSocket extends WebSocketAdapter
 	  				    getRemote().sendStringByFuture("VolatileProducer");
 	  				    String output="        Efficiency: " + volatileProducer.efficiency+" Installed Power: " + volatileProducer.installedPower;
 	  				    getRemote().sendStringByFuture(output);
-	  				}}
+	  				}
+	  				}
 	  				
 //	  				elect=Math.round(100.0 * elect) / 100.0;
   		    }   		
-  		    
   		    }
   		};
   		
