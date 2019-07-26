@@ -30,7 +30,12 @@ import linprogMPC.controller.TopologyController;;
 public class EchoSocket extends WebSocketAdapter
 {
     private static final Logger LOG = Log.getLogger(EchoSocket.class);
-
+    JettyStart js=new JettyStart();
+	ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+    
+    
+    
+    
     public void onWebSocketClose(int statusCode, String reason)
     {
         super.onWebSocketClose(statusCode,reason);
@@ -51,20 +56,24 @@ public class EchoSocket extends WebSocketAdapter
 
     public void onWebSocketText(String message)
     {
-        JettyStart js=new JettyStart();
+    	//If User clicks disconnect the simulation is stoped, the executor is ended, a new one is created and the console is emptied.
     	if (message.equals("disconnect")) {
     		js.stopSimulation();
+    		executor.shutdown();
+    		executor = Executors.newScheduledThreadPool(2);
+    		getRemote().sendStringByFuture("empty");
+    		System.out.println("Disconnecting was sucessful");
+
     	} else {
         
     			//Transfer String to JsonArray
     	JsonArray messageJsonArray=	new StringToJsonArray().StringToJsonArray(message);
     		
-
         // Regular Update (every 10 sec) of current Building data.
         //Every Building is iterated through
         //Every Device in every Building is iterated through
         //Key Values of each device are displayed
-    	  		Runnable helloRunnable = new Runnable() {
+    	  		Runnable displayRunnable = new Runnable() {
   		    public void run() {
   		    	JsonObject connectionStatus=js.getErrorCode();
   		    	Iterator<BuildingController> iterator=js.getTopology().managedBuildings.iterator();
@@ -139,13 +148,20 @@ public class EchoSocket extends WebSocketAdapter
   		    }
   		};
   		
-  		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-  		executor.scheduleAtFixedRate(helloRunnable, 10, 10, TimeUnit.SECONDS);
-  		
         // Connection to selected endpoints. Moreover, Simulation can get started.(See JettyStart in linprogMPC)
-        js.run(messageJsonArray);
-
-            LOG.info("Sending: Successful"); 
+  		//Has to happen in different Thread, because otherwise simulation blocks.
+  		Runnable simulationRunnable =
+  			    new Runnable(){
+  			        public void run(){
+  			          js.run(messageJsonArray);
+  			        }
+  			    };
+//  		Thread thread = new Thread(simulationRunnable);
+//  		thread.start();
+  		  		executor.scheduleAtFixedRate(displayRunnable, 10, 10, TimeUnit.SECONDS);
+  		  		executor.schedule(simulationRunnable, 0, TimeUnit.SECONDS);
+  			    
+            LOG.info("Submission of Data was Successful"); 
     	} 
     }
 

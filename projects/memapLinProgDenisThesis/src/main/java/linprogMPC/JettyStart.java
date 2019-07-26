@@ -27,34 +27,6 @@ public class JettyStart {
 	public TopologyController topologyController;
 	public JsonObject errorCode;
 	
-	
-	public void main(String arg, JsonArray endpoint) {
-		// show help by default
-
-		switch (arg) {
-		case "help":
-		case "h":
-			System.out.println(showHelp());
-			break;
-		// run the simulation
-		case "start":
-		case "s":
-			new JettyStart().run(endpoint);
-			break;
-		// run the simulation in a loop
-		case "loop":
-		case "l":
-			boolean loop = true;
-			while (loop) {
-				new JettyStart().run(endpoint);
-				break;
-			}
-		default:
-			System.out.println(showHelp());
-			break;
-		}
-	}
-	
 	public TopologyController getTopology() {
 		return topologyController;
 	}
@@ -63,32 +35,21 @@ public class JettyStart {
 	}
 	
 	public void stopSimulation() {
-		System.out.println("disconnect");
-//		No Idea
+		topologyController.endSimulation();
 		}
 	
+	
+	//initializes topologyController with all required buildings and has a Json containing the endpointValues(currently contains the configFile) as its input
+	//The errorCode contains a list of all requested buildings and an error code for their status. (Currently 0=connected, 1=not connected)
 	public void run(JsonArray endpointValues) {
 		topologyController = new TopologyController("MEMAP", true, 1, 96, 7, 0, false, 9999);
 		errorCode=new JsonObject();
-		
-		//So far, Config Nodes are hard coded. For future versions the Node Json has to be provided by the local EMS
-		/*JsonObject jsonNodes1=null;
-		try {
-			FileReader nodes1 = new FileReader("src/main/java/linprogMPC/controller/FortissBuilding1Nodes.json");
-			jsonNodes1 = (JsonObject) Jsoner.deserialize(nodes1);
-		} catch (FileNotFoundException | JsonException e1) {
-			System.err.println("WARNING: Failed to read JSON config files. Building has not been initalised.");
-			e1.printStackTrace();
-		}
-		*/
 		//Iterating through all the endpoint Jsons inputed in the user interface
 		//generates a building controller for every jsonEndpoint,jsonNodes tuple
 		//Buildings get attached to the topology
 		
 		
 		for (int i=0;i<endpointValues.size();i++) {
-
-				
 					JsonObject jsonEndpoint = (JsonObject) endpointValues.get(i);
 					try {
 					String NodeConfig=(String) jsonEndpoint.get("config");
@@ -116,14 +77,9 @@ public class JettyStart {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} // Wait so that we get initial values for all devices
-		
-		
-		
-		//Here, the topology Controller gets started. However, if activated, the thread runs through and thereby blocks our Jetty Server.
-		
+
+		//Here, the topology Controller gets started.
 			topologyController.startSimulation();
-
-
 
 		// To test the optimizer with csv files, maybe try this:
 //	topology = FiveBuildingExample.exampleTopology(true);

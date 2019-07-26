@@ -9,12 +9,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 public abstract class JettyWebsocket
 {
-/*	static String h;
-	public static void seth(String hallo)
-	{
-		h=hallo;
-	}
-	*/
+
 	
     public static void main(String[] args)
     {

@@ -70,6 +70,10 @@ public class TopologyController extends ThesisTopologySimple {
 		SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimple.NR_OF_ITERATIONS);
 	}
 
+	public void endSimulation() {
+		SimulationStarter.stopSimulation();
+	}
+	
 	private void createTopology() {
 		// Creating Actor Topology
 		this.top = new ActorTopology(this.name);

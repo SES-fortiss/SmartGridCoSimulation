@@ -6,6 +6,7 @@ div {
     border: 0px solid black;	
 }
 
+
 .button {
   border: none;
   color: white;
@@ -19,10 +20,19 @@ div {
   border-radius: 12px;
 }
 
-button[disabled=disabled], button:disabled {
-   	opacity: 0.5;
-	cursor: not-allowed;
+
+
+
+.add{
+	  background-color: #0080ff; /* Blue */
 }
+.connect{
+	  background-color: #4CAF50; /* Green */
+}
+.disconnect{
+	  background-color: #ff0000; /* Red */
+}
+
 
 
 .input {
@@ -61,16 +71,6 @@ button[disabled=disabled], button:disabled {
 }
 
 
-
-.add{
-	  background-color: #0080ff; /* Blue */
-}
-.connect{
-	  background-color: #4CAF50; /* Green */
-}
-.disconnect{
-	  background-color: #ff0000; /* Red */
-}
 
 
 

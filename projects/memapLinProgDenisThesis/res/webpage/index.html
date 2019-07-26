@@ -105,8 +105,9 @@
     
     //Connect submits the JsonArray to the Jetty Server
   $("connect").onclick = function(event) {
-      wstool.setState(true);
+	    wstool.setState(true);
 	  	wstool.submit(listOfBuildings.toString());
+//		document.getElementById('console').text-allign="center";
 		document.getElementById('console').innerHTML="loading";
 
   }
@@ -114,6 +115,7 @@
     $("disconnect").onclick = function(event) { 
   	  wstool.submit("disconnect");
   	 wstool.setState(false);
+  	listOfBuildings=[];
 //    	wstool.close(); return false; 
     	}
 
