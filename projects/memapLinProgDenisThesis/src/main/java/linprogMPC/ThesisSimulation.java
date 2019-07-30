@@ -10,6 +10,7 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 import linprogMPC.controller.BuildingController;
 import linprogMPC.controller.OpcUaBuildingController;
 import linprogMPC.controller.TopologyController;
+import linprogMPC.websocket.JettyWebsocket;
 import opcMEMAP.ConfigInterface;
 
 public class ThesisSimulation {
@@ -40,6 +41,11 @@ public class ThesisSimulation {
 		new ThesisSimulation().run();
 		break;
 	    }
+	case "jetty":
+	case "j":
+		String[] arbitraryValue=null;
+		JettyWebsocket.main(arbitraryValue);
+		break;
 	default:
 	    System.out.println(showHelp());
 	    break;
@@ -124,6 +130,7 @@ public class ThesisSimulation {
 		+ server + ":" + port + "/sessim\n" + "\n"
 		+ "Use these commands to run the simulation (i.e. use MemapServer.jar [command]: \n"
 		+ "    start : runs the simulation once \n" + "    loop  : runs the simulation in an indefinite loop \n"
+		+ "    jetty  : start jetty webserver. (Available under 8080) \n"
 		+ "    help  : show the help screen \n";
 	return help;
     }
