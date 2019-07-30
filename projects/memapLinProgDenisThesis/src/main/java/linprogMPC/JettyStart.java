@@ -26,7 +26,7 @@ public class JettyStart {
 //	public ActorTopology topology;
 	public TopologyController topologyController;
 	public JsonObject errorCode;
-	
+	public boolean simLoop=true;
 	public TopologyController getTopology() {
 		return topologyController;
 	}
@@ -35,6 +35,7 @@ public class JettyStart {
 	}
 	
 	public void stopSimulation() {
+		simLoop=false;
 		topologyController.endSimulation();
 		}
 	
@@ -78,9 +79,10 @@ public class JettyStart {
 			e.printStackTrace();
 		} // Wait so that we get initial values for all devices
 
-		//Here, the topology Controller gets started.
+		//Here, the topology Controller gets started and runned in a loop.
+		while (simLoop) {
 			topologyController.startSimulation();
-
+		}
 		// To test the optimizer with csv files, maybe try this:
 //	topology = FiveBuildingExample.exampleTopology(true);
 //	ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
