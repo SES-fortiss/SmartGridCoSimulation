@@ -38,9 +38,9 @@ public class ThesisSimulation {
 	case "l":
 	    boolean loop = true;
 	    while (loop) {
-		new ThesisSimulation().run();
-		break;
+	    	new ThesisSimulation().run();
 	    }
+	    break;
 	case "jetty":
 	case "j":
 		String[] arbitraryValue=null;
