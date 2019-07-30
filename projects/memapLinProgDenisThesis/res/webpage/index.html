@@ -1,0 +1,124 @@
+<html>
+  <head>
+    <title>MEMAP platform</title>
+    <script type="text/javascript" src="websocket.js"></script>
+    <link rel="stylesheet" type="text/css" href="main.css" media="all" >
+  </head>
+  <body>
+	<center>
+		<img src="MEMAP.png" alt="Picture not available" width="300" height="200">
+	
+		<h3>Welcome to the MEMAP platform. Please enter the name of your building, the URL of your server, and 
+		the configuration file of your server of all the buildings you want to connect sequentially.</h3>
+		<br><br><br>
+  
+		<!--Textbox containing the intended name of the building that is added-->
+			<label class="label">Name of the building</label> <input type="name" class="input name" id="BuildingName" value="FortissBuilding1" size="20"> 
+			
+				<!--extra spacing-->			
+			&emsp; &emsp; &emsp; &emsp;    
+			
+				<!--Textbox containing the Server IP address of the building that is added-->
+			<label class="label">OPC-UA server address</label> <input type="name" class="input serverIP" id="IPServer" value="opc.tcp://10.10.10.60:4880"	size="40">
+			
+							<!--extra spacing			
+			&emsp; &emsp; &emsp; &emsp; 
+
+				Containing Type of Server
+			Server Type		<select id="ServerType">
+								<option value="fortiss">fortiss</option> 
+								<option value="Sauter">Sauter</option> 
+								<option value="TUM">TUM</option>
+								</select>
+							extra spacing-->			
+			&emsp; &emsp; &emsp; &emsp; 
+			<label class="labelCon" for="config">Select a Config File...</label> <input type="file" id="config" class="inputfile"/>
+
+
+			<br><br>
+			
+			
+			   <div id="buttons">
+      <input id="add" class="button add" type="submit" name="add" value="ADD BUILDING"/>
+   			 </div>
+
+				<!--Label displaying the total number of connected houses
+			Total number of connected houses: &emsp; <b><label id="TotalNumber"> 0</label></b>-->
+
+    
+    <br>
+    
+    
+    <div id="console"></div>
+    <div id="buttons">
+      <input id="connect" class="button connect" type="submit" name="connect" value="Submit Data"/>
+<!--        <input id="close" class="button" type="submit" name="close" value="close">
+      <input id="hello" class="button" type="submit" name="hello" value="send hello">-->
+            <input id="disconnect" class="button disconnect" type="submit" name="disconnect" value="Disconnect" disabled="enabled"><!-- disabled="disabled"/> --> 
+    </div>
+    	</center>
+    <script type="text/javascript">
+    
+    //Add does only add the input to a JsonArray. This JsonArray is not submitted yet.
+    var numberOfClicks=0;
+    $("add").onclick = function(event) {
+    	var buildName=document.getElementById('BuildingName').value;
+    	var serverIP=document.getElementById('IPServer').value;
+//    	var serverType=document.getElementById('ServerType').value;
+    	var configFile=document.getElementById('config').files[0];	
+    	var stringConfig=null;
+    	
+        if (configFile) {
+        	if (buildName!=""){
+        		if (serverIP!=""){
+            var readFile = new FileReader();
+            readFile.onload = function(e) { 
+                var contents = e.target.result;
+                var json = JSON.parse(contents);
+                stringConfig=JSON.stringify(json);
+            };
+            readFile.readAsText(configFile);
+	
+    	numberOfClicks=numberOfClicks+1;
+    	if (numberOfClicks==1){
+        	wstool.connect(); 
+    	}
+        	setTimeout(function() {
+    	    	var messageForServer=JSON.stringify({"name": buildName, "endpointURL": serverIP, "endpointDescriptor": "0", "config": stringConfig});
+        		  // Code, der erst nach 0.1 Sekunden ausgeführt wird
+            	wstool._send(messageForServer);
+        		  var clientSees="Name: " + buildName + " , URL: "+serverIP + " , ConfigFile: " + configFile.name;
+        		wstool.write(clientSees);
+        		}, 100);
+        				}else {
+        					alert("Please enter the URL of your Building")
+        			  		  }
+        			} else {
+        				alert("Please enter the Name of your Building")
+        			}
+        	} else
+    	{
+    	alert("Please enter the ConfigFile");
+    	}
+    	
+	 }
+    
+    //Connect submits the JsonArray to the Jetty Server
+  $("connect").onclick = function(event) {
+	    wstool.setState(true);
+	  	wstool.submit(listOfBuildings.toString());
+//		document.getElementById('console').text-allign="center";
+		document.getElementById('console').innerHTML="loading";
+
+  }
+    
+    $("disconnect").onclick = function(event) { 
+  	  wstool.submit("disconnect");
+  	 wstool.setState(false);
+  	listOfBuildings=[];
+//    	wstool.close(); return false; 
+    	}
+
+    </script>
+  </body>
+</html>

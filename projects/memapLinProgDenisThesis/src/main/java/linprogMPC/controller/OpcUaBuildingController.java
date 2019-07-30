@@ -291,8 +291,8 @@ public class OpcUaBuildingController implements BuildingController {
 					}
 					break;
 
-				case "PV":
-					JsonArray pvs = (JsonArray) nodesConfig.get("pc");
+				case "pv":
+					JsonArray pvs = (JsonArray) nodesConfig.get("pv");
 					for (int i = 0; i < pvs.size(); i++) {
 						try {
 							JsonObject pv = (JsonObject) pvs.get(i);

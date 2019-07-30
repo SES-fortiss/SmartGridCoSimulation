@@ -1,33 +1,33 @@
 {
   "battery": [
     { 
-      "capacityId" : "ns=2;i=41",
-      "maxChargingId": "ns=2;i=43",
-      "maxDischargingId": "ns=2;i=44",
-      "effInId": "ns=2;i=40",
-      "effOutId": "ns=2;i=40"
+      "capacityId" : "ns=2;i=43",
+      "maxChargingId": "ns=2;i=45",
+      "maxDischargingId": "ns=2;i=46",
+      "effInId": "ns=2;i=42",
+      "effOutId": "ns=2;i=42"
     }
   ],
   "chp": [],
   "consumer": [
     {
-      "heatConsumptionId": "ns=2;i=12",
-      "powerConsumptionId": "ns=2;i=9"
+      "heatConsumptionId": "ns=2;i=10",
+      "powerConsumptionId": "ns=2;i=14"
     }
   ],
   "gasboiler": [],
   "heatpump": [
     { 
-      "installedPowerId": "ns=2;i=34",
-      "effHeatId": "ns=2;i=31",
-      "effElecId": "ns=2;i=31"
+      "installedPowerId": "ns=2;i=35",
+      "effHeatId": "ns=2;i=32",
+      "effElecId": "ns=2;i=33"
     }
   ],
   "pv": [
     { 
-      "installedPowerId" : "ns=2;i=24",
-      "effId": "ns=2;i=20",
-      "productionId": "ns=2;i=25"
+      "installedPowerId" : "ns=2;i=25",
+      "effId": "ns=2;i=23",
+      "productionId": "ns=2;i=27"
     }
   ],
   "solarthermic": [],
