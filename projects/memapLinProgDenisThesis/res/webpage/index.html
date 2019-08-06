@@ -33,6 +33,10 @@
 							extra spacing-->			
 			&emsp; &emsp; &emsp; &emsp; 
 			<label class="labelCon" for="config">Select a Config File...</label> <input type="file" id="config" class="inputfile"/>
+			&emsp; &emsp; &emsp; &emsp;
+			<div id="buttons">
+      			<input id="standardCase" class="button standard" type="submit" name="standardCase" value="Run the fortiss two buidlings standard scenario"/>
+   			 </div>
 
 
 			<br><br>
@@ -109,8 +113,16 @@
 	  	wstool.submit(listOfBuildings.toString());
 //		document.getElementById('console').text-allign="center";
 		document.getElementById('console').innerHTML="loading";
-
   }
+    
+  $("standardCase").onclick = function(event) {
+  		wstool.connect();
+  		setTimeout(function() {
+	    	wstool.submit("standard");
+			document.getElementById('console').innerHTML="loading";
+		    wstool.setState(true);
+  		}, 100);
+}
     
     $("disconnect").onclick = function(event) { 
   	  wstool.submit("disconnect");

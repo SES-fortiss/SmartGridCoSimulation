@@ -61,6 +61,7 @@ var wstool = {
         $('connect').disabled = enabled;
         $('disconnect').disabled = !enabled;
         $('add').disabled = enabled;
+        $('standardCase').disabled = enabled;
     },
     
     info : function(message) {
