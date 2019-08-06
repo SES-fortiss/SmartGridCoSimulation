@@ -7,6 +7,14 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+/**
+ * 
+ * JettyWebsocket class. Initiates and starts the websocket. 
+ * 
+ * @author freiesleben
+ * 
+ */
+
 public abstract class JettyWebsocket
 {
 
@@ -45,6 +53,7 @@ public abstract class JettyWebsocket
         catch (Exception e)
         {
             e.printStackTrace();
+            System.out.println("Failed to start the server!");
         }
     }
 }

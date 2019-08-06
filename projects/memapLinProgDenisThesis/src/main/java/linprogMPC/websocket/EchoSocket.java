@@ -25,7 +25,13 @@ import linprogMPC.components.prototypes.Device;
 import linprogMPC.controller.BuildingController;
 import linprogMPC.controller.TopologyController;;
 
-
+/**
+ * 
+ * EchoSocket class defines the methods of our websocket. The methods allow to connect, close, specify errors, and defines how the server responds to requests.
+ * 
+ * @author freiesleben
+ * 
+ */
 
 public class EchoSocket extends WebSocketAdapter
 {
@@ -53,10 +59,11 @@ public class EchoSocket extends WebSocketAdapter
     {
         LOG.warn("WebSocket Error",cause);
     }
-
+    //message contains the String message send by the javascript webapp.
     public void onWebSocketText(String message)
     {
-    	//If User clicks disconnect the simulation is stoped, the executor is ended, a new one is created and the console is emptied.
+    	//System.out.println(message);
+    	//If User clicks disconnect the simulation is stopped, the executor is ended, a new one is created and the console is emptied.
     	if (message.equals("disconnect")) {
     		js.stopSimulation();
     		executor.shutdown();
@@ -65,15 +72,21 @@ public class EchoSocket extends WebSocketAdapter
     		System.out.println("Disconnecting was sucessful");
 
     	} else {
-        
-    			//Transfer String to JsonArray
-    	JsonArray messageJsonArray=	new StringToJsonArray().StringToJsonArray(message);
+    		JsonArray messageAsJsonArray=null;
+    	//Transfer String to JsonArray
+    		if (message.equals("standard")) {
+    			String standardBuildings="{\"name\":\"FortissBuilding1\",\"endpointURL\":\"opc.tcp://10.10.10.60:4880\",\"endpointDescriptor\":\"0\",\"config\":\"{\\\"battery\\\":[{\\\"capacityId\\\":\\\"ns=2;i=43\\\",\\\"maxChargingId\\\":\\\"ns=2;i=45\\\",\\\"maxDischargingId\\\":\\\"ns=2;i=46\\\",\\\"effInId\\\":\\\"ns=2;i=42\\\",\\\"effOutId\\\":\\\"ns=2;i=42\\\"}],\\\"chp\\\":[],\\\"consumer\\\":[{\\\"heatConsumptionId\\\":\\\"ns=2;i=10\\\",\\\"powerConsumptionId\\\":\\\"ns=2;i=14\\\"}],\\\"gasboiler\\\":[],\\\"heatpump\\\":[{\\\"installedPowerId\\\":\\\"ns=2;i=35\\\",\\\"effHeatId\\\":\\\"ns=2;i=32\\\",\\\"effElecId\\\":\\\"ns=2;i=33\\\"}],\\\"pv\\\":[{\\\"installedPowerId\\\":\\\"ns=2;i=25\\\",\\\"effId\\\":\\\"ns=2;i=23\\\",\\\"productionId\\\":\\\"ns=2;i=27\\\"}],\\\"solarthermic\\\":[],\\\"thermalstorage\\\":[]}\"},{\"name\":\"FortissBuilding2\",\"endpointURL\":\"opc.tcp://10.10.10.60:4890\",\"endpointDescriptor\":\"0\",\"config\":\"{\\\"battery\\\":[],\\\"chp\\\":[{\\\"installedPowerId\\\":\\\"ns=2;i=35\\\",\\\"effHeatId\\\":\\\"ns=2;i=32\\\",\\\"effElecId\\\":\\\"ns=2;i=33\\\"}],\\\"consumer\\\":[{\\\"heatConsumptionId\\\":\\\"ns=2;i=10\\\",\\\"powerConsumptionId\\\":\\\"ns=2;i=14\\\"}],\\\"gasboiler\\\":[],\\\"heatpump\\\":[],\\\"pv\\\":[],\\\"solarthermic\\\":[{\\\"installedPowerId\\\":\\\"ns=2;i=25\\\",\\\"effId\\\":\\\"ns=2;i=23\\\",\\\"productionId\\\":\\\"ns=2;i=27\\\"}],\\\"thermalstorage\\\":[{\\\"capacityId\\\":\\\"ns=2;i=43\\\",\\\"maxChargingId\\\":\\\"ns=2;i=45\\\",\\\"maxDischargingId\\\":\\\"ns=2;i=46\\\",\\\"effInId\\\":\\\"ns=2;i=42\\\",\\\"effOutId\\\":\\\"ns=2;i=42\\\"}]}\"}\r\n";
+    			messageAsJsonArray=	new StringToJsonArray().StringToJsonArray(standardBuildings);	
+    		} else {
+    	messageAsJsonArray=	new StringToJsonArray().StringToJsonArray(message);
+    		}
     		
-        // Regular Update (every 10 sec) of current Building data.
+    		JsonArray messageJsonArray=messageAsJsonArray;
+        //Regular Update (every 10 sec) of current Building data.
         //Every Building is iterated through
         //Every Device in every Building is iterated through
         //Key Values of each device are displayed
-    	  		Runnable displayRunnable = new Runnable() {
+    	  Runnable displayRunnable = new Runnable() {
   		    public void run() {
   		    	JsonObject connectionStatus=js.getErrorCode();
   		    	Iterator<BuildingController> iterator=js.getTopology().managedBuildings.iterator();
@@ -102,9 +115,6 @@ public class EchoSocket extends WebSocketAdapter
 	  				String name=build.getName();
 	  				getRemote().sendStringByFuture(" ");
 	  				getRemote().sendStringByFuture("Name of Building: " + name);
-//	  				getRemote().sendStringByFuture(" Connection Status:");
-	  				//(js.getErrorCode()).get(name).toString());
-//	  				unconnectedBuildings.remove(name);
 	  				
 	  				Iterator<? extends Device> devices= build.getDevices().iterator();
 
@@ -142,22 +152,21 @@ public class EchoSocket extends WebSocketAdapter
 	  				    getRemote().sendStringByFuture(output);
 	  				}
 	  				}
-	  				
-//	  				elect=Math.round(100.0 * elect) / 100.0;
+	  					//Um zu runden nutze: Math.round(100.0 * number) / 100.0;
   		    }   		
   		    }
   		};
   		
-        // Connection to selected endpoints. Moreover, Simulation can get started.(See JettyStart in linprogMPC)
-  		//Has to happen in different Thread, because otherwise simulation blocks.
+        // Connection to selected endpoints is initiated. Moreover, simulation can get started.(See JettyStart class in linprogMPC)
+  		//This has to happen in a different Thread because otherwise the simulation blocks.
   		Runnable simulationRunnable =
   			    new Runnable(){
   			        public void run(){
   			          js.run(messageJsonArray);
   			        }
   			    };
-//  		Thread thread = new Thread(simulationRunnable);
-//  		thread.start();
+  			    
+  			    //Excecutes displayRunnable. Has a first time delay of 10 Seconds and excecutes again every 10 seconds.
   		  		executor.scheduleAtFixedRate(displayRunnable, 10, 10, TimeUnit.SECONDS);
   		  		executor.schedule(simulationRunnable, 0, TimeUnit.SECONDS);
   			    

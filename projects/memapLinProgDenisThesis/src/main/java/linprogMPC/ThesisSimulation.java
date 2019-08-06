@@ -13,6 +13,19 @@ import linprogMPC.controller.TopologyController;
 import linprogMPC.websocket.JettyWebsocket;
 import opcMEMAP.ConfigInterface;
 
+/**
+ * 
+ * ThesisSimulation class: main method expects argument. If no argument or help is the input, help method is executed which shows the available options and also the OPC-UA address
+ * of the MEMAP server. Optional input arguments are:
+ * help: displays help menu
+ * start: initializes connection to the two fortiss servers and starts simulation with these two example "buildings".
+ * loop: starts simulation in loop
+ * jetty: starts the jetty server, available on port 8080. There, one can input Connection data by her or himself and also start the simulation.
+ * 
+ * @author freiesleben & krueger
+ * 
+ */
+
 public class ThesisSimulation {
 
     public static void main(String[] args) {
