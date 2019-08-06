@@ -38,14 +38,14 @@ public class ThesisSimulation {
 	case "l":
 	    boolean loop = true;
 	    while (loop) {
-	    	new ThesisSimulation().run();
+		new ThesisSimulation().run();
 	    }
 	    break;
 	case "jetty":
 	case "j":
-		String[] arbitraryValue=null;
-		JettyWebsocket.main(arbitraryValue);
-		break;
+	    String[] arbitraryValue = null;
+	    JettyWebsocket.main(arbitraryValue);
+	    break;
 	default:
 	    System.out.println(showHelp());
 	    break;
@@ -53,7 +53,7 @@ public class ThesisSimulation {
     }
 
     private void run() {
-	TopologyController topologyController = new TopologyController("MEMAP", true, 1, 96, 7, 0, false, 9999);
+	TopologyController topologyController = new TopologyController("MEMAP", true, 5, 96, 7, 0, false, 9999);
 
 	try {
 	    BufferedReader endpoint1 = new BufferedReader(new InputStreamReader(
