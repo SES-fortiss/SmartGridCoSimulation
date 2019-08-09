@@ -4,12 +4,10 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 
-import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -30,15 +28,21 @@ import linprogMPC.messages.extension.NetworkType;
 public class ClientConsumer extends Consumer {
     public BasicClient client;
     public NodeId nodeId;
-    public CircularFifoQueue<Double> heatProfile = new CircularFifoQueue<Double>(Collections.nCopies(nStepsMPC, 0.0));
-    public CircularFifoQueue<Double> electricityProfile = new CircularFifoQueue<Double>(
-	    Collections.nCopies(nStepsMPC, 0.0));
+    // public CircularFifoQueue<Double> heatProfile = new
+    // CircularFifoQueue<Double>(Collections.nCopies(nStepsMPC, 0.0));
+    // public CircularFifoQueue<Double> electricityProfile = new
+    // CircularFifoQueue<Double>(
+    // Collections.nCopies(nStepsMPC, 0.0));
+    public Double heatProfile[] = new Double[nStepsMPC];
+    public Double electricityProfile[] = new Double[nStepsMPC];
     public List<UaMonitoredItem> itemsHeat;
     public List<UaMonitoredItem> itemsElectricity;
 
     public ClientConsumer(BasicClient client, NodeId nodeIdHeat, NodeId nodeIdElectricity, int port) {
 	super(port);
 	this.client = client;
+	Arrays.fill(heatProfile, 0.0);
+	Arrays.fill(electricityProfile, 0.0);
 
 	// subscribe to the Value attribute of the server's CurrentTime node
 	ReadValueId readValueIdHeat = new ReadValueId(nodeIdHeat, AttributeId.Value.uid(), null,
@@ -64,7 +68,8 @@ public class ClientConsumer extends Consumer {
 	BiConsumer<UaMonitoredItem, DataValue> consumerHeat = (item, value) -> {
 	    Variant var = value.getValue();
 	    if (var.getValue() instanceof Double) {
-		heatProfile.add(Math.abs((Double) value.getValue().getValue()));
+		Arrays.fill(heatProfile, (Math.abs((Double) value.getValue().getValue())));
+		// heatProfile.add(Math.abs((Double) value.getValue().getValue()));
 		// System.out.println("New heatProfileProfile" + heatProfile);
 	    } else {
 		System.out.println("Value " + value + " is not in double format");
@@ -75,7 +80,8 @@ public class ClientConsumer extends Consumer {
 	BiConsumer<UaMonitoredItem, DataValue> consumerElectricity = (item, value) -> {
 	    Variant var = value.getValue();
 	    if (var.getValue() instanceof Double) {
-		electricityProfile.add(Math.abs((Double) value.getValue().getValue()));
+		Arrays.fill(electricityProfile, (Math.abs((Double) value.getValue().getValue())));
+		// electricityProfile.add(Math.abs((Double) value.getValue().getValue()));
 		// System.out.println("New electricityProfile" + electricityProfile);
 	    } else {
 		System.out.println("Value " + value + " is not in double format");
@@ -139,12 +145,14 @@ public class ClientConsumer extends Consumer {
 
     @Override
     public List<Double> getHeatProfile(int timeStep, int mpcHorizon) {
-	return new ArrayList<Double>(heatProfile);
+	// return new ArrayList<Double>(heatProfile);
+	return new ArrayList<Double>(Arrays.asList(heatProfile));
     }
 
     @Override
     public List<Double> getElectricityProfile(int timeStep, int mpcHorizon) {
-	return new ArrayList<Double>(electricityProfile);
+	// return new ArrayList<Double>(electricityProfile);
+	return new ArrayList<Double>(Arrays.asList(electricityProfile));
     }
 
 }

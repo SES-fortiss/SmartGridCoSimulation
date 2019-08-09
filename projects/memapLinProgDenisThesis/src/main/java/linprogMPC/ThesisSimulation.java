@@ -15,12 +15,14 @@ import opcMEMAP.ConfigInterface;
 
 /**
  * 
- * ThesisSimulation class: main method expects argument. If no argument or help is the input, help method is executed which shows the available options and also the OPC-UA address
- * of the MEMAP server. Optional input arguments are:
- * help: displays help menu
- * start: initializes connection to the two fortiss servers and starts simulation with these two example "buildings".
- * loop: starts simulation in loop
- * jetty: starts the jetty server, available on port 8080. There, one can input Connection data by her or himself and also start the simulation.
+ * ThesisSimulation class: main method expects argument. If no argument or help
+ * is the input, help method is executed which shows the available options and
+ * also the OPC-UA address of the MEMAP server. Optional input arguments are:
+ * help: displays help menu start: initializes connection to the two fortiss
+ * servers and starts simulation with these two example "buildings". loop:
+ * starts simulation in loop jetty: starts the jetty server, available on port
+ * 8080. There, one can input Connection data by her or himself and also start
+ * the simulation.
  * 
  * @author freiesleben & krueger
  * 
@@ -66,7 +68,7 @@ public class ThesisSimulation {
     }
 
     private void run() {
-	TopologyController topologyController = new TopologyController("MEMAP", true, 5, 96, 7, 0, false, 9999);
+	TopologyController topologyController = new TopologyController("MEMAP", true, 5, 96, 7, 0, false, 4880);
 
 	try {
 	    BufferedReader endpoint1 = new BufferedReader(new InputStreamReader(

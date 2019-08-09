@@ -3,12 +3,10 @@ package linprogMPC.components;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 
-import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -33,8 +31,10 @@ public class ClientVolatileProducer extends Producer {
     static double eff = 1.0;
     public NetworkType networkType;
     VolatileProducerMessage volatileProducerMessage;
-    public CircularFifoQueue<Double> productionProfile = new CircularFifoQueue<Double>(
-	    Collections.nCopies(nStepsMPC, 0.0));
+    // public CircularFifoQueue<Double> productionProfile = new
+    // CircularFifoQueue<Double>(
+    // Collections.nCopies(nStepsMPC, 0.0));
+    public double productionProfile[] = new double[nStepsMPC];
     public List<UaMonitoredItem> itemsProduction;
 
     public ClientVolatileProducer(BasicClient client, NodeId installedPowerId, NodeId effId, NodeId currentProductionId,
@@ -63,7 +63,7 @@ public class ClientVolatileProducer extends Producer {
 	BiConsumer<UaMonitoredItem, DataValue> volatileProducerProduction = (item, value) -> {
 	    Variant var = value.getValue();
 	    if (var.getValue() instanceof Double) {
-		productionProfile.add((Double) value.getValue().getValue());
+		Arrays.fill(productionProfile, (Math.abs((Double) value.getValue().getValue())));
 		// System.out.println("New productionProfile" + productionProfile);
 	    } else {
 		System.out.println("Value " + value + " is not in double format");
@@ -100,7 +100,7 @@ public class ClientVolatileProducer extends Producer {
 	volatileProducerMessage.efficiency = efficiency;
 	volatileProducerMessage.installedPower = installedPower;
 	volatileProducerMessage.networkType = networkType;
-	volatileProducerMessage.forecast = productionProfile.stream().mapToDouble(Double::doubleValue).toArray();
+	volatileProducerMessage.forecast = productionProfile;
     }
 
     @Override
