@@ -34,6 +34,8 @@ public class BuildingMessage implements AnswerContent {
 	public ArrayList<CouplerMessage> couplerList = new ArrayList<CouplerMessage>();
 	public ArrayList<ProducerMessage> volatileProducerList = new ArrayList<ProducerMessage>();
 	public ArrayList<ProducerMessage> controllableProducerList = new ArrayList<ProducerMessage>();
+	public ArrayList<String> someValues=new ArrayList<String>();
+	boolean yes=someValues.add("Dieser Wert");
 	
 	public ArrayList<ChildSpecification> childrenList = new ArrayList<ChildSpecification>();
 	

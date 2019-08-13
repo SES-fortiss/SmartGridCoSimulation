@@ -17,6 +17,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
@@ -95,9 +97,9 @@ public class ClientConsumer extends Consumer {
 
 	try {
 	    subscriptionHeat = client.getSubscriptionManager().createSubscription(1000.0).get();
+//	    subscriptionHeat = client.getSubscriptionManager().createSubscription(1000.0, UInteger.valueOf(5), UInteger.valueOf(1), UInteger.valueOf(2000), true, UByte.valueOf(1)).get();
 	    itemsHeat = subscriptionHeat
 		    .createMonitoredItems(TimestampsToReturn.Both, Arrays.asList(requestHeat), onItemCreatedHeat).get();
-
 	    subscriptionElectricity = client.getSubscriptionManager().createSubscription(1000.0).get();
 	    itemsElectricity = subscriptionElectricity.createMonitoredItems(TimestampsToReturn.Both,
 		    Arrays.asList(requestElectricity), onItemCreatedElectricity).get();
@@ -114,6 +116,7 @@ public class ClientConsumer extends Consumer {
 	int cts = GlobalTime.getCurrentTimeStep();
 	// Getting the HeatProfiles at the current timestep with predictions
 	List<Double> currentHeatProfile = getHeatProfile(cts, nStepsMPC);
+//	System.out.println("Hier Steht das Profil:"+currentHeatProfile.toString()+"Und hier der Zeitpunkt"+cts);
 	List<Double> currentElectricityProfile = getElectricityProfile(cts, nStepsMPC);
 	// Creating demand vector
 	for (int i = 0; i < nStepsMPC; i++) {

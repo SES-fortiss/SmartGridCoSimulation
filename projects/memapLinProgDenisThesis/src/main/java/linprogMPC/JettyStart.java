@@ -63,7 +63,7 @@ public class JettyStart {
 	//The errorCode contains a list of all requested buildings and an error code for their status. (Currently 0=connected, 1=not connected)
 	public void run(JsonArray endpointValues) {
 		topologyMemapOn = new TopologyController("MemapOn", true, 1, 96, 7, 0, false, 9999);
-		topologyMemapOff = new TopologyController("MemapOff", false, 1, 96, 7, 0, false, 9999);
+		topologyMemapOff = new TopologyController("MemapOff", false, 5, 96, 7, 0, false, 9999);
 		errorCode=new JsonObject();
 		
 		
@@ -120,6 +120,6 @@ public class JettyStart {
   		  		};
   			    
   		  	memapOnOffRegulator.schedule(simulationMemapOn, 0, TimeUnit.SECONDS);
-  		  	memapOnOffRegulator.schedule(simulationMemapOff, 0, TimeUnit.SECONDS);
+ // 		  	memapOnOffRegulator.schedule(simulationMemapOff, 0, TimeUnit.SECONDS);
 	}
 }
