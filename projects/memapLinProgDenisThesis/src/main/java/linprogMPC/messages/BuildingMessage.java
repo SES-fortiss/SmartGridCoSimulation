@@ -36,6 +36,7 @@ public class BuildingMessage implements AnswerContent {
 	public ArrayList<ProducerMessage> controllableProducerList = new ArrayList<ProducerMessage>();
 	public ArrayList<String> someValues=new ArrayList<String>();
 	boolean yes=someValues.add("Dieser Wert");
+	public OptimizationResultMessage currentOptimizationResults;
 	
 	public ArrayList<ChildSpecification> childrenList = new ArrayList<ChildSpecification>();
 	

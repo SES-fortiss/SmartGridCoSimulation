@@ -66,7 +66,7 @@ public class ThesisSimulation {
     }
 
     private void run() {
-	TopologyController topologyController = new TopologyController("MEMAP", true, 5, 96, 7, 0, false, 9999);
+	TopologyController topologyController = new TopologyController("MEMAP", true, 3, 96, 1, 0, false, 9999);
 
 	try {
 	    BufferedReader endpoint1 = new BufferedReader(new InputStreamReader(

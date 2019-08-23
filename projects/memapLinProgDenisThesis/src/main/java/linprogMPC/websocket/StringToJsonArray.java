@@ -8,7 +8,7 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 /**
  * 
  * Parses a JsonArray in Form of a String to JsonArray type.
- * MethodStringToJsonArray has String of JsonArray from as input and outputs data of JsonArray type.
+ * MethodStringToJsonArray has String of "JsonArray" form as input and outputs data of JsonArray type.
  * 
  * @author freiesleben
  * 
@@ -18,6 +18,7 @@ public class StringToJsonArray extends JsonArray {
 public JsonArray StringToJsonArray(String input) {
 	
 	JsonArray output=new JsonArray();
+	//This part is not any elegant, different solution would be appreciated but wasnt found.
 	String[] messageArray=input.split("\\},"); 	
 	
     for (int i=0; i < messageArray.length -1;i++) {

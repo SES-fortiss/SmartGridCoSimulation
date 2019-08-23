@@ -6,6 +6,8 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
+import com.google.gson.Gson;
+
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
@@ -19,8 +21,10 @@ import linprogMPC.helper.MyTimeUnit;
 import linprogMPC.helper.OptimizationProblem;
 import linprogMPC.helper.OptimizationStarter;
 import linprogMPC.helper.SolutionHandler;
+import linprogMPC.helperOPCua.OpcServerContextGenerator;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.OptimizationResultMessage;
+import opcMEMAP.MemapOpcServerStarter;
 
 public class LinProgBehavior extends BehaviorModel {
 	
@@ -34,6 +38,9 @@ public class LinProgBehavior extends BehaviorModel {
 
 	public OptimizationResultMessage optResult = new OptimizationResultMessage();
 	//Gson gson = new Gson();
+    public MemapOpcServerStarter mServer;
+    protected Gson gson = new Gson();
+    public BuildingMessage buildingMessage = new BuildingMessage();
 	
 	public Calendar startTime;
 	public int nStepsMPC = ThesisTopologySimple.N_STEPS_MPC;
@@ -63,6 +70,7 @@ public class LinProgBehavior extends BehaviorModel {
 			if(answerContent instanceof BuildingMessage) {
 				BuildingMessage bm  = (BuildingMessage) answerContent;
 				buildingMessageList.add(bm);
+
 			}
 		}
 		
@@ -126,7 +134,8 @@ public class LinProgBehavior extends BehaviorModel {
 			String[] namesAll = HelperConcat.concatAllObjects(demandStrings, currentNamesPartly, storageNames, costName);
 						
 			System.out.println(this.actorName + " " + Arrays.toString(namesAll));
-			System.out.println(this.actorName + " " + Arrays.toString(vectorAll));									
+			System.out.println(this.actorName + " " + Arrays.toString(vectorAll));
+			System.out.println("Das muss der jetzt auch immer ausgeben.");
 			
 			//********* Speichern
 			memapSolutionPerTimeStep[this.getActualTimeStep()] = vectorAll;
@@ -177,7 +186,32 @@ public class LinProgBehavior extends BehaviorModel {
 	
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
-		return null;
+		int port=4880;
+		if (this.getActualTimeStep() == 0) {
+		    if (port != 0) {
+//			this.mServer = new MemapOpcServerStarter(false, gson.toJson(buildingMessage), port);
+		    this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult), port);
+		    	try {
+			    this.mServer.start();
+			} catch (Exception e) {
+			    e.printStackTrace();
+			}
+		    }
+//		    OpcServerContextGenerator.generateJson(this.actorName, buildingMessage);
+		    OpcServerContextGenerator.generateJson2(this.actorName, optResult);
+		}
+
+		if (port != 0) {
+		    try {
+//			mServer.update(gson.toJson(buildingMessage));
+			mServer.update(gson.toJson(optResult));
+			Thread.sleep(1000);
+		    } catch (Exception e) {
+			e.printStackTrace();
+		    }
+		}
+		buildingMessage.currentOptimizationResults=optResult;
+		return buildingMessage;
 	}
 
 	@Override
