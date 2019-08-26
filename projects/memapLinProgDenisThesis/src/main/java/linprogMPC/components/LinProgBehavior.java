@@ -102,7 +102,7 @@ public class LinProgBehavior extends BehaviorModel {
 				System.out.println("Total Number of Couplers: " + nrOfCouplers);
 				System.out.println("----------------------------------------------------------------");
 			}	    
-		
+			
 			// ------------ MEMAP - OPTIMIZATION ------------ 
 
 			MatrixBuildup mb = new MatrixBuildup();			
