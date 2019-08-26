@@ -60,42 +60,41 @@ public class TopologyController extends ThesisTopologySimple {
 	ThesisTopologySimple.calcNrSteps();
     }
 
-    public void attach(BuildingController buildingController) {
-	managedBuildings.add(buildingController);
-    }
-
-    public void startSimulation() {
-	createTopology();
-	ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(this.top);
-	SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimple.NR_OF_ITERATIONS);
-    }
-
-    public void endSimulation() {
-	SimulationStarter.stopSimulation();
-    }
-
-    private void createTopology() {
-	// Creating Actor Topology
-	this.top = new ActorTopology(this.name);
-	LinProgBehavior linProg = new LinProgBehavior();
-	top.addActor(this.name, ActorFactory.createDevice(linProg));
-
-	for (BuildingController managedBuilding : managedBuildings) {
-	    String buildingName = managedBuilding.getName();
-	    boolean LDHeatingON = managedBuilding.hasLDHeaeting();
-	    int heatTransportLength = managedBuilding.getHeatTransportLength();
-
-	    Building building = new Building(portUndefined, LDHeatingON, heatTransportLength);
-
-	    ActorTopology buildingHead = new ActorTopology(buildingName);
-	    buildingHead.addActor(buildingName, ActorFactory.createDevice(building));
-	    for (Device device : managedBuilding.getDevices()) {
-		buildingHead.addActorAsChild(buildingName + "/" + device.getClass().getName(),
-			ActorFactory.createDevice(device));
-	    }
-
-	    top.addSubTopology(name, buildingHead);
+	public void attach(BuildingController buildingController) {
+		managedBuildings.add(buildingController);
 	}
-    }
+	
+	public void startSimulation() {
+		createTopology();
+		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(this.top);
+		SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimple.NR_OF_ITERATIONS);
+	}
 
+	public void endSimulation() {
+		SimulationStarter.stopSimulation();
+	}
+	
+	private void createTopology() {
+		// Creating Actor Topology
+		int thePort=7070;
+		this.top = new ActorTopology(this.name);
+		LinProgBehavior linProg = new LinProgBehavior(thePort);
+		top.addActor(this.name, ActorFactory.createDevice(linProg));
+
+		for (BuildingController managedBuilding : managedBuildings) {
+			String buildingName = managedBuilding.getName();
+			boolean LDHeatingON = managedBuilding.hasLDHeaeting();
+			int heatTransportLength = managedBuilding.getHeatTransportLength();
+
+			Building building = new Building(portUndefined, LDHeatingON, heatTransportLength);
+
+			ActorTopology buildingHead = new ActorTopology(buildingName);
+			buildingHead.addActor(buildingName, ActorFactory.createDevice(building));
+			for (Device device : managedBuilding.getDevices()) {
+				buildingHead.addActorAsChild(buildingName + "/" + device.getClass().getName(),
+						ActorFactory.createDevice(device));
+			}
+			top.addSubTopology(name, buildingHead);
+		}
+	}
 }
