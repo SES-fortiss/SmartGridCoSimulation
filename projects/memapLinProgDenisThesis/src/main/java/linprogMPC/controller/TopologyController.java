@@ -76,8 +76,9 @@ public class TopologyController extends ThesisTopologySimple {
 	
 	private void createTopology() {
 		// Creating Actor Topology
+		int thePort=7070;
 		this.top = new ActorTopology(this.name);
-		LinProgBehavior linProg = new LinProgBehavior();
+		LinProgBehavior linProg = new LinProgBehavior(thePort);
 		top.addActor(this.name, ActorFactory.createDevice(linProg));
 
 		for (BuildingController managedBuilding : managedBuildings) {

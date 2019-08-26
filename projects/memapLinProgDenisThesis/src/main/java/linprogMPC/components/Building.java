@@ -109,24 +109,35 @@ public class Building extends BehaviorModel {
 
 	for (BasicAnswer basicAnswer : answerListReceived) {
 	    AnswerContent answerContent = basicAnswer.answerContent;
+	    
 	    if (answerContent instanceof DemandMessage) {
-		DemandMessage dm = (DemandMessage) answerContent;
-		buildingMessage.demandList.add((DemandMessage) dm);
+	    	DemandMessage dm = (DemandMessage) answerContent;
+	    	dm.name = buildingMessage.name + "." + dm.name;
+	    	buildingMessage.demandList.add((DemandMessage) dm);
 	    }
 
 	    if (answerContent instanceof ProducerMessage) {
-		if (answerContent instanceof VolatileProducerMessage) {
-		    buildingMessage.volatileProducerList.add((VolatileProducerMessage) answerContent);
-		} else {
-		    buildingMessage.controllableProducerList.add((ProducerMessage) answerContent);
-		}
+			if (answerContent instanceof VolatileProducerMessage) {
+				VolatileProducerMessage vm = (VolatileProducerMessage) answerContent;
+				vm.name = buildingMessage.name + "." + vm.name;
+			    buildingMessage.volatileProducerList.add(vm);
+			} else {
+				ProducerMessage pm = (ProducerMessage) answerContent;
+				pm.name = buildingMessage.name + "." + pm.name;
+			    buildingMessage.controllableProducerList.add(pm);
+			}
 	    }
 
 	    if (answerContent instanceof StorageMessage) {
-		buildingMessage.storageList.add((StorageMessage) answerContent);
+			StorageMessage sm = (StorageMessage) answerContent;
+			sm.name = buildingMessage.name + "." + sm.name;
+		    buildingMessage.storageList.add(sm);
 	    }
+	    
 	    if (answerContent instanceof CouplerMessage) {
-		buildingMessage.couplerList.add((CouplerMessage) answerContent);
+			CouplerMessage cm = (CouplerMessage) answerContent;
+			cm.name = buildingMessage.name + "." + cm.name;
+			buildingMessage.couplerList.add(cm);
 	    }
 	}
 	refactorDemandList();

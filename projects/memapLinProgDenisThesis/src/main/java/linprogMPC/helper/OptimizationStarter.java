@@ -62,7 +62,8 @@ public class OptimizationStarter {
 
 	System.out.println("SOL:");
 	System.out.println(Arrays.toString(sol));
-
+//	System.out.println("size");
+//	System.out.println(sol.length);
 	return sol;
 
     }

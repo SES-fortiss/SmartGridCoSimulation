@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
+import com.github.cliftonlabs.json_simple.JsonObject;
 import com.google.gson.Gson;
 
 import akka.advancedMessages.ErrorAnswerContent;
@@ -25,6 +29,7 @@ import linprogMPC.helperOPCua.OpcServerContextGenerator;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.OptimizationResultMessage;
 import opcMEMAP.MemapOpcServerStarter;
+import opcMEMAP.restructureSolutionVector;
 
 public class LinProgBehavior extends BehaviorModel {
 	
@@ -37,9 +42,9 @@ public class LinProgBehavior extends BehaviorModel {
 	double[][] memapSolutionPerTimeStep = new double[ThesisTopologySimple.NR_OF_ITERATIONS][];		
 
 	public OptimizationResultMessage optResult = new OptimizationResultMessage();
-	//Gson gson = new Gson();
     public MemapOpcServerStarter mServer;
     protected Gson gson = new Gson();
+    public int port;
     public BuildingMessage buildingMessage = new BuildingMessage();
 	
 	public Calendar startTime;
@@ -47,7 +52,9 @@ public class LinProgBehavior extends BehaviorModel {
 	
 	public SolutionHandler solHandler = new SolutionHandler();
 	
-	public LinProgBehavior() {}
+	public LinProgBehavior(int thePort) {
+		this.port=thePort;
+	}
 
 	@Override
 	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
@@ -109,7 +116,7 @@ public class LinProgBehavior extends BehaviorModel {
 					ThesisTopologySimple.MEMAP_LDHeating);
 			
 			OptimizationStarter os = new OptimizationStarter();
-			double[] sol = os.runLinProg(problem);
+			double[] sol =  os.runLinProg(problem);
 			
 			// ================= Handling the result ==================
 			
@@ -135,7 +142,7 @@ public class LinProgBehavior extends BehaviorModel {
 						
 			System.out.println(this.actorName + " " + Arrays.toString(namesAll));
 			System.out.println(this.actorName + " " + Arrays.toString(vectorAll));
-			System.out.println("Das muss der jetzt auch immer ausgeben.");
+//			System.out.println("Das muss der jetzt auch immer ausgeben.");
 			
 			//********* Speichern
 			memapSolutionPerTimeStep[this.getActualTimeStep()] = vectorAll;
@@ -161,17 +168,47 @@ public class LinProgBehavior extends BehaviorModel {
 			}
 	 		
 			// ================= AnswerContentToSend ==================		
+			//Here the structure of the server results is specified
 			
+			
+			//nameCategories contains a list of all building names
+			List<String> nameCategories = new ArrayList<String>();
+			String currentName="";
+			for (int i=0;i<sol.length-4*nStepsMPC;i++) {
+				if (problem.namesUB[i].split("\\.")[0].equals(currentName)){} else {
+					currentName=problem.namesUB[i].split("\\.")[0];
+					nameCategories.add(currentName);
+				}
+			}
+			
+			//A folder labeled "GeneralResults" is added to the resultsMap. Moreover, we add a new folder for every building.
+			optResult.resultsMap.put("GeneralResults", new TreeMap<String, double[]>());
+			for (int i=0;i<nameCategories.size();i++)
+			{
+			optResult.resultsMap.put(nameCategories.get(i), new TreeMap<String, double[]>());	
+			}
+
+			// We assign all the devices and generalResult datapoints to the respective folders. The first loop runs over the these datapoints and devices. The second loop runs over the respective nMpc Hoirzon points.
 			for (int i = 0; i < sol.length/nStepsMPC; i++) {
 				double[] result = new double[nStepsMPC];
 				
 				for (int j = 0; j < result.length; j++) {
 					result[j] = sol[i*nStepsMPC + j];
 				}
-				
-				String str = problem.namesUB[i*nStepsMPC];
-				optResult.resultMap.put(str, result);
-				//System.out.println("result: " + str + Arrays.toString(result));
+			
+				String str =problem.namesUB[i*nStepsMPC];
+				TreeMap<String, double[]> keyMap;
+				if (nameCategories.contains(str.split("\\.")[0])){
+					keyMap= (TreeMap<String, double[]>) optResult.resultsMap.get(str.split("\\.")[0]);
+				} else {
+					keyMap= (TreeMap<String, double[]>) optResult.resultsMap.get("GeneralResults");
+				}
+				//Enabling enumeration of devices.
+				int DevicesNumber=0;
+				while (keyMap.containsKey(str)) {
+					DevicesNumber=DevicesNumber+1;
+				}
+				keyMap.put(str+DevicesNumber, result);
 			}
 			
 			try {
@@ -186,10 +223,8 @@ public class LinProgBehavior extends BehaviorModel {
 	
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
-		int port=4880;
 		if (this.getActualTimeStep() == 0) {
 		    if (port != 0) {
-//			this.mServer = new MemapOpcServerStarter(false, gson.toJson(buildingMessage), port);
 		    this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult), port);
 		    	try {
 			    this.mServer.start();
@@ -197,13 +232,11 @@ public class LinProgBehavior extends BehaviorModel {
 			    e.printStackTrace();
 			}
 		    }
-//		    OpcServerContextGenerator.generateJson(this.actorName, buildingMessage);
 		    OpcServerContextGenerator.generateJson2(this.actorName, optResult);
 		}
 
 		if (port != 0) {
 		    try {
-//			mServer.update(gson.toJson(buildingMessage));
 			mServer.update(gson.toJson(optResult));
 			Thread.sleep(1000);
 		    } catch (Exception e) {
