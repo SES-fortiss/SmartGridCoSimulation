@@ -16,13 +16,14 @@ import opcMEMAP.ConfigInterface;
  * 8080. csv: start a simulation with csv files. There, one can input Connection
  * data by her or himself and also start the simulation.
  * 
- * @author freiesleben & krueger
+ * @author freiesleben & adrian.krueger
  * 
  */
 
 public class ThesisSimulation {
 
     public static void main(String[] args) {
+	// Show help screen by default
 	String arg = "help";
 
 	if (args.length != 0) {
