@@ -2,7 +2,6 @@ package linprogMPC.components;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -21,29 +20,22 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateReq
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
-import akka.systemActors.GlobalTime;
-import linprogMPC.components.prototypes.Consumer;
+import akka.basicMessages.AnswerContent;
+import linprogMPC.TopologyConfig;
+import linprogMPC.components.prototypes.Device;
 import linprogMPC.helperOPCua.BasicClient;
-import linprogMPC.messages.extension.NetworkType;
 
-public class ClientConsumer extends Consumer {
-    public BasicClient client;
-    public NodeId nodeId;
-    // public CircularFifoQueue<Double> heatProfile = new
-    // CircularFifoQueue<Double>(Collections.nCopies(nStepsMPC, 0.0));
-    // public CircularFifoQueue<Double> electricityProfile = new
-    // CircularFifoQueue<Double>(
-    // Collections.nCopies(nStepsMPC, 0.0));
-    public Double heatProfile[] = new Double[nStepsMPC];
-    public Double electricityProfile[] = new Double[nStepsMPC];
+public class ClientResultReader extends Device {
+    BasicClient client;
+    public Double setpointsHeat[] = new Double[TopologyConfig.N_STEPS_MPC];
+    public Double setpointsElectricity[] = new Double[TopologyConfig.N_STEPS_MPC];
     public List<UaMonitoredItem> itemsHeat;
     public List<UaMonitoredItem> itemsElectricity;
 
-    public ClientConsumer(BasicClient client, NodeId nodeIdHeat, NodeId nodeIdElectricity, int port) {
+    public ClientResultReader(BasicClient client, NodeId nodeIdHeat, NodeId nodeIdElectricity, int port) {
 	super(port);
-	this.client = client;
-	Arrays.fill(heatProfile, 0.0);
-	Arrays.fill(electricityProfile, 0.0);
+	Arrays.fill(setpointsHeat, 0.0);
+	Arrays.fill(setpointsElectricity, 0.0);
 
 	// subscribe to the Value attribute of the server's CurrentTime node
 	ReadValueId readValueIdHeat = new ReadValueId(nodeIdHeat, AttributeId.Value.uid(), null,
@@ -69,7 +61,7 @@ public class ClientConsumer extends Consumer {
 	BiConsumer<UaMonitoredItem, DataValue> consumerHeat = (item, value) -> {
 	    Variant var = value.getValue();
 	    if (var.getValue() instanceof Double) {
-		Arrays.fill(heatProfile, (Math.abs((Double) value.getValue().getValue())));
+		Arrays.fill(setpointsHeat, (Math.abs((Double) value.getValue().getValue())));
 		// heatProfile.add(Math.abs((Double) value.getValue().getValue()));
 		// System.out.println("New heatProfileProfile" + heatProfile);
 	    } else {
@@ -81,7 +73,7 @@ public class ClientConsumer extends Consumer {
 	BiConsumer<UaMonitoredItem, DataValue> consumerElectricity = (item, value) -> {
 	    Variant var = value.getValue();
 	    if (var.getValue() instanceof Double) {
-		Arrays.fill(electricityProfile, (Math.abs((Double) value.getValue().getValue())));
+		Arrays.fill(setpointsElectricity, (Math.abs((Double) value.getValue().getValue())));
 		// electricityProfile.add(Math.abs((Double) value.getValue().getValue()));
 		// System.out.println("New electricityProfile" + electricityProfile);
 	    } else {
@@ -112,48 +104,12 @@ public class ClientConsumer extends Consumer {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
-
     }
 
     @Override
-    public void makeDecision() {
-	double[] demandVectorB = new double[2 * nStepsMPC];
-	int cts = GlobalTime.getCurrentTimeStep();
-	// Getting the HeatProfiles at the current timestep with predictions
-	List<Double> currentHeatProfile = getHeatProfile(cts, nStepsMPC);
-	List<Double> currentElectricityProfile = getElectricityProfile(cts, nStepsMPC);
-	// Creating demand vector
-	for (int i = 0; i < nStepsMPC; i++) {
-	    // ToDo: Why / 60 ?
-	    try {
-		demandVectorB[i] = -currentHeatProfile.get(0 + i) / 60;
-		demandVectorB[nStepsMPC + i] = -currentElectricityProfile.get(0 + i) / 60;
-	    } catch (Exception e) {
-		e.printStackTrace();
-	    }
-
-	}
-
-	consumptionMessage.setDemandVector(demandVectorB);
-	consumptionMessage.networkType = NetworkType.DEMANDWITHBOTH;
-	consumptionMessage.name = this.actorName;
-	consumptionMessage.id = this.fullActorPath;
-	consumptionMessage.forecastType = "Profile";
-	consumptionMessage.optimizationCriteria = "Price";
-
-	super.updateDisplay(consumptionMessage);
-    }
-
-    @Override
-    public List<Double> getHeatProfile(int timeStep, int mpcHorizon) {
-	// return new ArrayList<Double>(heatProfile);
-	return new ArrayList<Double>(Arrays.asList(heatProfile));
-    }
-
-    @Override
-    public List<Double> getElectricityProfile(int timeStep, int mpcHorizon) {
-	// return new ArrayList<Double>(electricityProfile);
-	return new ArrayList<Double>(Arrays.asList(electricityProfile));
+    public AnswerContent returnAnswerContentToSend() {
+	// Does not need to return anything for now
+	return null;
     }
 
 }

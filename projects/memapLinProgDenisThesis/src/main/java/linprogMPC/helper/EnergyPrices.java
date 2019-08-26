@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import linprogMPC.ThesisTopologySimple;
+import linprogMPC.TopologyConfig;
 import simulation.SimulationStarter;
 
 /**
@@ -107,9 +107,9 @@ public class EnergyPrices {
     		y[i]=originalValues.get(i);
     	}
 		
-    	double[] xi = new double[ThesisTopologySimple.N_STEPS];
+    	double[] xi = new double[TopologyConfig.N_STEPS];
     	
-		for (int j = 0; j < ThesisTopologySimple.N_STEPS ; j++) {
+		for (int j = 0; j < TopologyConfig.N_STEPS ; j++) {
     		xi[j]=j*MyTimeUnit.stepLength(TimeUnit.HOURS);    
     	}	   		
 		

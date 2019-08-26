@@ -1,4 +1,4 @@
-package linprogMPC.components;
+package linprogMPC.components.prototypes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
-import linprogMPC.ThesisTopologySimple;
+import linprogMPC.TopologyConfig;
 import linprogMPC.helper.HelperConcat;
 import linprogMPC.helper.MatrixBuildup;
 import linprogMPC.helper.MyTimeUnit;
@@ -30,11 +30,11 @@ public class LinProgBehavior extends BehaviorModel {
 	
 	private long sleepTime = 0L;
 	
-	double[][] fullXVector = new double[ThesisTopologySimple.NR_OF_ITERATIONS][ThesisTopologySimple.N_STEPS];
+	double[][] fullXVector = new double[TopologyConfig.NR_OF_ITERATIONS][TopologyConfig.N_STEPS];
 	
-	double[] costForTimestepAllBuildings = new double[ThesisTopologySimple.NR_OF_ITERATIONS];
-	double[] costForTimestepMEMAP = new double[ThesisTopologySimple.NR_OF_ITERATIONS];
-	double[][] memapSolutionPerTimeStep = new double[ThesisTopologySimple.NR_OF_ITERATIONS][];		
+	double[] costForTimestepAllBuildings = new double[TopologyConfig.NR_OF_ITERATIONS];
+	double[] costForTimestepMEMAP = new double[TopologyConfig.NR_OF_ITERATIONS];
+	double[][] memapSolutionPerTimeStep = new double[TopologyConfig.NR_OF_ITERATIONS][];		
 
 	public OptimizationResultMessage optResult = new OptimizationResultMessage();
     public MemapOpcServerStarter mServer;
@@ -43,7 +43,7 @@ public class LinProgBehavior extends BehaviorModel {
     public BuildingMessage buildingMessage = new BuildingMessage();
 	
 	public Calendar startTime;
-	public int nStepsMPC = ThesisTopologySimple.N_STEPS_MPC;
+	public int nStepsMPC = TopologyConfig.N_STEPS_MPC;
 	
 	public SolutionHandler solHandler = new SolutionHandler();
 	
@@ -76,7 +76,7 @@ public class LinProgBehavior extends BehaviorModel {
 			}
 		}
 		
-		if (ThesisTopologySimple.MEMAP_ON) {
+		if (TopologyConfig.MEMAP_ON) {
 			if (GlobalTime.getCurrentTimeStep() == 0) {
 				
 				int nrOfStorages = 0;
@@ -91,9 +91,9 @@ public class LinProgBehavior extends BehaviorModel {
 				
 				// Output simulation details
 				System.out.println(" << makeDesicion LinProg --- Optimization >> ");
-				System.out.println("Simulation time: " + MyTimeUnit.stepLength(TimeUnit.HOURS)*ThesisTopologySimple.NR_OF_ITERATIONS + " hours (" + ThesisTopologySimple.NR_OF_ITERATIONS/ThesisTopologySimple.TIMESTEPS_PER_DAY + " days)");
-				System.out.println("Timestep: " + MyTimeUnit.stepLength(TimeUnit.MINUTES) + " minutes (" + ThesisTopologySimple.NR_OF_ITERATIONS + " Steps)");
-				System.out.println("MPC Horizon: " + ThesisTopologySimple.N_STEPS_MPC*MyTimeUnit.stepLength(TimeUnit.HOURS) + " hours (" + ThesisTopologySimple.N_STEPS_MPC + " Steps)");
+				System.out.println("Simulation time: " + MyTimeUnit.stepLength(TimeUnit.HOURS)*TopologyConfig.NR_OF_ITERATIONS + " hours (" + TopologyConfig.NR_OF_ITERATIONS/TopologyConfig.TIMESTEPS_PER_DAY + " days)");
+				System.out.println("Timestep: " + MyTimeUnit.stepLength(TimeUnit.MINUTES) + " minutes (" + TopologyConfig.NR_OF_ITERATIONS + " Steps)");
+				System.out.println("MPC Horizon: " + TopologyConfig.N_STEPS_MPC*MyTimeUnit.stepLength(TimeUnit.HOURS) + " hours (" + TopologyConfig.N_STEPS_MPC + " Steps)");
 				
 				System.out.println(" ");
 				
@@ -108,7 +108,7 @@ public class LinProgBehavior extends BehaviorModel {
 			MatrixBuildup mb = new MatrixBuildup();			
 			OptimizationProblem problem = mb.multipleBuildings(
 					buildingMessageList,
-					ThesisTopologySimple.MEMAP_LDHeating);
+					TopologyConfig.MEMAP_LDHeating);
 			
 			OptimizationStarter os = new OptimizationStarter();
 			double[] sol =  os.runLinProg(problem);
@@ -143,17 +143,17 @@ public class LinProgBehavior extends BehaviorModel {
 			memapSolutionPerTimeStep[this.getActualTimeStep()] = vectorAll;
 			
 			
-			if  (GlobalTime.getCurrentTimeStep() == (ThesisTopologySimple.NR_OF_ITERATIONS-1))  {
-				String saveString = ThesisTopologySimple.simulationName + "MPC"+ThesisTopologySimple.N_STEPS_MPC+"/";
+			if  (GlobalTime.getCurrentTimeStep() == (TopologyConfig.NR_OF_ITERATIONS-1))  {
+				String saveString = TopologyConfig.simulationName + "MPC"+TopologyConfig.N_STEPS_MPC+"/";
 				saveString += this.actorName+"MPC"+nStepsMPC+".csv";
 				solHandler.exportMatrixWithHeader(memapSolutionPerTimeStep, saveString, namesAll);
 			}
 
 			// ================= Handling the result ================== 	
 		
-			if (GlobalTime.getCurrentTimeStep() == (ThesisTopologySimple.NR_OF_ITERATIONS-1)) {
+			if (GlobalTime.getCurrentTimeStep() == (TopologyConfig.NR_OF_ITERATIONS-1)) {
 				double totalCostsMEMAP = 0;
-				for (int j=0; j < ThesisTopologySimple.NR_OF_ITERATIONS; j++) {
+				for (int j=0; j < TopologyConfig.NR_OF_ITERATIONS; j++) {
 					totalCostsMEMAP += costForTimestepMEMAP[j];
 				}
 				

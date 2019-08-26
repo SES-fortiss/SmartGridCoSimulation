@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import linprogMPC.ThesisTopologySimple;
+import linprogMPC.TopologyConfig;
 import simulation.SimulationStarter;
 
 public class ConsumptionProfiles {
@@ -150,7 +150,7 @@ public class ConsumptionProfiles {
 	    br.close();  
 
 	    // Calculate the consumption for one day longer than necessary because of MPC horizon
-	    int daysToConsider = (int) Math.round(ThesisTopologySimple.N_STEPS/k + 0.5);
+	    int daysToConsider = (int) Math.round(TopologyConfig.N_STEPS/k + 0.5);
 	    System.out.println("Days to Consider because of MPC: " + daysToConsider);
 
 	    // TODO das kommt doppelt vor

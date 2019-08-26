@@ -1,4 +1,4 @@
-package linprogMPC.components;
+package linprogMPC.components.prototypes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
-import linprogMPC.ThesisTopologySimple;
+import linprogMPC.TopologyConfig;
 import linprogMPC.helper.EnergyPrices;
 import linprogMPC.helper.HelperConcat;
 import linprogMPC.helper.MatrixBuildup;
@@ -40,10 +40,10 @@ public class Building extends BehaviorModel {
     public int port;
 
     // some long term values
-    double[] buildingsTotalCosts = new double[ThesisTopologySimple.NR_OF_ITERATIONS];
-    double[][] buildingsSolutionPerTimeStep = new double[ThesisTopologySimple.NR_OF_ITERATIONS][];
+    double[] buildingsTotalCosts = new double[TopologyConfig.NR_OF_ITERATIONS];
+    double[][] buildingsSolutionPerTimeStep = new double[TopologyConfig.NR_OF_ITERATIONS][];
 
-    public int nStepsMPC = ThesisTopologySimple.N_STEPS_MPC;
+    public int nStepsMPC = TopologyConfig.N_STEPS_MPC;
 
     // NEW(7.8.18 by JMr): Long-distance heating supply
     public boolean LDHeating;
@@ -142,7 +142,7 @@ public class Building extends BehaviorModel {
 	}
 	refactorDemandList();
 
-	if (!ThesisTopologySimple.MEMAP_ON) {
+	if (!TopologyConfig.MEMAP_ON) {
 	    solveOptProblem();
 
 	    double costTotal = 0;
@@ -218,11 +218,11 @@ public class Building extends BehaviorModel {
 
 	    buildingsSolutionPerTimeStep[this.getActualTimeStep()] = vectorAll;
 
-	    if (!ThesisTopologySimple.MEMAP_ON) {
-		String saveString = ThesisTopologySimple.simulationName + "MPC" + ThesisTopologySimple.N_STEPS_MPC
+	    if (!TopologyConfig.MEMAP_ON) {
+		String saveString = TopologyConfig.simulationName + "MPC" + TopologyConfig.N_STEPS_MPC
 			+ "/";
 		saveString += this.actorName + "MPC" + nStepsMPC + "Solutions.csv";
-		if (GlobalTime.getCurrentTimeStep() == (ThesisTopologySimple.NR_OF_ITERATIONS - 1)) {
+		if (GlobalTime.getCurrentTimeStep() == (TopologyConfig.NR_OF_ITERATIONS - 1)) {
 		    solHandler.exportMatrixWithHeader(buildingsSolutionPerTimeStep, saveString, namesAll);
 		}
 	    }
@@ -340,7 +340,7 @@ public class Building extends BehaviorModel {
     @Override
     public void handleRequest() {
 	requestContentToSend = optResult;
-	if (ThesisTopologySimple.MEMAP_ON) {
+	if (TopologyConfig.MEMAP_ON) {
 	    requestContentToSend = (OptimizationResultMessage) requestContentReceived;
 	}
     }

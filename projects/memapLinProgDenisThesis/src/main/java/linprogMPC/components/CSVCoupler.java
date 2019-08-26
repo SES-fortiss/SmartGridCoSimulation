@@ -1,27 +1,18 @@
 package linprogMPC.components;
 
-import java.util.concurrent.ExecutionException;
-
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-
 import linprogMPC.components.prototypes.Coupler;
 import linprogMPC.helper.EnergyPrices;
-import linprogMPC.helperOPCua.BasicClient;
 
-public class ClientCoupler extends Coupler {
+public class CSVCoupler extends Coupler {
     Boolean gas;
 
-    public ClientCoupler(BasicClient client, NodeId installedPowerId, NodeId effHeatId, NodeId effElecId, Boolean gas,
-	    int port) throws InterruptedException, ExecutionException {
-	super(client.readFinalDoubleValue(installedPowerId), client.readFinalDoubleValue(effHeatId),
-		client.readFinalDoubleValue(effElecId), port);
-
+    public CSVCoupler(double installedPower, double efficiencyHeat, double efficiencyElec, Boolean gas, int port) {
+	super(installedPower, efficiencyHeat, efficiencyElec, port);
 	this.gas = gas;
     }
 
     @Override
     public void makeDecision() {
-	super.makeDecision();
 	couplerMessage.name = this.actorName;
 	couplerMessage.id = this.fullActorPath;
 	double opCost = 0.00001;
@@ -35,4 +26,5 @@ public class ClientCoupler extends Coupler {
 
 	super.updateDisplay(couplerMessage);
     }
+
 }

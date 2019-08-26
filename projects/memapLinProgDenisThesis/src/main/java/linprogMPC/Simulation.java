@@ -20,7 +20,7 @@ import opcMEMAP.ConfigInterface;
  * 
  */
 
-public class ThesisSimulation {
+public class Simulation {
 
     public static void main(String[] args) {
 	// Show help screen by default

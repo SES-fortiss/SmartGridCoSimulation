@@ -7,7 +7,7 @@ import com.google.gson.Gson;
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
-import linprogMPC.ThesisTopologySimple;
+import linprogMPC.TopologyConfig;
 import linprogMPC.external.M2MDisplay;
 
 public abstract class Device extends BehaviorModel {
@@ -16,7 +16,7 @@ public abstract class Device extends BehaviorModel {
 	protected Gson gson = new Gson();
 	private long waitDisplayClose = 0L;
 	
-	public int nStepsMPC = ThesisTopologySimple.N_STEPS_MPC;
+	public int nStepsMPC = TopologyConfig.N_STEPS_MPC;
 	
 	/**
 	 * This class is only there so that each component receives a display, if the port != 0; <br>

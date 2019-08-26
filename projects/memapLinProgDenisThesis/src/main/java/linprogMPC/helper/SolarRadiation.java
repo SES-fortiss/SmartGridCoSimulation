@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import linprogMPC.ThesisTopologySimple;
+import linprogMPC.TopologyConfig;
 import simulation.SimulationStarter;
 
 public class SolarRadiation {
@@ -77,7 +77,7 @@ public class SolarRadiation {
     		y[i]=originalValues.get(i);
     	}
 		
-		int timestepsPerDay = ThesisTopologySimple.TIMESTEPS_PER_DAY;
+		int timestepsPerDay = TopologyConfig.TIMESTEPS_PER_DAY;
     	
 		double[] xi = new double[timestepsPerDay];
 		for (int j1 = 0; j1 < timestepsPerDay ; j1++) {

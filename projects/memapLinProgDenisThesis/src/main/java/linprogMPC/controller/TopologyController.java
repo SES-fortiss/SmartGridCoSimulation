@@ -5,10 +5,10 @@ import java.util.Set;
 
 import akka.actor.ActorSystem;
 import linprogMPC.ActorFactory;
-import linprogMPC.ThesisTopologySimple;
-import linprogMPC.components.Building;
-import linprogMPC.components.LinProgBehavior;
+import linprogMPC.TopologyConfig;
+import linprogMPC.components.prototypes.Building;
 import linprogMPC.components.prototypes.Device;
+import linprogMPC.components.prototypes.LinProgBehavior;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 
@@ -24,7 +24,7 @@ import topology.ActorTopology;
  * @author Adrian.Krueger
  *
  */
-public class TopologyController extends ThesisTopologySimple {
+public class TopologyController extends TopologyConfig {
 
     public int nrStepsMPC;
     public boolean memapOn;
@@ -50,14 +50,14 @@ public class TopologyController extends ThesisTopologySimple {
 	this.predUncertainty = predUncertainty;
 	this.hasLDHeating = hasLDHeating;
 
-	ThesisTopologySimple.setStepsMPC(nrStepsMPC);
-	ThesisTopologySimple.setTimeStepsPerDay(timeStepsPerDay);
-	ThesisTopologySimple.setPredUncertainty(predUncertainty);
-	ThesisTopologySimple.setMemapLDHeating(hasLDHeating);
-	ThesisTopologySimple.setMemapOn(memapOn);
-	ThesisTopologySimple.setNrOfDays(nrDays);
-	ThesisTopologySimple.calcNrIterations();
-	ThesisTopologySimple.calcNrSteps();
+	TopologyConfig.setStepsMPC(nrStepsMPC);
+	TopologyConfig.setTimeStepsPerDay(timeStepsPerDay);
+	TopologyConfig.setPredUncertainty(predUncertainty);
+	TopologyConfig.setMemapLDHeating(hasLDHeating);
+	TopologyConfig.setMemapOn(memapOn);
+	TopologyConfig.setNrOfDays(nrDays);
+	TopologyConfig.calcNrIterations();
+	TopologyConfig.calcNrSteps();
     }
 
 	public void attach(BuildingController buildingController) {
@@ -67,7 +67,7 @@ public class TopologyController extends ThesisTopologySimple {
 	public void startSimulation() {
 		createTopology();
 		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(this.top);
-		SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimple.NR_OF_ITERATIONS);
+		SimulationStarter.startSimulation(actorSystem, 0, TopologyConfig.NR_OF_ITERATIONS);
 	}
 
 	public void endSimulation() {

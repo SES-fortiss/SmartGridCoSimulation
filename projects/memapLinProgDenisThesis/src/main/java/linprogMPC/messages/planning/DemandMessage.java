@@ -1,7 +1,7 @@
 package linprogMPC.messages.planning;
 
 import akka.basicMessages.AnswerContent;
-import linprogMPC.ThesisTopologySimple;
+import linprogMPC.TopologyConfig;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.extension.NetworkType;
 
@@ -52,7 +52,7 @@ public class DemandMessage implements AnswerContent {
 	public double[] calcHeatLosses(BuildingMessage buildingSpec) {
 		double[] consumptionVector = buildingSpec.getCombinedDemandVector();		
 		// 1.5 % Verlust auf 100 Metern Leitung
-		double losses = Math.pow(ThesisTopologySimple.HEAT_LOSSES,buildingSpec.heatTransportLength/100);		
+		double losses = Math.pow(TopologyConfig.HEAT_LOSSES,buildingSpec.heatTransportLength/100);		
 		for (int j = 0; j < consumptionVector.length/2; j++) {
 			consumptionVector[j] = losses*consumptionVector[j];
 		}

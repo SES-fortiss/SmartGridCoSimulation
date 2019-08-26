@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import helper.IoHelper;
-import linprogMPC.ThesisTopologySimple;
+import linprogMPC.TopologyConfig;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.planning.StorageMessage;
  
 
 public class SolutionHandler {
 	
-	int nMPC = ThesisTopologySimple.N_STEPS_MPC;
+	int nMPC = TopologyConfig.N_STEPS_MPC;
 	
 	public void exportVector(double[] data, String filename) {
 		BufferedWriter bw = null;

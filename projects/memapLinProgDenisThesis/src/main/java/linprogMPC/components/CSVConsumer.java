@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import linprogMPC.ThesisTopologySimple;
+import linprogMPC.TopologyConfig;
+import linprogMPC.components.prototypes.Consumer;
 import linprogMPC.helper.MyTimeUnit;
 
 public class CSVConsumer extends Consumer {
@@ -72,7 +73,7 @@ public class CSVConsumer extends Consumer {
 			br.close();
 			// Calculate the consumption for one day longer than necessary because of MPC
 			// horizon
-			int daysToConsider = (int) Math.round(ThesisTopologySimple.N_STEPS / k + 0.5);
+			int daysToConsider = (int) Math.round(TopologyConfig.N_STEPS / k + 0.5);
 			System.out.println("Days to Consider because of MPC: " + daysToConsider);
 
 			// the heat profile of one day is copied for n_days; ( k = N_STEPS/N_Days )

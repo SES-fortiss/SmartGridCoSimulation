@@ -7,16 +7,17 @@ import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 
-import linprogMPC.components.Battery;
-import linprogMPC.components.CHP;
-import linprogMPC.components.HeatPump;
-import linprogMPC.components.PV;
-import linprogMPC.components.SolarThermic;
-import linprogMPC.components.ThermalStorage;
+import linprogMPC.components.CSVCoupler;
+import linprogMPC.components.CSVStorage;
+import linprogMPC.components.CSVVolatileProducer;
+import linprogMPC.components.prototypes.Coupler;
+import linprogMPC.components.prototypes.Producer;
+import linprogMPC.components.prototypes.Storage;
 import linprogMPC.controller.BuildingController;
 import linprogMPC.controller.CSVBuildingController;
 import linprogMPC.controller.OpcUaBuildingController;
 import linprogMPC.controller.TopologyController;
+import linprogMPC.messages.extension.NetworkType;
 
 public final class ExampleLoader {
     public static TopologyController OpcUaExample = OpcUaExample();
@@ -83,26 +84,26 @@ public final class ExampleLoader {
 
 	BuildingController building2 = new CSVBuildingController("Building2", "WaermeVerbraeucheAngepasstGebaeude2.csv",
 		"StromVerbraeucheAngepasstGebaeude2.csv", false, 50);
-	Battery battery2 = new Battery(12.0, 9, 9, 0.95, 0.95, 0);
+	Storage battery2 = new CSVStorage(12.0, 9, 9, 0.95, 0.95, NetworkType.ELECTRICITY, 0);
 	building2.attach(battery2);
 
 	BuildingController building3 = new CSVBuildingController("Building3", "WaermeVerbraeucheAngepasstGebaeude3.csv",
 		"StromVerbraeucheAngepasstGebaeude3.csv", false, 50);
-	PV pv3 = new PV(12.0 + 5.0, PORT_UNDEFINED);
-	HeatPump heatpump3 = new HeatPump(25, 2.5, -1, PORT_UNDEFINED);
-	ThermalStorage thermalStorage3 = new ThermalStorage(3 * 100, 3 * 60, 3 * 60, 0.9, 0.9, PORT_UNDEFINED);
+	Producer pv3 = new CSVVolatileProducer(12.0 + 5.0, NetworkType.ELECTRICITY, PORT_UNDEFINED);
+	Coupler heatpump3 = new CSVCoupler(25, 2.5, -1, false, PORT_UNDEFINED);
+	Storage thermalStorage3 = new CSVStorage(3 * 100, 3 * 60, 3 * 60, 0.9, 0.9, NetworkType.HEAT, PORT_UNDEFINED);
 	building3.attach(pv3);
 	building3.attach(heatpump3);
 	building3.attach(thermalStorage3);
 
 	BuildingController building4 = new CSVBuildingController("Building4", "WaermeVerbraeucheAngepasstGebaeude4.csv",
 		"StromVerbraeucheAngepasstGebaeude4.csv", false, 50);
-	CHP chp4 = new CHP(43, 0.61, 0.29, PORT_UNDEFINED);
+	Coupler chp4 = new CSVCoupler(43, 0.61, 0.29, true, PORT_UNDEFINED);
 	building4.attach(chp4);
 
 	BuildingController building5 = new CSVBuildingController("Building5", "WaermeVerbraeucheAngepasstGebaeude4.csv",
 		"StromVerbraeucheAngepasstGebaeude4.csv", false, 50);
-	SolarThermic solarThermic5 = new SolarThermic(10, PORT_UNDEFINED);
+	Producer solarThermic5 = new CSVVolatileProducer(10, NetworkType.HEAT, PORT_UNDEFINED);
 	building5.attach(solarThermic5);
 
 	topologyController.attach(building1);

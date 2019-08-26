@@ -1,10 +1,9 @@
-package linprogMPC.components;
+package linprogMPC.components.prototypes;
 
 import java.util.List;
 
 import akka.basicMessages.AnswerContent;
 import akka.systemActors.GlobalTime;
-import linprogMPC.components.prototypes.Device;
 import linprogMPC.messages.extension.NetworkType;
 import linprogMPC.messages.planning.DemandMessage;
 

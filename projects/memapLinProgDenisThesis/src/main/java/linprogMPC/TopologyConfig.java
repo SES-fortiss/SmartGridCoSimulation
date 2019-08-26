@@ -7,7 +7,7 @@ package linprogMPC;
  * @author andreas.thut
  *
  */
-public abstract class ThesisTopologySimple {
+public abstract class TopologyConfig {
     public static String simulationName;
 
     // ================= Model Predictive Control (MPC) =================

@@ -246,7 +246,7 @@ public class OpcUaBuildingController implements BuildingController {
 			    NodeId installedPowerId = NodeId.parse((String) chp.get("installedPowerId"));
 			    NodeId effHeatId = NodeId.parse((String) chp.get("effHeatId"));
 			    NodeId effElecId = NodeId.parse((String) chp.get("effElecId"));
-			    attach(new ClientCoupler(client, installedPowerId, effHeatId, effElecId, 0));
+			    attach(new ClientCoupler(client, installedPowerId, effHeatId, effElecId, true, 0));
 			    System.out.println("Added chp to " + name);
 			} catch (Exception e) {
 			    System.err.println("WARNING: Could not add chp " + i + " to building " + name
@@ -295,7 +295,7 @@ public class OpcUaBuildingController implements BuildingController {
 			    NodeId installedPowerId = NodeId.parse((String) heatpump.get("installedPowerId"));
 			    NodeId effHeatId = NodeId.parse((String) heatpump.get("effHeatId"));
 			    NodeId effElecId = NodeId.parse((String) heatpump.get("effElecId"));
-			    attach(new ClientCoupler(client, installedPowerId, effHeatId, effElecId, 0));
+			    attach(new ClientCoupler(client, installedPowerId, effHeatId, effElecId, false, 0));
 			    System.out.println("Added heatpump to " + name);
 			} catch (Exception e) {
 			    System.err.println("WARNING: Could not add heatpump " + i + " to building " + name

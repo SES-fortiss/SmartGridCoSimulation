@@ -3,7 +3,7 @@ package linprogMPC.helper;
 import java.util.ArrayList;
 
 import akka.systemActors.GlobalTime;
-import linprogMPC.ThesisTopologySimple;
+import linprogMPC.TopologyConfig;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.extension.NetworkType;
 import linprogMPC.messages.planning.CouplerMessage;
@@ -18,7 +18,7 @@ public class MatrixBuildup {
 	int nStepsMPC = 0;
 	
 	public MatrixBuildup() {
-		 nStepsMPC = ThesisTopologySimple.N_STEPS_MPC;
+		 nStepsMPC = TopologyConfig.N_STEPS_MPC;
 	}
 		
 	public OptimizationProblem singleBuilding(BuildingMessage buildingMessage) {		
@@ -350,7 +350,7 @@ public class MatrixBuildup {
 		}
 		
 		
-		double factor = 24.0 / ThesisTopologySimple.TIMESTEPS_PER_DAY; // = 0.25 für 96 Schritte /Tag
+		double factor = 24.0 / TopologyConfig.TIMESTEPS_PER_DAY; // = 0.25 für 96 Schritte /Tag
 		
 		for(int i = 0; i < nStepsMPC; i++) {		
 			for(int j = 0; j <= i; j++) {
