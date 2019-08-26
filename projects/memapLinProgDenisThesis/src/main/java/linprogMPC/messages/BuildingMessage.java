@@ -34,6 +34,7 @@ public class BuildingMessage implements AnswerContent {
 	public ArrayList<CouplerMessage> couplerList = new ArrayList<CouplerMessage>();
 	public ArrayList<ProducerMessage> volatileProducerList = new ArrayList<ProducerMessage>();
 	public ArrayList<ProducerMessage> controllableProducerList = new ArrayList<ProducerMessage>();
+	public OptimizationResultMessage currentOptimizationResults;
 	
 	public ArrayList<ChildSpecification> childrenList = new ArrayList<ChildSpecification>();
 	
