@@ -5,13 +5,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
-
-import com.github.cliftonlabs.json_simple.JsonObject;
 import com.google.gson.Gson;
-
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
@@ -29,7 +25,6 @@ import linprogMPC.helperOPCua.OpcServerContextGenerator;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.OptimizationResultMessage;
 import opcMEMAP.MemapOpcServerStarter;
-import opcMEMAP.restructureSolutionVector;
 
 public class LinProgBehavior extends BehaviorModel {
 	
