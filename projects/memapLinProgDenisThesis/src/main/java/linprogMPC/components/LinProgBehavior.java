@@ -177,10 +177,9 @@ public class LinProgBehavior extends BehaviorModel {
 			}
 			
 			//A folder labeled "GeneralResults" is added to the resultsMap. Moreover, we add a new folder for every building.
-			optResult.resultsMap.put("GeneralResults", new TreeMap<String, double[]>());
 			for (int i=0;i<nameCategories.size();i++)
 			{
-			optResult.resultsMap.put(nameCategories.get(i), new TreeMap<String, double[]>());	
+			optResult.buildingResultsMap.put(nameCategories.get(i), new TreeMap<String, double[]>());	
 			}
 
 			// We assign all the devices and generalResult datapoints to the respective folders. The first loop runs over the these datapoints and devices. The second loop runs over the respective nMpc Hoirzon points.
@@ -194,9 +193,9 @@ public class LinProgBehavior extends BehaviorModel {
 				String str =problem.namesUB[i*nStepsMPC];
 				TreeMap<String, double[]> keyMap;
 				if (nameCategories.contains(str.split("\\.")[0])){
-					keyMap= (TreeMap<String, double[]>) optResult.resultsMap.get(str.split("\\.")[0]);
+					keyMap= (TreeMap<String, double[]>) optResult.buildingResultsMap.get(str.split("\\.")[0]);
 				} else {
-					keyMap= (TreeMap<String, double[]>) optResult.resultsMap.get("GeneralResults");
+					keyMap= (TreeMap<String, double[]>) optResult.generalResultsMap;
 				}
 				//Enabling enumeration of devices.
 				int DevicesNumber=0;
