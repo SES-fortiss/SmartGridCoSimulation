@@ -26,53 +26,52 @@ import topology.ActorTopology;
  */
 public class TopologyController extends ThesisTopologySimple {
 
-	public int nrStepsMPC;
-	public boolean memapOn;
-	public int portUndefined;
-	public String name;
-	public int timeStepsPerDay;
-	public int nrDays;
-	public int predUncertainty;
-	public boolean hasLDHeating;
+    public int nrStepsMPC;
+    public boolean memapOn;
+    public int portUndefined;
+    public String name;
+    public int timeStepsPerDay;
+    public int nrDays;
+    public int predUncertainty;
+    public boolean hasLDHeating;
 
-	public Set<BuildingController> managedBuildings = new HashSet<>();
+    public Set<BuildingController> managedBuildings = new HashSet<>();
+    public ActorTopology top;
 
-	public ActorTopology top;
+  public TopologyController(String name, boolean memapOn, int nrStepsMPC, int timeStepsPerDay, int nrDays,
+	    int predUncertainty, boolean hasLDHeating, int portUndefined) {
+	this.name = name;
+	this.nrStepsMPC = nrStepsMPC;
+	this.memapOn = memapOn;
+	this.portUndefined = portUndefined;
+	this.timeStepsPerDay = timeStepsPerDay;
+	this.nrDays = nrDays;
+	this.predUncertainty = predUncertainty;
+	this.hasLDHeating = hasLDHeating;
 
-	public TopologyController(String name, boolean memapOn, int nrStepsMPC, int timeStepsPerDay, int nrDays,
-			int predUncertainty, boolean hasLDHeating, int portUndefined) {
-		this.name = name;
-		this.nrStepsMPC = nrStepsMPC;
-		this.memapOn = memapOn;
-		this.portUndefined = portUndefined;
-		this.timeStepsPerDay = timeStepsPerDay;
-		this.nrDays = nrDays;
-		this.predUncertainty = predUncertainty;
-		this.hasLDHeating = hasLDHeating;
+	ThesisTopologySimple.setStepsMPC(nrStepsMPC);
+	ThesisTopologySimple.setTimeStepsPerDay(timeStepsPerDay);
+	ThesisTopologySimple.setPredUncertainty(predUncertainty);
+	ThesisTopologySimple.setMemapLDHeating(hasLDHeating);
+	ThesisTopologySimple.setMemapOn(memapOn);
+	ThesisTopologySimple.setNrOfDays(nrDays);
+	ThesisTopologySimple.calcNrIterations();
+	ThesisTopologySimple.calcNrSteps();
+    }
 
-		ThesisTopologySimple.setStepsMPC(nrStepsMPC);
-		ThesisTopologySimple.setTimeStepsPerDay(timeStepsPerDay);
-		ThesisTopologySimple.setPredUncertainty(predUncertainty);
-		ThesisTopologySimple.setMemapLDHeating(hasLDHeating);
-		ThesisTopologySimple.setMemapOn(memapOn);
-		ThesisTopologySimple.setNrOfDays(nrDays);
-		ThesisTopologySimple.calcNrIterations();
-		ThesisTopologySimple.calcNrSteps();
-	}
+    public void attach(BuildingController buildingController) {
+	managedBuildings.add(buildingController);
+    }
 
-	public void attach(BuildingController buildingController) {
-		managedBuildings.add(buildingController);
-	}
-	
-	public void startSimulation() {
-		createTopology();
-		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(this.top);
-		SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimple.NR_OF_ITERATIONS);
-	}
+    public void startSimulation() {
+	createTopology();
+	ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(this.top);
+	SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimple.NR_OF_ITERATIONS);
+    }
 
-	public void endSimulation() {
-		SimulationStarter.stopSimulation();
-	}
+    public void endSimulation() {
+	SimulationStarter.stopSimulation();
+    }
 	
 	private void createTopology() {
 		// Creating Actor Topology
@@ -96,6 +95,4 @@ public class TopologyController extends ThesisTopologySimple {
 			}
 			top.addSubTopology(name, buildingHead);
 		}
-	}
-
 }

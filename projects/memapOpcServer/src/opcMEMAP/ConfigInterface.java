@@ -12,7 +12,7 @@ public class ConfigInterface {
 
   // private String host = "localhost";
   private String host;
-  private int port = 9999;
+  private int port = 4880;
   private String uri = "urn:fortiss:opc:sever:memap" + UUID.randomUUID();
   private String namespace = "sessim";
   private double minSamplingInterval = 499;
