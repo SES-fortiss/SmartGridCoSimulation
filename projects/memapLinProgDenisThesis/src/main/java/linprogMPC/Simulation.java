@@ -40,40 +40,43 @@ public class Simulation {
 
     private static void argParser(String arg) {
 	switch (arg) {
-		case "help":
-		case "h":
-		    System.out.println(showHelp());
-		    break;
-	
-		// run the simulation
-		case "start":
-		case "s":
-		    run(ExampleLoader.OpcUaExample);
-		    break;
-	
-		// run the simulation in a loop
-		case "loop":
-		case "l":
-		    while (true) {
-			run(ExampleLoader.OpcUaExample);
-		    }
-	
-		    // run csv example once
-		case "csv":
-		    run(ExampleLoader.CsvExample);
-		    break;
-	
-		// starts jetty Server
-		case "jetty":
-		case "j":
-		    String[] arbitraryValue = null;
-		    JettyWebsocket.main(arbitraryValue);
-		    break;
-		    
-		default:
-		    System.out.println(showHelp());
-		    break;
-		}
+	case "help":
+	case "h":
+	    System.out.println(showHelp());
+	    break;
+
+	// run the simulation
+	case "start":
+	case "s":
+	    System.out.println("========= START OPCUA SIMULATION =========");
+	    run(ExampleLoader.OpcUaExample());
+	    break;
+
+	// run the simulation in a loop
+	case "loop":
+	case "l":
+	    while (true) {
+		System.out.println("========= START OPCUA SIMULATION =========");
+		run(ExampleLoader.OpcUaExample());
+	    }
+
+	    // run csv example once
+	case "csv":
+	    System.out.println("========= START CSV SIMULATION =========");
+	    run(ExampleLoader.CsvExample());
+	    break;
+
+	// starts jetty Server
+	case "jetty":
+	case "j":
+	    String[] arbitraryValue = null;
+	    JettyWebsocket.main(arbitraryValue);
+	    break;
+
+	default:
+	    System.out.println(showHelp());
+	    break;
+	}
     }
 
     private static String showHelp() {

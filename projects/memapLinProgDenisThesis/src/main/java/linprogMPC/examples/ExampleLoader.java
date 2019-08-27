@@ -20,13 +20,11 @@ import linprogMPC.controller.TopologyController;
 import linprogMPC.messages.extension.NetworkType;
 
 public final class ExampleLoader {
-    public static TopologyController OpcUaExample = OpcUaExample();
-    public static TopologyController CsvExample = CsvExample();
 
     private ExampleLoader() {
     }
 
-    private static TopologyController OpcUaExample() {
+    public static TopologyController OpcUaExample() {
 	TopologyController topologyController = new TopologyController("MEMAP", true, 5, 96, 7, 0, false, 4880);
 
 	try {
@@ -74,7 +72,7 @@ public final class ExampleLoader {
 	return topologyController;
     }
 
-    private static TopologyController CsvExample() {
+    public static TopologyController CsvExample() {
 	final int PORT_UNDEFINED = 0;
 
 	TopologyController topologyController = new TopologyController("MEMAP", true, 2, 96, 7, 0, false, 0);
