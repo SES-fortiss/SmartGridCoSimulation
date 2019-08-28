@@ -3,20 +3,32 @@ package memap;
 import topology.ActorTopology;
 
 /**
- *
- * DesignedTopology for example with 5 buildings with Linear Programming
- * 
- * @author andreas.thut
- *
+ * Designed Topology for example with 5 buildings with Linear Programming
  */
+
 public class MemapTopology {
-	public static String simulationName = "2MEMAP";	
+	
+	/**
+	 * Creates a topology according to user design (GUI input). The following
+	 * parameters are user inputs:
+	 * 
+	 * @par mpcInput N_STEPS_MPC
+	 * @par memapActive MemapON
+	 */
+	public static String simulationName = "2MEMAP";
 	
 	public static ActorTopology createTopology(int mpcInput,boolean memapActive){
 		
-		MemapConfig.NR_OF_CONSUMERS = 5;
 		MemapConfig.N_STEPS_MPC = mpcInput;
-		MemapConfig.MEMAP_ON = memapActive;	
+		MemapConfig.TIMESTEPS_PER_DAY = 96;
+		MemapConfig.DAYS = 1;
+		MemapConfig.NR_OF_ITERATIONS = MemapConfig.DAYS * MemapConfig.TIMESTEPS_PER_DAY;
+		MemapConfig.N_STEPS = MemapConfig.NR_OF_ITERATIONS + MemapConfig.N_STEPS_MPC;
+		MemapConfig.MEMAP_ON = memapActive;
+		MemapConfig.NR_OF_CONSUMERS = 5;
+		MemapConfig.MEMAP_LDHeating = false;
+		MemapConfig.HEAT_LOSSES = 1.0;
+		
 		int PORT_UNDEFINED = 0;
 		String profilePath = "WaermeVerbraeucheAngepasst.csv";
 		String networkType = "Heat";
@@ -34,7 +46,7 @@ public class MemapTopology {
 		ActorTopology building2 = new ActorTopology(building2Name);
 		building2.addActor(building2Name, ActorFactory.createBuilding(PORT_UNDEFINED, false, 50));
 		building2.addActorAsChild(building2Name + "/Consumption", ActorFactory.createConsumer(profilePath, networkType, 1, PORT_UNDEFINED));
-		//building2.addActorAsChild(building2Name + "/GasBoiler2", ActorFactory.createGasBoiler(20, 0.99, 0.0591, PORT_UNDEFINED));
+		building2.addActorAsChild(building2Name + "/GasBoiler2", ActorFactory.createGasBoiler(20, 0.99, 0.0591, PORT_UNDEFINED));
 		//building2.addActorAsChild(building2Name + "/PV2", ActorFactory.createPV(5, PORT_UNDEFINED));
 		building2.addActorAsChild(building2Name + "/Battery2", ActorFactory.createBattery(12.0, 9, 9, 0.95, 0.95, PORT_UNDEFINED));
 		
