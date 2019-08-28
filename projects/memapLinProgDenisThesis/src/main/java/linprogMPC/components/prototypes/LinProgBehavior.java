@@ -166,7 +166,12 @@ public class LinProgBehavior extends BehaviorModel {
 			//Here the structure of the server results is specified
 			
 			
+			
+			//Caution!!! Building 1 does in the CSV example not contain any devices. 
+			//Hence, there is no folder for building one initialized.
+			
 			//nameCategories contains a list of all building names
+			//-4*nStepsMMPC is due to the generalResults split
 			List<String> nameCategories = new ArrayList<String>();
 			String currentName="";
 			for (int i=0;i<sol.length-4*nStepsMPC;i++) {
@@ -175,35 +180,58 @@ public class LinProgBehavior extends BehaviorModel {
 					nameCategories.add(currentName);
 				}
 			}
-			
 			//A folder labeled "GeneralResults" is added to the resultsMap. Moreover, we add a new folder for every building.
+			List<TreeMap<String, Object>> buildingsList=null;
 			for (int i=0;i<nameCategories.size();i++)
 			{
-			optResult.buildingResultsMap.put(nameCategories.get(i), new TreeMap<String, double[]>());	
+//			buildingsList.add(AddFolderLinProg.subAddFolder(nameCategories.get(i), optResult.buildingResultsMap));	
+//			buildingsList.add(i, AddFolderLinProg.subAddFolder(nameCategories.get(i), optResult.buildingResultsMap));
+				TreeMap<String, Object> buildingFolder;
+				buildingFolder=AddFolderLinProg.subAddFolder(nameCategories.get(i), optResult.buildingResultsMap);
+				AddFolderLinProg.subAddFolder("ClientStorageCharge", buildingFolder);
+				AddFolderLinProg.subAddFolder("ClientStorageDischarge", buildingFolder);	
+				AddFolderLinProg.subAddFolder("ClientCoupler", buildingFolder);	
+				AddFolderLinProg.subAddFolder("ClientVolatileProducer", buildingFolder);
+				AddFolderLinProg.subAddFolder("CSVStorageCharge", buildingFolder);
+				AddFolderLinProg.subAddFolder("CSVStorageDischarge", buildingFolder);	
+				AddFolderLinProg.subAddFolder("CSVCoupler", buildingFolder);	
+				AddFolderLinProg.subAddFolder("CSVVolatileProducer", buildingFolder);
 			}
 
-			// We assign all the devices and generalResult datapoints to the respective folders. The first loop runs over the these datapoints and devices. The second loop runs over the respective nMpc Hoirzon points.
-			for (int i = 0; i < sol.length/nStepsMPC; i++) {
+			//We assign all the devices and generalResult datapoints to the respective folders. 
+			//The first loop runs over the datapoints and devices. 
+			//The second loop runs over the respective nMpc Hoirzon points.
+			for (int i = 0; i < sol.length/nStepsMPC-4; i++) {
 				double[] result = new double[nStepsMPC];
-				
 				for (int j = 0; j < result.length; j++) {
 					result[j] = sol[i*nStepsMPC + j];
 				}
-			
 				String str =problem.namesUB[i*nStepsMPC];
-				TreeMap<String, double[]> keyMap;
-				if (nameCategories.contains(str.split("\\.")[0])){
-					keyMap= (TreeMap<String, double[]>) optResult.buildingResultsMap.get(str.split("\\.")[0]);
-				} else {
-					keyMap= (TreeMap<String, double[]>) optResult.generalResultsMap;
-				}
+				TreeMap<String, Object> keyMap;
+				TreeMap<String, double[]> keyMapDevices;
+				String[] strSplit=str.split("\\.");
+				keyMap= (TreeMap<String, Object>) optResult.buildingResultsMap.get(strSplit[0]);
+				keyMapDevices=(TreeMap<String, double[]>) keyMap.get(strSplit[strSplit.length-1]);
 				//Enabling enumeration of devices.
 				int DevicesNumber=0;
-				while (keyMap.containsKey(str)) {
+				while (keyMapDevices.containsKey(str)) {
 					DevicesNumber=DevicesNumber+1;
 				}
-				keyMap.put(str+DevicesNumber, result);
+				keyMapDevices.put(str+DevicesNumber, result);
 			}
+			
+			//Putting values to the generalResultsMap. Loops same as above
+			for (int i = sol.length/nStepsMPC-4; i < sol.length/nStepsMPC; i++) {
+				double[] result = new double[nStepsMPC];
+				for (int j = 0; j < result.length; j++) {
+					result[j] = sol[i*nStepsMPC + j];
+				}
+				String str =problem.namesUB[i*nStepsMPC];
+				TreeMap<String, double[]> keyMap;
+				keyMap= (TreeMap<String, double[]>) optResult.generalResultsMap;
+				keyMap.put(str, result);
+			}
+			
 			
 			try {
 				Thread.sleep(sleepTime);
