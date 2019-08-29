@@ -23,7 +23,6 @@ abstract public class ReadFileManager {
 			String source = "resources/" + filename;
 			InputStream is = ReadFileManager.class.getClassLoader().getResourceAsStream(source);
 			br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-
 		} catch (IOException e1) {
 			System.err.println("Error reading " + filename + " thrown at class ReadFileManager");
 			e1.printStackTrace();

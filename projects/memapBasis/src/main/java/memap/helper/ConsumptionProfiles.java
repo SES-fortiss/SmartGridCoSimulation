@@ -1,7 +1,9 @@
 package memap.helper;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -25,9 +27,9 @@ public class ConsumptionProfiles {
 	}
 
 	/**
-	 * Returns the current heat consumption at a given time step.
-	 * Inputs, originally in kW/minute, are converted to kWh and the multiplied by
-	 * the time step in hours
+	 * Returns the current heat consumption at a given time step. Inputs, originally
+	 * in kW/minute, are converted to kWh and the multiplied by the time step in
+	 * hours
 	 * 
 	 * @param timestep the time step for which to get the heat consumption
 	 * @return heat consumption at given time step
@@ -136,49 +138,46 @@ public class ConsumptionProfiles {
 		return profiles;
 	}
 
+	/**
+	 * Set the profile file according to the user input. If a path to an existing
+	 * file either in the file system or in the resource directory is not provided
+	 * then a default file from the resources directory is used.
+	 */
 	public void setProfiles(String networkType, String profilesPath) {
-		if (profilesPath.equals("")) {
-			if (networkType.equals("Heat")) {
-				try {
-					BufferedReader br = new BufferedReader(ReadFileManager.readFromResources(DEFAULT_HEAT_PROFILE));
-					interpolateConsumption(br, nrOfProfiles);
-				} catch (ParseException | IOException e) {
-					System.err.println("Error reading " + profilesPath + "thrown at class ConsumptionProfiles");
-					e.printStackTrace();
-				}
-				System.out.println(">> Loading default heat profiles: " + getProfiles().get(0).size());
-			} else if (networkType.equals("Electricity")) {
-				try {
-					BufferedReader br = new BufferedReader(
-							ReadFileManager.readFromResources(DEFAULT_ELECTRICITY_PROFILE));
-					interpolateConsumption(br, nrOfProfiles);
-				} catch (ParseException | IOException e) {
-					System.err.println("Error reading " + profilesPath + "thrown at class ConsumptionProfiles");
-					e.printStackTrace();
-				}
-				System.out.println(">> Loading default electricity profiles: " + getProfiles().get(0).size());
-			}
+		File file = new File(profilesPath);
+		BufferedReader br = null;
+		String message = ">> Reading ";
+
+		if (file.exists()) {
+			// profilePath is a valid path to a file
+			br = new BufferedReader(ReadFileManager.readFromSource(profilesPath));
+			message = message + "custom " + networkType + " profiles: ";
 		} else {
-			System.out.println(">> Reading from: " + profilesPath);
-			if (networkType.equals("Heat")) {
-				try {
-					BufferedReader br = new BufferedReader(ReadFileManager.readFromSource(profilesPath));
-					interpolateConsumption(br, nrOfProfiles);
-				} catch (ParseException | IOException e) {
-					System.err.println("Error reading " + profilesPath + "thrown at class ConsumptionProfiles");
-					e.printStackTrace();
+			// Check if path is the name of a file in resources
+			URL resourceURL = ReadFileManager.class.getClassLoader().getResource("resources/" + profilesPath);
+			if ((profilesPath != "") && (resourceURL != null)) {
+				// Load from specified resource file
+				br = new BufferedReader(ReadFileManager.readFromResources(profilesPath));
+				message = message + "selected " + networkType + " profiles: ";
+			} else {
+				// Load default file
+				if (networkType.equals("Heat")) {
+					br = new BufferedReader(ReadFileManager.readFromResources(DEFAULT_HEAT_PROFILE));
+					message = message + "default heat profiles: ";
+				} else if (networkType.equals("Electricity")) {
+					br = new BufferedReader(ReadFileManager.readFromResources(DEFAULT_ELECTRICITY_PROFILE));
+					message = message + "default electricity profiles: ";
 				}
-				System.out.println(">> Loading custom heat profiles: " + getProfiles().get(0).size());
-			} else if (networkType.equals("Electricity")) {
-				try {
-					BufferedReader br = new BufferedReader(ReadFileManager.readFromSource(profilesPath));
-					interpolateConsumption(br, nrOfProfiles);
-				} catch (ParseException | IOException e) {
-					System.err.println("Error reading " + profilesPath + "thrown at class ConsumptionProfiles");
-					e.printStackTrace();
-				}
-				System.out.println(">> Loading custom electricity profiles: " + getProfiles().get(0).size());
 			}
 		}
+		
+		try {
+			interpolateConsumption(br, nrOfProfiles);
+		} catch (ParseException | IOException e) {
+			System.err.println("Error reading or parsing " + profilesPath + "thrown at ConsumptionProfiles");
+			e.printStackTrace();
+		}
+
+		System.out.println(message + getProfiles().get(0).size());
 	}
 }
