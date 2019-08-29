@@ -30,7 +30,7 @@ public class AcceptListener extends MouseAdapter {
 			simt.start();
 		} else {
 			FileManager.writeDescriptorFiles();
-			FileManager.writeParameterConfigFile();
+			FileManager.writeParameterConfigFile(); // Should be called last
 		}
 		Designer.frame.dispose();
 	}
