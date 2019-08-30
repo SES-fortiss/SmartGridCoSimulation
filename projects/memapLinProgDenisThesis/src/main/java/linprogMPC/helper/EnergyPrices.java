@@ -3,13 +3,14 @@ package linprogMPC.helper;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import linprogMPC.ThesisTopologySimple;
+import linprogMPC.TopologyConfig;
 import simulation.SimulationStarter;
 
 /**
@@ -68,23 +69,21 @@ public class EnergyPrices {
 	
 	
 	
-	private ArrayList<Double> readElectricityPrices(String filename){
+	private ArrayList<Double> readElectricityPrices(String filename) {
 		ArrayList<Double> electricityPrices = new ArrayList<Double>();
 		try {
-			String source = "res/"+ filename;			
-			String location = ReadMemapFiles.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-			location = location.replace("%20", " ");
-			location = location.substring(0, location.length()-15);
-			location = location + source;			
-			FileReader fr = new FileReader(location);
-			BufferedReader br = new BufferedReader(fr);
-		    read(br, electricityPrices);	
+			// Retrieve ElectricityPrices from res folder. Note that actual path
+			// to res folder varies across different systems and using explicit paths
+			// is therefore not recommended.
+			BufferedReader br = new BufferedReader(
+					new InputStreamReader(this.getClass().getResourceAsStream("/" + filename)));
+			read(br, electricityPrices);
 		} catch (IOException | ParseException e1) {
-				e1.printStackTrace();
-				SimulationStarter.stopSimulation();
-				return null;
+			e1.printStackTrace();
+			SimulationStarter.stopSimulation();
+			return null;
 		}
-		
+
 		return electricityPrices;
 	}
 	
@@ -108,9 +107,9 @@ public class EnergyPrices {
     		y[i]=originalValues.get(i);
     	}
 		
-    	double[] xi = new double[ThesisTopologySimple.N_STEPS];
+    	double[] xi = new double[TopologyConfig.N_STEPS];
     	
-		for (int j = 0; j < ThesisTopologySimple.N_STEPS ; j++) {
+		for (int j = 0; j < TopologyConfig.N_STEPS ; j++) {
     		xi[j]=j*MyTimeUnit.stepLength(TimeUnit.HOURS);    
     	}	   		
 		

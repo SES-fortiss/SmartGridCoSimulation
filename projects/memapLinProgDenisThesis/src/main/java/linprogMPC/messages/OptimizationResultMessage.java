@@ -12,5 +12,7 @@ public class OptimizationResultMessage implements RequestContent {
 	public SortedMap<String, double[]> basicsMap = new TreeMap<String, double[]>();
 	public SortedMap<String, double[]> resultMap = new TreeMap<String, double[]>();	
 	public SortedMap<String, double[]> marketMap = new TreeMap<String, double[]>();	
-	
+	public TreeMap<String, Object> buildingResultsMap = new TreeMap<String, Object>();
+	public SortedMap<String, double[]> generalResultsMap =  new TreeMap<String, double[]>();
+
 }

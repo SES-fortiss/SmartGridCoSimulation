@@ -3,13 +3,14 @@ package linprogMPC.helper;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import linprogMPC.ThesisTopologySimple;
+import linprogMPC.TopologyConfig;
 import simulation.SimulationStarter;
 
 public class SolarRadiation {
@@ -32,13 +33,10 @@ public class SolarRadiation {
 	private ArrayList<Double> readSolarProduction(String filename) {
 		ArrayList<Double> solarProductionPerKWp = new ArrayList<Double>();
 		try {
-			String source = "res/"+ filename;			
-			String location = ReadMemapFiles.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-			location = location.replace("%20", " ");
-			location = location.substring(0, location.length()-15);
-			location = location + source;	
-			FileReader fr = new FileReader(location);
-			BufferedReader br = new BufferedReader(fr);
+			// Retrieve Consumptionprofiles from res folder. Note that actual path
+			// to res folder varies across different systems and using explicit paths 
+			// is therefore not recommended.
+			BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/" + filename)));
 		    readProd(br, solarProductionPerKWp);	
 		} catch (IOException | ParseException e1) {
 				e1.printStackTrace();
@@ -79,7 +77,7 @@ public class SolarRadiation {
     		y[i]=originalValues.get(i);
     	}
 		
-		int timestepsPerDay = ThesisTopologySimple.TIMESTEPS_PER_DAY;
+		int timestepsPerDay = TopologyConfig.TIMESTEPS_PER_DAY;
     	
 		double[] xi = new double[timestepsPerDay];
 		for (int j1 = 0; j1 < timestepsPerDay ; j1++) {

@@ -8,6 +8,7 @@ import java.io.IOException;
 import com.google.gson.Gson;
 
 import akka.basicMessages.AnswerContent;
+import akka.basicMessages.RequestContent;
 import helper.IoHelper;
 
 public class OpcServerContextGenerator {
@@ -16,6 +17,13 @@ public class OpcServerContextGenerator {
 	
 	public static void generateJson(String actorName, AnswerContent content) {
 				
+		String result = gson.toJson(content);		
+		writeFile(actorName, result);
+		
+	}
+	
+	public static void generateJson2(String actorName, RequestContent content) {
+		
 		String result = gson.toJson(content);		
 		writeFile(actorName, result);
 		
