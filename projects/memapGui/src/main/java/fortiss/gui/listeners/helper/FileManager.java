@@ -3,7 +3,6 @@ package fortiss.gui.listeners.helper;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import com.google.gson.Gson;
 
@@ -16,8 +15,6 @@ import memap.helper.DirectoryConfiguration;
  */
 abstract public class FileManager {
 
-	private static ArrayList<Object> descriptorFiles = new  ArrayList<Object>();
-	
 	/** Main output directory path */
 	private static String mainDir = DirectoryConfiguration.mainDir;
 	/** Configuration directory path */
@@ -66,10 +63,7 @@ abstract public class FileManager {
 
 		// Create JSON string
 		Gson gson = new Gson();
-		ArrayList<Object> config = new  ArrayList<Object>();
-		config.add(descriptorFiles);
-		config.add(Designer.control.pars);
-		String str = gson.toJson(config);
+		String str = gson.toJson(Designer.control.pars);
 		writeFile(str, file);
 	}
 
@@ -109,7 +103,7 @@ abstract public class FileManager {
 			// Create JSON string
 			Gson gson = new Gson();
 			String str = gson.toJson(building);
-			descriptorFiles.add(file);
+			Designer.control.pars.addDescriptorFile(file);
 			writeFile(str, file);
 		}
 	}

@@ -1,5 +1,6 @@
 package fortiss.controller;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import fortiss.gui.Designer;
@@ -20,6 +21,8 @@ public class Parameters {
 		}
 	};
 
+	/** paths to descriptor files */
+	private ArrayList<File> descriptorFiles = new  ArrayList<File>();
 	/** length MemapSimulation steps. An integer */
 	private int length;
 	/** steps MPC horizon. An integer */
@@ -127,5 +130,13 @@ public class Parameters {
 			setOptCriteria(criteriaOptions.get(index + 1));
 			Designer.control.lbOptCriteria2.setIcon(Icon.optCriteria.get(index + 1));
 		}
+	}
+
+	public ArrayList<File> getDescriptorFiles() {
+		return descriptorFiles;
+	}
+
+	public void addDescriptorFile(File descriptorFile) {
+		descriptorFiles.add(descriptorFile);
 	}
 }
