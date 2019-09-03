@@ -16,7 +16,6 @@ import linprogMPC.components.CSVCoupler;
 import linprogMPC.components.CSVProducer;
 import linprogMPC.components.CSVStorage;
 import linprogMPC.components.CSVVolatileProducer;
-import linprogMPC.components.prototypes.Device;
 import linprogMPC.messages.extension.NetworkType;
 
 
@@ -35,6 +34,7 @@ public class GuiController {
   }
 
   public void startSimulation() {
+    System.out.println("====== START GUI SIMULATON =====");
     top.startSimulation();
   }
 
@@ -106,7 +106,7 @@ public class GuiController {
       // This just takes the first index of the first object in the demand list.
       // TODO: Passing links to actual csv files here
       JsonObject demand = (JsonObject) demandList.get(0);
-      int index = demand.get("index").getAsInt();
+      int index = demand.get("index").getAsInt() + 1;
 
       String heatDemandFile = "WaermeVerbraeucheAngepasstGebaeude" + index + ".csv";
       String electricityDemandFile = "StromVerbraeucheAngepasstGebaeude" + index + ".csv";
@@ -122,7 +122,11 @@ public class GuiController {
       JsonArray storages = (JsonArray) jObject.get("storage_list");
 
       GsonBuilder gsonBuilder = new GsonBuilder();
-      gsonBuilder.registerTypeAdapter(Device.class, new DeviceDeserializer());
+      gsonBuilder.registerTypeAdapter(CSVCoupler.class, new CSVCouplerDeserializer());
+      gsonBuilder.registerTypeAdapter(CSVProducer.class, new CSVProducerDeserializer());
+      gsonBuilder.registerTypeAdapter(CSVVolatileProducer.class,
+          new CSVVolatileProducerDeserializer());
+      gsonBuilder.registerTypeAdapter(CSVStorage.class, new CSVStorageDeserializer());
       Gson gson = gsonBuilder.create();
 
       for (JsonElement couplerEl : couplers) {
@@ -133,8 +137,8 @@ public class GuiController {
 
       for (JsonElement producersEl : producers) {
         JsonObject producerConfig = (JsonObject) producersEl;
-        CSVProducer coupler = gson.fromJson(producerConfig, CSVProducer.class);
-        building.attach(coupler);
+        CSVProducer producer = gson.fromJson(producerConfig, CSVProducer.class);
+        building.attach(producer);
       }
 
       for (JsonElement volatileProducersEl : volatileProducers) {
@@ -153,38 +157,60 @@ public class GuiController {
     }
   }
 
-  class DeviceDeserializer implements JsonDeserializer<Device> {
-
+  class CSVCouplerDeserializer implements JsonDeserializer<CSVCoupler> {
     @Override
-    public Device deserialize(JsonElement jsonElement, Type typeOfT,
+    public CSVCoupler deserialize(JsonElement jsonElement, Type typeOfT,
         JsonDeserializationContext context) throws JsonParseException {
+      JsonObject jObject = (JsonObject) jsonElement;
+      // installed power, gas?
+      return new CSVCoupler(1000, jObject.get("efficiencyPrimary").getAsDouble(),
+          jObject.get("efficiencySecondary").getAsDouble(), false, 0);
+    }
+  }
 
+  class CSVProducerDeserializer implements JsonDeserializer<CSVProducer> {
+    @Override
+    public CSVProducer deserialize(JsonElement jsonElement, Type typeOfT,
+        JsonDeserializationContext context) throws JsonParseException {
       JsonObject jObject = (JsonObject) jsonElement;
 
-      if (typeOfT == CSVCoupler.class) {
-        return new CSVCoupler(0, 0, 0, false, 0);
+      return new CSVProducer(jObject.get("power").getAsDouble(),
+          jObject.get("efficiency").getAsDouble(), jObject.get("cost").getAsDouble(), 0);
+    }
+  }
 
+  class CSVVolatileProducerDeserializer implements JsonDeserializer<CSVVolatileProducer> {
+    @Override
+    public CSVVolatileProducer deserialize(JsonElement jsonElement, Type typeOfT,
+        JsonDeserializationContext context) throws JsonParseException {
+      JsonObject jObject = (JsonObject) jsonElement;
+
+      String networkS = jObject.get("networkType").getAsString();
+      NetworkType networkType = NetworkType.ELECTRICITY;
+      if (networkS == "Heat") {
+        networkType = NetworkType.HEAT;
       }
 
-      else if (typeOfT == CSVProducer.class) {
-        return new CSVProducer(0, 0, 0, 0);
+      return new CSVVolatileProducer(jObject.get("power").getAsDouble(), networkType, 0);
+    }
+  }
 
+  class CSVStorageDeserializer implements JsonDeserializer<CSVStorage> {
+    @Override
+    public CSVStorage deserialize(JsonElement jsonElement, Type typeOfT,
+        JsonDeserializationContext context) throws JsonParseException {
+      JsonObject jObject = (JsonObject) jsonElement;
+
+      String networkS = jObject.get("networkType").getAsString();
+      NetworkType networkType = NetworkType.ELECTRICITY;
+
+      if (networkS == "Heat") {
+        networkType = NetworkType.HEAT;
       }
 
-      else if (typeOfT == CSVVolatileProducer.class) {
-        return new CSVVolatileProducer(0, NetworkType.ELECTRICITY, 0);
-
-      }
-
-      else if (typeOfT == CSVStorage.class) {
-        return new CSVStorage(0, 0, 0, 0, 0, NetworkType.HEAT, 0);
-      }
-
-      else {
-        // TODO: Throw exception here
-        return null;
-      }
-
+      return new CSVStorage(jObject.get("capacity").getAsDouble(),
+          jObject.get("maxCharging").getAsDouble(), jObject.get("maxDischarging").getAsDouble(),
+          jObject.get("effIN").getAsDouble(), jObject.get("effOUT").getAsDouble(), networkType, 0);
     }
   }
 
