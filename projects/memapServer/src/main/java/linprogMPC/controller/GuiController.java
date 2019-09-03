@@ -158,7 +158,6 @@ public class GuiController {
     @Override
     public Device deserialize(JsonElement jsonElement, Type typeOfT,
         JsonDeserializationContext context) throws JsonParseException {
-
       JsonObject jObject = (JsonObject) jsonElement;
 
       if (typeOfT == CSVCoupler.class) {
