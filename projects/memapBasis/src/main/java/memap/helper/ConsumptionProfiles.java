@@ -155,7 +155,7 @@ public class ConsumptionProfiles {
 		} else {
 			// Check if path is the name of a file in resources
 			URL resourceURL = ReadFileManager.class.getClassLoader().getResource("resources/" + profilesPath);
-			if ((profilesPath != "") && (resourceURL != null)) {
+			if ((!profilesPath.equals("")) && (resourceURL != null)) {
 				// Load from specified resource file
 				br = new BufferedReader(ReadFileManager.readFromResources(profilesPath));
 				message = message + "selected " + networkType + " profiles: ";
