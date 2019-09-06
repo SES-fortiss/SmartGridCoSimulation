@@ -61,21 +61,21 @@ public class RemoveListener extends KeyAdapter {
 	private void removeBuilding() {
 		// Remove currentBuilding from building list
 		Designer.buildings.remove(building);
-
+		
 		// Remove currentBuilding icon from panel
 		Designer.pl_ems.remove(Designer.buildingIcons.get(building));
 		Designer.pl_ems.repaint();
-
+		
 		// Remove position
 		PositionManager.removePosition(Designer.buildingIcons.get(building));
-
+		
 		// Remove component icons of currentBuilding from lists
-		Designer.demandIcons.get(building).clear();
-		Designer.storageIcons.get(building).clear();
-		Designer.volatileIcons.get(building).clear();
-		Designer.controllableIcons.get(building).clear();
-		Designer.couplerIcons.get(building).clear();
-
+		Designer.demandIcons.remove(building);
+		Designer.storageIcons.remove(building);
+		Designer.volatileIcons.remove(building);
+		Designer.controllableIcons.remove(building);
+		Designer.couplerIcons.remove(building);
+		
 		// Remove EMS detail panel
 		Designer.cl.show(Designer.pl_comp_detail, "initial");
 
