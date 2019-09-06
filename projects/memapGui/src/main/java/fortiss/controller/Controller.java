@@ -206,7 +206,7 @@ public class Controller extends JFrame {
 		btBad.addMouseListener(new WeatherListener());
 		getContentPane().add(btBad, "6, 12, left, center");
 
-		lbPrice = new JLabel("Price");
+		lbPrice = new JLabel("Market price");
 		getContentPane().add(lbPrice, "2, 14");
 
 		btFixed = new JRadioButton("Fixed");
