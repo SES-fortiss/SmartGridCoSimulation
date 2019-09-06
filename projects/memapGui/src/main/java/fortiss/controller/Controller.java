@@ -7,7 +7,6 @@ import java.awt.Graphics;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,7 +19,6 @@ import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
 import fortiss.controller.listener.selectionitem.DaysListener;
-import fortiss.controller.listener.selectionitem.RunInServerListener;
 import fortiss.controller.listeners.button.AcceptListener;
 import fortiss.controller.listeners.button.PriceListener;
 import fortiss.controller.listeners.button.WeatherListener;
@@ -51,8 +49,6 @@ public class Controller extends JFrame {
 	public JLabel lbOptCriteria2; // Optimization criteria icon
 	public JLabel lbMemap2;
 	public JComboBox<Integer> sDays;
-	
-	private JCheckBox chckbxRunInServer;
 	private JLabel lbTitle;
 	private JLabel lbLength;
 	private JLabel lbSteps;
@@ -93,8 +89,6 @@ public class Controller extends JFrame {
 		btFixed.setForeground(Colors.normal);
 		btVolatile.setBackground(Colors.background);
 		btVolatile.setForeground(Colors.normal);
-		chckbxRunInServer.setBackground(Colors.background);
-		chckbxRunInServer.setForeground(Colors.normal);
 		lbTitle.setForeground(Colors.title);
 		lbLength.setForeground(Colors.normal);
 		lbSteps.setForeground(Colors.normal);
@@ -123,31 +117,45 @@ public class Controller extends JFrame {
 	 */
 	private void initialize() {
 		// Sets frame properties
-		setSize(new Dimension(377, 404));
+		setSize(new Dimension(377, 370));
 		setLocationRelativeTo(null);
 		setType(Type.POPUP);
 		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		setPreferredSize(new Dimension(325, 325));
 		setTitle("MEMAP - Parameter input");
 		setName("fController");
 		setIconImage(Icon.smallMemapLogo.getImage());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		getContentPane()
-				.setLayout(new FormLayout(
-						new ColumnSpec[] { ColumnSpec.decode("20dlu:grow"), FormSpecs.DEFAULT_COLSPEC,
-								ColumnSpec.decode("15dlu"), ColumnSpec
-										.decode("50dlu:grow"),
-								FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(33dlu;default)"),
-								ColumnSpec.decode("20dlu:grow"), },
-						new RowSpec[] { RowSpec.decode("5dlu:grow"), FormSpecs.DEFAULT_ROWSPEC,
-								FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-								FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-								FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-								FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-								FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("14dlu"), FormSpecs.RELATED_GAP_ROWSPEC,
-								RowSpec.decode("14dlu"), FormSpecs.UNRELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-								FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-								RowSpec.decode("default:grow"), }));
+				.setLayout(new FormLayout(new ColumnSpec[] {
+				ColumnSpec.decode("20dlu:grow"),
+				FormSpecs.DEFAULT_COLSPEC,
+				ColumnSpec.decode("15dlu"),
+				ColumnSpec.decode("50dlu:grow"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(33dlu;default)"),
+				ColumnSpec.decode("20dlu:grow"),},
+			new RowSpec[] {
+				RowSpec.decode("5dlu:grow"),
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("14dlu"),
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("14dlu"),
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				RowSpec.decode("default:grow"),}));
 
 		lbTitle = new JLabel("Memap Simulation parameters");
 		lbTitle.setFont(Fonts.getOswald());
@@ -233,11 +241,7 @@ public class Controller extends JFrame {
 		lbOptCriteria2.addMouseListener(new OptimizationCriteriaListener());
 		getContentPane().add(lbOptCriteria2, "4, 18");
 
-		chckbxRunInServer = new JCheckBox("Run simulation on MEMAP server");
-		chckbxRunInServer.addItemListener(new RunInServerListener());
-		getContentPane().add(chckbxRunInServer, "2, 20, 3, 1");
-
-		getContentPane().add(btAccept, "2, 22, 5, 1, center, center");
+		getContentPane().add(btAccept, "2, 20, 5, 1, center, center");
 
 	}
 
