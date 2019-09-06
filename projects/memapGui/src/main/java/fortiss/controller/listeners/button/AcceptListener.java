@@ -25,13 +25,10 @@ public class AcceptListener extends MouseAdapter {
 	public void mouseClicked(MouseEvent e) {
 
 		Designer.control.dispose();
-		if (Designer.control.pars.getRunInServer() == false) {
-			simt = new Thread(sim);
-			simt.start();
-		} else {
-			FileManager.writeDescriptorFiles();
-			FileManager.writeParameterConfigFile(); // Should be called last
-		}
+		simt = new Thread(sim);
+		simt.start();
+		FileManager.writeDescriptorFiles();
+		FileManager.writeParameterConfigFile(); // Should be called after writeDescriptorFiles()
 		Designer.frame.dispose();
 	}
 }
