@@ -116,7 +116,7 @@
         <configuration>
           <transformers>
             <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-              <mainClass>linprogMPC.ThesisSimulation</mainClass>
+              <mainClass>linprogMPC.Simulation</mainClass>
             </transformer>
           </transformers>
           <filters>
