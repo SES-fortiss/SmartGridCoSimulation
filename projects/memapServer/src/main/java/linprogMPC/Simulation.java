@@ -82,13 +82,14 @@ public class Simulation {
   private static String showHelp() {
     ConfigInterface jsonInterface = new ConfigInterface();
     String server = jsonInterface.getHost();
-    int port = jsonInterface.getPort();
+    // int port = jsonInterface.getPort();
     String help = "Hi there, this is MEMAP.\n" + "\n"
         + "To reach the OPC-UA result server on this machine, please use opc.tcp://" + server + ":"
         + "7070" + "/sessim\n" + "\n"
         + "To reach the OPC-UA building server of Building1 on this machine, please use opc.tcp://"
-        + server + ":" + port + "/sessim\n" + "\n"
-        + "Use these commands to run the simulation (i.e. use MemapServer.jar [command]: \n"
+        + server + ":" + 4880 + "/sessim\n" + "\n"
+        + "All other building servers can be found by ascending port number, i.e. 4881, 4882..."
+        + "\n" + "Use these commands to run the simulation (i.e. use MemapServer.jar [command]: \n"
         + "    start : runs the simulation once \n"
         + "    loop  : runs the simulation in an indefinite loop \n"
         + "    jetty  : start jetty webserver. (Available under 8080) \n"
