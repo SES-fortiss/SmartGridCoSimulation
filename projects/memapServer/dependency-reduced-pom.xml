@@ -40,7 +40,7 @@
         <configuration>
           <transformers>
             <transformer>
-              <mainClass>linprogMPC.ThesisSimulation</mainClass>
+              <mainClass>linprogMPC.Simulation</mainClass>
             </transformer>
           </transformers>
           <filters>
