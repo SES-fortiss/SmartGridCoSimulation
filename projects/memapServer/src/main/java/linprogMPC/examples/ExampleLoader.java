@@ -6,6 +6,7 @@ import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import linprogMPC.components.CSVCoupler;
+import linprogMPC.components.CSVProducer;
 import linprogMPC.components.CSVStorage;
 import linprogMPC.components.CSVVolatileProducer;
 import linprogMPC.components.prototypes.Coupler;
@@ -86,6 +87,8 @@ public final class ExampleLoader {
         new CSVBuildingController("Building2", "WaermeVerbraeucheAngepasstGebaeude2.csv",
             "StromVerbraeucheAngepasstGebaeude2.csv", false, 50);
     Storage battery2 = new CSVStorage(12.0, 9, 9, 0.95, 0.95, NetworkType.ELECTRICITY, 0);
+    Producer producer2 = new CSVProducer(20.0, 0.89, 0.006, PORT_UNDEFINED);
+    building2.attach(producer2);
     building2.attach(battery2);
 
     BuildingController building3 =
