@@ -4,11 +4,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.fortiss</groupId>
-  <artifactId>memapLinProgDenisThesis</artifactId>
+  <artifactId>memapServer</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>memapLinProgDenisThesis</name>
+  <name>Multi Energy Management and Aggregation Platform (MEMAP)</name>
   <url>http://memap.fortiss.org</url>
 
 
