@@ -20,13 +20,18 @@ public class SolutionHandler {
 	public void exportVector(double[] data, String filename) {
 		BufferedWriter bw = null;
 		try {
-			String source = "res/results/" + filename;
-			String location = ReadMemapFiles.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-			location = location.replace("%20", " ");
-			location = location.substring(0, location.length() - 15);
+			String source = "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.resultDir + "/" + filename;
+			String location = System.getProperty("user.dir");
+			/*
+			 * Note: location is the project directory from which the simulation was started
+			 * or or the directory from which the .jar was executed.
+			 */
 			location = location + source;
 
 			// Specify the file name and path here
+			
+			System.out.println("Try file location: " + location);
+			IoHelper.createParentFolders(location);
 			File file = new File(location);
 
 			/*
@@ -113,13 +118,18 @@ public class SolutionHandler {
 		BufferedWriter bw = null;
 
 		try {
-			String source = "res/results/" + filename;
-			String location = ReadMemapFiles.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-			location = location.replace("%20", " ");
-			location = location.substring(0, location.length() - 15);
+			String source = "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.resultDir + "/" + filename;
+			String location = System.getProperty("user.dir");
+			/*
+			 * Note: location is the project directory from which the simulation was started
+			 * or or the directory from which the .jar was executed.
+			 */
 			location = location + source;
 
 			// Specify the file name and path here
+			
+			System.out.println("Try file location: " + location);
+			IoHelper.createParentFolders(location);
 			File file = new File(location);
 
 			/*
@@ -330,15 +340,18 @@ public class SolutionHandler {
 		BufferedWriter bw = null;
 
 		try {
-			String source = "res/results/" + filename;
-			String location = ReadMemapFiles.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-			location = location.replace("%20", " ");
-			location = location.substring(1, location.length() - 15);
+			
+			String source = "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.resultDir + "/" + filename;
+			String location = System.getProperty("user.dir");
+			/*
+			 * Note: location is the project directory from which the simulation was started
+			 * or or the directory from which the .jar was executed.
+			 */
 			location = location + source;
 
 			// Specify the file name and path here
 			
-			System.out.println("Try Filelocation: " + location);
+			System.out.println("Try file location: " + location);
 			IoHelper.createParentFolders(location);
 			File file = new File(location);
 
