@@ -53,16 +53,9 @@
     	<version>0.1</version>
    </dependency>
    
-   <!--
    <dependency>
     	<groupId>org.fortiss</groupId>
-    	<artifactId>memapLinProgDenisThesis</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-   </dependency> -->
-   
-   <dependency>
-    	<groupId>fortiss</groupId>
-    	<artifactId>memapBasis</artifactId>
+    	<artifactId>memapServer</artifactId>
     	<version>0.0.1-SNAPSHOT</version>
    </dependency>
   
