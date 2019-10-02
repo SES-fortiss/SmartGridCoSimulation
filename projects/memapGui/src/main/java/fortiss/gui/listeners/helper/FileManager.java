@@ -8,7 +8,7 @@ import com.google.gson.Gson;
 
 import fortiss.components.Building;
 import fortiss.gui.Designer;
-import memap.helper.DirectoryConfiguration;
+import linprogMPC.helper.DirectoryConfiguration;
 
 /**
  * Manages all the files produced by the GUI interface

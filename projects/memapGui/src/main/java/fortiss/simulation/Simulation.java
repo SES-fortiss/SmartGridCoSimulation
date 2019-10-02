@@ -1,16 +1,12 @@
 package fortiss.simulation;
 
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
 
-import akka.actor.ActorSystem;
-import fortiss.components.Building;
 import fortiss.controller.listeners.button.AcceptListener;
-import fortiss.gui.Designer;
 import fortiss.results.Reporter;
 import fortiss.simulation.listeners.helper.ProgressManager;
-import memap.MemapConfig;
-import simulation.SimulationStarter;
-import topology.ActorTopology;
+import linprogMPC.controller.GuiController;
+import linprogMPC.helper.DirectoryConfiguration;
 
 /**
  * Based on class MemapTopology ( @author andreas.thut)
@@ -24,34 +20,32 @@ public class Simulation implements Runnable {
 	 * @par pmt a thread for progress manager
 	 * @par ready a flag for class ProgressManager
 	 */
-	private ActorTopology topology;
+	private GuiController gc;
 	public static Reporter result;
 	private ProgressManager pm = new ProgressManager();
 	private Thread pmt;
 	public static boolean ready = false;
 
-	private void execute() throws InterruptedException {
+	private void execute() throws InterruptedException, FileNotFoundException {
 
-		int mpcLength = Designer.control.pars.getSteps();
-		boolean memapOn = Designer.control.pars.isMemapON();
-
-		System.out.println(">> Interactive simulator: Creating topology.");
-		AcceptListener.loadingScreen.lbMessage.setText("Creating the buildings");
-		ArrayList<Building> buildings = Designer.buildings;
-		topology = Topology.createTopology(mpcLength, memapOn, buildings);
-
+		System.out.println(">> Interactive simulator: Setting up the topology.");
 		AcceptListener.loadingScreen.lbMessage.setText("Setting up the topology");
-		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
-
+		
+		String location = System.getProperty("user.dir") + "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.configDir + "/parameterConfig.json";
+		gc = new GuiController(location);
+		
 		System.out.println(">> Interactive simulator: Starting simulation.");
-		AcceptListener.loadingScreen.lbMessage.setText("Starting simulation");
 		ready = true;
-		SimulationStarter.startSimulation(actorSystem, 0, MemapConfig.NR_OF_ITERATIONS);
+		gc.startSimulation();
 	}
 
 	public static void createAndRun() {
 		try {
-			new Simulation().execute();
+			try {
+				new Simulation().execute();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

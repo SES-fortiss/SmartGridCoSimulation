@@ -5,7 +5,7 @@ import javax.swing.SwingUtilities;
 import akka.systemActors.GlobalTime;
 import fortiss.controller.listeners.button.AcceptListener;
 import fortiss.simulation.Simulation;
-import memap.MemapConfig;
+import linprogMPC.TopologyConfig;
 
 public class ProgressManager implements Runnable {
 
@@ -26,7 +26,7 @@ public class ProgressManager implements Runnable {
 		}
 
 		// Start progress computation
-		int max = MemapConfig.NR_OF_ITERATIONS - 1;
+		int max = TopologyConfig.NR_OF_ITERATIONS - 1;
 		while (AcceptListener.loadingScreen.progressBar.getValue() < AcceptListener.loadingScreen.progressBar
 				.getMaximum()) {
 			Runnable pb = new Runnable() {

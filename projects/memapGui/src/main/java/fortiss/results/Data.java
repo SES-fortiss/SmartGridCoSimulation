@@ -8,10 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import fortiss.simulation.Topology;
-import memap.MemapConfig;
-import memap.MemapTopology;
-import memap.helper.DirectoryConfiguration;
+import linprogMPC.TopologyConfig;
+import linprogMPC.helper.DirectoryConfiguration;
 
 /**
  * Data represents a building set of results.
@@ -37,12 +35,12 @@ public class Data {
 	 */
 	public void readData(String buildingName) {
 		String source;
-		source = "/" + DirectoryConfiguration.mainDir + "/results/" + MemapTopology.simulationName + "MPC"
-				+ MemapConfig.N_STEPS_MPC + "/";
-		if (MemapConfig.MEMAP_ON == true) {
-			source += Topology.simulationName + "MPC" + MemapConfig.N_STEPS_MPC + ".csv";
+		source = "/" + DirectoryConfiguration.mainDir + "/results/" + TopologyConfig.simulationName + "MPC"
+				+ TopologyConfig.N_STEPS_MPC + "/";
+		if (TopologyConfig.MEMAP_ON == true) {
+			source += TopologyConfig.simulationName + "MPC" + TopologyConfig.N_STEPS_MPC + ".csv";
 		} else {
-			source += buildingName + "MPC" + MemapConfig.N_STEPS_MPC + "Solutions.csv";
+			source += buildingName + "MPC" + TopologyConfig.N_STEPS_MPC + "Solutions.csv";
 		}
 
 		String location = System.getProperty("user.dir");
@@ -66,7 +64,7 @@ public class Data {
 				}
 			}
 
-			if (MemapConfig.MEMAP_ON == true) {
+			if (TopologyConfig.MEMAP_ON == true) {
 				labels.add(0, "timeStep");
 				values.add(0, new ArrayList<Double>());
 				for (int i = 0; i < values.get(1).size(); i++) {

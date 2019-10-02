@@ -11,7 +11,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import fortiss.gui.Designer;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
-import memap.MemapConfig;
+import linprogMPC.TopologyConfig;
 
 /**
  * Shows the available results
@@ -46,7 +46,7 @@ public class Menu extends JTree {
 
 	private static Object[] treeStructure() {
 		Object[] structure;
-		if (MemapConfig.MEMAP_ON == true) {
+		if (TopologyConfig.MEMAP_ON == true) {
 			structure = memapOnStructure();
 		} else {
 			structure = memapOffStructure();

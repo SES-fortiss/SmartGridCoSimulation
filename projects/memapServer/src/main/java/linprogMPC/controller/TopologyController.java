@@ -24,36 +24,21 @@ import topology.ActorTopology;
  */
 public class TopologyController extends TopologyConfig {
 
-  public int nrStepsMPC;
-  public boolean memapOn;
-  public int portUndefined;
-  public String name;
-  public int timeStepsPerDay;
-  public int nrDays;
-  public int predUncertainty;
-  public boolean hasLDHeating;
-
   public List<BuildingController> managedBuildings = new ArrayList<BuildingController>();
 
   public ActorTopology top;
 
   public TopologyController(String name, boolean memapOn, int nrStepsMPC, int timeStepsPerDay,
       int nrDays, int predUncertainty, boolean hasLDHeating, int portUndefined) {
-    this.name = name;
-    this.nrStepsMPC = nrStepsMPC;
-    this.memapOn = memapOn;
-    this.portUndefined = portUndefined;
-    this.timeStepsPerDay = timeStepsPerDay;
-    this.nrDays = nrDays;
-    this.predUncertainty = predUncertainty;
-    this.hasLDHeating = hasLDHeating;
-
-    TopologyConfig.setStepsMPC(nrStepsMPC);
-    TopologyConfig.setTimeStepsPerDay(timeStepsPerDay);
-    TopologyConfig.setPredUncertainty(predUncertainty);
-    TopologyConfig.setMemapLDHeating(hasLDHeating);
-    TopologyConfig.setMemapOn(memapOn);
-    TopologyConfig.setNrOfDays(nrDays);
+   
+    TopologyConfig.simulationName = name;
+    TopologyConfig.PORT_UNDEFINED = portUndefined;
+    TopologyConfig.N_STEPS_MPC = nrStepsMPC;
+    TopologyConfig.TIMESTEPS_PER_DAY = timeStepsPerDay;
+    TopologyConfig.PREDICTION_UNCERTAINTY = predUncertainty;
+    TopologyConfig.MEMAP_LDHeating = hasLDHeating;
+    TopologyConfig.MEMAP_ON = memapOn;
+    TopologyConfig.NR_DAYS = nrDays;
     TopologyConfig.calcNrIterations();
     TopologyConfig.calcNrSteps();
   }
@@ -75,16 +60,16 @@ public class TopologyController extends TopologyConfig {
   private void createTopology() {
     // Creating Actor Topology
     int thePort = 7070;
-    this.top = new ActorTopology(this.name);
+    this.top = new ActorTopology(TopologyConfig.simulationName);
     LinProgBehavior linProg = new LinProgBehavior(thePort);
-    top.addActor(this.name, ActorFactory.createDevice(linProg));
+    top.addActor(TopologyConfig.simulationName, ActorFactory.createDevice(linProg));
 
     for (BuildingController managedBuilding : managedBuildings) {
       String buildingName = managedBuilding.getName();
       boolean LDHeatingON = managedBuilding.hasLDHeaeting();
       int heatTransportLength = managedBuilding.getHeatTransportLength();
 
-      Building building = new Building(portUndefined, LDHeatingON, heatTransportLength);
+      Building building = new Building(TopologyConfig.PORT_UNDEFINED, LDHeatingON, heatTransportLength);
 
       ActorTopology buildingHead = new ActorTopology(buildingName);
       buildingHead.addActor(buildingName, ActorFactory.createDevice(building));
@@ -92,8 +77,8 @@ public class TopologyController extends TopologyConfig {
         buildingHead.addActorAsChild(buildingName + "/" + device.getClass().getName(),
             ActorFactory.createDevice(device));
       }
-      top.addSubTopology(name, buildingHead);
-      this.portUndefined += 1;
+      top.addSubTopology(TopologyConfig.simulationName, buildingHead);
+      TopologyConfig.PORT_UNDEFINED += 1;
     }
   }
 }
