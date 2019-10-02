@@ -26,6 +26,7 @@ import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.OptimizationResultMessage;
 import opcMEMAP.MemapOpcServerStarter;
 
+@SuppressWarnings("unchecked")
 public class LinProgBehavior extends BehaviorModel {
 
   private long sleepTime = 0L;
@@ -189,7 +190,6 @@ public class LinProgBehavior extends BehaviorModel {
       // add a new folder for every building.
 
       DirectoryManager.createDirectoryHierarchy(nameCategories, optResult);
-
 
       // We assign all the devices and generalResult datapoints to the respective
       // folders.
