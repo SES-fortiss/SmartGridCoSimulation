@@ -69,9 +69,9 @@ public class EchoSocket extends WebSocketAdapter {
 	    // Transfer String to JsonArray
 	    if (message.equals("standard")) {
 		String standardBuildings = "{\"name\":\"FortissBuilding1\",\"endpointURL\":\"opc.tcp://10.10.10.60:4880\",\"endpointDescriptor\":\"0\",\"config\":\"{\\\"battery\\\":[{\\\"capacityId\\\":\\\"ns=2;i=43\\\",\\\"maxChargingId\\\":\\\"ns=2;i=45\\\",\\\"maxDischargingId\\\":\\\"ns=2;i=46\\\",\\\"effInId\\\":\\\"ns=2;i=42\\\",\\\"effOutId\\\":\\\"ns=2;i=42\\\"}],\\\"chp\\\":[],\\\"consumer\\\":[{\\\"heatConsumptionId\\\":\\\"ns=2;i=10\\\",\\\"powerConsumptionId\\\":\\\"ns=2;i=14\\\"}],\\\"gasboiler\\\":[],\\\"heatpump\\\":[{\\\"installedPowerId\\\":\\\"ns=2;i=35\\\",\\\"effHeatId\\\":\\\"ns=2;i=32\\\",\\\"effElecId\\\":\\\"ns=2;i=33\\\"}],\\\"pv\\\":[{\\\"installedPowerId\\\":\\\"ns=2;i=25\\\",\\\"effId\\\":\\\"ns=2;i=23\\\",\\\"productionId\\\":\\\"ns=2;i=27\\\"}],\\\"solarthermic\\\":[],\\\"thermalstorage\\\":[]}\"},{\"name\":\"FortissBuilding2\",\"endpointURL\":\"opc.tcp://10.10.10.60:4890\",\"endpointDescriptor\":\"0\",\"config\":\"{\\\"battery\\\":[],\\\"chp\\\":[{\\\"installedPowerId\\\":\\\"ns=2;i=35\\\",\\\"effHeatId\\\":\\\"ns=2;i=32\\\",\\\"effElecId\\\":\\\"ns=2;i=33\\\"}],\\\"consumer\\\":[{\\\"heatConsumptionId\\\":\\\"ns=2;i=10\\\",\\\"powerConsumptionId\\\":\\\"ns=2;i=14\\\"}],\\\"gasboiler\\\":[],\\\"heatpump\\\":[],\\\"pv\\\":[],\\\"solarthermic\\\":[{\\\"installedPowerId\\\":\\\"ns=2;i=25\\\",\\\"effId\\\":\\\"ns=2;i=23\\\",\\\"productionId\\\":\\\"ns=2;i=27\\\"}],\\\"thermalstorage\\\":[{\\\"capacityId\\\":\\\"ns=2;i=43\\\",\\\"maxChargingId\\\":\\\"ns=2;i=45\\\",\\\"maxDischargingId\\\":\\\"ns=2;i=46\\\",\\\"effInId\\\":\\\"ns=2;i=42\\\",\\\"effOutId\\\":\\\"ns=2;i=42\\\"}]}\"}\r\n";
-		messageAsJsonArray = new StringToJsonArray().StringToJsonArray(standardBuildings);
+		messageAsJsonArray = StringToJsonArray.convertStringToJsonArray(standardBuildings);
 	    } else {
-		messageAsJsonArray = new StringToJsonArray().StringToJsonArray(message);
+		messageAsJsonArray = StringToJsonArray.convertStringToJsonArray(message);
 	    }
 
 	    JsonArray messageJsonArray = messageAsJsonArray;
