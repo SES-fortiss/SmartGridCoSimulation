@@ -25,8 +25,10 @@ public class LoadListener extends MouseAdapter {
 	 */
 	public void mouseClicked(MouseEvent e) {
 
-		// Open dialog
+		// Open dialog in current directory
 		JFileChooser chooser = new JFileChooser();
+		chooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+		
 		int rVal = chooser.showOpenDialog(chooser);
 		if (rVal == JFileChooser.APPROVE_OPTION) {
 			File file = chooser.getSelectedFile();
