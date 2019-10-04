@@ -8,32 +8,28 @@ import fortiss.simulation.listeners.helper.ProgressManager;
 import linprogMPC.controller.GuiController;
 import linprogMPC.helper.DirectoryConfiguration;
 
-/**
- * Based on class MemapTopology ( @author andreas.thut)
- */
 public class Simulation implements Runnable {
 
-	/**
-	 * @par topology
-	 * @par result an instance of Reporter
-	 * @par pm an instance of progress manager
-	 * @par pmt a thread for progress manager
-	 * @par ready a flag for class ProgressManager
-	 */
+	/** Controller for the GUI */
 	private GuiController gc;
+	/** an instance of Reporter window */
 	public static Reporter result;
+	/** an instance of progress manager */
 	private ProgressManager pm = new ProgressManager();
+	/** a thread for progress manager */
 	private Thread pmt;
+	/** a flag for class ProgressManager */
 	public static boolean ready = false;
 
 	private void execute() throws InterruptedException, FileNotFoundException {
 
 		System.out.println(">> Interactive simulator: Setting up the topology.");
 		AcceptListener.loadingScreen.lbMessage.setText("Setting up the topology");
-		
-		String location = System.getProperty("user.dir") + "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.configDir + "/parameterConfig.json";
+
+		String location = System.getProperty("user.dir") + "/" + DirectoryConfiguration.mainDir + "/"
+				+ DirectoryConfiguration.configDir + "/parameterConfig.json";
 		gc = new GuiController(location);
-		
+
 		System.out.println(">> Interactive simulator: Starting simulation.");
 		ready = true;
 		gc.startSimulation();
@@ -41,12 +37,8 @@ public class Simulation implements Runnable {
 
 	public static void createAndRun() {
 		try {
-			try {
-				new Simulation().execute();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		} catch (InterruptedException e) {
+			new Simulation().execute();
+		} catch (FileNotFoundException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
