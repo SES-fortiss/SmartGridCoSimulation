@@ -56,27 +56,23 @@ public class DConsumptionListener extends KeyAdapter implements FocusListener {
 	}
 
 	/**
-	 * Verifies if the input is a non-empty valid path value. In that case, @param
-	 * valid is set to <code>true</code>, and the value is saved to the
-	 * corresponding object. Otherwise, @param valid is set to <code>false</code>.
+	 * Verifies if the input is an empty field or a non-empty valid path value. In
+	 * that case, @param valid is set to <code>true</code>, and the value is saved
+	 * to the corresponding object. Otherwise, @param valid is set to
+	 * <code>false</code>.
 	 */
 	@Override
 	public void keyReleased(KeyEvent e) {
 		input = source.getText();
 
 		if (check) {
-			if (input.isEmpty()) {
-				valid = false;
-				message = "Error. This field can not be empty.";
+			File f = new File(input);
+			if (f.exists() || input.isEmpty()) {
+				valid = true;
+				o.setConsumptionProfile(input);
 			} else {
-				File f = new File(input);
-				if (f.exists()) {
-					valid = true;
-					o.setConsumptionProfile(input);
-				} else {
-					valid = false;
-					message = "Error. Invalid path to file";
-				}
+				valid = false;
+				message = "Error. Invalid path to file";
 			}
 		}
 	}
