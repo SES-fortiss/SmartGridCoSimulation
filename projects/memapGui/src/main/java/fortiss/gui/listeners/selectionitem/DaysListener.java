@@ -1,4 +1,4 @@
-package fortiss.controller.listener.selectionitem;
+package fortiss.gui.listeners.selectionitem;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -16,7 +16,7 @@ public class DaysListener implements ItemListener{
 	public void itemStateChanged(ItemEvent e) {
 		JComboBox<?> o = (JComboBox<?>) e.getSource();
 		Integer sel = (Integer) o.getSelectedItem();
-		Designer.control.pars.setDays(sel);
+		Designer.parameterPanel.pars.setDays(sel);
 	}
 
 }

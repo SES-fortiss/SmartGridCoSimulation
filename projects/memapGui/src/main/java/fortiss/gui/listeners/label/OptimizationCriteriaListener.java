@@ -1,4 +1,4 @@
-package fortiss.controller.listeners.label;
+package fortiss.gui.listeners.label;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -13,6 +13,6 @@ public class OptimizationCriteriaListener extends MouseAdapter {
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		Designer.control.pars.nextOptCriteria();
+		Designer.parameterPanel.pars.nextOptCriteria();
 	}
 }

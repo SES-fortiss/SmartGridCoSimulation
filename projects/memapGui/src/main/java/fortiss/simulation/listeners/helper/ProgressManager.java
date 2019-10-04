@@ -3,7 +3,7 @@ package fortiss.simulation.listeners.helper;
 import javax.swing.SwingUtilities;
 
 import akka.systemActors.GlobalTime;
-import fortiss.controller.listeners.button.AcceptListener;
+import fortiss.gui.listeners.button.AcceptListener;
 import fortiss.simulation.Simulation;
 import linprogMPC.TopologyConfig;
 

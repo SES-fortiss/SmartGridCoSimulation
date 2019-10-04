@@ -50,7 +50,7 @@ abstract public class FileManager {
 
 	/**
 	 * Writes one parameter configuration file that includes the parameters
-	 * registered in {@link fortiss.controller.Parameters}.
+	 * registered in {@link fortiss.simulation.Parameters}.
 	 */
 	public static void writeParameterConfigFile() {
 		String source = "/" + mainDir + "/" + configDir + "/parameterConfig.json";
@@ -63,7 +63,7 @@ abstract public class FileManager {
 
 		// Create JSON string
 		Gson gson = new Gson();
-		String str = gson.toJson(Designer.control.pars);
+		String str = gson.toJson(Designer.parameterPanel.pars);
 		writeFile(str, file);
 	}
 
@@ -103,7 +103,7 @@ abstract public class FileManager {
 			// Create JSON string
 			Gson gson = new Gson();
 			String str = gson.toJson(building);
-			Designer.control.pars.addDescriptorFile(file);
+			Designer.parameterPanel.pars.addDescriptorFile(file);
 			writeFile(str, file);
 		}
 	}

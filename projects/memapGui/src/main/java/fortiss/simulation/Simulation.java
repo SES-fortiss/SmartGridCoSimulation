@@ -2,7 +2,7 @@ package fortiss.simulation;
 
 import java.io.FileNotFoundException;
 
-import fortiss.controller.listeners.button.AcceptListener;
+import fortiss.gui.listeners.button.AcceptListener;
 import fortiss.results.Reporter;
 import fortiss.simulation.listeners.helper.ProgressManager;
 import linprogMPC.controller.GuiController;

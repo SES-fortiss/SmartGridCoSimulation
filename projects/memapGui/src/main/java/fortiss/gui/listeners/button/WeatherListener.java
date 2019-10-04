@@ -1,4 +1,4 @@
-package fortiss.controller.listeners.button;
+package fortiss.gui.listeners.button;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -19,8 +19,8 @@ public class WeatherListener extends MouseAdapter {
 
 		if (source.getName() == "good") {
 			if (source.isSelected()) {
-				Designer.control.pars.setWeather(true);
-				Designer.control.btBad.setSelected(false);
+				Designer.parameterPanel.pars.setWeather(true);
+				Designer.parameterPanel.btBad.setSelected(false);
 			} else {
 				source.setSelected(true);
 			}
@@ -28,8 +28,8 @@ public class WeatherListener extends MouseAdapter {
 
 		if (source.getName() == "bad") {
 			if (source.isSelected()) {
-				Designer.control.pars.setWeather(false);
-				Designer.control.btGood.setSelected(false);
+				Designer.parameterPanel.pars.setWeather(false);
+				Designer.parameterPanel.btGood.setSelected(false);
 			} else {
 				source.setSelected(true);
 			}

@@ -1,4 +1,4 @@
-package fortiss.simulation;
+package fortiss.gui;
 
 import java.awt.Cursor;
 import java.awt.Dimension;

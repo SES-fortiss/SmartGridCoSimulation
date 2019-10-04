@@ -1,4 +1,4 @@
-package fortiss.controller;
+package fortiss.simulation;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -125,10 +125,10 @@ public class Parameters {
 
 		if (index == criteriaOptions.size() - 1) {
 			setOptCriteria(criteriaOptions.get(0));
-			Designer.control.lbOptCriteria2.setIcon(Icon.optCriteria.get(0));
+			Designer.parameterPanel.lbOptCriteria2.setIcon(Icon.optCriteria.get(0));
 		} else {
 			setOptCriteria(criteriaOptions.get(index + 1));
-			Designer.control.lbOptCriteria2.setIcon(Icon.optCriteria.get(index + 1));
+			Designer.parameterPanel.lbOptCriteria2.setIcon(Icon.optCriteria.get(index + 1));
 		}
 	}
 

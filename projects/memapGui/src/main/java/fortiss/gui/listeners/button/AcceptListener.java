@@ -1,11 +1,11 @@
-package fortiss.controller.listeners.button;
+package fortiss.gui.listeners.button;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import fortiss.gui.Designer;
+import fortiss.gui.LoadingScreen;
 import fortiss.gui.listeners.helper.FileManager;
-import fortiss.simulation.LoadingScreen;
 import fortiss.simulation.Simulation;
 
 public class AcceptListener extends MouseAdapter {
@@ -15,20 +15,16 @@ public class AcceptListener extends MouseAdapter {
 	private Thread simt;
 
 	/**
-	 * Initializes the simulation. Disposes the interactive simulator window and
-	 * creates the reporter window, if
-	 * {@link fortiss.controller.Parameters#getRunInServer} is <code>true</code>.
-	 * Otherwise, descriptor files for every building are created in order to run
-	 * the simulation on the server.
+	 * Initializes the simulation. Creates a descriptor file for every building and
+	 * a configuration file for the simulation parameters, disposes the interactive
+	 * simulator window.
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-
-		Designer.control.dispose();
 		simt = new Thread(sim);
-		simt.start();
 		FileManager.writeDescriptorFiles();
 		FileManager.writeParameterConfigFile(); // Should be called after writeDescriptorFiles()
+		simt.start();
 		Designer.frame.dispose();
 	}
 }

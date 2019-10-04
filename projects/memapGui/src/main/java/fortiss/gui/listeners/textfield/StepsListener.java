@@ -1,4 +1,4 @@
-package fortiss.controller.listeners.textfield;
+package fortiss.gui.listeners.textfield;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -10,7 +10,7 @@ import javax.swing.JTextField;
 import fortiss.gui.Designer;
 import fortiss.gui.listeners.helper.InsertionVerifier;
 
-public class LengthListener extends KeyAdapter implements FocusListener {
+public class StepsListener extends KeyAdapter implements FocusListener {
 
 	private static boolean check;
 	private static boolean valid;
@@ -34,7 +34,7 @@ public class LengthListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
-			String currentVal = Integer.toString(Designer.control.pars.getLength());
+			String currentVal = Integer.toString(Designer.parameterPanel.pars.getSteps());
 			source.setText(currentVal);
 		}
 	}
@@ -53,7 +53,7 @@ public class LengthListener extends KeyAdapter implements FocusListener {
 				valid = false;
 			} else {
 				valid = true;
-				Designer.control.pars.setLength(Integer.parseUnsignedInt(input));
+				Designer.parameterPanel.pars.setSteps(Integer.parseUnsignedInt(input));
 			}
 		}
 	}

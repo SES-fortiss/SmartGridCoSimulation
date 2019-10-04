@@ -9,10 +9,10 @@ public class RunListener extends MouseAdapter {
 
 	/**
 	 * Set visible <code>true</code> for the
-	 * {@linkplain fortiss.controller.Controller}
+	 * {@linkplain fortiss.gui.ParameterInputPanel}
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		Designer.control.setVisible(true);
+		Designer.cl.show(Designer.pl_comp_detail, "parameter");
 	}
 }

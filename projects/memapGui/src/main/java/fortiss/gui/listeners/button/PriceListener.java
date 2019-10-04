@@ -1,4 +1,4 @@
-package fortiss.controller.listeners.button;
+package fortiss.gui.listeners.button;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -18,8 +18,8 @@ public class PriceListener extends MouseAdapter {
 		JRadioButton source = (JRadioButton) e.getSource();
 		if (source.getName() == "fixed") {
 			if (source.isSelected()) {
-				Designer.control.pars.setPrice(true);
-				Designer.control.btVolatile.setSelected(false);
+				Designer.parameterPanel.pars.setPrice(true);
+				Designer.parameterPanel.btVolatile.setSelected(false);
 			} else {
 				source.setSelected(true);
 			}
@@ -27,8 +27,8 @@ public class PriceListener extends MouseAdapter {
 
 		if (source.getName() == "volatile") {
 			if (source.isSelected()) {
-				Designer.control.pars.setPrice(false);
-				Designer.control.btFixed.setSelected(false);
+				Designer.parameterPanel.pars.setPrice(false);
+				Designer.parameterPanel.btFixed.setSelected(false);
 			} else {
 				source.setSelected(true);
 			}

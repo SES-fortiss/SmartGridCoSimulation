@@ -16,14 +16,14 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import fortiss.components.Building;
-import fortiss.controller.Controller;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
 
-@SuppressWarnings("serial")
 public class Designer extends JFrame {
 
+	private static final long serialVersionUID = 1L;
+	
 	// Object arrays
 	public static ArrayList<Building> buildings = new ArrayList<Building>();
 	public static ArrayList<JLabel> buildingIcons = new ArrayList<JLabel>();
@@ -39,7 +39,7 @@ public class Designer extends JFrame {
 	public static int currentComponent;
 
 	// Panels
-	public static Controller control;
+	public static ParameterInputPanel parameterPanel;
 	public static JPanel contentPane; // Principal panel
 	public static ActionPanel pl_action; // Action panel: LoadListener, run, save, reset
 	public static BuildingInputPanel pl_ems_detail; // Split 1: panel for EMS details
@@ -100,9 +100,6 @@ public class Designer extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 
-		// Add control panel
-		control = new Controller();
-
 		// Add dataFlavor class
 		dataFlavor = new DataFlavor(JLabel.class, JLabel.class.getSimpleName());
 
@@ -120,6 +117,10 @@ public class Designer extends JFrame {
 		cl = (CardLayout) pl_comp_detail.getLayout();
 		pl_comp_detail.setVisible(true);
 
+		// Add parameter panel
+		parameterPanel = new ParameterInputPanel();
+		pl_comp_detail.add(parameterPanel, "parameter");
+				
 		// Add initial panel
 		initialPanel = new InitialPanel();
 		pl_comp_detail.add(initialPanel, "initial");
@@ -146,13 +147,14 @@ public class Designer extends JFrame {
 		// Add panel for Coupler
 		couplerPanel = new CouplerInputPanel();
 		pl_comp_detail.add(couplerPanel, "coupler");
-
+		
+		cl.show(Designer.pl_comp_detail, "initial");
+		
 		// Add split panel for EMS/component icons
 		split_main = new JSplitPane();
 		split_main.setBorder(null);
 		split_main.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		split_main.setDividerSize(0);
-		split_main.setToolTipText("");
 		split_main.setLastDividerLocation(400);
 		split_main.setDividerLocation(400);
 		contentPane.add(split_main, BorderLayout.CENTER);

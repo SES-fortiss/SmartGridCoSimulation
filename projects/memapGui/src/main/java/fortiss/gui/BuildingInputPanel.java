@@ -44,9 +44,9 @@ public class BuildingInputPanel extends JPanel {
 		setForeground(Colors.normal);
 		lb_id.setForeground(Colors.normal);
 		lb_port.setForeground(Colors.normal);
+		lblBuilding.setForeground(Colors.title);
 		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Building information",
 				TitledBorder.RIGHT, TitledBorder.TOP, null, Colors.accent2));
-		lblBuilding.setForeground(Colors.title);
 	}
 
 	public BuildingInputPanel() {
