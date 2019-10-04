@@ -43,6 +43,7 @@ public class Building extends BehaviorModel {
 	
 	// some long term values
 	double[] buildingsTotalCosts = new double[ThesisTopologySimple.NR_OF_ITERATIONS];
+	double[] buildingsTotalCO2 = new double[ThesisTopologySimple.NR_OF_ITERATIONS];
 	double[][] buildingsSolutionPerTimeStep = new double[ThesisTopologySimple.NR_OF_ITERATIONS][];
 	
 	public int nStepsMPC = ThesisTopologySimple.N_STEPS_MPC;
@@ -111,10 +112,12 @@ public class Building extends BehaviorModel {
 			solveOptProblem();
 			
 			double costTotal = 0;
+			double CO2Total = 0;
 			for (int i = 0; i < buildingsTotalCosts.length; i++) {
 				costTotal += buildingsTotalCosts[i];
+				CO2Total += buildingsTotalCO2[i];
 			}
-			System.out.println(this.actorName+" cost = " + costTotal);
+			System.out.println(this.actorName+" cost = " + String.format("%.02f", costTotal) + " € ; CO2: " + String.format("%.02f", CO2Total) + " kg");
 		}
 		
 		buildingMessage = addMetering(buildingMessage);
@@ -153,8 +156,11 @@ public class Building extends BehaviorModel {
 			
 			// ******** Ermittlung der Kosten *********************
 			double[] buildingCostPerTimestep = new double[nStepsMPC];
-			buildingCostPerTimestep = solHandler.calculateTimeStepCosts(optSolution, problem.lambda);		
-			buildingsTotalCosts[GlobalTime.getCurrentTimeStep()] += buildingCostPerTimestep[0];			
+			double[] buildingCO2PerTimestep = new double[nStepsMPC];
+			buildingCostPerTimestep = solHandler.calculateTimeStepCosts(optSolution, problem.lambda);
+			buildingCO2PerTimestep = solHandler.calculateTimeStepCosts(optSolution, problem.lambdaCO2);
+			buildingsTotalCosts[GlobalTime.getCurrentTimeStep()] += buildingCostPerTimestep[0];
+			buildingsTotalCO2[GlobalTime.getCurrentTimeStep()] += buildingCO2PerTimestep[0];	
 
 			// ******** Erstellung des Ergebnisvektors *********************
 			double[] currentStep = {getActualTimeStep()};
@@ -162,13 +168,14 @@ public class Building extends BehaviorModel {
 			double[] currentDemand = solHandler.getDemandForThisTimestep(problem, nStepsMPC);
 			double[] currentSOC = solHandler.getCurrentSOC(buildingMessage.storageList);
 			double[] currentCost = {buildingCostPerTimestep[0]};
+			double[] currentCO2 = {buildingCO2PerTimestep[0]};
 			
 			double[] currentPosDemand = solHandler.getPositiveDemandForThisTimestep(problem, nStepsMPC);
 			double[] currentEffOptVector = solHandler.getEffSolutionForThisTimeStep(optSolution, problem, nStepsMPC);
 			
 			double[] electricalPrice = {energyPrices.getElectricityPriceInEuro(this.getActualTimeStep())};			
 			//double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, electricalPrice);
-			double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, electricalPrice, currentPosDemand, currentEffOptVector);
+			double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, currentCO2, electricalPrice, currentPosDemand, currentEffOptVector);
 			
 			String[] timeStep = {"timeStep"};
 			String[] currentNamesPartly = solHandler.getNamesForThisTimeStep(problem, nStepsMPC);
@@ -177,9 +184,10 @@ public class Building extends BehaviorModel {
 			String[] posDemandStrings = {"positiveDemandHeat", "positiveDemandHeatTotal", "positiveDemandElectricity"}; 
 			String[] storageNames = solHandler.getNamesForSOC(buildingMessage.storageList);
 			String[] costName = {"Cost"};
+			String[] CO2Name = {"CO2"};
 			String[] priceName = {"Price"};
 			
-			String[] namesAll = HelperConcat.concatAllObjects(timeStep, demandStrings, currentNamesPartly, storageNames, costName, priceName, posDemandStrings, currentEffNames);
+			String[] namesAll = HelperConcat.concatAllObjects(timeStep, demandStrings, currentNamesPartly, storageNames, costName, CO2Name, priceName, posDemandStrings, currentEffNames);
 						
 			//System.out.println(this.actorName + " " + Arrays.toString(namesAll));
 			//System.out.println(this.actorName + " " + Arrays.toString(vectorAll));									

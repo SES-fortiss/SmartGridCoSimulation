@@ -14,6 +14,7 @@ public class Connection extends Device {
 	public double efficiencyIn;
 	public double efficiencyOut;
 	public double operationalPriceEURO;
+	public double operationalPriceCO2;
 	
 	public ConnectionMessage connectionMessage = new ConnectionMessage();
 	
@@ -27,6 +28,7 @@ public class Connection extends Device {
 		this.maxIn = maxIn;
 		this.maxOut= maxOut;
 		this.operationalPriceEURO = 0.00001;
+		this.operationalPriceCO2 = 0.0;
 		// 1.5 % Verlust auf 100 Metern Leitung
 		this.efficiencyIn = Math.pow(0.985,pipeLength/100);
 		this.efficiencyOut = Math.pow(0.985,pipeLength/100);
@@ -43,6 +45,7 @@ public class Connection extends Device {
 		connectionMessage.efficiencyIn = this.efficiencyIn;
 		connectionMessage.efficiencyOut = this.efficiencyOut;	
 		connectionMessage.operationalPriceEURO = this.operationalPriceEURO;
+		connectionMessage.operationalPriceCO2 = this.operationalPriceCO2;
 	}
 	
 	@Override

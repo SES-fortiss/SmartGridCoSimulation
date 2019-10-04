@@ -13,19 +13,19 @@ public class ThesisSimulation {
 		// **************MEMAP OFF *******************
 		
 		//int[] mpcTimeSteps = {1,4,12,24,36,48,60,72};
-		
-		int[] mpcTimeSteps = {4};
-		for (int i = 0; i < mpcTimeSteps.length; i++) {
-			topology = ThesisTopologySimpleSingle.createTopology(mpcTimeSteps[i], false);
-			ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
-	        SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimpleSingle.NR_OF_ITERATIONS);
-		}
-		
+//		
+//		int[] mpcTimeSteps = {4};
+//		for (int i = 0; i < mpcTimeSteps.length; i++) {
+//			topology = ThesisTopologySimpleSingle.createTopology(mpcTimeSteps[i], false);
+//			ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
+//	        SimulationStarter.startSimulation(actorSystem, 0, ThesisTopologySimpleSingle.NR_OF_ITERATIONS);
+//		}
+//		
 		
 		// **************MEMAP ON ********************
 		//int[] mpcTimeSteps2 = {1,4,12,24};
 		
-		int[] mpcTimeSteps2 = {};
+		int[] mpcTimeSteps2 = {4};
 		for (int i = 0; i < mpcTimeSteps2.length; i++) {
 			topology = ThesisTopologySimple.createTopology(mpcTimeSteps2[i], true);
 			ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);

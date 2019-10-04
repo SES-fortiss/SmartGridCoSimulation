@@ -93,6 +93,24 @@ public class SolutionHandler {
 	
 	}
 
+	public double[][] getCorrectedSolutionVector(double[][] matrix, double[] vec, int NumberOfStorages) throws IOException {		
+		if (matrix[0].length == vec.length) {
+			int size = (int)(matrix[0].length/nMPC - 4);
+			double[][] TotalDeviceProduction = new double[size+NumberOfStorages][2];
+				
+			for (int i = 0; i < size+NumberOfStorages; i++)	{
+				for (int j = 0; j < nMPC; j++) {
+					
+					TotalDeviceProduction[i][0] += matrix[j][i*nMPC+j] * vec[i*nMPC+j]; 			// Wärme
+					TotalDeviceProduction[i][1] += matrix[j+nMPC][i*nMPC+j] * vec[i*nMPC+j]; 		// Strom
+				}
+			}
+			return TotalDeviceProduction;
+		}		
+		return null;
+ 
+	}
+	
 	public double[] matrixMultiplication(double[][] matrix, double[] vec) throws IOException {		
 		if (matrix[0].length == vec.length) {
 			double[] result = new double[matrix[0].length];
@@ -105,7 +123,6 @@ public class SolutionHandler {
 			return result;
 		}		
 		return null;
- 
 	}
 
 	public void exportMatrix(double[][] data, String filename) {

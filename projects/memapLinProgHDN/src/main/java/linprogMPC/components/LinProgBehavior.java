@@ -1,5 +1,6 @@
 package linprogMPC.components;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -30,6 +31,7 @@ public class LinProgBehavior extends BehaviorModel {
 	
 	double[] costForTimestepAllBuildings = new double[ThesisTopologySimple.NR_OF_ITERATIONS];
 	double[] costForTimestepMEMAP = new double[ThesisTopologySimple.NR_OF_ITERATIONS];
+	double[] CO2ForTimestepMEMAP = new double[ThesisTopologySimple.NR_OF_ITERATIONS];
 	double[][] memapSolutionPerTimeStep = new double[ThesisTopologySimple.NR_OF_ITERATIONS][];		
 
 	public OptimizationResultMessage optResult = new OptimizationResultMessage();
@@ -69,10 +71,7 @@ public class LinProgBehavior extends BehaviorModel {
 			}
 		}
 		
-		if (ThesisTopologySimple.MEMAP_ON) {
-			if (GlobalTime.getCurrentTimeStep() == 0) {
-				
-				int nrOfStorages = 0;
+		int nrOfStorages = 0;
 				int nrOfProducers = 0;
 				int nrOfCouplers = 0;
 				
@@ -81,6 +80,9 @@ public class LinProgBehavior extends BehaviorModel {
 					nrOfProducers += buildingMessage.getNrOfProducers();
 					nrOfCouplers += buildingMessage.getNrOfCouplers();
 				}
+				
+		if (ThesisTopologySimple.MEMAP_ON) {
+			if (GlobalTime.getCurrentTimeStep() == 0) {
 				
 				// Output simulation details
 				System.out.println(" << makeDesicion LinProg --- Optimization >> ");
@@ -109,6 +111,8 @@ public class LinProgBehavior extends BehaviorModel {
 			// ================= Handling the result ==================
 			
 			double[] memapCostPerTimestep = solHandler.calculateTimeStepCosts(sol, problem.lambda);
+			double[] memapCO2PerTimestep = solHandler.calculateTimeStepCosts(sol, problem.lambdaCO2);
+//			double[][] memapHeatPerTimestep =
 			System.out.println();
 			
 			if (GlobalTime.getCurrentTimeStep() == 0) {
@@ -117,6 +121,7 @@ public class LinProgBehavior extends BehaviorModel {
 			
 			
 			costForTimestepMEMAP[GlobalTime.getCurrentTimeStep()] = memapCostPerTimestep[0];
+			CO2ForTimestepMEMAP[GlobalTime.getCurrentTimeStep()] = memapCO2PerTimestep[0];
 			
 			// ******** Erstellung des Ergebnisvektors *********************
 			double[] currentStep = {getActualTimeStep()};
@@ -124,12 +129,13 @@ public class LinProgBehavior extends BehaviorModel {
 			double[] currentDemand = solHandler.getDemandForThisTimestep(problem, nStepsMPC);
 			double[] currentSOC = solHandler.getCurrentSOCs(buildingMessageList);
 			double[] currentCost = {memapCostPerTimestep[0]};
+			double[] currentCO2 = {memapCO2PerTimestep[0]};
 			
 			double[] currentPosDemand = solHandler.getPositiveDemandForThisTimestep(problem, nStepsMPC);
 			double[] currentEffOptVector = solHandler.getEffSolutionForThisTimeStep(sol, problem, nStepsMPC);
 			
 			//double[] vectorAll = HelperConcat.concatAlldoubles(currentDemand, currentOptVector, currentSOC, currentCost);
-			double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, currentPosDemand, currentEffOptVector);
+			double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, currentCO2, currentPosDemand, currentEffOptVector);
 			
 			String[] timeStep = {"timeStep"};
 			String[] currentNamesPartly = solHandler.getNamesForThisTimeStep(problem, nStepsMPC);
@@ -145,10 +151,11 @@ public class LinProgBehavior extends BehaviorModel {
 			posDemandStrings[nrOfBuildings+1] = "positiveDemandElectricity";
 			String[] storageNames = solHandler.getNamesForSOCs(buildingMessageList);
 			String[] costName = {"Cost"}; 
+			String[] CO2Name = {"CO2"}; 
 			
 			
 			
-			String[] namesAll = HelperConcat.concatAllObjects(timeStep, demandStrings, currentNamesPartly, storageNames, costName, posDemandStrings, currentEffNames);
+			String[] namesAll = HelperConcat.concatAllObjects(timeStep, demandStrings, currentNamesPartly, storageNames, costName, CO2Name, posDemandStrings, currentEffNames);
 						
 			System.out.println(this.actorName + " " + Arrays.toString(namesAll));
 			System.out.println(this.actorName + " " + Arrays.toString(vectorAll));									
@@ -161,18 +168,32 @@ public class LinProgBehavior extends BehaviorModel {
 				String saveString = ThesisTopologySimple.simulationName + "MPC"+ThesisTopologySimple.N_STEPS_MPC+"/";
 				saveString += this.actorName+"MPC"+nStepsMPC+".csv";
 				solHandler.exportMatrixWithHeader(memapSolutionPerTimeStep, saveString, namesAll);
+								
+				double[][] CorrectedResultMatrix = null;
+				try {
+					CorrectedResultMatrix = solHandler.getCorrectedSolutionVector(problem.a_eq, sol, nrOfStorages);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				solHandler.exportMatrix(CorrectedResultMatrix, "CorrectedSolutionMatrix.csv");
 			}
 
 			// ================= Handling the result ================== 	
 		
 			if (GlobalTime.getCurrentTimeStep() == (ThesisTopologySimple.NR_OF_ITERATIONS-1)) {
 				double totalCostsMEMAP = 0;
+				double totalCO2MEMAP = 0;
 				for (int j=0; j < ThesisTopologySimple.NR_OF_ITERATIONS; j++) {
 					totalCostsMEMAP += costForTimestepMEMAP[j];
+					totalCO2MEMAP += CO2ForTimestepMEMAP[j];
 				}
 				
 				System.out.println(" << Optimization Result (MPC) >> ");
 				System.out.println("COSTS with MEMAP: " + String.format("%.02f", totalCostsMEMAP));
+				System.out.println("----------------------------------------------------------------");
+				
+				System.out.println("CO2 mit MEMAP : " + String.format("%.02f", totalCO2MEMAP));
 				System.out.println("----------------------------------------------------------------");
 			}
 	 		

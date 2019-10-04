@@ -26,6 +26,7 @@ public class CHP extends Coupler {
 		couplerMessage.name = this.actorName;
 		couplerMessage.id = this.fullActorPath;
 		couplerMessage.operationalCostEUR = 0.00001 + EnergyPrices.getGasPriceInEuro(cts);		
+		couplerMessage.operationalCostCO2 = 0.202; // kg CO2/kWh 
 		couplerMessage.efficiencyElec = efficiencyElec;
 		couplerMessage.efficiencyHeat = efficiencyHeat;
 		couplerMessage.installedPower = installedPower;

@@ -17,6 +17,7 @@ public class ConnectionMessage implements AnswerContent {
 	public double efficiencyOut;
 	
 	public double operationalPriceEURO;
+	public double operationalPriceCO2;
 	
 	public NetworkType networkType;
 

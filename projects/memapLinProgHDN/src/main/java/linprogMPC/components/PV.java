@@ -23,6 +23,7 @@ public class PV extends Producer {
 		volatileProducerMessage.name = this.actorName;
 		volatileProducerMessage.id = this.fullActorPath;		
 		volatileProducerMessage.operationalPriceEURO = 0.00001;
+		volatileProducerMessage.operationalPriceCO2 = 0.0;
 		volatileProducerMessage.efficiency = efficiency;
 		volatileProducerMessage.installedPower = installedPower;
 		volatileProducerMessage.networkType = NetworkType.ELECTRICITY;

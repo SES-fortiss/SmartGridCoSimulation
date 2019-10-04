@@ -17,6 +17,7 @@ public class GasBoiler extends Producer {
 		producerMessage.id = this.fullActorPath;
 		producerMessage.name = this.actorName;		
 		producerMessage.operationalPriceEURO = this.cost;
+		producerMessage.operationalPriceCO2 = 0.202; // kg CO2/kWh
 		producerMessage.efficiency = efficiency;
 		producerMessage.installedPower = installedPower;
 		producerMessage.networkType = NetworkType.HEAT;

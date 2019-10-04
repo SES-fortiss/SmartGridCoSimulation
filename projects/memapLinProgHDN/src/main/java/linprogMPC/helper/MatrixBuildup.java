@@ -200,6 +200,7 @@ public class MatrixBuildup {
 		int el_index = nStepsMPC*optProblem.getNrOfBuildings();
 		
 		double[] lambda = new double[nStepsMPC];
+		double[] lambdaCO2 = new double[nStepsMPC];
 		double[] lb = new double[nStepsMPC];
 		double[] ub = new double[nStepsMPC];
 		
@@ -211,6 +212,7 @@ public class MatrixBuildup {
 		// fill the basic vectors and matrices
 		for(int i = 0; i < nStepsMPC; i++) {
 			lambda[i] = producerMessage.operationalPriceEURO;
+			lambdaCO2[i] = producerMessage.operationalPriceCO2;
 			lb[i] = 0;
 			ub[i] = producerMessage.installedPower;		
 			namesUB[i] = producerMessage.name;
@@ -237,6 +239,7 @@ public class MatrixBuildup {
 		// fill the problem matrices
 		for(int i = 0; i < nStepsMPC; i++) {
 			optProblem.lambda[n_index+i] = lambda[i];
+			optProblem.lambdaCO2[n_index+i] = lambdaCO2[i];
 			optProblem.x_lb[n_index+i] = lb[i];
 			optProblem.x_ub[n_index+i] = ub[i];
 			optProblem.namesUB[n_index+i] = namesUB[i];
@@ -259,6 +262,7 @@ public class MatrixBuildup {
 			int connectionsHandledSoFar) {
 		
 		double[] lambda = new double[nStepsMPC];
+		double[] lambdaCO2 = new double[nStepsMPC];
 		double[] lb = new double[nStepsMPC];
 		double[] ub = new double[nStepsMPC];
 		String[] namesUB = new String[nStepsMPC];
@@ -274,6 +278,7 @@ public class MatrixBuildup {
 		
 		for(int i = 0; i < nStepsMPC; i++) {
 			lambda[i] = couplerMessage.operationalCostEUR;
+			lambdaCO2[i] = couplerMessage.operationalCostCO2;
 			lb[i] = 0;
 			// Achtung hier spielen die Effizienzen eine Rolle, wegen den angegeben Leistungen.
 			// Z.b. brauch eine 10kW Wï¿½rmepumpe keine 10kW Strom.
@@ -293,6 +298,7 @@ public class MatrixBuildup {
 		// fill the problem matrices
 		for(int i = 0; i < nStepsMPC; i++) {
 			optProblem.lambda[n_index+i] = lambda[i];
+			optProblem.lambdaCO2[n_index+i] = lambdaCO2[i];
 			optProblem.x_lb[n_index+i] = lb[i];
 			optProblem.x_ub[n_index+i] = ub[i];
 			optProblem.namesUB[n_index+i] = namesUB[i];
@@ -317,6 +323,7 @@ public class MatrixBuildup {
 		// Matrizen befï¿½llen. Zuerst die regulï¿½ren, dann die Kapazitï¿½t
 				
 		double[] lambda = new double[2*nStepsMPC];
+		double[] lambdaCO2 = new double[2*nStepsMPC];
 		double[] lb = new double[2*nStepsMPC];
 		double[] ub = new double[2*nStepsMPC];
 		String[] namesUB = new String[2*nStepsMPC];
@@ -327,6 +334,8 @@ public class MatrixBuildup {
 		for(int i = 0; i < nStepsMPC; i++) { // zuerst kommt das ent-laden (produzieren), dann das be-laden (verbrauchen)
 			lambda[i] = storageMessage.operationalPriceEURO;
 			lambda[nStepsMPC+i] = storageMessage.operationalPriceEURO;
+			lambdaCO2[i] = storageMessage.operationalPriceCO2;
+			lambdaCO2[nStepsMPC+i] = storageMessage.operationalPriceCO2;
 			lb[i] = 0;
 			lb[nStepsMPC+i] = 0;
 			ub[i] = storageMessage.maxDischarge;
@@ -412,6 +421,7 @@ public class MatrixBuildup {
 					problem.g[nStepsMPC*(2*storagesHandledSoFar)+i][n_index+j] = capacityMatrix1[i][j];
 					problem.g[nStepsMPC*(1+2*storagesHandledSoFar)+i][n_index+j] = capacityMatrix2[i][j];
 					problem.lambda[n_index+j] = storageMessage.operationalPriceEURO;
+					problem.lambdaCO2[n_index+j] = storageMessage.operationalPriceCO2;
 					problem.x_lb[n_index+j] = lb[j];
 					problem.x_ub[n_index+j] = ub[j];
 					problem.namesUB[n_index+j] = namesUB[j];
@@ -463,6 +473,7 @@ public class MatrixBuildup {
 						problem.a_eq[bi_index+i][n_index+j] = couplingMatrix_H_i[i][j];
 						problem.a_eq[bj_index+i][n_index+j] = couplingMatrix_H_j[i][j];
 						problem.lambda[n_index+j] = connectionMessage.operationalPriceEURO;
+						problem.lambdaCO2[n_index+j] = connectionMessage.operationalPriceCO2;
 						problem.x_lb[n_index+j] = lb[j];
 						problem.x_ub[n_index+j] = ub[j];
 						problem.namesUB[n_index+j] = namesUB[j];
@@ -502,6 +513,8 @@ public class MatrixBuildup {
 						// Extended price vector for market
 						problem.lambda[n_index+b_index+i] = EnergyPrices.getHeatPriceInEuro(cts+i);				// heat buy price
 						problem.lambda[n_index+b_index+nStepsMPC+i] = -0.0;												// heat sell price
+						problem.lambdaCO2[n_index+b_index+i] = 0.196; 						// Emissionen deutscher Fernwärme   kg CO2 / kWh
+						problem.lambdaCO2[n_index+b_index+nStepsMPC+i] = -0.0;												// heat sell price
 					}
 					b_index = (k+1)*2*nStepsMPC;
 				}
@@ -526,6 +539,8 @@ public class MatrixBuildup {
 				// Extended price vector for market
 				problem.lambda[n_index+b_index+i] = energyPrices.getElectricityPriceInEuro(cts+i);					// electricity buy price
 				problem.lambda[n_index+b_index+nStepsMPC+i] = -energyPrices.getElectricityPriceInEuro(cts+i)*0.5;   // electricity sell price
+				problem.lambdaCO2[n_index+b_index+i] = 0.474; // Emissionen deutscher Strommix   kg CO2 / kWh
+				problem.lambdaCO2[n_index+b_index+nStepsMPC+i] = 0.0 ;   // electricity sell price
 				
 				
 				

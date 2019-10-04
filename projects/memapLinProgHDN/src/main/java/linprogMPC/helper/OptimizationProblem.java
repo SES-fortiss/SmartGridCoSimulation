@@ -3,6 +3,7 @@ package linprogMPC.helper;
 public class OptimizationProblem {
 	
 	public double[] lambda;
+	public double[] lambdaCO2;
 	public double[] h;
 	public double[][] g;
 	public double[] b_eq;
@@ -18,6 +19,7 @@ public class OptimizationProblem {
 	int nrOfCouplers;
 	int nrOfConnections;
 	int marketmatrices;
+	
 
 	public OptimizationProblem(int nStepsMPC, int nrOfBuildings, int nrOfProducers, int nrOfStorages, int nrOfCouplers, int nrOfConnections, boolean lDHeating) {
 		
@@ -36,6 +38,7 @@ public class OptimizationProblem {
 		
 		
 		lambda  = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages) + nrOfCouplers + nrOfConnections*2 + marketmatrices)];
+		lambdaCO2  = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages) + nrOfCouplers + nrOfConnections*2 + marketmatrices)];
 		
 		h = new double[nStepsMPC*2*nrOfStorages];
 		g = new double[nStepsMPC*2*nrOfStorages][nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];

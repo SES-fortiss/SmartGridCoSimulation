@@ -10,6 +10,7 @@ public class OptimizationStarter {
 		LPOptimizationRequest or = new LPOptimizationRequest();
 		
 		or.setC(problem.lambda);
+//		or.setC(problem.lambdaCO2);
 		or.setG(problem.g);
 		or.setH(problem.h);
 		or.setA(problem.a_eq);

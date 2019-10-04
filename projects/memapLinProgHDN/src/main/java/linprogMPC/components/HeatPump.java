@@ -14,6 +14,7 @@ public class HeatPump extends Coupler {
 		couplerMessage.id = this.fullActorPath;
 		
 		couplerMessage.operationalCostEUR = 0.00001;
+		couplerMessage.operationalCostCO2 = 0.0; // kg CO2/kWh
 		couplerMessage.efficiencyElec = efficiencyElec;
 		couplerMessage.efficiencyHeat = efficiencyHeat;
 		couplerMessage.installedPower = installedPower;
