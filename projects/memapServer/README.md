@@ -20,7 +20,7 @@ Look at help to see more options for running the program.
 src/main/java/linprogMPC/Simulation.java help
 ```
 
-**Alternatively** If you're not interested in working on the code, download the latest MemapServer.jar from MISSING LINK and run:
+**Alternatively** If you're not interested in working on the code, download the latest MemapServer.jar from the [releases page](https://github.com/SES-fortiss/SmartGridCoSimulation/releases) and run:
 
 ```
 java -jar MemapServer.jar csv
@@ -232,4 +232,4 @@ in architecture.
 
 ## License
 
-???
+[Read licence](https://github.com/SES-fortiss/SmartGridCoSimulation/blob/master/LICENSE)
