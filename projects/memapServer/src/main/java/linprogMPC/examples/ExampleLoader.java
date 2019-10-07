@@ -16,6 +16,7 @@ import linprogMPC.controller.BuildingController;
 import linprogMPC.controller.CSVBuildingController;
 import linprogMPC.controller.OpcUaBuildingController;
 import linprogMPC.controller.TopologyController;
+import linprogMPC.helper.DirectoryConfiguration;
 import linprogMPC.messages.extension.NetworkType;
 
 public final class ExampleLoader {
@@ -28,9 +29,9 @@ public final class ExampleLoader {
 
     try {
       BufferedReader endpoint1 = new BufferedReader(new InputStreamReader(ExampleLoader.class
-          .getClassLoader().getResourceAsStream("opcconfig/FortissBuilding1Endpoint.json")));
+          .getClassLoader().getResourceAsStream(DirectoryConfiguration.exampleDir + "/FortissBuilding1Endpoint.json")));
       BufferedReader nodes1 = new BufferedReader(new InputStreamReader(ExampleLoader.class
-          .getClassLoader().getResourceAsStream("opcconfig/FortissBuilding1Nodes.json")));
+          .getClassLoader().getResourceAsStream(DirectoryConfiguration.exampleDir + "/FortissBuilding1Nodes.json")));
       JsonObject jsonEndpoint1 = (JsonObject) Jsoner.deserialize(endpoint1);
       JsonObject jsonNodes1 = (JsonObject) Jsoner.deserialize(nodes1);
       BuildingController sampleBuilding1 = new OpcUaBuildingController(jsonEndpoint1, jsonNodes1);
@@ -47,9 +48,9 @@ public final class ExampleLoader {
 
     try {
       BufferedReader endpoint2 = new BufferedReader(new InputStreamReader(ExampleLoader.class
-          .getClassLoader().getResourceAsStream("opcconfig/FortissBuilding2Endpoint.json")));
+          .getClassLoader().getResourceAsStream(DirectoryConfiguration.exampleDir + "/FortissBuilding2Endpoint.json")));
       BufferedReader nodes2 = new BufferedReader(new InputStreamReader(ExampleLoader.class
-          .getClassLoader().getResourceAsStream("opcconfig/FortissBuilding2Nodes.json")));
+          .getClassLoader().getResourceAsStream(DirectoryConfiguration.exampleDir + "/FortissBuilding2Nodes.json")));
       JsonObject jsonEndpoint2 = (JsonObject) Jsoner.deserialize(endpoint2);
       JsonObject jsonNodes2 = (JsonObject) Jsoner.deserialize(nodes2);
       BuildingController sampleBuilding2 = new OpcUaBuildingController(jsonEndpoint2, jsonNodes2);

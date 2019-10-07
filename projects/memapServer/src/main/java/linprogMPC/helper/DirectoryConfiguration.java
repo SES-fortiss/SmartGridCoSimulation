@@ -10,4 +10,7 @@ public abstract class DirectoryConfiguration {
 
 	/** Configuration directory path */
 	public static String configDir = "opcconfig";
+	
+	/** Examples directory path */
+	public static String exampleDir = "examples";
 }

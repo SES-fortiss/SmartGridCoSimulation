@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import helper.IoHelper;
+import linprogMPC.helper.DirectoryConfiguration;
 
 public class OpcServerContextGenerator {
 	
@@ -30,31 +31,25 @@ public class OpcServerContextGenerator {
 	}
 
 	private static void writeFile(String filename, String result) {		
-		String source = "res/opcconfig/" + filename;
-		String location = OpcServerContextGenerator.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-		location = location.replace("%20", " ");
-		location = location.substring(0, location.length() - 15);
-		location = location + source + ".json";
+		String source = "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.configDir + "/" + filename + ".json";
+		String location = System.getProperty("user.dir");
+		location = location + source;
 		
-		System.out.println("Try Filelocation: " + location);
+		System.out.println("Try file location: " + location);
 		IoHelper.createParentFolders(location);
 		File file = new File(location);
 		
 	    BufferedWriter writer;
 		try {
-			
 			if (!file.exists()) {
 				file.createNewFile();
 			}
-			
 			writer = new BufferedWriter(new FileWriter(file));
 		    writer.write(result);	     
 		    writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		
 	}	
 }
 

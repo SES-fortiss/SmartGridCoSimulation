@@ -19,21 +19,21 @@ public class SolutionHandler {
 	
 	public void exportVector(double[] data, String filename) {
 		BufferedWriter bw = null;
+		String source = "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.resultDir + "/" + filename;
+		String location = System.getProperty("user.dir");
+		/*
+		 * Note: location is the project directory from which the simulation was started
+		 * or or the directory from which the .jar was executed.
+		 */
+		location = location + source;
+
+		// Specify the file name and path here
+		
+		System.out.println("Try file location: " + location);
+		IoHelper.createParentFolders(location);
+		File file = new File(location);
+		
 		try {
-			String source = "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.resultDir + "/" + filename;
-			String location = System.getProperty("user.dir");
-			/*
-			 * Note: location is the project directory from which the simulation was started
-			 * or or the directory from which the .jar was executed.
-			 */
-			location = location + source;
-
-			// Specify the file name and path here
-			
-			System.out.println("Try file location: " + location);
-			IoHelper.createParentFolders(location);
-			File file = new File(location);
-
 			/*
 			 * This logic will make sure that the file gets created if it is not present at
 			 * the specified location
@@ -116,22 +116,21 @@ public class SolutionHandler {
 	public void exportMatrix(double[][] data, String filename) {
 
 		BufferedWriter bw = null;
+		String source = "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.resultDir + "/" + filename;
+		String location = System.getProperty("user.dir");
+		/*
+		 * Note: location is the project directory from which the simulation was started
+		 * or or the directory from which the .jar was executed.
+		 */
+		location = location + source;
 
+		// Specify the file name and path here
+		
+		System.out.println("Try file location: " + location);
+		IoHelper.createParentFolders(location);
+		File file = new File(location);
+		
 		try {
-			String source = "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.resultDir + "/" + filename;
-			String location = System.getProperty("user.dir");
-			/*
-			 * Note: location is the project directory from which the simulation was started
-			 * or or the directory from which the .jar was executed.
-			 */
-			location = location + source;
-
-			// Specify the file name and path here
-			
-			System.out.println("Try file location: " + location);
-			IoHelper.createParentFolders(location);
-			File file = new File(location);
-
 			/*
 			 * This logic will make sure that the file gets created if it is not present at
 			 * the specified location
@@ -338,23 +337,17 @@ public class SolutionHandler {
 	public void exportMatrixWithHeader(double[][] data, String filename, String[] header) {
 
 		BufferedWriter bw = null;
-
+		String source = "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.resultDir + "/" + filename;
+		String location = System.getProperty("user.dir");
+		/*
+		 * Note: location is the project directory from which the simulation was started
+		 * or or the directory from which the .jar was executed.
+		 */
+		location = location + source;
+		System.out.println("Try file location: " + location);
+		IoHelper.createParentFolders(location);
+		File file = new File(location);
 		try {
-			
-			String source = "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.resultDir + "/" + filename;
-			String location = System.getProperty("user.dir");
-			/*
-			 * Note: location is the project directory from which the simulation was started
-			 * or or the directory from which the .jar was executed.
-			 */
-			location = location + source;
-
-			// Specify the file name and path here
-			
-			System.out.println("Try file location: " + location);
-			IoHelper.createParentFolders(location);
-			File file = new File(location);
-
 			/*
 			 * This logic will make sure that the file gets created if it is not present at
 			 * the specified location

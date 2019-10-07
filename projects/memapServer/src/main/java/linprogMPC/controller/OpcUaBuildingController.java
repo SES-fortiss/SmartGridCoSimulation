@@ -205,7 +205,7 @@ public class OpcUaBuildingController implements BuildingController {
      * "deviceName:" [...] ... }
      * 
      * Refer to initDevices() for device names and required Ids. Also have a look in
-     * the res/opcconfig folder for examples.
+     * the resource directory for examples.
      * 
      * TODO: Implement automatic device detection
      * 
