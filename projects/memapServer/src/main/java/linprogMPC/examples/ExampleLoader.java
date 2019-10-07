@@ -19,9 +19,7 @@ import linprogMPC.controller.TopologyController;
 import linprogMPC.helper.DirectoryConfiguration;
 import linprogMPC.messages.extension.NetworkType;
 
-public final class ExampleLoader {
-
-  private ExampleLoader() {}
+public abstract class ExampleLoader {
 
   public static TopologyController OpcUaExample() {
     TopologyController topologyController =
