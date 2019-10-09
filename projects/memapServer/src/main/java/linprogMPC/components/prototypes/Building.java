@@ -223,7 +223,7 @@ public class Building extends BehaviorModel {
 			+ "/";
 		saveString += this.actorName + "MPC" + nStepsMPC + "Solutions.csv";
 		if (GlobalTime.getCurrentTimeStep() == (TopologyConfig.NR_OF_ITERATIONS - 1)) {
-		    solHandler.exportMatrixWithHeader(buildingsSolutionPerTimeStep, saveString, namesAll);
+		    solHandler.exportMatrix(buildingsSolutionPerTimeStep, saveString, namesAll);
 		}
 	    }
 

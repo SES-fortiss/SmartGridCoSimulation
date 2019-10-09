@@ -153,7 +153,7 @@ public class LinProgBehavior extends BehaviorModel {
         String saveString =
             TopologyConfig.simulationName + "MPC" + TopologyConfig.N_STEPS_MPC + "/";
         saveString += this.actorName + "MPC" + nStepsMPC + ".csv";
-        solHandler.exportMatrixWithHeader(memapSolutionPerTimeStep, saveString, namesAll);
+        solHandler.exportMatrix(memapSolutionPerTimeStep, saveString, namesAll);
       }
 
       // ================= Handling the result ==================
