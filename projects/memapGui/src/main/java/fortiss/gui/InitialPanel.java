@@ -26,8 +26,8 @@ public class InitialPanel extends JPanel {
 
 	/** Necessary for dark mode on/off implementation */
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		setBackground(Colors.background);
 		setForeground(Colors.normal);
 		lblMemap_1.setForeground(Colors.title);

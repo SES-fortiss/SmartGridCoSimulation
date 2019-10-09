@@ -34,6 +34,7 @@ abstract public class Icon {
 	private static String offMemapPath = "/resources/offMemap.png";
 	private static String optCostPath = "/resources/optCost.png";
 	private static String optCO2Path = "/resources/optCO2.png";
+	private static String visualizePath = "/resources/visualize.png";
 
 	public static ImageIcon fortissLogo = new ImageIcon(
 			new ImageIcon(Icon.class.getResource(fortissLogoPath)).getImage().getScaledInstance(180, 60, Image.SCALE_SMOOTH));
@@ -54,6 +55,8 @@ abstract public class Icon {
 			new ImageIcon(Icon.class.getResource(onDarkModePath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 	public static ImageIcon offDarkMode = new ImageIcon(
 			new ImageIcon(Icon.class.getResource(offDarkModePath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+	public static ImageIcon visualize = new ImageIcon(
+			new ImageIcon(Icon.class.getResource(visualizePath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 
 	public static ImageIcon uDemandMenu = new ImageIcon(new ImageIcon(Icon.class.getResource(uDemandPath)).getImage()
 			.getScaledInstance(25, 35, Image.SCALE_SMOOTH));

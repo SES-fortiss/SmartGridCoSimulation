@@ -25,7 +25,10 @@ public class DataUpdater {
 		Designer.demandPanel.txtDIndex.setText(Integer.toString(index));
 		Designer.demandPanel.txtDConsumption.setText(consumption);
 		Designer.demandPanel.sDNetworkType.setSelectedItem(networkType);
-
+		Designer.demandPanel.plotPanel.clearSeries();
+		if(!consumption.isEmpty()) {
+			Designer.demandPanel.plotPanel.setData(consumption);
+		}
 		Designer.cl.show(Designer.pl_comp_detail, "demand");
 	}
 

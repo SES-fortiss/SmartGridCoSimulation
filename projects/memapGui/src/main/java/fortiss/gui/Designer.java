@@ -13,7 +13,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 
 import fortiss.components.Building;
 import fortiss.gui.style.Colors;
@@ -83,7 +82,6 @@ public class Designer extends JFrame {
 		super.paint(g);
 		contentPane.setBackground(Colors.background);
 		lblFortissMemap.setForeground(Colors.accent1);
-		repaint();
 	}
 
 	/**
@@ -96,7 +94,6 @@ public class Designer extends JFrame {
 		setIconImage(Icon.smallMemapLogo.getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 

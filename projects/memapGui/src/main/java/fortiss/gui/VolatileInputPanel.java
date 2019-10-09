@@ -67,8 +67,8 @@ public class VolatileInputPanel extends JPanel {
 
 	/** Necessary for dark mode on/off implementation */
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		setForeground(Colors.normal);
 		setBackground(Colors.background);
 		lblVolatileProduction.setForeground(Colors.title);

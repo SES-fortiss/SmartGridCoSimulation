@@ -38,14 +38,13 @@ public class MenuListener implements TreeSelectionListener {
 
 		if (h.isPathSelected(selPath)) {
 			if (h.getSelectionCount() == 1) {
-				Reporter.plotter.series.clear();
-				Reporter.plotter.seriesNames.clear();
+				Reporter.plotPanel.clearSeries();
 			}
-			Reporter.plotter.addSeries(getSeriesName(), data.get(seriesIndex));
-			Reporter.plotter.paintSeries();
+			Reporter.plotPanel.addSeries(getSeriesName(), data.get(seriesIndex));
+			Reporter.plotPanel.paintSeries();
 		} else {
-			Reporter.plotter.removeSeries(getSeriesName(), data.get(seriesIndex));
-			Reporter.plotter.paintSeries();
+			Reporter.plotPanel.removeSeries(getSeriesName(), data.get(seriesIndex));
+			Reporter.plotPanel.paintSeries();
 		}
 	}
 
@@ -54,7 +53,7 @@ public class MenuListener implements TreeSelectionListener {
 	 */
 	private int getBuildingIndex() {
 		for (int i = 0; i < Reporter.output.size(); i++) {
-			if (Reporter.output.getData(i).buildingName.equals(par.toString())) {
+			if (Reporter.output.buildingNames.get(i).equals(par.toString())) {
 				return i;
 			}
 		}

@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 
 import fortiss.gui.style.Colors;
+import fortiss.gui.Designer;
 import fortiss.media.Icon;
 
 public class DarkModeListener extends MouseAdapter {
@@ -20,6 +21,7 @@ public class DarkModeListener extends MouseAdapter {
 			icon.setIcon(Icon.onDarkMode);
 			Colors.setDarkModeOn();
 		}
+		Designer.frame.repaint();
 	}
 	
 }

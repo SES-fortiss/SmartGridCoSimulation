@@ -39,8 +39,8 @@ public class BuildingInputPanel extends JPanel {
 
 	/** Necessary for dark mode on/off implementation */
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		setBackground(Colors.background);
 		setForeground(Colors.normal);
 		lb_id.setForeground(Colors.normal);
@@ -101,6 +101,5 @@ public class BuildingInputPanel extends JPanel {
 		txtBPort.addKeyListener(new BPortListener());
 		txtBPort.addFocusListener(new BPortListener());
 		add(txtBPort, "4, 10, fill, default");
-		setVisible(false);
 	}
 }

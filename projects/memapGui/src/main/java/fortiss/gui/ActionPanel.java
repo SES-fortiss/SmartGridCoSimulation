@@ -2,8 +2,6 @@ package fortiss.gui;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -57,10 +55,6 @@ public class ActionPanel extends JPanel {
 		bt_load.setFocusPainted(false);
 		bt_load.setIcon(Icon.open);
 		bt_load.setToolTipText("Load from Json File");
-		bt_load.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
 		bt_load.addMouseListener(new LoadListener());
 
 		setLayout(new FormLayout(new ColumnSpec[] {

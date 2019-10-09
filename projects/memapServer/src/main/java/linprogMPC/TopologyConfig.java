@@ -31,7 +31,7 @@ public abstract class TopologyConfig {
 	 * Simulation mode: global (<code>true</code>) or individual
 	 * (<code>false</code>)
 	 */
-	public static boolean MEMAP_ON = true;
+	public static boolean MEMAP_ON = false;
 
 	/** Port number */
 	public static int PORT_UNDEFINED;

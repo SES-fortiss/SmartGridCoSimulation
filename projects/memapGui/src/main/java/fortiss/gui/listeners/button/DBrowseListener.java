@@ -18,9 +18,14 @@ public class DBrowseListener extends MouseAdapter {
 		// Update selection in text field
 		Chooser c = new Chooser();
 		String path = c.choosePath();
-		Designer.demandPanel.txtDConsumption.setText(path);
+		
+		if (path != null) {
+			Designer.demandPanel.txtDConsumption.setText(path);
+			d.setConsumptionProfile(path);
+		}
 
-		// SaveListener selection
-		d.setConsumptionProfile(path);
+		if (!d.getConsumptionProfile().isEmpty()) {
+			Designer.demandPanel.plotPanel.setData(path);
+		}
 	}
 }

@@ -12,17 +12,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
+import fortiss.gui.PlotPanel;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
-import fortiss.results.listeners.helper.Plotter;
 import fortiss.results.listeners.label.MenuListener;
 
 /**
@@ -33,7 +34,7 @@ public class Reporter extends JFrame {
 
 	public static Reporter results;
 	public static JPanel plPlot;
-	public static Plotter plotter;
+	public static PlotPanel plotPanel;
 	public static Output output;
 	private JPanel plSelection;
 	private JLabel lbInstructions;
@@ -45,7 +46,7 @@ public class Reporter extends JFrame {
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		plotter.paintSeries();
+		plotPanel.paintSeries();
 		plSelection.setBackground(Colors.background);
 		plSelection.setForeground(Colors.normal);
 		lbInstructions.setForeground(Colors.title);
@@ -58,8 +59,7 @@ public class Reporter extends JFrame {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				try {	
 					results = new Reporter();
 					results.setVisible(true);
 				} catch (Exception e) {
@@ -74,11 +74,8 @@ public class Reporter extends JFrame {
 	 * Create the application.
 	 */
 	public Reporter() {
-		plotter = new Plotter();
-		
 		// Read results
 		output = new Output();
-
 		StyleGenerator.setupStyle();
 		initialize();
 	}
@@ -87,6 +84,13 @@ public class Reporter extends JFrame {
 	 * Initializes the contents of the frame.
 	 */
 	private void initialize() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
+		
 		// Sets frame properties
 		setSize(new Dimension(1120, 810));
 		setBackground(Colors.background);
@@ -95,7 +99,7 @@ public class Reporter extends JFrame {
 		setIconImage(Icon.smallMemapLogo.getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
-
+		
 		// Adds panel for result selection
 		plSelection = new JPanel();
 		plSelection.setForeground(Colors.normal);
@@ -131,11 +135,9 @@ public class Reporter extends JFrame {
 		treeResults.addTreeSelectionListener(new MenuListener());
 		treeResults.setRowHeight(30);
 		treeResults.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		//treeResults.setBackground(UIManager.getColor("Button.background"));
-
 
 		// Adds panel for plots
-		plPlot = new JPanel();
-		getContentPane().add(plPlot);
+		plotPanel = new PlotPanel();
+		getContentPane().add(plotPanel);
 	}
 }
