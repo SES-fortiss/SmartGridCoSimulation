@@ -55,6 +55,7 @@ Note: At one point the memapServer project will be renamed to memapCore.
 
 ### Deployment
 
+First all dependent projects have to be built with `mvn install -DskipTests`, then
 `mvn package` will create a Memap.jar in `target/`.
 
 ## Live Optimization
