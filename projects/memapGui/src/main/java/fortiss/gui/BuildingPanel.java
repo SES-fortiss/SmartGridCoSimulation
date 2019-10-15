@@ -31,23 +31,10 @@ public class BuildingPanel extends JPanel {
 	 */
 	private boolean drawing = false;
 
-	/** Necessary for dark mode on/off implementation */
-	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
-		setBackground(Colors.background);
-		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Layout area", TitledBorder.LEADING,
-				TitledBorder.TOP, null, Colors.accent2));
-
-		for (int i = 0; i < Designer.buildingCount; i++) {
-			Designer.buildingIcons.get(i).setForeground(Colors.defaultCol);
-		}
-		repaint();
-	}
-
 	public BuildingPanel() {
 		setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-
+		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Layout area", TitledBorder.LEADING,
+				TitledBorder.TOP, null, Colors.accent2));
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
@@ -60,6 +47,14 @@ public class BuildingPanel extends JPanel {
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		
+		/** Necessary for dark mode on/off implementation */
+		setBackground(Colors.background);
+
+		for (int i = 0; i < Designer.buildingCount; i++) {
+			Designer.buildingIcons.get(i).setForeground(Colors.defaultCol);
+		}
+		
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setStroke(new BasicStroke(2, // Width
 				BasicStroke.CAP_ROUND, // End-cap style

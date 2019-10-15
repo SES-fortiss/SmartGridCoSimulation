@@ -15,7 +15,6 @@ public class DataUpdater {
 		Designer.pl_ems_detail.txtBPort.setText(port);
 
 		Designer.cl.show(Designer.pl_comp_detail, "building");
-		Designer.pl_comp_detail.repaint();
 	}
 
 	/**
@@ -28,7 +27,6 @@ public class DataUpdater {
 		Designer.demandPanel.sDNetworkType.setSelectedItem(networkType);
 
 		Designer.cl.show(Designer.pl_comp_detail, "demand");
-		Designer.pl_comp_detail.repaint();
 	}
 
 	/**
@@ -45,7 +43,6 @@ public class DataUpdater {
 		Designer.storagePanel.txtSEffOUT.setText(Double.toString(dischargeE));
 
 		Designer.cl.show(Designer.pl_comp_detail, "storage");
-		Designer.pl_comp_detail.repaint();
 	}
 
 	/**
@@ -62,8 +59,6 @@ public class DataUpdater {
 		Designer.volatilePanel.txtVCOEmission.setText(Double.toString(coEmission));
 
 		Designer.cl.show(Designer.pl_comp_detail, "volProduction");
-		Designer.pl_comp_detail.repaint();
-
 	}
 
 	/**
@@ -79,7 +74,6 @@ public class DataUpdater {
 		Designer.controllablePanel.txtCPCOEmission.setText(Double.toString(coEmission));
 
 		Designer.cl.show(Designer.pl_comp_detail, "contProduction");
-		Designer.pl_comp_detail.repaint();
 	}
 
 	/**
@@ -98,7 +92,5 @@ public class DataUpdater {
 		Designer.couplerPanel.txtCCOEmission.setText(Double.toString(coEmission));
 
 		Designer.cl.show(Designer.pl_comp_detail, "coupler");
-		Designer.pl_comp_detail.repaint();
 	}
-
 }

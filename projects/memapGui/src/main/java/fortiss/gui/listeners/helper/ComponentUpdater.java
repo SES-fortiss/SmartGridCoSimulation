@@ -31,7 +31,7 @@ public class ComponentUpdater {
 			Designer.pl_comp.add(Designer.couplerIcons.get(current_building).get(i));
 		}
 		Designer.pl_comp.doLayout();
-		Designer.pl_comp.repaint();
+		// repaint of component panel is triggered by the FocusManager
 	}
 
 }

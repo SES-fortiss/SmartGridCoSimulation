@@ -38,8 +38,6 @@ public class CNewtworkTypePListener extends MouseAdapter implements ItemListener
 					Designer.buildings.get(building).getCoupler().get(component).setNetworkTypeS(opt);
 				}
 				Designer.couplerPanel.txtCSecondaryNetworkType.setText(opt);
-				Designer.cl.show(Designer.pl_comp_detail, "coupler");
-				Designer.pl_comp_detail.repaint();
 			}
 			userSelection = false;
 		}

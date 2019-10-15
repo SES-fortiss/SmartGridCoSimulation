@@ -23,6 +23,7 @@ import fortiss.gui.listeners.textfield.SMaxDischargeListener;
 import fortiss.gui.listeners.textfield.SNameListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
+import fortiss.gui.style.StyleGenerator;
 
 /**
  * Input panel for storage parameters.
@@ -76,24 +77,47 @@ public class StorageInputPanel extends JPanel {
 		lbSMaxDRate.setForeground(Colors.normal);
 		lbSChargeE.setForeground(Colors.normal);
 		lbSDischargeE.setForeground(Colors.normal);
-		setBorder(new TitledBorder(null, "Component information", TitledBorder.RIGHT, TitledBorder.TOP, null,
-				Colors.accent2));
 	}
 
 	public StorageInputPanel() {
-		setFont(Fonts.getOpenSans());
-
-		setLayout(new FormLayout(
-				new ColumnSpec[] {
-						ColumnSpec.decode("15dlu"), ColumnSpec.decode("left:85dlu"), ColumnSpec.decode("15dlu"),
-						ColumnSpec.decode("100dlu"), ColumnSpec.decode("15dlu"), FormSpecs.RELATED_GAP_COLSPEC, },
-				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.PREF_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
+		StyleGenerator.setupStyle();
+		initialize();
+	}
+	
+	/**
+	 * Initializes the contents of the panel.
+	 */
+	private void initialize() {
+		setBorder(new TitledBorder(null, "Component information", TitledBorder.RIGHT, TitledBorder.TOP, null,
+				Colors.accent2));
+		setLayout(new FormLayout(new ColumnSpec[] {
+				ColumnSpec.decode("15dlu"),
+				ColumnSpec.decode("left:85dlu:grow"),
+				ColumnSpec.decode("15dlu"),
+				ColumnSpec.decode("116dlu:grow"),
+				ColumnSpec.decode("15dlu"),
+				FormSpecs.RELATED_GAP_COLSPEC,},
+			new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.PREF_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,}));
 
 		lblStorage = new JLabel("STORAGE");
 		lblStorage.setFont(Fonts.getOswald());

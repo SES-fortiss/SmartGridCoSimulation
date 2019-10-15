@@ -22,8 +22,8 @@ public class Menu extends JTree {
 	private static ArrayList<String> series;
 
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		setBackground(Colors.background);
 		setForeground(Colors.normal);
 	}

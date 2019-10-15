@@ -81,6 +81,7 @@ public class ParameterInputPanel extends JPanel {
 	/** label for price */
 	private JLabel lbPrice;
 
+	/** Necessary for dark mode on/off implementation */
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
@@ -102,13 +103,8 @@ public class ParameterInputPanel extends JPanel {
 		lbMemap.setForeground(Colors.normal);
 		lbPrice.setForeground(Colors.normal);
 		lbOptCriteria2.setForeground(Colors.normal);
-		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Parameter input", TitledBorder.RIGHT,
-				TitledBorder.TOP, null, Colors.accent2));
 	}
 
-	/**
-	 * Create the application.
-	 */
 	public ParameterInputPanel() {
 		StyleGenerator.setupStyle();
 		setBackground(Colors.background);
@@ -122,6 +118,8 @@ public class ParameterInputPanel extends JPanel {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Parameter input", TitledBorder.RIGHT,
+				TitledBorder.TOP, null, Colors.accent2));
 		setLayout(new FormLayout(new ColumnSpec[] {
 				ColumnSpec.decode("15dlu"),
 				ColumnSpec.decode("max(75dlu;default)"),

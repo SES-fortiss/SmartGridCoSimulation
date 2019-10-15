@@ -7,6 +7,7 @@ import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 
 import fortiss.gui.style.Colors;
+import fortiss.gui.style.StyleGenerator;
 
 /** 
  * Panel to show components added to a building
@@ -17,11 +18,9 @@ public class AddedComponentPanel extends JPanel {
 
 	/** Necessary for dark mode on/off implementation */
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		setBackground(Colors.background);
-		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Added components", TitledBorder.LEFT,
-				TitledBorder.TOP, null, Colors.accent2));
 		
 		for (int i = 0; i < Designer.buildingCount; i++) {
 			for (int j = 0; j < Designer.demandIcons.get(i).size(); j++) {
@@ -40,6 +39,19 @@ public class AddedComponentPanel extends JPanel {
 				Designer.couplerIcons.get(i).get(j).setForeground(Colors.defaultCol);
 			}
 		}
+	}
+	
+	public AddedComponentPanel() {
+		StyleGenerator.setupStyle();
+		initialize();
+	}
+	
+	/**
+	 * Initializes the contents of the panel.
+	 */
+	private void initialize() {
+		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Added components", TitledBorder.LEFT,
+				TitledBorder.TOP, null, Colors.accent2));
 	}
 
 }

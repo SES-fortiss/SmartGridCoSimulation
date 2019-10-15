@@ -1,6 +1,5 @@
 package fortiss.gui;
 
-import java.awt.ComponentOrientation;
 import java.awt.Graphics;
 
 import javax.swing.JLabel;
@@ -33,10 +32,11 @@ public class InitialPanel extends JPanel {
 		setForeground(Colors.normal);
 		lblMemap_1.setForeground(Colors.title);
 	}
-
+	
+	/**
+	 * Initialize the contents of the panel.
+	 */
 	public InitialPanel() {
-		setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-
 		setLayout(new FormLayout(new ColumnSpec[] { ColumnSpec.decode("center:449px"), },
 				new RowSpec[] { RowSpec.decode("250px"), FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("120px"), }));

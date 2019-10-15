@@ -17,6 +17,7 @@ import fortiss.gui.listeners.textfield.BNameListener;
 import fortiss.gui.listeners.textfield.BPortListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
+import fortiss.gui.style.StyleGenerator;
 
 /**
  * Input panel for building parameters.
@@ -45,19 +46,39 @@ public class BuildingInputPanel extends JPanel {
 		lb_id.setForeground(Colors.normal);
 		lb_port.setForeground(Colors.normal);
 		lblBuilding.setForeground(Colors.title);
-		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Building information",
-				TitledBorder.RIGHT, TitledBorder.TOP, null, Colors.accent2));
 	}
 
 	public BuildingInputPanel() {
-
-		setLayout(new FormLayout(
-				new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("85dlu"), ColumnSpec.decode("15dlu"),
-						ColumnSpec.decode("100dlu"), ColumnSpec.decode("15dlu"), FormSpecs.RELATED_GAP_COLSPEC, },
-				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
+		StyleGenerator.setupStyle();
+		initialize();
+	}
+	
+	/**
+	 * Initialize the contents of the panel.
+	 */
+	public void initialize() {
+		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Building information",
+				TitledBorder.RIGHT, TitledBorder.TOP, null, Colors.accent2));
+		setLayout(new FormLayout(new ColumnSpec[] {
+				ColumnSpec.decode("15dlu"),
+				ColumnSpec.decode("left:85dlu"),
+				ColumnSpec.decode("15dlu"),
+				ColumnSpec.decode("left:100dlu"),
+				ColumnSpec.decode("15dlu"),
+				FormSpecs.RELATED_GAP_COLSPEC,},
+			new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,}));
 
 		lblBuilding = new JLabel("BUILDING");
 		lblBuilding.setFont(Fonts.getOswald());

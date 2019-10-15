@@ -61,23 +61,55 @@ public class DemandInputPanel extends JPanel {
 		lbDIndex.setForeground(Colors.normal);
 		lbDNetworkType.setForeground(Colors.normal);
 		lbDConsumption.setForeground(Colors.normal);
-		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Component information",
-				TitledBorder.RIGHT, TitledBorder.TOP, null, Colors.accent2));
 	}
 
 	public DemandInputPanel() {
-		setFont(Fonts.getOpenSans());
-
-		setLayout(new FormLayout(
-				new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("85dlu"), ColumnSpec.decode("15dlu"),
-						ColumnSpec.decode("100dlu:grow"), ColumnSpec.decode("15dlu:grow"),
-						FormSpecs.RELATED_GAP_COLSPEC, },
-				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, }));
+		plotter = new Plotter();
+		StyleGenerator.setupStyle();
+		initialize();
+	}
+	
+	/**
+	 * Initializes the contents of the panel.
+	 */
+	private void initialize() {
+		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Component information",
+				TitledBorder.RIGHT, TitledBorder.TOP, null, Colors.accent2));
+		setLayout(new FormLayout(new ColumnSpec[] {
+				ColumnSpec.decode("15dlu"),
+				ColumnSpec.decode("85dlu:grow"),
+				ColumnSpec.decode("15dlu"),
+				ColumnSpec.decode("93dlu:grow"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("15dlu:grow"),
+				FormSpecs.RELATED_GAP_COLSPEC,},
+			new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("fill:200dlu"),
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,}));
 
 		lblDemand = new JLabel("DEMAND");
 		lblDemand.setFont(Fonts.getOswald());

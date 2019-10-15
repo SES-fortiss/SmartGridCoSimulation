@@ -18,6 +18,7 @@ import fortiss.gui.listeners.label.DragListener;
 import fortiss.gui.listeners.label.DropListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
+import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;;
 
 /**
@@ -35,19 +36,25 @@ public class ObjectPanel extends JPanel {
 
 	/** Necessary for dark mode on/off implementation */
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		setForeground(Colors.normal);
 		setBackground(Colors.background);
 		panel.setForeground(Colors.normal);
 		panel.setBackground(Colors.background);
 		lblInstructions.setForeground(Colors.title);
 		lbInstructions2.setForeground(Colors.defaultCol);
-		repaint();
 	}
 
 	public ObjectPanel() {
-
+		StyleGenerator.setupStyle();
+		initialize();
+	}
+	
+	/**
+	 * Initializes the contents of the panel.
+	 */
+	private void initialize() {
 		setSize(new Dimension(150, 655));
 		setPreferredSize(new Dimension(150, 655));
 		setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
@@ -59,8 +66,6 @@ public class ObjectPanel extends JPanel {
 				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("max(20dlu;default)"),
 						FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("20dlu"), FormSpecs.UNRELATED_GAP_ROWSPEC,
 						RowSpec.decode("80px"), RowSpec.decode("max(4dlu;default)"), }));
-
-		panel.setFont(Fonts.getOpenSans());
 		add(panel);
 
 		lblInstructions.setText("<html><center> Energy Management <br/> System (EMS) </center></html>");

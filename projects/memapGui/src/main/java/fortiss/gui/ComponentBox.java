@@ -32,8 +32,8 @@ public class ComponentBox extends Box {
 
 	/** Necessary for dark mode on/off implementation */
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		lb_add_demand.setForeground(Colors.normal);
 		;
 		lb_add_storage.setForeground(Colors.normal);
@@ -46,13 +46,20 @@ public class ComponentBox extends Box {
 		;
 		setForeground(Colors.normal);
 		setBackground(Colors.background);
-		repaint();
-		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "COMPONENTS", TitledBorder.CENTER,
-				TitledBorder.TOP, null, Colors.accent1));
+		
 	}
 
 	public ComponentBox() {
 		super(BoxLayout.Y_AXIS);
+		initialize();
+	}
+	
+	/**
+	 * Initializes the contents of the component box.
+	 */
+	public void initialize() {
+		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "COMPONENTS", TitledBorder.CENTER,
+				TitledBorder.TOP, null, Colors.accent1));
 		setToolTipText("Clic on a component to add it to the building devices.");
 
 		Component verticalStrut = Box.createVerticalStrut(2);

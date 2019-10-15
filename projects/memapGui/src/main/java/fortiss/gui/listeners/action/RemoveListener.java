@@ -81,7 +81,7 @@ public class RemoveListener extends KeyAdapter {
 
 		// Remove component icons from panel
 		Designer.pl_comp.removeAll();
-		Designer.pl_comp.repaint();
+		Designer.pl_comp.revalidate();
 
 		// Remove currentBuilding icon from icon list
 		Designer.buildingIcons.remove(building);
@@ -155,6 +155,6 @@ public class RemoveListener extends KeyAdapter {
 	 */
 	private void removeIcon(JLabel source) {
 		Designer.pl_comp.remove(source);
-		Designer.pl_comp.repaint();
+		source.revalidate();
 	}
 }

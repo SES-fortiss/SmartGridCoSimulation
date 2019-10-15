@@ -68,6 +68,6 @@ public class BuildingIcons {
 
 		// Clear component panel
 		Designer.pl_comp.removeAll();
-		Designer.pl_comp.repaint();
+		// repaint of component panel is triggered by the FocusManager
 	}
 }

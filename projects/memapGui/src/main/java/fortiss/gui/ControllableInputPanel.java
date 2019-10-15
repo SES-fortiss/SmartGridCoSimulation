@@ -23,6 +23,7 @@ import fortiss.gui.listeners.textfield.CPNameListener;
 import fortiss.gui.listeners.textfield.CPPowerListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
+import fortiss.gui.style.StyleGenerator;
 
 /**
  * Input panel for volatile parameters.
@@ -71,14 +72,19 @@ public class ControllableInputPanel extends JPanel {
 		lbCPEfficiency.setForeground(Colors.normal);
 		lbCPCost.setForeground(Colors.normal);
 		lbCPCOEmission.setForeground(Colors.normal);
-		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Component information",
-				TitledBorder.RIGHT, TitledBorder.TOP, null, Colors.accent2));
 	}
 
 	public ControllableInputPanel() {
+		StyleGenerator.setupStyle();
+		initialize();
+	}
 
-		setFont(Fonts.getOpenSans());
-
+	/**
+	 * Initializes the contents of the panel.
+	 */
+	private void initialize() {
+		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Component information",
+				TitledBorder.RIGHT, TitledBorder.TOP, null, Colors.accent2));
 		setLayout(new FormLayout(
 				new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("85dlu"), ColumnSpec.decode("15dlu"),
 						ColumnSpec.decode("100dlu:grow"), ColumnSpec.decode("15dlu"), FormSpecs.RELATED_GAP_COLSPEC, },

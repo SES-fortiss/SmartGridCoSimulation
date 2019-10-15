@@ -34,7 +34,7 @@ public class PositionListener extends MouseAdapter {
 			icon.setLocation(icon.getX() + e.getX() - icon.getWidth() / 2,
 					icon.getY() + e.getY() - icon.getHeight() / 2);
 			PositionManager.updateBuildingPosition(icon);
-			Designer.pl_ems.repaint();
+			// repaint of component panel is triggered by the FocusManager
 		}
 	}
 

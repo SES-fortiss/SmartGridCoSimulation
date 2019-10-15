@@ -21,6 +21,7 @@ import fortiss.gui.listeners.action.ResetListener;
 import fortiss.gui.listeners.action.RunListener;
 import fortiss.gui.listeners.action.SaveListener;
 import fortiss.gui.style.Colors;
+import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
 
 /**
@@ -32,14 +33,21 @@ public class ActionPanel extends JPanel {
 
 	/** Necessary for dark mode on/off implementation */
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		setForeground(Colors.normal);
 		setBackground(Colors.background);
-		repaint();
 	}
 
 	public ActionPanel() {
+		StyleGenerator.setupStyle();
+		initialize();
+	}
+	
+	/**
+	 * Initializes the contents of the panel.
+	 */
+	private void initialize() {
 		setPreferredSize(new Dimension(1200, 60));
 
 		// Add load button
