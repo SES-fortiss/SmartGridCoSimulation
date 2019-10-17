@@ -39,6 +39,23 @@ public class InsertionVerifier {
 		validKeys.add((char) KeyEvent.VK_BACK_SPACE);
 		validKeys.add((char) KeyEvent.VK_DELETE);
 		validKeys.add(':');
+		validKeys.add('.');
+		validKeys.add('_');
+		validKeys.add('-');
+		validKeys.add('!');
+		validKeys.add('@');
+		validKeys.add('#');
+		validKeys.add('$');
+		validKeys.add('+');
+		validKeys.add('&');
+		validKeys.add('%');
+		validKeys.add('^');
+		validKeys.add('(');
+		validKeys.add(')');
+		validKeys.add(',');
+		validKeys.add('{');
+		validKeys.add('}');
+		
 		if (SystemUtils.IS_OS_WINDOWS) {
 			validKeys.add((char) KeyEvent.VK_BACK_SLASH);
 		} else {
