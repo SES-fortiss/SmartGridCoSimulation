@@ -99,19 +99,41 @@ public class ClientConsumer extends Consumer {
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
-
 	}
-	
-	@Override
+
+	/**
+	 * @return current {@link #heatProfile}
+	 */
 	public List<Double> getHeatProfile(int timeStep, int mpcHorizon) {
 		return new ArrayList<Double>(Arrays.asList(heatProfile));
 	}
 
-	@Override
+	/**
+	 * @return current {@link #electricityProfile}
+	 */
 	public List<Double> getElectricityProfile(int timeStep, int mpcHorizon) {
 		return new ArrayList<Double>(Arrays.asList(electricityProfile));
 	}
 
+	/**
+	 * Calls {@link #getElectricityProfile(int, int)} and
+	 * {@link #getHeatProfile(int, int)}
+	 * 
+	 * @return current consumption profile
+	 */
+	@Override
+	public List<Double> getProfile(int timeStep, int mpcHorizon) {
+		List<Double> profile = new ArrayList<Double>();
+
+		profile.addAll(getHeatProfile(timeStep, mpcHorizon));
+		profile.addAll(getElectricityProfile(timeStep, mpcHorizon));
+
+		return profile;
+	}
+
+	/**
+	 * @return {@link #networkType}
+	 */
 	@Override
 	public NetworkType getNetworkType() {
 		return NetworkType.DEMANDWITHBOTH;

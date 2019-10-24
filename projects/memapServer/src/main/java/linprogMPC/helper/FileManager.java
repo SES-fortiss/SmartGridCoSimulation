@@ -19,9 +19,8 @@ abstract public class FileManager {
 	 */
 	public static BufferedReader readFromResources(String filename) {
 		BufferedReader br = null;
-		try {
-			String source = "resources/" + filename;
-			InputStream is = FileManager.class.getClassLoader().getResourceAsStream(source);
+		try {			
+			InputStream is = FileManager.class.getClassLoader().getResourceAsStream(filename);
 			br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 		} catch (IOException e1) {
 			System.err.println("Error reading " + filename + " thrown at class ReadFileManager");

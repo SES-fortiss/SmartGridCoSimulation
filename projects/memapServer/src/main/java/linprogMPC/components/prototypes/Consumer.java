@@ -1,6 +1,5 @@
 package linprogMPC.components.prototypes;
 
-import java.util.Arrays;
 import java.util.List;
 
 import akka.basicMessages.AnswerContent;
@@ -24,29 +23,28 @@ public abstract class Consumer extends Device {
 
 	@Override
 	public void makeDecision() {
-		double[] demandVectorB = new double[2 * nStepsMPC];
-		
+		double[] demandVectorB;
+		if (getNetworkType() == NetworkType.DEMANDWITHBOTH) {
+			demandVectorB = new double[2 * nStepsMPC];
+		} else {
+			demandVectorB = new double[nStepsMPC];
+		}
+
 		int cts = GlobalTime.getCurrentTimeStep();
-		// Getting the profiles at the current time step with predictions
-		List<Double> currentHeatProfile = getHeatProfile(cts, nStepsMPC);
-		List<Double> currentElectricityProfile = getElectricityProfile(cts, nStepsMPC);
-		
+
+		List<Double> currentProfile = getProfile(cts, nStepsMPC);
+
 		// Creating demand vector
-		for (int i = 0; i < nStepsMPC; i++) {
+		for (int i = 0; i < demandVectorB.length; i++) {
 			try {
-				demandVectorB[i] = -currentHeatProfile.get(0 + i) / 60;
-				demandVectorB[nStepsMPC + i] = -currentElectricityProfile.get(0 + i) / 60;
+				demandVectorB[i] = -currentProfile.get(0 + i) / 60;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 		}
 
-		System.out.println(" ");
-		System.out.println("demandVector " + Arrays.toString(demandVectorB));
-		System.out.println(" ");
 		consumptionMessage.setDemandVector(demandVectorB);
-		consumptionMessage.networkType = NetworkType.DEMANDWITHBOTH;
+		consumptionMessage.networkType = getNetworkType();
 		consumptionMessage.name = this.actorName;
 		consumptionMessage.id = this.fullActorPath;
 		consumptionMessage.forecastType = "Profile";
@@ -61,24 +59,14 @@ public abstract class Consumer extends Device {
 	}
 
 	/**
-	 * Implement this method to retrieve the current heat consumption together with
-	 * a prediction of up to mpcHorizon time steps.
+	 * Implement this method to retrieve the current consumption together with a
+	 * prediction of up to mpcHorizon time steps.
 	 * 
 	 * @param timeStep
 	 * @param mpcHorizon
-	 * @return heatConsumption prediction for mpcHorison timeSteps
+	 * @return consumption for mpcHorizon timeSteps
 	 */
-	public abstract List<Double> getHeatProfile(int timeStep, int mpcHorizon);
-
-	/**
-	 * Implement this method to retrieve the current electricity consumption
-	 * together with a prediction of up to mpcHorizon time steps.
-	 * 
-	 * @param timeStep
-	 * @param mpcHorizon
-	 * @return electricityConsumption for mpcHorizon timeSteps
-	 */
-	public abstract List<Double> getElectricityProfile(int timeStep, int mpcHorizon);
+	public abstract List<Double> getProfile(int timeStep, int mpcHorizon);
 
 	public abstract NetworkType getNetworkType();
 

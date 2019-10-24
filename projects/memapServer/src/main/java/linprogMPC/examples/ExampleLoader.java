@@ -65,7 +65,6 @@ public abstract class ExampleLoader {
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} // Wait so that we get initial values for all devices
 
@@ -77,22 +76,12 @@ public abstract class ExampleLoader {
 
 		TopologyController topologyController = new TopologyController("MEMAP", true, 2, 96, 7, "cost", 0, false, 4880);
 
-		/*
-		 * BuildingController building1 = new CSVBuildingController("Building1",
-		 * "WaermeVerbraeucheAngepasstGebaeude1.csv",
-		 * "StromVerbraeucheAngepasstGebaeude1.csv", false, 50);
-		 */
 		BuildingController building1 = new CSVBuildingController("Building1", false, 50);
-		Consumer consumer1 = new CSVConsumer("WaermeVerbraeucheAngepasstGebaeude1.csv", NetworkType.HEAT, 0);
+		Consumer consumer1 = new CSVConsumer("WaermeVerbraeucheAngepasstGebaeude1.csv", "StromVerbraeucheAngepasstGebaeude1.csv", 0);
 		building1.attach(consumer1);
 
-		/*
-		 * BuildingController building2 = new CSVBuildingController("Building2",
-		 * "WaermeVerbraeucheAngepasstGebaeude2.csv",
-		 * "StromVerbraeucheAngepasstGebaeude2.csv", false, 50);
-		 */
 		BuildingController building2 = new CSVBuildingController("Building2", false, 50);
-		Consumer consumer2 = new CSVConsumer("StromVerbraeucheAngepasstGebaeude2.csv", NetworkType.ELECTRICITY, 0);
+		Consumer consumer2 = new CSVConsumer("StromVerbraeucheAngepasstGebaeude2.csv", "StromVerbraeucheAngepasstGebaeude2.csv", 0);
 
 		Storage battery2 = new CSVStorage(12.0, 9, 9, 0.95, 0.95, NetworkType.ELECTRICITY, 0);
 		Producer producer2 = new CSVProducer(20.0, 0.89, 0.006, PORT_UNDEFINED);
@@ -100,13 +89,8 @@ public abstract class ExampleLoader {
 		building2.attach(producer2);
 		building2.attach(battery2);
 
-		/*
-		 * BuildingController building3 = new CSVBuildingController("Building3",
-		 * "WaermeVerbraeucheAngepasstGebaeude3.csv",
-		 * "StromVerbraeucheAngepasstGebaeude3.csv", false, 50);
-		 */
 		BuildingController building3 = new CSVBuildingController("Building3", false, 50);
-		Consumer consumer3 = new CSVConsumer("WaermeVerbraeucheAngepasstGebaeude3.csv", NetworkType.HEAT, 0);
+		Consumer consumer3 = new CSVConsumer("WaermeVerbraeucheAngepasstGebaeude3.csv", "StromVerbraeucheAngepasstGebaeude3.csv", 0);
 
 		Producer pv3 = new CSVVolatileProducer(12.0 + 5.0, NetworkType.ELECTRICITY, PORT_UNDEFINED);
 		Coupler heatpump3 = new CSVCoupler(25, 2.5, -1, false, PORT_UNDEFINED);
@@ -116,25 +100,15 @@ public abstract class ExampleLoader {
 		building3.attach(heatpump3);
 		building3.attach(thermalStorage3);
 
-		/*
-		 * BuildingController building4 = new CSVBuildingController("Building4",
-		 * "WaermeVerbraeucheAngepasstGebaeude4.csv",
-		 * "StromVerbraeucheAngepasstGebaeude4.csv", false, 50);
-		 */
 		BuildingController building4 = new CSVBuildingController("Building4", false, 50);
-		Consumer consumer4 = new CSVConsumer("StromVerbraeucheAngepasstGebaeude4.csv", NetworkType.ELECTRICITY, 0);
+		Consumer consumer4 = new CSVConsumer("StromVerbraeucheAngepasstGebaeude4.csv", "StromVerbraeucheAngepasstGebaeude4.csv", 0);
 
 		Coupler chp4 = new CSVCoupler(43, 0.61, 0.29, true, PORT_UNDEFINED);
 		building4.attach(consumer4);
 		building4.attach(chp4);
 
-		/*
-		 * BuildingController building5 = new CSVBuildingController("Building5",
-		 * "WaermeVerbraeucheAngepasstGebaeude4.csv",
-		 * "StromVerbraeucheAngepasstGebaeude4.csv", false, 50);
-		 */
 		BuildingController building5 = new CSVBuildingController("Building5", false, 50);
-		Consumer consumer5 = new CSVConsumer("WaermeVerbraeucheAngepasstGebaeude4.csv", NetworkType.HEAT, 0);
+		Consumer consumer5 = new CSVConsumer("WaermeVerbraeucheAngepasstGebaeude4.csv", "StromVerbraeucheAngepasstGebaeude4.csv", 0);
 		Producer solarThermic5 = new CSVVolatileProducer(10, NetworkType.HEAT, PORT_UNDEFINED);
 		building5.attach(consumer5);
 		building5.attach(solarThermic5);

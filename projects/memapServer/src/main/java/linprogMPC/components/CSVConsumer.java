@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -19,47 +17,72 @@ import linprogMPC.messages.extension.NetworkType;
 
 public class CSVConsumer extends Consumer {
 
+	/** Default heat profile. Loaded from resources directory */
 	private static final String DEFAULT_HEAT_PROFILE = "WaermeVerbraeucheAngepasstGebaeude1.csv";
+	/** Default electricity profile. Loaded from resources directory */
 	private static final String DEFAULT_ELECTRICITY_PROFILE = "StromVerbraeucheAngepasstGebaeude1.csv";
+	/** Network type */
 	private NetworkType networkType;
+	/** Heat consumption profile */
 	private ArrayList<Double> heatProfile;
+	/** Electricity consumption profile */
 	private ArrayList<Double> electricityProfile;
 
-	/*
-	 * public CSVConsumer(String csvProfilePath, String csvElectricityFileName, int
-	 * port) { super(port); this.heatProfile = readCSVFile(csvHeatFileName);
-	 * this.electricityProfile = readCSVFile(csvElectricityFileName); }
+	/**
+	 * Constructor for a CSVConsumer with electricity or heat demand
 	 */
 	public CSVConsumer(String csvProfilePath, NetworkType networkType, int port) {
 		super(port);
 		this.networkType = networkType;
-		System.out.println("Set consumptionFile " + csvProfilePath);
-		setConsumptionProfile(csvProfilePath);
+		setProfile(csvProfilePath);
 	}
 
-	private void setConsumptionProfile(String csvProfilePath) {
-		BufferedReader br = null;
+	/**
+	 * Constructor for a CSVConsumer with electricity and heat demand
+	 */
+	public CSVConsumer(String csvHeatProfilePath, String csvElecProfilePath, int port) {
+		super(port);
+		this.networkType = NetworkType.DEMANDWITHBOTH;
+		setHeatProfile(csvHeatProfilePath);
+		setElectricityProfile(csvElecProfilePath);
+	}
 
-		if (csvProfilePath.isEmpty()) {
-			if (networkType == NetworkType.HEAT) {
-				br = new BufferedReader(FileManager.readFromResources(DEFAULT_HEAT_PROFILE));
-				this.heatProfile = readCSVFile(br);
-				this.electricityProfile = new ArrayList<Double>(Collections.nCopies(heatProfile.size(), 0.0));
-			} else {
-				br = new BufferedReader(FileManager.readFromResources(DEFAULT_ELECTRICITY_PROFILE));
-				this.electricityProfile = readCSVFile(br);
-				this.heatProfile = new ArrayList<Double>(Collections.nCopies(electricityProfile.size(), 0.0));
-			}
+	/**
+	 * Call {@link #setElectricityProfile(String)}, {@link #setHeatProfile(String)},
+	 * or both according to the {@link #networkType}
+	 */
+	private void setProfile(String csvProfilePath) {
+		if (networkType == NetworkType.HEAT) {
+			setHeatProfile(csvProfilePath);
 		} else {
-			br = new BufferedReader(FileManager.readFromSource(csvProfilePath));
-			if (networkType == NetworkType.HEAT) {
-				this.heatProfile = readCSVFile(br);
-				this.electricityProfile = new ArrayList<Double>(Collections.nCopies(heatProfile.size(), 0.0));
-			} else {
-				this.electricityProfile = readCSVFile(br);
-				this.heatProfile = new ArrayList<Double>(Collections.nCopies(electricityProfile.size(), 0.0));
-			}
+			setElectricityProfile(csvProfilePath);
 		}
+	}
+
+	/**
+	 * Set {@link #heatProfile}
+	 */
+	private void setHeatProfile(String csvHeatProfilePath) {
+		BufferedReader br = null;
+		if (csvHeatProfilePath.isEmpty()) {
+			br = new BufferedReader(FileManager.readFromResources(DEFAULT_HEAT_PROFILE));
+		} else {
+			br = new BufferedReader(FileManager.readFromSource(csvHeatProfilePath));
+		}
+		this.heatProfile = readCSVFile(br);
+	}
+
+	/**
+	 * Set {@link #electricityProfile}
+	 */
+	private void setElectricityProfile(String csvElecProfilePath) {
+		BufferedReader br = null;
+		if (csvElecProfilePath.isEmpty()) {
+			br = new BufferedReader(FileManager.readFromResources(DEFAULT_ELECTRICITY_PROFILE));
+		} else {
+			br = new BufferedReader(FileManager.readFromSource(csvElecProfilePath));
+		}
+		this.electricityProfile = readCSVFile(br);
 	}
 
 	private ArrayList<Double> readCSVFile(BufferedReader br) {
@@ -112,35 +135,49 @@ public class CSVConsumer extends Consumer {
 		return records;
 	}
 
-	// @Override
+	/**
+	 * @return current {@link #heatProfile}
+	 */
+	private List<Double> getHeatProfile(int timeStep, int mpcHorizon) {
+		return heatProfile.subList(timeStep, timeStep + mpcHorizon);
+	}
+
+	/**
+	 * @return current {@link #electricityProfile}
+	 */
+	private List<Double> getElectricityProfile(int timeStep, int mpcHorizon) {
+		return electricityProfile.subList(timeStep, timeStep + mpcHorizon);
+	}
+
+	/**
+	 * Calls {@link #getElectricityProfile(int, int)},
+	 * {@link #getHeatProfile(int, int)} or both according to the
+	 * {@link #networkType}
+	 * 
+	 * @return current consumption profile
+	 */
+	@Override
 	public List<Double> getProfile(int timeStep, int mpcHorizon) {
 		List<Double> profile = new ArrayList<Double>();
 		if (networkType == NetworkType.DEMANDWITHBOTH) {
 			profile.addAll(getHeatProfile(timeStep, mpcHorizon));
 			profile.addAll(getElectricityProfile(timeStep, mpcHorizon));
 		}
-		
+
 		if (networkType == NetworkType.HEAT) {
 			profile = getHeatProfile(timeStep, mpcHorizon);
 		}
-		
+
 		if (networkType == NetworkType.ELECTRICITY) {
 			profile = getElectricityProfile(timeStep, mpcHorizon);
 		}
-		
+
 		return profile;
 	}
 
-	@Override
-	public List<Double> getHeatProfile(int timeStep, int mpcHorizon) {
-		return heatProfile.subList(timeStep, timeStep + mpcHorizon);
-	}
-
-	@Override
-	public List<Double> getElectricityProfile(int timeStep, int mpcHorizon) {
-		return electricityProfile.subList(timeStep, timeStep + mpcHorizon);
-	}
-
+	/**
+	 * @return {@link #networkType}
+	 */
 	@Override
 	public NetworkType getNetworkType() {
 		return networkType;
