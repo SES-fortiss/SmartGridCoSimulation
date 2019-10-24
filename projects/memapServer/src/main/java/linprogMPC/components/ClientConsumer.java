@@ -101,7 +101,7 @@ public class ClientConsumer extends Consumer {
 		}
 
 	}
-
+	
 	@Override
 	public List<Double> getHeatProfile(int timeStep, int mpcHorizon) {
 		return new ArrayList<Double>(Arrays.asList(heatProfile));
@@ -110,6 +110,11 @@ public class ClientConsumer extends Consumer {
 	@Override
 	public List<Double> getElectricityProfile(int timeStep, int mpcHorizon) {
 		return new ArrayList<Double>(Arrays.asList(electricityProfile));
+	}
+
+	@Override
+	public NetworkType getNetworkType() {
+		return NetworkType.DEMANDWITHBOTH;
 	}
 
 }
