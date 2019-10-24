@@ -60,7 +60,7 @@ public class GuiController {
       // Creating topologyController
       TopologyController top = new TopologyController("Memap",
           jObject.get("memapON").getAsBoolean(), jObject.get("steps").getAsInt(),
-          jObject.get("length").getAsInt(), jObject.get("days").getAsInt(), 0, false, 0);
+          jObject.get("length").getAsInt(), jObject.get("days").getAsInt(), jObject.get("optCriteria").getAsString(), 0, false, 0);
 
       // Attaching buildings
       JsonArray buildingPathList = (JsonArray) jObject.get("descriptorFiles");

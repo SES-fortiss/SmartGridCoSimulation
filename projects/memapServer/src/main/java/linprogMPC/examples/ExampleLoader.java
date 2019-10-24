@@ -23,7 +23,7 @@ public abstract class ExampleLoader {
 
   public static TopologyController OpcUaExample() {
     TopologyController topologyController =
-        new TopologyController("MEMAP", true, 5, 96, 7, 0, false, 4880);
+        new TopologyController("MEMAP", true, 5, 96, 7, "cost", 0, false, 4880);
 
     try {
       BufferedReader endpoint1 = new BufferedReader(new InputStreamReader(ExampleLoader.class
@@ -76,7 +76,7 @@ public abstract class ExampleLoader {
     final int PORT_UNDEFINED = 0;
 
     TopologyController topologyController =
-        new TopologyController("MEMAP", true, 2, 96, 7, 0, false, 4880);
+        new TopologyController("MEMAP", true, 2, 96, 7, "cost", 0, false, 4880);
 
     BuildingController building1 =
         new CSVBuildingController("Building1", "WaermeVerbraeucheAngepasstGebaeude1.csv",

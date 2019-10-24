@@ -29,7 +29,7 @@ public class TopologyController extends TopologyConfig {
   public ActorTopology top;
 
   public TopologyController(String name, boolean memapOn, int nrStepsMPC, int timeStepsPerDay,
-      int nrDays, int predUncertainty, boolean hasLDHeating, int portUndefined) {
+      int nrDays, String optimizationCriteria, int predUncertainty, boolean hasLDHeating, int portUndefined) {
    
     TopologyConfig.simulationName = name;
     TopologyConfig.PORT_UNDEFINED = portUndefined;
@@ -39,6 +39,7 @@ public class TopologyController extends TopologyConfig {
     TopologyConfig.MEMAP_LDHeating = hasLDHeating;
     TopologyConfig.MEMAP_ON = memapOn;
     TopologyConfig.NR_DAYS = nrDays;
+    TopologyConfig.OPTIMIZATION_CRITERIA = optimizationCriteria;
     TopologyConfig.calcNrIterations();
     TopologyConfig.calcNrSteps();
   }

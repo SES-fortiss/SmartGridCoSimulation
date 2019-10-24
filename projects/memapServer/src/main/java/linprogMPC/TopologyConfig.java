@@ -12,6 +12,9 @@ public abstract class TopologyConfig {
 	/** Prediction uncertainty */
 	public static int PREDICTION_UNCERTAINTY;
 
+	/** */
+	public static String OPTIMIZATION_CRITERIA;
+	
 	/**
 	 * MPC horizon. Equals N_STEPS for case of overall optimization, smaller for
 	 * case of MPC

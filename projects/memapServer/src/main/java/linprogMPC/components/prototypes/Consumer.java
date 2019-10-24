@@ -4,6 +4,7 @@ import java.util.List;
 
 import akka.basicMessages.AnswerContent;
 import akka.systemActors.GlobalTime;
+import linprogMPC.TopologyConfig;
 import linprogMPC.messages.extension.NetworkType;
 import linprogMPC.messages.planning.DemandMessage;
 
@@ -52,7 +53,7 @@ public abstract class Consumer extends Device {
 	consumptionMessage.name = this.actorName;
 	consumptionMessage.id = this.fullActorPath;
 	consumptionMessage.forecastType = "Profile";
-	consumptionMessage.optimizationCriteria = "Price";
+	consumptionMessage.optimizationCriteria = TopologyConfig.OPTIMIZATION_CRITERIA;
 
 	super.updateDisplay(consumptionMessage);
     }
