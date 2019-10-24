@@ -36,13 +36,13 @@ abstract public class Icon {
 	private static String optCO2Path = "/resources/optCO2.png";
 	private static String visualizePath = "/resources/visualize.png";
 
-	public static ImageIcon fortissLogo = new ImageIcon(
-			new ImageIcon(Icon.class.getResource(fortissLogoPath)).getImage().getScaledInstance(180, 60, Image.SCALE_SMOOTH));
-	public static ImageIcon memapLogo = new ImageIcon(
-			new ImageIcon(Icon.class.getResource(memapLogoPath)).getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH));
-	public static ImageIcon smallMemapLogo = new ImageIcon(
-			new ImageIcon(Icon.class.getResource(memapLogoPath)).getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH));
-	
+	public static ImageIcon fortissLogo = new ImageIcon(new ImageIcon(Icon.class.getResource(fortissLogoPath))
+			.getImage().getScaledInstance(180, 60, Image.SCALE_SMOOTH));
+	public static ImageIcon memapLogo = new ImageIcon(new ImageIcon(Icon.class.getResource(memapLogoPath)).getImage()
+			.getScaledInstance(250, 250, Image.SCALE_SMOOTH));
+	public static ImageIcon smallMemapLogo = new ImageIcon(new ImageIcon(Icon.class.getResource(memapLogoPath))
+			.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH));
+
 	public static ImageIcon open = new ImageIcon(
 			new ImageIcon(Icon.class.getResource(openPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 	public static ImageIcon reset = new ImageIcon(
@@ -51,12 +51,12 @@ abstract public class Icon {
 			new ImageIcon(Icon.class.getResource(saveAsPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 	public static ImageIcon run = new ImageIcon(
 			new ImageIcon(Icon.class.getResource(runPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
-	public static ImageIcon onDarkMode = new ImageIcon(
-			new ImageIcon(Icon.class.getResource(onDarkModePath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
-	public static ImageIcon offDarkMode = new ImageIcon(
-			new ImageIcon(Icon.class.getResource(offDarkModePath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
-	public static ImageIcon visualize = new ImageIcon(
-			new ImageIcon(Icon.class.getResource(visualizePath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+	public static ImageIcon onDarkMode = new ImageIcon(new ImageIcon(Icon.class.getResource(onDarkModePath)).getImage()
+			.getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+	public static ImageIcon offDarkMode = new ImageIcon(new ImageIcon(Icon.class.getResource(offDarkModePath))
+			.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+	public static ImageIcon visualize = new ImageIcon(new ImageIcon(Icon.class.getResource(visualizePath)).getImage()
+			.getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 
 	public static ImageIcon uDemandMenu = new ImageIcon(new ImageIcon(Icon.class.getResource(uDemandPath)).getImage()
 			.getScaledInstance(25, 35, Image.SCALE_SMOOTH));
@@ -94,13 +94,13 @@ abstract public class Icon {
 	public static ImageIcon sCoupler = new ImageIcon(new ImageIcon(Icon.class.getResource(sCouplerPath)).getImage()
 			.getScaledInstance(50, 70, Image.SCALE_SMOOTH));
 	public static ImageIcon onMemap = new ImageIcon(new ImageIcon(Icon.class.getResource(onMemapPath)).getImage()
-			.getScaledInstance(50, 30, Image.SCALE_SMOOTH));
+			.getScaledInstance(60, 30, Image.SCALE_SMOOTH));
 	public static ImageIcon offMemap = new ImageIcon(new ImageIcon(Icon.class.getResource(offMemapPath)).getImage()
-			.getScaledInstance(50, 30, Image.SCALE_SMOOTH));
+			.getScaledInstance(60, 30, Image.SCALE_SMOOTH));
 	public static ImageIcon optCost = new ImageIcon(new ImageIcon(Icon.class.getResource(optCostPath)).getImage()
-			.getScaledInstance(50, 30, Image.SCALE_SMOOTH));
+			.getScaledInstance(60, 30, Image.SCALE_SMOOTH));
 	public static ImageIcon optCO2 = new ImageIcon(
-			new ImageIcon(Icon.class.getResource(optCO2Path)).getImage().getScaledInstance(50, 30, Image.SCALE_SMOOTH));
+			new ImageIcon(Icon.class.getResource(optCO2Path)).getImage().getScaledInstance(60, 30, Image.SCALE_SMOOTH));
 	@SuppressWarnings("serial")
 	public static ArrayList<ImageIcon> optCriteria = new ArrayList<ImageIcon>() {
 		{
