@@ -19,6 +19,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
+import fortiss.datastructures.Data;
 import fortiss.gui.listeners.button.DBrowseListener;
 import fortiss.gui.listeners.button.DPlotListener;
 import fortiss.gui.listeners.selectionitem.DNetworkTypeListener;
@@ -57,7 +58,10 @@ public class DemandInputPanel extends JPanel {
 	private JLabel lbDIndex;
 	/** Plot panel */
 	public PlotPanel plotPanel = new PlotPanel();
+	/** Auxiliary panel */
 	private JPanel panel;
+	/** Data read from consumption profiles file */
+	private Data data;
 
 	/** Necessary for dark mode on/off implementation */
 	@Override
@@ -134,37 +138,37 @@ public class DemandInputPanel extends JPanel {
 		sDNetworkType.setFocusable(false);
 		sDNetworkType.setModel(new DefaultComboBoxModel<String>(new String[] { "Heat", "Electricity" }));
 
-		lbDIndex = new JLabel("Index");
-		panel.add(lbDIndex, "2, 11");
-
-		txtDIndex = new JTextField();
-		panel.add(txtDIndex, "4, 11, 5, 1, fill, default");
-		txtDIndex.addKeyListener(new DIndexListener());
-		txtDIndex.addFocusListener(new DIndexListener());
-		txtDIndex.setColumns(10);
-
 		lbDConsumption = new JLabel("Consumption profile");
-		panel.add(lbDConsumption, "2, 13");
+		panel.add(lbDConsumption, "2, 11");
 
 		txtDConsumption = new JTextField();
-		panel.add(txtDConsumption, "4, 13, fill, default");
+		panel.add(txtDConsumption, "4, 11, fill, default");
 		txtDConsumption.addKeyListener(new DConsumptionListener());
 		txtDConsumption.addFocusListener(new DConsumptionListener());
 		txtDConsumption.setColumns(10);
 
 		JButton btDBrowse = new JButton("");
-		panel.add(btDBrowse, "6, 13, right, center");
+		panel.add(btDBrowse, "6, 11, right, center");
 		btDBrowse.addMouseListener(new DBrowseListener());
 		btDBrowse.setIcon(Icon.open);
 		btDBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
 		btDBrowse.setContentAreaFilled(false);
 
 		JButton btDPlot = new JButton("");
-		panel.add(btDPlot, "8, 13");
+		panel.add(btDPlot, "8, 11");
 		btDPlot.setIcon(Icon.visualize);
 		btDPlot.setBorder(new EmptyBorder(3, 3, 3, 3));
 		btDPlot.setContentAreaFilled(false);
 		btDPlot.addMouseListener(new DPlotListener());
+
+		lbDIndex = new JLabel("Index");
+		panel.add(lbDIndex, "2, 13");
+
+		txtDIndex = new JTextField();
+		panel.add(txtDIndex, "4, 13, 5, 1, fill, default");
+		txtDIndex.addKeyListener(new DIndexListener());
+		txtDIndex.addFocusListener(new DIndexListener());
+		txtDIndex.setColumns(10);
 		sDNetworkType.addItemListener(new DNetworkTypeListener());
 		sDNetworkType.addMouseListener(new DNetworkTypeListener());
 
@@ -173,5 +177,23 @@ public class DemandInputPanel extends JPanel {
 		plotPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		add(plotPanel, "1, 4, fill, fill");
 		plotPanel.setVisible(true);
+	}
+
+	/**
+	 * Set data to new data object. Add the series in the new data set to the chart
+	 * and set plotter to <code>false</code>
+	 */
+	public void setData(String location) {
+		this.data = new Data(location, false);
+		plotPanel.clearSeries();
+		plotPanel.addSeries(data.getLabel(0), data.getSeries(0));
+		plotPanel.setPlotted(false);
+	}
+
+	/**
+	 * @return data
+	 */
+	public Data getData() {
+		return data;
 	}
 }

@@ -25,7 +25,7 @@ public class DBrowseListener extends MouseAdapter {
 		}
 
 		if (!d.getConsumptionProfile().isEmpty()) {
-			Designer.demandPanel.plotPanel.setData(path);
+			Designer.demandPanel.setData(path);
 		}
 	}
 }

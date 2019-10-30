@@ -27,7 +27,7 @@ public class DataUpdater {
 		Designer.demandPanel.sDNetworkType.setSelectedItem(networkType);
 		Designer.demandPanel.plotPanel.clearSeries();
 		if(!consumption.isEmpty()) {
-			Designer.demandPanel.plotPanel.setData(consumption);
+			Designer.demandPanel.setData(consumption);
 		}
 		Designer.cl.show(Designer.pl_comp_detail, "demand");
 	}
