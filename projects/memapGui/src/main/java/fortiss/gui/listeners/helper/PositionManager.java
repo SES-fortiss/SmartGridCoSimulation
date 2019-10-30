@@ -55,6 +55,7 @@ public abstract class PositionManager {
 		int index = Designer.buildingIcons.indexOf(icon);
 		position.set(index, getCentralPoint(icon));
 		ConnectionManager.updateLines();
+		Designer.pl_ems.repaint();
 	}
 
 	/**
