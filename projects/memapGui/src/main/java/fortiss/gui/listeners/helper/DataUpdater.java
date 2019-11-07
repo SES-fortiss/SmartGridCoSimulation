@@ -20,11 +20,9 @@ public class DataUpdater {
 	/**
 	 * Updates and shows the data of the selected demand.
 	 */
-	public void updateDemandData(String name, int index, String consumption, String networkType) {
+	public void updateDemandData(String name, String consumption) {
 		Designer.demandPanel.txtDName.setText(name);
-		Designer.demandPanel.txtDIndex.setText(Integer.toString(index));
 		Designer.demandPanel.txtDConsumption.setText(consumption);
-		Designer.demandPanel.sDNetworkType.setSelectedItem(networkType);
 		Designer.demandPanel.plotPanel.clearSeries();
 		if(!consumption.isEmpty()) {
 			Designer.demandPanel.setData(consumption);

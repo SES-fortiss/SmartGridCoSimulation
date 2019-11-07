@@ -5,9 +5,7 @@ package fortiss.components;
  */
 public class Demand {
 	private String name;
-	private int index;
 	private String consumptionProfile;
-	private String networkType;
 
 	/**
 	 * Constructor for class Demand
@@ -17,11 +15,9 @@ public class Demand {
 	 * @param consumptionProfile a path to an existing file
 	 * @param networkType        a string: Heat or Electricity
 	 */
-	public Demand(String name, int index, String consumptionProfile, String networkType) {
+	public Demand(String name, String consumptionProfile) {
 		this.setName(name);
-		this.setIndex(index);
 		this.setConsumptionProfile(consumptionProfile);
-		this.setNetworkType(networkType);
 	}
 
 	public String getName() {
@@ -32,28 +28,12 @@ public class Demand {
 		this.name = name;
 	}
 
-	public int getIndex() {
-		return index;
-	}
-
-	public void setIndex(int index) {
-		this.index = index;
-	}
-
 	public String getConsumptionProfile() {
 		return consumptionProfile;
 	}
 
 	public void setConsumptionProfile(String consumptionFile) {
 		this.consumptionProfile = consumptionFile;
-	}
-
-	public String getNetworkType() {
-		return networkType;
-	}
-
-	public void setNetworkType(String networkType) {
-		this.networkType = networkType;
 	}
 
 }
