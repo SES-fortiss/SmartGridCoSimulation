@@ -44,6 +44,12 @@ public class DemandInputPanel extends JPanel {
 	private JLabel lbDName;
 	/** Demand consumption file path label */
 	private JLabel lbDConsumption;
+	/** Example of consumption file format */
+	private JLabel lblCsvformat;
+	/** CSV format instructions */
+	private JLabel lblCsvInstructions;
+	/** consumption file (CSV) warning */
+	private JLabel lblCsvWarning;
 	/** Plot panel */
 	public PlotPanel plotPanel = new PlotPanel();
 	/** Auxiliary panel */
@@ -64,6 +70,8 @@ public class DemandInputPanel extends JPanel {
 		lblDemand.setForeground(Colors.title);
 		lbDName.setForeground(Colors.normal);
 		lbDConsumption.setForeground(Colors.normal);
+		lblCsvInstructions.setForeground(Colors.normal);
+		lblCsvWarning.setForeground(Colors.normal);
 		if (plotPanel.isPlotted()) {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
@@ -114,6 +122,12 @@ public class DemandInputPanel extends JPanel {
 				FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC,
 				FormSpecs.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("15dlu"),
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC,}));
 
 		lblDemand = new JLabel("DEMAND");
@@ -129,28 +143,38 @@ public class DemandInputPanel extends JPanel {
 		txtDName.addKeyListener(new DNameListener());
 		txtDName.addFocusListener(new DNameListener());
 		txtDName.setColumns(10);
+
+		lbDConsumption = new JLabel("Consumption profile");
+		panel.add(lbDConsumption, "2, 9");
+
+		txtDConsumption = new JTextField();
+		panel.add(txtDConsumption, "4, 9, fill, default");
+		txtDConsumption.addKeyListener(new DConsumptionListener());
+		txtDConsumption.addFocusListener(new DConsumptionListener());
+		txtDConsumption.setColumns(10);
+
+		JButton btDBrowse = new JButton("");
+		panel.add(btDBrowse, "6, 9, right, center");
+		btDBrowse.addMouseListener(new DBrowseListener());
+		btDBrowse.setIcon(Icon.open);
+		btDBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
+		btDBrowse.setContentAreaFilled(false);
+
+		JButton btDPlot = new JButton("");
+		panel.add(btDPlot, "8, 9");
+		btDPlot.setIcon(Icon.visualize);
+		btDPlot.setBorder(new EmptyBorder(3, 3, 3, 3));
+		btDPlot.setContentAreaFilled(false);
 		
-				lbDConsumption = new JLabel("Consumption profile");
-				panel.add(lbDConsumption, "2, 9");
+		lblCsvInstructions = new JLabel("<html> <b> Consumption file format </b> <br/> <br/> CSV file with no headers <br/> Column 1: Heat &emsp; Column 2: Electricity <br/> Decimal separator: , <br/> Column separator: ;</html>");
+		panel.add(lblCsvInstructions, "2, 13, 2, 1, left, default");
+
+		lblCsvformat = new JLabel("");
+		lblCsvformat.setIcon(Icon.csvFormat);
+		panel.add(lblCsvformat, "4, 13, 6, 1, right, center");
 		
-				txtDConsumption = new JTextField();
-				panel.add(txtDConsumption, "4, 9, fill, default");
-				txtDConsumption.addKeyListener(new DConsumptionListener());
-				txtDConsumption.addFocusListener(new DConsumptionListener());
-				txtDConsumption.setColumns(10);
-		
-				JButton btDBrowse = new JButton("");
-				panel.add(btDBrowse, "6, 9, right, center");
-				btDBrowse.addMouseListener(new DBrowseListener());
-				btDBrowse.setIcon(Icon.open);
-				btDBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
-				btDBrowse.setContentAreaFilled(false);
-		
-				JButton btDPlot = new JButton("");
-				panel.add(btDPlot, "8, 9");
-				btDPlot.setIcon(Icon.visualize);
-				btDPlot.setBorder(new EmptyBorder(3, 3, 3, 3));
-				btDPlot.setContentAreaFilled(false);
+		lblCsvWarning = new JLabel("<html><font face=\"verdana\" color=\"red\">&#9888;</font> Note: If no consumption file is selected the default is zero</html>");
+		panel.add(lblCsvWarning, "2, 15, 8, 1");
 		btDPlot.addMouseListener(new DPlotListener());
 
 		plotPanel = new PlotPanel();
@@ -167,7 +191,8 @@ public class DemandInputPanel extends JPanel {
 	public void setData(String location) {
 		this.data = new Data(location, false);
 		plotPanel.clearSeries();
-		plotPanel.addSeries(data.getLabel(0), data.getSeries(0));
+		plotPanel.addSeries("Heat", data.getSeries(0));
+		plotPanel.addSeries("Electricity", data.getSeries(1));
 		plotPanel.setPlotted(false);
 	}
 
