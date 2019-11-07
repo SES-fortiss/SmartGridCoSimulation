@@ -3,7 +3,6 @@ package linprogMPC.controller;
 import java.util.HashSet;
 import java.util.Set;
 
-import linprogMPC.components.CSVConsumer;
 import linprogMPC.components.prototypes.Device;
 
 public class CSVBuildingController implements BuildingController {
@@ -13,14 +12,10 @@ public class CSVBuildingController implements BuildingController {
 	public int heatTransportLength;
 	private Set<Device> devices = new HashSet<Device>();
 
-	public CSVBuildingController(String name, String csvHeatFileName, String csvElectricityFileName,
-			boolean hasLDHeating, int heatTransportLength) {
+	public CSVBuildingController(String name, Boolean hasLDHeating, int heatTransportLength) {
 		this.name = name;
 		this.hasLDHeating = hasLDHeating;
 		this.heatTransportLength = heatTransportLength;
-
-		// adding Consumers from CSV files
-		devices.add(new CSVConsumer(csvHeatFileName, csvElectricityFileName, 0));
 	}
 
 	@Override

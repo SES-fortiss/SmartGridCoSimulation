@@ -9,22 +9,21 @@ import java.io.InputStreamReader;
 
 import simulation.SimulationStarter;
 
-abstract public class FileManager {
-	
+public class FileManager {
+
 	/**
 	 * Reads a file from the resource container of the project
 	 * 
-	 * @param filename the name of the file to be read
+	 * @param filename the name of the file in resources
 	 * @return a buffer with the data in the input file
 	 */
-	public static BufferedReader readFromResources(String filename) {
+	public BufferedReader readFromResources(String filename) {
 		BufferedReader br = null;
 		try {
-			String source = "resources/" + filename;
-			InputStream is = FileManager.class.getClassLoader().getResourceAsStream(source);
+			InputStream is = this.getClass().getResourceAsStream("/" + filename);
 			br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 		} catch (IOException e1) {
-			System.err.println("Error reading " + filename + " thrown at class ReadFileManager");
+			System.err.println("Error reading " + filename + " from resources");
 			e1.printStackTrace();
 			SimulationStarter.stopSimulation();
 		}
@@ -35,14 +34,14 @@ abstract public class FileManager {
 	 * Reads a file from location specified.
 	 * 
 	 * @param location the absolute path to the file to be read
-	 * @return a buffer with the data in the file read
+	 * @return a buffer with the data in the input file
 	 */
-	public static BufferedReader readFromSource(String location) {
+	public BufferedReader readFromSource(String location) {
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(location));
 		} catch (FileNotFoundException e) {
-			System.err.println("Error reading " + location + " thrown at class ReadFileManager");
+			System.err.println("Error reading " + location);
 			e.printStackTrace();
 		}
 		return br;

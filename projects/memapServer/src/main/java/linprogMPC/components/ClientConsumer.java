@@ -23,7 +23,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
 import linprogMPC.components.prototypes.Consumer;
 import linprogMPC.helperOPCua.BasicClient;
-import linprogMPC.messages.extension.NetworkType;
 
 public class ClientConsumer extends Consumer {
 	public BasicClient client;
