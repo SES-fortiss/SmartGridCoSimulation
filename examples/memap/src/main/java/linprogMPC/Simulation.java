@@ -10,18 +10,21 @@ public class Simulation {
 
 	private ActorTopology topology;
 	
+	//
+	public static final boolean Static_Simulation = true;
+	
 	// ================= Model Predictive Control (MPC) =================
-	public static final int N_STEPS_MPC = 5; //equals N_STEPS for case of overall optimization, smaller for case of MPC
+	public static final int N_STEPS_MPC = 192; //equals N_STEPS for case of overall optimization, smaller for case of MPC
 	public static final int PREDICTION_UNCERTAINTY = 0;
 	
-	public static final int TIMESTEPS_PER_DAY = 12; // 120 min timestep
-	public static final int NR_OF_ITERATIONS =  2*TIMESTEPS_PER_DAY; // 2 Days
-	public static final int N_STEPS = NR_OF_ITERATIONS + N_STEPS_MPC; 
+	public static final int TIMESTEPS_PER_DAY = 96; // 120 min timestep
+	public static final int NR_OF_ITERATIONS =  1; // 2*TIMESTEPS_PER_DAY; // 2 Days
+	public static final int N_STEPS = 192; // NR_OF_ITERATIONS + N_STEPS_MPC; 
 
 	
 	
 	// Does MEMAP has a long-distance heating connection to buy heat ?
-	public static final boolean MEMAP_LDHeating = true;
+	public static final boolean MEMAP_LDHeating = false;
 	public static final double HEAT_LOSSES = 1.0;
 	
 	
@@ -33,7 +36,7 @@ public class Simulation {
 	
 	private void run() {
 		// Test-Topology:
-		topology = Topology2HousesMPC.createTopology();
+		topology = Topology2Houses.createTopology();
 //		topology = Topology.createTopology();
 		SimulationStarter.saveGridTopologyPlot(topology);   
 		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);

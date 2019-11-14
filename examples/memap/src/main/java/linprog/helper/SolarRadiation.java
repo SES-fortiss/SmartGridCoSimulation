@@ -131,7 +131,7 @@ public class SolarRadiation {
     	
     	double[] x = new double[originalValues.size()];
     	double[] y = new double[originalValues.size()];
-    	SolutionHandler.exportData(y, "Solarradiation_1Day.csv");
+
     	
 		for (int i = 0; i < originalValues.size() ; i++) {
     		x[i]=15*i;    		// 15 min * 1 Days = 96 
@@ -150,6 +150,8 @@ public class SolarRadiation {
 			solarProductionPerKWp.add(yi[k]);
     	}
 		
+    	SolutionHandler.exportData(y, "Solarradiation_1Day.csv");
+    	SolutionHandler.exportData(yi, "Solarradiation_1Day_interpolated.csv");
 	    br.close();
 	}	
 	

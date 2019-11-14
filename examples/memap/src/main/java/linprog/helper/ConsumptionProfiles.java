@@ -26,7 +26,7 @@ public class ConsumptionProfiles {
 
 		// kWh / Minute - für 24 Stunden, 1440 Minuten = Einträge
 		heatProfiles = readConsumption("WaermeVerbraeuche.csv", nrOfProfiles);
-		electricityProfile = readConsumption("StromVerbraeuche.csv", nrOfProfiles);
+		electricityProfile = readConsumption("StromVerbraeuche_reduced.csv", nrOfProfiles);
 	}
 	
 	/**

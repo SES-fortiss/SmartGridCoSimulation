@@ -149,9 +149,13 @@ public class LinProgBehavior extends BehaviorModel {
 				buildingSpecs,consumptionProfiles,producerSpecs,storageSpecs, Simulation.MEMAP_LDHeating);
 		double[] sol = OptimizationStarter.runLinProg(problem);
 
+		if(Simulation.Static_Simulation) {
+			double costsMEMAP = SolutionHandler.exportCostsStatic(sol, problem.lambda, "CostVectorMEMAP.csv");
+			System.out.println("COSTS with MEMAP: " + String.format("%.02f", costsMEMAP));	
+		} 
+		
 		double[] memapCostPerTimestep = SolutionHandler.exportCosts(sol, problem.lambda, "CostVectorMEMAP.csv");
 		costsMEMAP[GlobalTime.getCurrentTimeStep()] = memapCostPerTimestep[0];
-
 		// Print consumption and calculate energy autarky
 //		double autarkyMEMAP = SolutionHandler.calcAutarky(problem, sol);
 			

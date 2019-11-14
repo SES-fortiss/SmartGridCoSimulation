@@ -2,7 +2,12 @@ package linprog.helper;
 
 public class OptimizationProblem {
 	
-	public double[] lambda;
+	public double[] lambda1;	// Euro
+	public double[] lambda2;	// CO2
+	public double[] lambda3;	// extended costs
+	public double[] lambda4;	// mix of Euro and CO2
+	
+	public double[] lambda;	
 	public double[] h;
 	public double[][] g;
 	public double[] b_eq;
@@ -17,6 +22,11 @@ public class OptimizationProblem {
 	public OptimizationProblem(int n, int nrOfProducers, int nrOfStorages) {		
 		this.nrOfProducers = nrOfProducers;
 		this.nrOfStorages = nrOfStorages;
+		
+		lambda1  = new double[n*(nrOfProducers+(2*nrOfStorages)+marketmatrices)];
+		lambda2  = new double[n*(nrOfProducers+(2*nrOfStorages)+marketmatrices)];
+		lambda3  = new double[n*(nrOfProducers+(2*nrOfStorages)+marketmatrices)];
+		lambda4  = new double[n*(nrOfProducers+(2*nrOfStorages)+marketmatrices)];
 		
 		lambda  = new double[n*(nrOfProducers+(2*nrOfStorages)+marketmatrices)];
 		

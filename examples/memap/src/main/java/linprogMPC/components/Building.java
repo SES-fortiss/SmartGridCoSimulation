@@ -67,20 +67,20 @@ public class Building extends BehaviorModel {
 //		NodeId node1 = new NodeId(2, b001SBL);
 //		NodeId node1 = new NodeId(2,30);
 //		NodeId node1 = new NodeId(1, 50190); //smartpi-forte
-		NodeId node1 = new NodeId(0, 2259); // server Status
-		
-		try {
-			ReadClient.startClient(node1);
-			// Output:
-			int readValue = (int) ReadClient.getData();
-			System.out.println("[OPC UA] Read Status " + name + " Server: " + readValue );
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("[OPC UA] Client read failed");
-		}
-		
+//		NodeId node1 = new NodeId(0, 2259); // server Status
+//		
+//		try {
+//			ReadClient.startClient(node1);
+//			// Output:
+//			int readValue = (int) ReadClient.getData();
+//			System.out.println("[OPC UA] Read Status " + name + " Server: " + readValue );
+//			
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			System.out.println("[OPC UA] Client read failed");
+//		}
+//		
 	
 //		=======================  RECEIVING =======================	
 			

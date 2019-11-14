@@ -1,0 +1,38 @@
+package fortiss.gui.style;
+import java.awt.Font;
+import java.io.InputStream;
+
+/**
+ * Stores font configuration
+ */
+public class Fonts {
+
+	private static String oswaldPath = "/resources/fonts/Oswald/Oswald-Light.ttf";
+	private static String openSansPath = "/resources/fonts/Open_Sans/OpenSans-Light.ttf";
+	
+	public static Font getOswald() {
+		Font font;
+		try {
+			InputStream file = Fonts.class.getResourceAsStream(oswaldPath);
+	        font = Font.createFont(Font.TRUETYPE_FONT, file);
+			font  = font.deriveFont(Font.LAYOUT_LEFT_TO_RIGHT, 18);
+		} catch (Exception e) {
+			System.err.println(e);
+			font = new Font("Tahoma", Font.BOLD, 15);
+		}
+		return font;
+	}
+
+	public static Font getOpenSans() {
+		Font font;
+		try {	 
+			InputStream file = Fonts.class.getResourceAsStream(openSansPath);
+	        font = Font.createFont(Font.TRUETYPE_FONT, file);
+			font  = font.deriveFont(Font.LAYOUT_LEFT_TO_RIGHT, 12);
+		} catch (Exception e) {
+			System.err.println(e);
+			font = new Font("Tahoma", Font.PLAIN, 12);
+		}
+		return font;
+	}
+}
