@@ -1,12 +1,12 @@
 package linprogMPC.components.prototypes;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
-import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+
 import com.google.gson.Gson;
+
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
@@ -26,254 +26,222 @@ import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.OptimizationResultMessage;
 import opcMEMAP.MemapOpcServerStarter;
 
-@SuppressWarnings("unchecked")
 public class LinProgBehavior extends BehaviorModel {
 
-  private long sleepTime = 0L;
+	private long sleepTime = 0L;
 
-  double[][] fullXVector = new double[TopologyConfig.NR_OF_ITERATIONS][TopologyConfig.N_STEPS];
+	double[][] fullXVector = new double[TopologyConfig.NR_OF_ITERATIONS][TopologyConfig.N_STEPS];
 
-  double[] costForTimestepAllBuildings = new double[TopologyConfig.NR_OF_ITERATIONS];
-  double[] costForTimestepMEMAP = new double[TopologyConfig.NR_OF_ITERATIONS];
-  double[][] memapSolutionPerTimeStep = new double[TopologyConfig.NR_OF_ITERATIONS][];
+	double[] costForTimestepAllBuildings = new double[TopologyConfig.NR_OF_ITERATIONS];
+	double[] costForTimestepMEMAP = new double[TopologyConfig.NR_OF_ITERATIONS];
+	double[][] memapSolutionPerTimeStep = new double[TopologyConfig.NR_OF_ITERATIONS][];
 
-  public OptimizationResultMessage optResult = new OptimizationResultMessage();
-  public MemapOpcServerStarter mServer;
-  protected Gson gson = new Gson();
-  public int port;
-  public BuildingMessage buildingMessage = new BuildingMessage();
+	public OptimizationResultMessage optResult = new OptimizationResultMessage();
+	public MemapOpcServerStarter mServer;
+	protected Gson gson = new Gson();
+	public int port;
+	public BuildingMessage buildingMessage = new BuildingMessage();
 
-  public Calendar startTime;
-  public int nStepsMPC = TopologyConfig.N_STEPS_MPC;
+	public Calendar startTime;
+	public int nStepsMPC = TopologyConfig.N_STEPS_MPC;
 
-  public SolutionHandler solHandler = new SolutionHandler();
+	public SolutionHandler solHandler = new SolutionHandler();
 
-  public LinProgBehavior(int thePort) {
-    this.port = thePort;
-  }
+	public LinProgBehavior(int thePort) {
+		this.port = thePort;
+	}
 
-  @Override
-  public void handleError(LinkedList<ErrorAnswerContent> errors) {}
+	@Override
+	public void handleError(LinkedList<ErrorAnswerContent> errors) {
+	}
 
-  @Override
-  public void handleRequest() {}
+	@Override
+	public void handleRequest() {
+	}
 
-  @Override
-  public void makeDecision() {
+	@Override
+	public void makeDecision() {
+		// Sort the received answers in 'Buildings' and/or 'free
+		// consumer/Storage/Producers'
+		ArrayList<BuildingMessage> buildingMessageList = new ArrayList<BuildingMessage>();
 
-    System.out.println("MPC Linprog: " + nStepsMPC);
+		for (BasicAnswer basicAnswer : answerListReceived) {
 
-    // Sort the received answers in 'Buildings' and/or 'free
-    // consumer/Storage/Producers'
-    ArrayList<BuildingMessage> buildingMessageList = new ArrayList<BuildingMessage>();
+			AnswerContent answerContent = basicAnswer.answerContent;
+			if (answerContent instanceof BuildingMessage) {
+				BuildingMessage bm = (BuildingMessage) answerContent;
+				buildingMessageList.add(bm);
 
-    for (BasicAnswer basicAnswer : answerListReceived) {
+			}
+		}
 
-      AnswerContent answerContent = basicAnswer.answerContent;
-      if (answerContent instanceof BuildingMessage) {
-        BuildingMessage bm = (BuildingMessage) answerContent;
-        buildingMessageList.add(bm);
+		if (TopologyConfig.MEMAP_ON) {
+			if (GlobalTime.getCurrentTimeStep() == 0) {
 
-      }
-    }
+				int nrOfConsumers = 0;
+				int nrOfStorages = 0;
+				int nrOfProducers = 0;
+				int nrOfCouplers = 0;
 
-    if (TopologyConfig.MEMAP_ON) {
-      if (GlobalTime.getCurrentTimeStep() == 0) {
+				for (BuildingMessage buildingMessage : buildingMessageList) {
+					nrOfConsumers += buildingMessage.getNrOfConsumers();
+					nrOfStorages += buildingMessage.getNrOfStorages();
+					nrOfProducers += buildingMessage.getNrOfProducers();
+					nrOfCouplers += buildingMessage.getNrOfCouplers();
+				}
 
-        int nrOfStorages = 0;
-        int nrOfProducers = 0;
-        int nrOfCouplers = 0;
+				// Output simulation details
+				System.out.println(" << makeDecision LinProg --- Optimization >> ");
+				System.out.println("Simulation time: "
+						+ MyTimeUnit.stepLength(TimeUnit.HOURS) * TopologyConfig.NR_OF_ITERATIONS + " hours ("
+						+ TopologyConfig.NR_OF_ITERATIONS / TopologyConfig.TIMESTEPS_PER_DAY + " days)");
+				System.out.println("Timestep: " + MyTimeUnit.stepLength(TimeUnit.MINUTES) + " minutes ("
+						+ TopologyConfig.NR_OF_ITERATIONS + " Steps)");
+				System.out.println("MPC Horizon: " + TopologyConfig.N_STEPS_MPC * MyTimeUnit.stepLength(TimeUnit.HOURS)
+						+ " hours (" + TopologyConfig.N_STEPS_MPC + " Steps)");
 
-        for (BuildingMessage buildingMessage : buildingMessageList) {
-          nrOfStorages += buildingMessage.getNrOfStorages();
-          nrOfProducers += buildingMessage.getNrOfProducers();
-          nrOfCouplers += buildingMessage.getNrOfCouplers();
-        }
+				System.out.println(" ");
+				System.out.println("Total Number of Consumers: " + nrOfConsumers);
+				System.out.println("Total Number of Storages: " + nrOfStorages);
+				System.out.println("Total Number of Producers: " + nrOfProducers);
+				System.out.println("Total Number of Couplers: " + nrOfCouplers);
+				System.out.println("----------------------------------------------------------------");
+			}
 
-        // Output simulation details
-        System.out.println(" << makeDesicion LinProg --- Optimization >> ");
-        System.out.println("Simulation time: "
-            + MyTimeUnit.stepLength(TimeUnit.HOURS) * TopologyConfig.NR_OF_ITERATIONS + " hours ("
-            + TopologyConfig.NR_OF_ITERATIONS / TopologyConfig.TIMESTEPS_PER_DAY + " days)");
-        System.out.println("Timestep: " + MyTimeUnit.stepLength(TimeUnit.MINUTES) + " minutes ("
-            + TopologyConfig.NR_OF_ITERATIONS + " Steps)");
-        System.out.println(
-            "MPC Horizon: " + TopologyConfig.N_STEPS_MPC * MyTimeUnit.stepLength(TimeUnit.HOURS)
-                + " hours (" + TopologyConfig.N_STEPS_MPC + " Steps)");
+			// ------------ MEMAP - OPTIMIZATION ------------
 
-        System.out.println(" ");
+			MatrixBuildup mb = new MatrixBuildup();
+			OptimizationProblem problem = mb.multipleBuildings(buildingMessageList, TopologyConfig.MEMAP_LDHeating);
 
-        System.out.println("Total Number of Storages: " + nrOfStorages);
-        System.out.println("Total Number of Producers: " + nrOfProducers);
-        System.out.println("Total Number of Couplers: " + nrOfCouplers);
-        System.out.println("----------------------------------------------------------------");
-      }
+			OptimizationStarter os = new OptimizationStarter();
+			double[] sol = os.runLinProg(problem);
 
-      // ------------ MEMAP - OPTIMIZATION ------------
+			// Handling the result
+			double[] memapCostPerTimestep = solHandler.calculateTimeStepCosts(sol, problem.lambda);
+			System.out.println();
 
-      MatrixBuildup mb = new MatrixBuildup();
-      OptimizationProblem problem =
-          mb.multipleBuildings(buildingMessageList, TopologyConfig.MEMAP_LDHeating);
+			costForTimestepMEMAP[GlobalTime.getCurrentTimeStep()] = memapCostPerTimestep[0];
 
-      OptimizationStarter os = new OptimizationStarter();
-      double[] sol = os.runLinProg(problem);
+			// Creation of the result vector
+			double[] currentOptVector = solHandler.getSolutionForThisTimeStep(sol, nStepsMPC);
+			double[] currentDemand = solHandler.getDemandForThisTimestep(problem, nStepsMPC);
+			double[] currentSOC = solHandler.getCurrentSOCs(buildingMessageList);
+			double[] currentCost = { memapCostPerTimestep[0] };
 
-      // ================= Handling the result ==================
+			double[] vectorAll = HelperConcat.concatAlldoubles(currentDemand, currentOptVector, currentSOC,
+					currentCost);
 
-      double[] memapCostPerTimestep = solHandler.calculateTimeStepCosts(sol, problem.lambda);
-      System.out.println();
+			String[] currentNamesPartly = solHandler.getNamesForThisTimeStep(problem, nStepsMPC);
+			String[] demandStrings = solHandler.getNamesForDemand();
+			String[] storageNames = solHandler.getNamesForSOCs(buildingMessageList);
+			String[] costName = { "Cost" };
 
-      costForTimestepMEMAP[GlobalTime.getCurrentTimeStep()] = memapCostPerTimestep[0];
+			String[] namesAll = HelperConcat.concatAllObjects(demandStrings, currentNamesPartly, storageNames,
+					costName);
 
-      // ******** Erstellung des Ergebnisvektors *********************
-      double[] currentOptVector = solHandler.getSolutionForThisTimeStep(sol, nStepsMPC);
-      double[] currentDemand = solHandler.getDemandForThisTimestep(problem, nStepsMPC);
-      double[] currentSOC = solHandler.getCurrentSOCs(buildingMessageList);
-      double[] currentCost = {memapCostPerTimestep[0]};
+			// Save
+			memapSolutionPerTimeStep[this.getActualTimeStep()] = vectorAll;
 
-      double[] vectorAll =
-          HelperConcat.concatAlldoubles(currentDemand, currentOptVector, currentSOC, currentCost);
+			if (GlobalTime.getCurrentTimeStep() == (TopologyConfig.NR_OF_ITERATIONS - 1)) {
+				String saveString = TopologyConfig.simulationName + "MPC" + TopologyConfig.N_STEPS_MPC + "/";
+				saveString += this.actorName + "MPC" + nStepsMPC + ".csv";
+				solHandler.exportMatrix(memapSolutionPerTimeStep, saveString, namesAll);
+			}
 
-      String[] currentNamesPartly = solHandler.getNamesForThisTimeStep(problem, nStepsMPC);
-      String[] demandStrings = {"demandHeat", "demandElectricity"};
-      String[] storageNames = solHandler.getNamesForSOCs(buildingMessageList);
-      String[] costName = {"Cost"};
+			// Handling the result
+			if (GlobalTime.getCurrentTimeStep() == (TopologyConfig.NR_OF_ITERATIONS - 1)) {
+				double totalCostsMEMAP = 0;
+				for (int j = 0; j < TopologyConfig.NR_OF_ITERATIONS; j++) {
+					totalCostsMEMAP += costForTimestepMEMAP[j];
+				}
 
-      String[] namesAll =
-          HelperConcat.concatAllObjects(demandStrings, currentNamesPartly, storageNames, costName);
+				System.out.println(" << Optimization Result (MPC) >> ");
+				System.out.println("COSTS with MEMAP: " + String.format("%.02f", totalCostsMEMAP));
+				System.out.println("----------------------------------------------------------------");
+			}
 
-      System.out.println(this.actorName + " " + Arrays.toString(namesAll));
-      System.out.println(this.actorName + " " + Arrays.toString(vectorAll));
-      // System.out.println("Das muss der jetzt auch immer ausgeben.");
+			// ================= AnswerContentToSend ==================
+			// Here the structure of the server results is specified
 
-      // ********* Speichern
-      memapSolutionPerTimeStep[this.getActualTimeStep()] = vectorAll;
+			// Caution!!! Building 1 does in the CSV example not contain any devices.
+			// Hence, there is no folder for building one initialized.
 
-      if (GlobalTime.getCurrentTimeStep() == (TopologyConfig.NR_OF_ITERATIONS - 1)) {
-        String saveString =
-            TopologyConfig.simulationName + "MPC" + TopologyConfig.N_STEPS_MPC + "/";
-        saveString += this.actorName + "MPC" + nStepsMPC + ".csv";
-        solHandler.exportMatrix(memapSolutionPerTimeStep, saveString, namesAll);
-      }
+			// A new folder for every building is added
+			DirectoryManager dm = new DirectoryManager(optResult, buildingMessageList);
+			dm.createDirectoryHierarchy();
 
-      // ================= Handling the result ==================
+			/*
+			 * We assign all the devices and generalResult data-points to the respective
+			 * folders. The first loop runs over the data-points and devices. The
+			 * second loop runs over the respective nMpc Horizon points.
+			 */
+			for (int i = 0; i < sol.length / nStepsMPC - 4; i++) {
+				double[] result = new double[nStepsMPC];
+				for (int j = 0; j < result.length; j++) {
+					result[j] = sol[i * nStepsMPC + j];
+				}
+				String str = problem.namesUB[i * nStepsMPC];
+				String[] strSplit = str.split("\\.");
+				dm.addBuildingResult(strSplit[0], strSplit[1], result);
+			}
 
-      if (GlobalTime.getCurrentTimeStep() == (TopologyConfig.NR_OF_ITERATIONS - 1)) {
-        double totalCostsMEMAP = 0;
-        for (int j = 0; j < TopologyConfig.NR_OF_ITERATIONS; j++) {
-          totalCostsMEMAP += costForTimestepMEMAP[j];
-        }
+			// Putting values to the generalResultsMap. Loops same as above
+			for (int i = sol.length / nStepsMPC - 4; i < sol.length / nStepsMPC; i++) {
+				double[] result = new double[nStepsMPC];
+				for (int j = 0; j < result.length; j++) {
+					result[j] = sol[i * nStepsMPC + j];
+				}
+				String str = problem.namesUB[i * nStepsMPC];
+				dm.addGeneralResult(str, result);
+			}
 
-        System.out.println(" << Optimization Result (MPC) >> ");
-        System.out.println("COSTS with MEMAP: " + String.format("%.02f", totalCostsMEMAP));
-        System.out.println("----------------------------------------------------------------");
-      }
+			try {
+				Thread.sleep(sleepTime);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 
-      // ================= AnswerContentToSend ==================
-      // Here the structure of the server results is specified
+	}
 
-      // Caution!!! Building 1 does in the CSV example not contain any devices.
-      // Hence, there is no folder for building one initialized.
+	@Override
+	public AnswerContent returnAnswerContentToSend() {
+		if (this.getActualTimeStep() == 0) {
+			if (port != 0) {
+				this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult), port);
+				try {
+					this.mServer.start();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			OpcServerContextGenerator.generateJson2(this.actorName, optResult);
+		}
 
-      // nameCategories contains a list of all building names
-      // -4*nStepsMMPC is due to the generalResults split
-      ArrayList<String> nameCategories = new ArrayList<String>();
-      String currentName = "";
-      for (int i = 0; i < sol.length - 4 * nStepsMPC; i++) {
-        if (problem.namesUB[i].split("\\.")[0].equals(currentName)) {
-        } else {
-          currentName = problem.namesUB[i].split("\\.")[0];
-          nameCategories.add(currentName);
-        }
-      }
-      // A folder labeled "GeneralResults" is added to the resultsMap. Moreover, we
-      // add a new folder for every building.
+		if (port != 0) {
+			try {
+				mServer.update(gson.toJson(optResult));
+				Thread.sleep(1000);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		buildingMessage.currentOptimizationResults = optResult;
+		return buildingMessage;
+	}
 
-      DirectoryManager.createDirectoryHierarchy(nameCategories, optResult);
+	@Override
+	public RequestContent returnRequestContentToSend() {
+		return optResult;
+	}
 
-      // We assign all the devices and generalResult datapoints to the respective
-      // folders.
-      // The first loop runs over the datapoints and devices.
-      // The second loop runs over the respective nMpc Hoirzon points.
-      for (int i = 0; i < sol.length / nStepsMPC - 4; i++) {
-        double[] result = new double[nStepsMPC];
-        for (int j = 0; j < result.length; j++) {
-          result[j] = sol[i * nStepsMPC + j];
-        }
-        String str = problem.namesUB[i * nStepsMPC];
-        TreeMap<String, Object> keyMap;
-        TreeMap<String, double[]> keyMapDevices;
-        String[] strSplit = str.split("\\.");
-
-        keyMap = (TreeMap<String, Object>) optResult.buildingResultsMap.get(strSplit[0]);
-        keyMapDevices = (TreeMap<String, double[]>) keyMap.get(strSplit[strSplit.length - 1]);
-        // Enabling enumeration of devices.
-        int DevicesNumber = 0;
-        while (keyMapDevices.containsKey(str)) {
-          DevicesNumber = DevicesNumber + 1;
-        }
-        keyMapDevices.put(str + DevicesNumber, result);
-      }
-
-      // Putting values to the generalResultsMap. Loops same as above
-      for (int i = sol.length / nStepsMPC - 4; i < sol.length / nStepsMPC; i++) {
-        double[] result = new double[nStepsMPC];
-        for (int j = 0; j < result.length; j++) {
-          result[j] = sol[i * nStepsMPC + j];
-        }
-        String str = problem.namesUB[i * nStepsMPC];
-        TreeMap<String, double[]> keyMap;
-        keyMap = (TreeMap<String, double[]>) optResult.generalResultsMap;
-        keyMap.put(str, result);
-      }
-
-      try {
-        Thread.sleep(sleepTime);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
-
-  }
-
-  @Override
-  public AnswerContent returnAnswerContentToSend() {
-    if (this.getActualTimeStep() == 0) {
-      if (port != 0) {
-        this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult), port);
-        try {
-          this.mServer.start();
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
-      OpcServerContextGenerator.generateJson2(this.actorName, optResult);
-    }
-
-    if (port != 0) {
-      try {
-        mServer.update(gson.toJson(optResult));
-        Thread.sleep(1000);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
-    buildingMessage.currentOptimizationResults = optResult;
-    return buildingMessage;
-  }
-
-  @Override
-  public RequestContent returnRequestContentToSend() {
-    return optResult;
-  }
-
-  @Override
-  public void stop() {
-    try {
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    super.stop();
-  }
+	@Override
+	public void stop() {
+		try {
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		super.stop();
+	}
 
 }

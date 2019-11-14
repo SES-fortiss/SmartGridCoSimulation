@@ -32,8 +32,8 @@ public class ClientConsumer extends Consumer {
 	public List<UaMonitoredItem> itemsHeat;
 	public List<UaMonitoredItem> itemsElectricity;
 
-	public ClientConsumer(BasicClient client, NodeId nodeIdHeat, NodeId nodeIdElectricity, int port) {
-		super(port);
+	public ClientConsumer(BasicClient client, String name, NodeId nodeIdHeat, NodeId nodeIdElectricity, int port) {
+		super(name, port);
 		this.client = client;
 		Arrays.fill(heatProfile, 0.0);
 		Arrays.fill(electricityProfile, 0.0);

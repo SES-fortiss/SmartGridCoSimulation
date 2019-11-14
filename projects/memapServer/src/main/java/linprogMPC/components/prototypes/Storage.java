@@ -33,8 +33,8 @@ public abstract class Storage extends Device {
 	 * @param effOUT
 	 * @param port
 	 */
-	public Storage(double capacity, double max_charging, double max_discharging, double effIN, double effOUT, int port) {
-		super(port);
+	public Storage(String name, double capacity, double max_charging, double max_discharging, double effIN, double effOUT, int port) {
+		super(name, port);
 		
 		this.capacity = capacity;
 		this.max_charging = max_charging;

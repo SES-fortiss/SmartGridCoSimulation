@@ -13,8 +13,8 @@ public abstract class Producer extends Device {
 	
 	public double[] linprogAdvice  = new double[nStepsMPC];
 	
-	public Producer(double installedPower, double efficiency, int port) {
-		super(port);
+	public Producer(String name, double installedPower, double efficiency, int port) {
+		super(name, port);
 		
 		this.installedPower = installedPower;
 		this.efficiency = efficiency;				

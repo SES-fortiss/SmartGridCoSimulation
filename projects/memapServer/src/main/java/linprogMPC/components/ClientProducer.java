@@ -12,10 +12,10 @@ public class ClientProducer extends Producer {
 	public final double costs;
 	public final NetworkType networkType;
 
-	public ClientProducer(BasicClient client, NodeId installedPowerId, NodeId effId, NodeId costsId,
+	public ClientProducer(BasicClient client, String name, NodeId installedPowerId, NodeId effId, NodeId costsId,
 			NetworkType networkType, int port) throws InterruptedException, ExecutionException {
 
-		super(client.readFinalDoubleValue(installedPowerId), client.readFinalDoubleValue(effId), port);
+		super(name, client.readFinalDoubleValue(installedPowerId), client.readFinalDoubleValue(effId), port);
 
 		this.costs = client.readFinalDoubleValue(costsId);
 		this.networkType = networkType;

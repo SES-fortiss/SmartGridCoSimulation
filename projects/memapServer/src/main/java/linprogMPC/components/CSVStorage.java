@@ -17,9 +17,9 @@ public class CSVStorage extends Storage {
      * @param effOUT
      * @param port
      */
-    public CSVStorage(double capacity, double max_charging, double max_dischariging, double effIN, double effOUT,
+    public CSVStorage(String name, double capacity, double max_charging, double max_discharging, double effIN, double effOUT,
 	    NetworkType networkType, int port) {
-	super(capacity, max_charging, max_dischariging, effIN, effOUT, port);
+	super(name, capacity, max_charging, max_discharging, effIN, effOUT, port);
 	this.networkType = networkType;
     }
 

@@ -14,8 +14,8 @@ public abstract class Coupler extends Device {
 	
 	public double[] mpcSignal  = new double[nStepsMPC];
 	
-	public Coupler(double installedPower, double efficiencyHeat, double efficiencyElec, int port) {
-		super(port);
+	public Coupler(String name, double installedPower, double efficiencyHeat, double efficiencyElec, int port) {
+		super(name, port);
 		this.installedPower = installedPower;
 		this.efficiencyHeat = efficiencyHeat;
 		this.efficiencyElec = efficiencyElec;

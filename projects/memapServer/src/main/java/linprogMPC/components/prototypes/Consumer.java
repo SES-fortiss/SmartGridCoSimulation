@@ -20,8 +20,8 @@ import linprogMPC.messages.planning.DemandMessage;
  */
 public abstract class Consumer extends Device {
 
-	public Consumer(int port) {
-		super(port);
+	public Consumer(String name, int port) {
+		super(name, port);
 	}
 
 	public DemandMessage consumptionMessage = new DemandMessage();
@@ -70,8 +70,8 @@ public abstract class Consumer extends Device {
 	public abstract List<Double> getHeatProfile(int timeStep, int mpcHorizon);
 
 	/**
-	 * Implement this method to retrieve the current electricity consumption together
-	 * with a prediction of up to mpcHorizon time steps.
+	 * Implement this method to retrieve the current electricity consumption
+	 * together with a prediction of up to mpcHorizon time steps.
 	 * 
 	 * @param timeStep
 	 * @param mpcHorizon

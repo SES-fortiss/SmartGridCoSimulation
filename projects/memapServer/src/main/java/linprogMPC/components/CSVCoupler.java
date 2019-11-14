@@ -6,8 +6,8 @@ import linprogMPC.helper.EnergyPrices;
 public class CSVCoupler extends Coupler {
     Boolean gas;
 
-    public CSVCoupler(double installedPower, double efficiencyHeat, double efficiencyElec, Boolean gas, int port) {
-	super(installedPower, efficiencyHeat, efficiencyElec, port);
+    public CSVCoupler(String name, double installedPower, double efficiencyHeat, double efficiencyElec, Boolean gas, int port) {
+	super(name, installedPower, efficiencyHeat, efficiencyElec, port);
 	this.gas = gas;
     }
 

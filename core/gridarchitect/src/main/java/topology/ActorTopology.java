@@ -55,9 +55,6 @@ public class ActorTopology {
      */    
     
     public void addActor(String actorPath, ActorOptions builder) {
-    	
-    	//System.out.println(actorPath);
-    	
     	if (actorPath.contains("ActorSupervisor")) {
     		if (this.actorTopology.containsKey(actorPath)){
     			System.out.println("actorPath [" +actorPath+ "] already exists. --> Exception");
@@ -87,11 +84,6 @@ public class ActorTopology {
                 
         ActorTopology top = new ActorTopology("");        
         top.addActor(actorName, actor);
-        
-        //System.out.println(top);
-        //System.out.println(parentPath);
-        //System.out.println(actorName);
-        
         this.addSubTopology(parentPath, top);
     }
 

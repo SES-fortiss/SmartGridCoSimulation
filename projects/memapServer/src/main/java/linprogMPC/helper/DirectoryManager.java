@@ -1,51 +1,61 @@
 package linprogMPC.helper;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
+
+import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.OptimizationResultMessage;
 
-public abstract class DirectoryManager {
+@SuppressWarnings("unchecked")
+public class DirectoryManager {
 
-  /**
-   * Add a sub-directory to the directory tree map
-   * 
-   * @param folderName Name of new sub-directory
-   * @param parent Directory where sub-directory should be created
-   */
-  private static TreeMap<String, Object> addSubDirectory(String folderName,
-      TreeMap<String, Object> parent) {
+	/** A optimization result message */
+	private OptimizationResultMessage optimizationResultMessage;
+	/** A list of building messages */
+	private ArrayList<BuildingMessage> buildingMessageList;
 
-    TreeMap<String, Object> newFolder = new TreeMap<String, Object>();
-    parent.put(folderName, newFolder);
+	public DirectoryManager(OptimizationResultMessage optimizationResultMessage,
+			ArrayList<BuildingMessage> buildingMessageList) {
+		this.optimizationResultMessage = optimizationResultMessage;
+		this.buildingMessageList = buildingMessageList;
+	}
 
-    return parent;
-  }
+	/**
+	 * adds a general result to {@link OptimizationResultMessage#buildingResultsMap}
+	 * 
+	 * @param buildingName building name
+	 * @param name         result name
+	 * @param result       a double array results
+	 */
+	public void addBuildingResult(String buildingName, String name, double[] result) {
+		Map<String, Object> root = optimizationResultMessage.buildingResultsMap;
+		if (root.get(buildingName) instanceof TreeMap<?, ?>) {
+			TreeMap<String, Object> parent = (TreeMap<String, Object>) root.get(buildingName);
+			parent.put(name, result);
+		}
+	}
 
-  /**
-   * Creates a directory hierarchy for simulation results
-   * 
-   * @param folderName Name of new sub-directory
-   * @param parent Directory where sub-directory should be created
-   */
-  public static void createDirectoryHierarchy(ArrayList<String> nameCategories,
-      OptimizationResultMessage optResult) {
+	/**
+	 * adds a general result to {@link OptimizationResultMessage#generalResultsMap}
+	 * 
+	 * @param name   result name
+	 * @param result a double array results
+	 */
+	public void addGeneralResult(String name, double[] result) {
+		SortedMap<String, double[]> root = optimizationResultMessage.generalResultsMap;
+		root.put(name, result);
+	}
 
-    for (int i = 0; i < nameCategories.size(); i++) {
-
-      TreeMap<String, Object> buildingFolder = new TreeMap<String, Object>();
-      addSubDirectory("ClientProducer", buildingFolder);
-      addSubDirectory("ClientStorageCharge", buildingFolder);
-      addSubDirectory("ClientStorageDischarge", buildingFolder);
-      addSubDirectory("ClientCoupler", buildingFolder);
-      addSubDirectory("ClientVolatileProducer", buildingFolder);
-      addSubDirectory("CSVProducer", buildingFolder);
-      addSubDirectory("CSVStorageCharge", buildingFolder);
-      addSubDirectory("CSVStorageDischarge", buildingFolder);
-      addSubDirectory("CSVCoupler", buildingFolder);
-      addSubDirectory("CSVVolatileProducer", buildingFolder);
-
-      optResult.buildingResultsMap.put(nameCategories.get(i), buildingFolder);
-    }
-  }
+	/**
+	 * Creates a directory hierarchy for simulation results
+	 */
+	public void createDirectoryHierarchy() {
+		Map<String, Object> root = optimizationResultMessage.buildingResultsMap;
+		for (BuildingMessage buildingMessage : buildingMessageList) {
+			root.put(buildingMessage.name, new TreeMap<String, Object>());
+		}
+	}
 
 }

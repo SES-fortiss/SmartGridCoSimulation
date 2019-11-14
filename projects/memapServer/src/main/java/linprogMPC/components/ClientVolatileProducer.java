@@ -31,16 +31,13 @@ public class ClientVolatileProducer extends Producer {
     static double eff = 1.0;
     public NetworkType networkType;
     VolatileProducerMessage volatileProducerMessage;
-    // public CircularFifoQueue<Double> productionProfile = new
-    // CircularFifoQueue<Double>(
-    // Collections.nCopies(nStepsMPC, 0.0));
     public double productionProfile[] = new double[nStepsMPC];
     public List<UaMonitoredItem> itemsProduction;
 
-    public ClientVolatileProducer(BasicClient client, NodeId installedPowerId, NodeId effId, NodeId currentProductionId,
+    public ClientVolatileProducer(BasicClient client, String name, NodeId installedPowerId, NodeId effId, NodeId currentProductionId,
 	    NetworkType networkType, int port) throws InterruptedException, ExecutionException {
 
-	super(client.readFinalDoubleValue(installedPowerId), client.readFinalDoubleValue(effId), port);
+	super(name, client.readFinalDoubleValue(installedPowerId), client.readFinalDoubleValue(effId), port);
 
 	this.volatileProducerMessage = new VolatileProducerMessage();
 	this.networkType = networkType;
@@ -87,7 +84,6 @@ public class ClientVolatileProducer extends Producer {
 	    itemsProduction = subscriptionProduction.createMonitoredItems(TimestampsToReturn.Both,
 		    Arrays.asList(requestProduction), onItemCreatedProduction).get();
 	} catch (InterruptedException | ExecutionException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
     }

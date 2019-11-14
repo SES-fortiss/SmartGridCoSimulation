@@ -38,6 +38,10 @@ public class BuildingMessage implements AnswerContent {
 	
 	public ArrayList<ChildSpecification> childrenList = new ArrayList<ChildSpecification>();
 	
+	public int getNrOfConsumers() {
+		return demandList.size();
+	}
+	
 	public int getNrOfProducers() {
 		return volatileProducerList.size() + controllableProducerList.size();
 	}

@@ -82,7 +82,6 @@ public class GuiController {
 					top.attach(building);
 
 				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -157,8 +156,8 @@ public class GuiController {
 		public CSVCoupler deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context)
 				throws JsonParseException {
 			JsonObject jObject = (JsonObject) jsonElement;
-			// installed power, gas?
-			return new CSVCoupler(1000, jObject.get("efficiencyPrimary").getAsDouble(),
+			
+			return new CSVCoupler(jObject.get("name").getAsString(), 1000, jObject.get("efficiencyPrimary").getAsDouble(),
 					jObject.get("efficiencySecondary").getAsDouble(), false, 0);
 		}
 	}
@@ -169,7 +168,7 @@ public class GuiController {
 				throws JsonParseException {
 			JsonObject jObject = (JsonObject) jsonElement;
 
-			return new CSVProducer(jObject.get("power").getAsDouble(), jObject.get("efficiency").getAsDouble(),
+			return new CSVProducer(jObject.get("name").getAsString(), jObject.get("power").getAsDouble(), jObject.get("efficiency").getAsDouble(),
 					jObject.get("cost").getAsDouble(), 0);
 		}
 	}
@@ -186,7 +185,7 @@ public class GuiController {
 				networkType = NetworkType.HEAT;
 			}
 
-			return new CSVVolatileProducer(jObject.get("power").getAsDouble(), networkType, 0);
+			return new CSVVolatileProducer(jObject.get("name").getAsString(), jObject.get("power").getAsDouble(), networkType, 0);
 		}
 	}
 
@@ -203,7 +202,7 @@ public class GuiController {
 				networkType = NetworkType.HEAT;
 			}
 
-			return new CSVStorage(jObject.get("capacity").getAsDouble(), jObject.get("maxCharging").getAsDouble(),
+			return new CSVStorage(jObject.get("name").getAsString(), jObject.get("capacity").getAsDouble(), jObject.get("maxCharging").getAsDouble(),
 					jObject.get("maxDischarging").getAsDouble(), jObject.get("effIN").getAsDouble(),
 					jObject.get("effOUT").getAsDouble(), networkType, 0);
 		}
@@ -215,9 +214,7 @@ public class GuiController {
 				throws JsonParseException {
 			JsonObject jObject = (JsonObject) jsonElement;
 			
-			//"name"
-			
-			return new CSVConsumer(jObject.get("consumptionProfile").getAsString(), 0);
+			return new CSVConsumer(jObject.get("name").getAsString(), jObject.get("consumptionProfile").getAsString(), 0);
 		}
 	}
 

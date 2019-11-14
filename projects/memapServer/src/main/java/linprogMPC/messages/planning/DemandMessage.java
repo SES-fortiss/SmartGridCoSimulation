@@ -7,7 +7,7 @@ import linprogMPC.messages.extension.NetworkType;
 
 public class DemandMessage implements AnswerContent {	
 	
-	private double[] demandForecast; // das beinhaltet durchaus auch beides
+	private double[] demandForecast; // that certainly includes both
 	
 	public String optimizationCriteria;
 	public String forecastType;

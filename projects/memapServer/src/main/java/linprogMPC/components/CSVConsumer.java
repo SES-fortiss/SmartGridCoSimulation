@@ -17,13 +17,12 @@ import linprogMPC.helper.FileManager;
 import linprogMPC.helper.MyTimeUnit;
 
 public class CSVConsumer extends Consumer {
-
 	private FileManager mgr = new FileManager();
 	private ArrayList<Double> heatProfile = new ArrayList<Double>();
 	private ArrayList<Double> electricityProfile = new ArrayList<Double>();
 
-	public CSVConsumer(String csvFile, int port) {
-		super(port);
+	public CSVConsumer(String name, String csvFile, int port) {
+		super(name, port);
 		setProfiles(csvFile);
 	}
 

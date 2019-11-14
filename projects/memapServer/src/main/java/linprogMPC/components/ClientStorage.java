@@ -11,10 +11,10 @@ import linprogMPC.messages.extension.NetworkType;
 public class ClientStorage extends Storage {
 	NetworkType networkType;
 
-	public ClientStorage(BasicClient client, NodeId capacityId, NodeId maxChargingId, NodeId maxDischargingId,
+	public ClientStorage(BasicClient client, String name, NodeId capacityId, NodeId maxChargingId, NodeId maxDischargingId,
 			NodeId effInId, NodeId effOutId, NetworkType networkType, int port)
 			throws InterruptedException, ExecutionException {
-		super(client.readFinalDoubleValue(capacityId), client.readFinalDoubleValue(maxChargingId),
+		super(name, client.readFinalDoubleValue(capacityId), client.readFinalDoubleValue(maxChargingId),
 				client.readFinalDoubleValue(maxDischargingId), client.readFinalDoubleValue(effInId),
 				client.readFinalDoubleValue(effOutId), port);
 		this.networkType = networkType;
@@ -22,9 +22,10 @@ public class ClientStorage extends Storage {
 
 	@Override
 	public void makeDecision() {
+		
 		storageMessage.stateOfCharge = myStateOfCharge;
-
-		// alle parameter ï¿½ndern sich nicht wï¿½hrend der laufzeit.
+		
+		// alle parameter ändern sich nicht während der laufzeit
 		storageMessage.networkType = this.networkType;
 		storageMessage.name = this.actorName;
 		storageMessage.id = this.fullActorPath;
