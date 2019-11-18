@@ -25,9 +25,6 @@ public class TopologyRiemerling {
 	private static String simulationName = "LinProg";
 	public static final int NR_OF_CONSUMERS = 5;
 	
-	&/
-	
-	
 	// Efficiencies [kWh]
 	private static final double EFFICIENCY_CHP_H = .6;
 	private static final double EFFICIENCY_CHP_EL = .25;

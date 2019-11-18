@@ -1,11 +1,11 @@
-package linprogMPC.helper;
+package linprogMPC.helper.lp;
 
 import com.joptimizer.optimizers.LPOptimizationRequest;
 import com.joptimizer.optimizers.LPPrimalDualMethod;
 
-public class OptimizationStarter {
+public class LPOptimizationStarter {
 	
-	public double[] runLinProg(OptimizationProblem problem) {
+	public double[] runLinProg(LPOptimizationProblem problem) {
 	
 		LPOptimizationRequest or = new LPOptimizationRequest();
 		

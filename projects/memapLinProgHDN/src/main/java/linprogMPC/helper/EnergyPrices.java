@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import linprogMPC.ThesisTopologySimple;
+import linprogMPC.TopologySimple;
 import simulation.SimulationStarter;
 
 /**
@@ -34,8 +34,7 @@ public class EnergyPrices {
 	 * @return gas price in ct/kWh at specified timestep
 	 */
 	public static double getGasPriceInEuro(int timestep) {
-		return 0.0685d; //thesis
-		//return 0.0612d;
+		return 0.0685d;
 	}
 	
 	/**
@@ -108,9 +107,9 @@ public class EnergyPrices {
     		y[i]=originalValues.get(i);
     	}
 		
-    	double[] xi = new double[ThesisTopologySimple.N_STEPS];
+    	double[] xi = new double[TopologySimple.N_STEPS];
     	
-		for (int j = 0; j < ThesisTopologySimple.N_STEPS ; j++) {
+		for (int j = 0; j < TopologySimple.N_STEPS ; j++) {
     		xi[j]=j*MyTimeUnit.stepLength(TimeUnit.HOURS);    
     	}	   		
 		

@@ -8,14 +8,15 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import helper.IoHelper;
-import linprogMPC.ThesisTopologySimple;
+import linprogMPC.TopologySimple;
+import linprogMPC.helper.lp.LPOptimizationProblem;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.planning.StorageMessage;
  
 
 public class SolutionHandler {
 	
-	int nMPC = ThesisTopologySimple.N_STEPS_MPC;
+	int nMPC = TopologySimple.N_STEPS_MPC;
 	
 	public void exportVector(double[] data, String filename) {
 		BufferedWriter bw = null;
@@ -201,7 +202,7 @@ public class SolutionHandler {
 		return;	
 	}
 	
-	public double calcAutarky(OptimizationProblem problem, double[] sol) {
+	public double calcAutarky(LPOptimizationProblem problem, double[] sol) {
 		
 		double summeB_H = 0 ;
 		double summeB_el = 0 ;
@@ -232,7 +233,7 @@ public class SolutionHandler {
 		
 	}
 
-	public void calcNewCosts(OptimizationProblem problem, double[] sol, ArrayList<BuildingMessage> buildingSpecs) {
+	public void calcNewCosts(LPOptimizationProblem problem, double[] sol, ArrayList<BuildingMessage> buildingSpecs) {
 		
 		int nrOfStorages2 = 0;
 		int nrOfProducers2 = 0;
@@ -245,7 +246,7 @@ public class SolutionHandler {
 					
 		for(BuildingMessage buildingSpec : buildingSpecs) {
 			double newBuildingCosts = 0;
-			nrOfProducers2 += buildingSpec.getNrOfProducers();
+			nrOfProducers2 += buildingSpec.getNrOfControllableProducers() + buildingSpec.getNrOfVolatileProducers();
 			nrOfStorages2 += buildingSpec.getNrOfStorages();	
 			range2 = nMPC*(nrOfProducers2+2*nrOfStorages2);
 			for (int j=range1; j<range2; j++) {
@@ -277,7 +278,7 @@ public class SolutionHandler {
 		return result;
 	}
 	
-	public double[] getEffSolutionForThisTimeStep(double[] optSolution, OptimizationProblem problem, int nStepsMPC) {
+	public double[] getEffSolutionForThisTimeStep(double[] optSolution, LPOptimizationProblem problem, int nStepsMPC) {
 		
 		double[] result = new double[optSolution.length / nStepsMPC];
 		
@@ -288,7 +289,7 @@ public class SolutionHandler {
 		return result;
 	}
 
-	public String[] getNamesForThisTimeStep(OptimizationProblem problem, int nStepsMPC) {
+	public String[] getNamesForThisTimeStep(LPOptimizationProblem problem, int nStepsMPC) {
 		String[] result = new String[problem.namesUB.length / nStepsMPC];
 		
 		for (int i = 0; i < result.length; i++) {
@@ -298,7 +299,7 @@ public class SolutionHandler {
 		return result;
 	}
 	
-	public String[] getEffNamesForThisTimeStep(OptimizationProblem problem, int nStepsMPC) {
+	public String[] getEffNamesForThisTimeStep(LPOptimizationProblem problem, int nStepsMPC) {
 		String[] result = new String[problem.namesUB.length / nStepsMPC];
 		
 		for (int i = 0; i < result.length; i++) {
@@ -308,7 +309,7 @@ public class SolutionHandler {
 		return result;
 	}
 
-	public double[] getDemandForThisTimestep(OptimizationProblem problem, int nStepsMPC) {
+	public double[] getDemandForThisTimestep(LPOptimizationProblem problem, int nStepsMPC) {
 		double[] result = new double[problem.b_eq.length / nStepsMPC];
 		
 		for (int i = 0; i < result.length; i++) {
@@ -318,7 +319,7 @@ public class SolutionHandler {
 		return result;
 	}
 	
-	public double[] getPositiveDemandForThisTimestep(OptimizationProblem problem, int nStepsMPC) {
+	public double[] getPositiveDemandForThisTimestep(LPOptimizationProblem problem, int nStepsMPC) {
 		double[] result = new double[problem.b_eq.length / nStepsMPC + 1];
 		
 		for (int i = 0; i < result.length-2; i++) {

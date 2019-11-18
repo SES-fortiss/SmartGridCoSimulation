@@ -1,7 +1,6 @@
 package linprogMPC.components;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 
 import com.google.gson.Gson;
@@ -10,15 +9,11 @@ import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
-import linprogMPC.ThesisTopologySimple;
-import linprogMPC.helper.EnergyPrices;
-import linprogMPC.helper.HelperConcat;
-import linprogMPC.helper.MatrixBuildup;
-import linprogMPC.helper.OptimizationProblem;
-import linprogMPC.helper.OptimizationStarter;
+import linprogMPC.MILPTopology;
 import linprogMPC.helper.SolutionHandler;
+import linprogMPC.helper.lp.LPSolver;
+import linprogMPC.helper.milp.MILPSolver;
 import linprogMPC.helperOPCua.OpcServerContextGenerator;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.OptimizationResultMessage;
@@ -42,16 +37,12 @@ public class Building extends BehaviorModel {
 	public int port;
 	
 	// some long term values
-	double[] buildingsTotalCosts = new double[ThesisTopologySimple.NR_OF_ITERATIONS];
-	double[] buildingsTotalCO2 = new double[ThesisTopologySimple.NR_OF_ITERATIONS];
-	double[][] buildingsSolutionPerTimeStep = new double[ThesisTopologySimple.NR_OF_ITERATIONS][];
+	double[] buildingsTotalCosts = new double[MILPTopology.NR_OF_ITERATIONS];
+	double[] buildingsTotalCO2 = new double[MILPTopology.NR_OF_ITERATIONS];
+	double[][] buildingsSolutionPerTimeStep = new double[MILPTopology.NR_OF_ITERATIONS][];
 	
-	public int nStepsMPC = ThesisTopologySimple.N_STEPS_MPC;
+	public int nStepsMPC = MILPTopology.N_STEPS_MPC;
 	
-	// NEW(7.8.18 by JMr): Long-distance heating supply
-	public boolean LDHeating;
-	public int heatTransportLength;
-	EnergyPrices energyPrices = new EnergyPrices();
 	SolutionHandler solHandler = new SolutionHandler();
 	
 	// ================================
@@ -60,10 +51,8 @@ public class Building extends BehaviorModel {
 	public OptimizationResultMessage optResult = new OptimizationResultMessage(); // optResult = selbst berechnet
 	public OptimizationResultMessage requestContentToSend = new OptimizationResultMessage();
 
-	public Building(int port, boolean LDHeating, int heatTransportLength) {
+	public Building(int port) {
 		this.port = port;
-		this.LDHeating = LDHeating;
-		this.heatTransportLength = heatTransportLength;	
 	}
 	
 	@Override
@@ -73,8 +62,6 @@ public class Building extends BehaviorModel {
 		buildingMessage = new BuildingMessage();
 		buildingMessage.id = this.fullActorPath;
 		buildingMessage.name = this.actorName;
-		buildingMessage.LDHeating = LDHeating;
-		buildingMessage.heatTransportLength = heatTransportLength;
 		
 		this.actor.getContext().getChildren().forEach(child -> 
 			buildingMessage.childrenList.add(new ChildSpecification(this.fullActorPath + "/" + child.path().name())));		
@@ -105,11 +92,17 @@ public class Building extends BehaviorModel {
 			if(answerContent instanceof ConnectionMessage) {
 				buildingMessage.connectionList.add((ConnectionMessage) answerContent);
 			}
-		}		
+		}
 		refactorDemandList();
 		
-		if (!ThesisTopologySimple.MEMAP_ON) {			
-			solveOptProblem();
+		if (!MILPTopology.MEMAP_ON) {
+			
+			LPSolver lpsolver = new LPSolver(
+					buildingMessage, nStepsMPC, solHandler, 
+					buildingsTotalCosts, buildingsTotalCO2, 
+					getActualTimeStep(),buildingsSolutionPerTimeStep,
+					this.actorName,optResult);
+			lpsolver.solveLPOptProblem();
 			
 			double costTotal = 0;
 			double CO2Total = 0;
@@ -118,6 +111,11 @@ public class Building extends BehaviorModel {
 				CO2Total += buildingsTotalCO2[i];
 			}
 			System.out.println(this.actorName+" cost = " + String.format("%.02f", costTotal) + " € ; CO2: " + String.format("%.02f", CO2Total) + " kg");
+		}
+		
+		// TODO MILP
+		if (true) {
+			MILPSolver milpSolver = new MILPSolver(buildingMessage, nStepsMPC);
 		}
 		
 		buildingMessage = addMetering(buildingMessage);
@@ -144,91 +142,6 @@ public class Building extends BehaviorModel {
 		return result;
 	}
 
-	private void solveOptProblem() {
-		OptimizationProblem problem = null;
-		try {
-			
-			// ******* Optimierung ********************************
-			MatrixBuildup mb = new MatrixBuildup();			
-			problem = mb.singleBuilding(buildingMessage);
-			OptimizationStarter os = new OptimizationStarter();
-			double[] optSolution = os.runLinProg(problem);
-			
-			// ******** Ermittlung der Kosten *********************
-			double[] buildingCostPerTimestep = new double[nStepsMPC];
-			double[] buildingCO2PerTimestep = new double[nStepsMPC];
-			buildingCostPerTimestep = solHandler.calculateTimeStepCosts(optSolution, problem.lambda);
-			buildingCO2PerTimestep = solHandler.calculateTimeStepCosts(optSolution, problem.lambdaCO2);
-			buildingsTotalCosts[GlobalTime.getCurrentTimeStep()] += buildingCostPerTimestep[0];
-			buildingsTotalCO2[GlobalTime.getCurrentTimeStep()] += buildingCO2PerTimestep[0];	
-
-			// ******** Erstellung des Ergebnisvektors *********************
-			double[] currentStep = {getActualTimeStep()};
-			double[] currentOptVector = solHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
-			double[] currentDemand = solHandler.getDemandForThisTimestep(problem, nStepsMPC);
-			double[] currentSOC = solHandler.getCurrentSOC(buildingMessage.storageList);
-			double[] currentCost = {buildingCostPerTimestep[0]};
-			double[] currentCO2 = {buildingCO2PerTimestep[0]};
-			
-			double[] currentPosDemand = solHandler.getPositiveDemandForThisTimestep(problem, nStepsMPC);
-			double[] currentEffOptVector = solHandler.getEffSolutionForThisTimeStep(optSolution, problem, nStepsMPC);
-			
-			double[] electricalPrice = {energyPrices.getElectricityPriceInEuro(this.getActualTimeStep())};			
-			//double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, electricalPrice);
-			double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, currentCO2, electricalPrice, currentPosDemand, currentEffOptVector);
-			
-			String[] timeStep = {"timeStep"};
-			String[] currentNamesPartly = solHandler.getNamesForThisTimeStep(problem, nStepsMPC);
-			String[] currentEffNames= solHandler.getEffNamesForThisTimeStep(problem, nStepsMPC);
-			String[] demandStrings = {"demandHeat", "demandElectricity"};
-			String[] posDemandStrings = {"positiveDemandHeat", "positiveDemandHeatTotal", "positiveDemandElectricity"}; 
-			String[] storageNames = solHandler.getNamesForSOC(buildingMessage.storageList);
-			String[] costName = {"Cost"};
-			String[] CO2Name = {"CO2"};
-			String[] priceName = {"Price"};
-			
-			String[] namesAll = HelperConcat.concatAllObjects(timeStep, demandStrings, currentNamesPartly, storageNames, costName, CO2Name, priceName, posDemandStrings, currentEffNames);
-						
-			//System.out.println(this.actorName + " " + Arrays.toString(namesAll));
-			//System.out.println(this.actorName + " " + Arrays.toString(vectorAll));									
-			
-			//********* Speichern
-			
-			buildingsSolutionPerTimeStep[this.getActualTimeStep()] = vectorAll;
-			
-			if (!ThesisTopologySimple.MEMAP_ON) {
-				String saveString = ThesisTopologySimple.simulationName + "MPC"+ThesisTopologySimple.N_STEPS_MPC+"/";
-				saveString += this.actorName+"MPC"+nStepsMPC+"Solutions.csv";
-				if (GlobalTime.getCurrentTimeStep() == (ThesisTopologySimple.NR_OF_ITERATIONS-1)) {
-					solHandler.exportMatrixWithHeader(buildingsSolutionPerTimeStep, saveString, namesAll);
-				}
-			}
-			
-			
-			// ================= RequestContentToSend ==================					
-			for (int i = 0; i < optSolution.length/nStepsMPC; i++) {
-				double[] result = new double[nStepsMPC];
-				
-				for (int j = 0; j < result.length; j++) {
-					result[j] = optSolution[i*nStepsMPC + j];
-				}
-				
-				String str = problem.namesUB[i*nStepsMPC];
-				optResult.resultMap.put(str, result);
-				//System.out.println("result: " + str + Arrays.toString(result));
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println(this.actorName + " cannot solve the optimization");			
-			System.out.println("names: " + Arrays.toString(problem.namesUB));
-			System.out.println("b: " + Arrays.toString(problem.b_eq));
-			System.out.println("ub: " + Arrays.toString(problem.x_ub));
-			System.out.println("h: " + Arrays.toString(problem.h));
-		}		
-		
-	}
-
 	private void refactorDemandList() {		
 		BuildingMessage bm = this.buildingMessage;
 		
@@ -239,23 +152,23 @@ public class Building extends BehaviorModel {
 			if (demandMessage.networkType == NetworkType.DEMANDWITHBOTH) {
 				// Zwei draus machen
 				
-				DemandMessage a = new DemandMessage();
-				DemandMessage b = new DemandMessage();
+				DemandMessage heatDemand = new DemandMessage();
+				DemandMessage elecDemand = new DemandMessage();
 				
-				a.forecastType = demandMessage.forecastType;
-				b.forecastType = demandMessage.forecastType;
+				heatDemand.forecastType = demandMessage.forecastType;
+				elecDemand.forecastType = demandMessage.forecastType;
 				
-				a.id = demandMessage.id + "HEAT";
-				b.id = demandMessage.id + "ELECTRICITY";
+				heatDemand.id = demandMessage.id + "HEAT";
+				elecDemand.id = demandMessage.id + "ELECTRICITY";
 				
-				a.name = "HEAT_" + demandMessage.name;
-				b.name = "ELECTRICITY_" + demandMessage.name;
+				heatDemand.name = "HEAT_" + demandMessage.name;
+				elecDemand.name = "ELECTRICITY_" + demandMessage.name;
 				
-				a.networkType = NetworkType.HEAT;
-				b.networkType = NetworkType.ELECTRICITY;
+				heatDemand.networkType = NetworkType.HEAT;
+				elecDemand.networkType = NetworkType.ELECTRICITY;
 				
-				a.optimizationCriteria = demandMessage.optimizationCriteria;
-				b.optimizationCriteria = demandMessage.optimizationCriteria;
+				heatDemand.optimizationCriteria = demandMessage.optimizationCriteria;
+				elecDemand.optimizationCriteria = demandMessage.optimizationCriteria;
 				
 				int length = demandMessage.getDemandVector().length / 2;
 				double[] aInput =  new double[length];
@@ -266,11 +179,11 @@ public class Building extends BehaviorModel {
 					bInput[i] = demandMessage.getDemandVector()[length+i];
 				}
 				
-				a.setDemandVector(aInput);
-				b.setDemandVector(bInput);
+				heatDemand.setDemandVector(aInput);
+				elecDemand.setDemandVector(bInput);
 				
-				newDemandList.add(a);
-				newDemandList.add(b);
+				newDemandList.add(heatDemand);
+				newDemandList.add(elecDemand);
 			}
 			
 			if (demandMessage.networkType == NetworkType.ELECTRICITY) {
@@ -318,7 +231,7 @@ public class Building extends BehaviorModel {
 	@Override	
 	public void handleRequest() {		
 		requestContentToSend = optResult;		
-		if (ThesisTopologySimple.MEMAP_ON) {
+		if (MILPTopology.MEMAP_ON) {
 			requestContentToSend = (OptimizationResultMessage) requestContentReceived;
 		}		
 	}

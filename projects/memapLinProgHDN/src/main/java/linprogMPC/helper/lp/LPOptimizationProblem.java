@@ -1,6 +1,6 @@
-package linprogMPC.helper;
+package linprogMPC.helper.lp;
 
-public class OptimizationProblem {
+public class LPOptimizationProblem {
 	
 	public double[] lambda;
 	public double[] lambdaCO2;
@@ -21,7 +21,7 @@ public class OptimizationProblem {
 	int marketmatrices;
 	
 
-	public OptimizationProblem(int nStepsMPC, int nrOfBuildings, int nrOfProducers, int nrOfStorages, int nrOfCouplers, int nrOfConnections, boolean lDHeating) {
+	public LPOptimizationProblem(int nStepsMPC, int nrOfBuildings, int nrOfProducers, int nrOfStorages, int nrOfCouplers, int nrOfConnections) {
 		
 		this.nrOfBuildings = nrOfBuildings;
 		this.nrOfProducers = nrOfProducers;
@@ -29,12 +29,7 @@ public class OptimizationProblem {
 		this.nrOfCouplers = nrOfCouplers;
 		this.nrOfConnections = nrOfConnections;
 		
-		if (lDHeating) {
-			this.marketmatrices = 2+2*nrOfBuildings; // selling/buying(2) of electricity/heat(2)
-		}
-		else {
-			this.marketmatrices = 2; // selling/buying(2) of electricity
-		}
+		this.marketmatrices = 2; // selling/buying(2) of electricity
 		
 		
 		lambda  = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages) + nrOfCouplers + nrOfConnections*2 + marketmatrices)];

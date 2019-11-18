@@ -25,7 +25,7 @@ public class PV extends Producer {
 		volatileProducerMessage.operationalPriceEURO = 0.00001;
 		volatileProducerMessage.operationalPriceCO2 = 0.0;
 		volatileProducerMessage.efficiency = efficiency;
-		volatileProducerMessage.installedPower = installedPower;
+		volatileProducerMessage.maxPower = maxPower;
 		volatileProducerMessage.networkType = NetworkType.ELECTRICITY;
 		volatileProducerMessage.forecast = new double[nStepsMPC];
 		
@@ -33,7 +33,7 @@ public class PV extends Producer {
 
 		
 		for (int i = 0; i < nStepsMPC; i++) {
-			volatileProducerMessage.forecast[i] = solarRadiation.getSolarProductionPerKWp(cts+i)*installedPower;			
+			volatileProducerMessage.forecast[i] = solarRadiation.getSolarProductionPerKWp(cts+i)*maxPower;			
 		}
 		super.updateDisplay(volatileProducerMessage);
 	}

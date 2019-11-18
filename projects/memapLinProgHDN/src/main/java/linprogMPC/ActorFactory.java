@@ -33,10 +33,10 @@ public abstract class ActorFactory {
 		return result;
 	}
 	
-	public static ActorOptions createGasBoiler(double qdot_max, double efficiency, double costs, int port){
+	public static ActorOptions createGasBoiler(double max, double min, double efficiency, double costs, int port){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new GasBoiler(qdot_max, efficiency, costs, port));	
+				new GasBoiler(max, min, efficiency, costs, port));	
 		return result;
 	}	
 	
@@ -105,10 +105,10 @@ public abstract class ActorFactory {
 		return result;
 	}
 	
-	public static ActorOptions createBuilding(int port, boolean LDHeating, int heatTransportLength){
+	public static ActorOptions createBuilding(int port){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new Building(port, LDHeating, heatTransportLength));	
+				new Building(port));	
 		return result;
 	}
 	
