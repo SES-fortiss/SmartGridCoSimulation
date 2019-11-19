@@ -33,9 +33,10 @@ public class MILPTopology {
 		String building1Name = "Building1";
 		top.addActor(building1Name, ActorFactory.createBuilding(PORT_UNDEFINED));
 		top.addActorAsChild(building1Name + "/Consumption", ActorFactory.createConsumer(consumptionProfiles, 0, PORT_UNDEFINED));
-		top.addActorAsChild(building1Name + "/OilBoiler1", ActorFactory.createGasBoiler(20, 10, 0.95, 0.0685, PORT_UNDEFINED));
-		top.addActorAsChild(building1Name + "/ThermalStorage", ActorFactory.createThermalStorage(100, 100, 100, 0.9, 0.9, PORT_UNDEFINED));
-			
+		top.addActorAsChild(building1Name + "/PV", ActorFactory.createPV(5, PORT_UNDEFINED));
+		top.addActorAsChild(building1Name + "/Battery", ActorFactory.createBattery(12, 3.3, 3.3, 0.99, 0.99, PORT_UNDEFINED));
+		top.addActorAsChild(building1Name + "/HeatPump", ActorFactory.createHeatPump(10, 0, 3.8, -1 , PORT_UNDEFINED));			
+		
 		return top;
 		
 	}

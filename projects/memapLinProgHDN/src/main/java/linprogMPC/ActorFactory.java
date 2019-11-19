@@ -26,10 +26,10 @@ public abstract class ActorFactory {
 		return result;
 	}
 
-	public static ActorOptions createCHP(double qdot_max, double efficiency_el, double efficiency_H, int port){
+	public static ActorOptions createCHP(double qdot_max, double qdot_min, double efficiencyHeat, double efficiencyElec, int port){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new CHP(qdot_max, efficiency_el, efficiency_H, port));	
+				new CHP(qdot_max, qdot_min, efficiencyHeat, efficiencyElec, port));	
 		return result;
 	}
 	
@@ -40,11 +40,11 @@ public abstract class ActorFactory {
 		return result;
 	}	
 	
-	public static ActorOptions createHeatPump(double qdot_max, double efficiencyHeat, double efficiencyElec, int port){
+	public static ActorOptions createHeatPump(double qdot_max, double qdot_min, double efficiencyHeat, double efficiencyElec, int port){
 		ActorOptions result = new ActorOptions(
 				LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new HeatPump(qdot_max, efficiencyHeat, efficiencyElec, port));	
+				new HeatPump(qdot_max, qdot_min, efficiencyHeat, efficiencyElec, port));
 		return result;
 	}
 	

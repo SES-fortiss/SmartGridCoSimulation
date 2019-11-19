@@ -4,8 +4,8 @@ import linprogMPC.components.prototypes.Coupler;
 
 public class HeatPump extends Coupler {
 	
-	public HeatPump(double installedPower, double efficiencyHeat, double efficiencyElec, int port) {
-		super(installedPower, efficiencyHeat, efficiencyElec, port);
+	public HeatPump(double installedPower, double minPower, double efficiencyHeat, double efficiencyElec, int port) {
+		super(installedPower, minPower, efficiencyHeat, efficiencyElec, port);
 	}
 	
 	@Override
@@ -18,6 +18,7 @@ public class HeatPump extends Coupler {
 		couplerMessage.efficiencyElec = efficiencyElec;
 		couplerMessage.efficiencyHeat = efficiencyHeat;
 		couplerMessage.installedPower = installedPower;
+		couplerMessage.minPower = minPower;
 		
 		super.updateDisplay(couplerMessage);
 	}

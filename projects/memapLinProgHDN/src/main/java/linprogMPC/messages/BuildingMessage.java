@@ -20,7 +20,6 @@ public class BuildingMessage implements AnswerContent {
 	
 	public String name; // contains the name of the actor, i.e. building
 	public String id;  // unique id of the sender
-	public boolean ack  = true;
 
 	// ========SOME Placeholders for OPC UA interface ====================
 	

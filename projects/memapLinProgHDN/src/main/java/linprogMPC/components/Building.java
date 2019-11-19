@@ -26,6 +26,7 @@ import linprogMPC.messages.planning.ProducerMessage;
 import linprogMPC.messages.planning.StorageMessage;
 import linprogMPC.messages.planning.VolatileProducerMessage;
 import linprogMPC.messages.realTime.CurrentMeterValues;
+import lpsolve.LpSolveException;
 import opcMEMAP.MemapOpcServerStarter;
 
 public class Building extends BehaviorModel {
@@ -116,6 +117,11 @@ public class Building extends BehaviorModel {
 		// TODO MILP
 		if (true) {
 			MILPSolver milpSolver = new MILPSolver(buildingMessage, nStepsMPC);
+			try {
+				milpSolver.solveMILP();
+			} catch (LpSolveException e) {			
+				e.printStackTrace();
+			}
 		}
 		
 		buildingMessage = addMetering(buildingMessage);

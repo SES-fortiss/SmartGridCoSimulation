@@ -3,7 +3,6 @@ package linprogMPC.messages.planning;
 import akka.basicMessages.AnswerContent;
 import linprogMPC.messages.extension.NetworkType;
 
-//@Deprecated
 public class ProducerMessage implements AnswerContent {
 	
 	public String id;

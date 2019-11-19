@@ -7,6 +7,7 @@ import linprogMPC.messages.planning.CouplerMessage;
 public abstract class Coupler extends Device {
 
 	public double installedPower;
+	public double minPower;
 	public double efficiencyHeat;
 	public double efficiencyElec;
 	
@@ -14,9 +15,10 @@ public abstract class Coupler extends Device {
 	
 	public double[] mpcSignal  = new double[nStepsMPC];
 	
-	public Coupler(double installedPower, double efficiencyHeat, double efficiencyElec, int port) {
+	public Coupler(double installedPower, double minPower, double efficiencyHeat, double efficiencyElec, int port) {
 		super(port);
 		this.installedPower = installedPower;
+		this.minPower = minPower;
 		this.efficiencyHeat = efficiencyHeat;
 		this.efficiencyElec = efficiencyElec;
 	}

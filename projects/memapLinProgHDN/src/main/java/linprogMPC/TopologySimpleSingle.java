@@ -62,7 +62,7 @@ public class TopologySimpleSingle {
 		building3.addActorAsChild(building3Name + "/Consumption", ActorFactory.createConsumer(consumptionProfiles, 2, PORT_UNDEFINED));
 		building3.addActorAsChild(building3Name + "/PV3", ActorFactory.createPV(40.0, PORT_UNDEFINED));
 		//building3.addActorAsChild(building3Name + "/PV3", ActorFactory.createPV(12.0, PORT_UNDEFINED));
-		building3.addActorAsChild(building3Name + "/HeatPump3", ActorFactory.createHeatPump(25, 2.5, -1, PORT_UNDEFINED));
+		building3.addActorAsChild(building3Name + "/HeatPump3", ActorFactory.createHeatPump(25, 0, 2.5, -1, PORT_UNDEFINED));
 		building3.addActorAsChild(building3Name + "/GasBoiler3", ActorFactory.createGasBoiler(20, 0, 0.98, 0.0591, PORT_UNDEFINED));
 		building3.addActorAsChild(building3Name + "/ThermalStorage3", ActorFactory.createThermalStorage(100, 60, 60, 0.9, 0.9, PORT_UNDEFINED));
 		//building3.addActorAsChild(building3Name + "/ThermalStorage3", ActorFactory.createThermalStorage(3*100, 3*60, 3*60, 0.9, 0.9, PORT_UNDEFINED));
@@ -71,14 +71,14 @@ public class TopologySimpleSingle {
 		ActorTopology building4 = new ActorTopology(building4Name);
 		building4.addActor(building4Name, ActorFactory.createBuilding(PORT_UNDEFINED));
 		building4.addActorAsChild(building4Name + "/Consumption", ActorFactory.createConsumer(consumptionProfiles, 3, PORT_UNDEFINED));
-		building4.addActorAsChild(building4Name + "/CHP4", ActorFactory.createCHP(43, 0.61, 0.29, PORT_UNDEFINED));
+		building4.addActorAsChild(building4Name + "/CHP4", ActorFactory.createCHP(43, 0, 0.61, 0.29, PORT_UNDEFINED));
 		building4.addActorAsChild(building4Name + "/ThermalStorage4", ActorFactory.createThermalStorage(100, 60, 60, 0.9, 0.9, PORT_UNDEFINED));
 		
 		String building5Name = "Building5";
 		ActorTopology building5 = new ActorTopology(building5Name);
 		building5.addActor(building5Name, ActorFactory.createBuilding(PORT_UNDEFINED));
 		building5.addActorAsChild(building5Name + "/Consumption", ActorFactory.createConsumer(consumptionProfiles, 4, PORT_UNDEFINED));
-		building5.addActorAsChild(building5Name + "/CHP5", ActorFactory.createCHP(43, 0.60, 0.28, PORT_UNDEFINED));
+		building5.addActorAsChild(building5Name + "/CHP5", ActorFactory.createCHP(43, 0, 0.60, 0.28, PORT_UNDEFINED));
 		building5.addActorAsChild(building5Name + "/ThermalStorage5", ActorFactory.createThermalStorage(100, 60, 60, 0.9, 0.9, PORT_UNDEFINED));
 		building5.addActorAsChild(building5Name + "/SolarThermic5", ActorFactory.createSolarThermic(20, PORT_UNDEFINED));
 		//building5.addActorAsChild(building5Name + "/SolarThermic5", ActorFactory.createSolarThermic(10, PORT_UNDEFINED));
