@@ -60,7 +60,7 @@ public class Menu extends JTree {
 		Object[] structure = new Object[buildingCount + 1];
 		structure[0] = "Results";
 		for (int i = 1; i <= buildingCount; i++) {
-			int numberOfSeries = Reporter.output.getDataSetSize(0);
+			int numberOfSeries = Reporter.output.getDataSetSize(i - 1);
 
 			Object[] subs = new Object[numberOfSeries];
 			subs[0] = Designer.buildings.get(i - 1).getName();
@@ -79,7 +79,7 @@ public class Menu extends JTree {
 	 */
 	private static Object[] memapOnStructure() {
 		int numberOfSeries = Reporter.output.getDataSetSize(0);
-		Object[] structure = new Object[numberOfSeries];
+		Object[] structure = new Object[numberOfSeries + 1];
 		structure[0] = "Results";
 		for (int j = 1; j < structure.length; j++) {
 			structure[j] = Reporter.output.getDataLabel(0, j - 1);
