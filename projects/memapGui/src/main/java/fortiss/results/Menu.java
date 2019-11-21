@@ -79,10 +79,10 @@ public class Menu extends JTree {
 	 */
 	private static Object[] memapOnStructure() {
 		int numberOfSeries = Reporter.output.getDataSetSize(0);
-		Object[] structure = new Object[numberOfSeries + 1];
+		Object[] structure = new Object[numberOfSeries];
 		structure[0] = "Results";
 		for (int j = 1; j < structure.length; j++) {
-			structure[j] = Reporter.output.getDataLabel(0, j - 1);
+			structure[j] = Reporter.output.getDataLabel(0, j);
 		}
 		return structure;
 	}

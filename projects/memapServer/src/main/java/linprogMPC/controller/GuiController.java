@@ -156,9 +156,16 @@ public class GuiController {
 		public CSVCoupler deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context)
 				throws JsonParseException {
 			JsonObject jObject = (JsonObject) jsonElement;
+			String networkP = jObject.get("networkTypeP").getAsString();
+			NetworkType primaryNetworkType = NetworkType.ELECTRICITY;
+			NetworkType secondaryNetworkType = NetworkType.HEAT;
+			if (networkP == "Heat") {
+				primaryNetworkType = NetworkType.HEAT;
+				secondaryNetworkType = NetworkType.ELECTRICITY;
+			}
 			
-			return new CSVCoupler(jObject.get("name").getAsString(), 1000, jObject.get("efficiencyPrimary").getAsDouble(),
-					jObject.get("efficiencySecondary").getAsDouble(), false, 0);
+			return new CSVCoupler(jObject.get("name").getAsString(), jObject.get("power").getAsDouble(), jObject.get("efficiencyPrimary").getAsDouble(),
+					jObject.get("efficiencySecondary").getAsDouble(), primaryNetworkType, secondaryNetworkType, jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
 		}
 	}
 
@@ -169,7 +176,7 @@ public class GuiController {
 			JsonObject jObject = (JsonObject) jsonElement;
 
 			return new CSVProducer(jObject.get("name").getAsString(), jObject.get("power").getAsDouble(), jObject.get("efficiency").getAsDouble(),
-					jObject.get("cost").getAsDouble(), 0);
+					jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
 		}
 	}
 
@@ -185,7 +192,7 @@ public class GuiController {
 				networkType = NetworkType.HEAT;
 			}
 
-			return new CSVVolatileProducer(jObject.get("name").getAsString(), jObject.get("power").getAsDouble(), networkType, 0);
+			return new CSVVolatileProducer(jObject.get("name").getAsString(), jObject.get("power").getAsDouble(), networkType, jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
 		}
 	}
 
@@ -204,7 +211,7 @@ public class GuiController {
 
 			return new CSVStorage(jObject.get("name").getAsString(), jObject.get("capacity").getAsDouble(), jObject.get("maxCharging").getAsDouble(),
 					jObject.get("maxDischarging").getAsDouble(), jObject.get("effIN").getAsDouble(),
-					jObject.get("effOUT").getAsDouble(), networkType, 0);
+					jObject.get("effOUT").getAsDouble(), networkType, 0.0001, 0.0001, 0);
 		}
 	}
 

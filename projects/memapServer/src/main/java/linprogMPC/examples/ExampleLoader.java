@@ -82,17 +82,17 @@ public abstract class ExampleLoader {
 
 		BuildingController building2 = new CSVBuildingController("Building2", false, 50);
 		Consumer consumer2 = new CSVConsumer("demand2", "EXAMPLE2", 0);
-		Storage battery2 = new CSVStorage("storage2", 12.0, 9, 9, 0.95, 0.95, NetworkType.ELECTRICITY, 0);
-		Producer producer2 = new CSVProducer("producer2", 20.0, 0.89, 0.006, PORT_UNDEFINED);
+		Storage battery2 = new CSVStorage("storage2", 30.0, 0.9, 0.9, 0.95, 0.95, NetworkType.ELECTRICITY, 0.0001, 0.0001, 0);
+		Producer producer2 = new CSVProducer("producer2", 40.0, 0.89, 0.0591, 0.202, PORT_UNDEFINED);
 		building2.attach(producer2);
 		building2.attach(battery2);
 		building2.attach(consumer2);
 
 		BuildingController building3 = new CSVBuildingController("Building3", false, 50);
 		Consumer consumer3 = new CSVConsumer("demand3", "EXAMPLE3", 0);
-		Producer pv3 = new CSVVolatileProducer("pv3", 12.0 + 5.0, NetworkType.ELECTRICITY, PORT_UNDEFINED);
-		Coupler heatpump3 = new CSVCoupler("heatpump3", 25, 2.5, -1, false, PORT_UNDEFINED);
-		Storage thermalStorage3 = new CSVStorage("thermalStorage3", 3 * 100, 3 * 60, 3 * 60, 0.9, 0.9, NetworkType.HEAT,
+		Producer pv3 = new CSVVolatileProducer("pv3", 40.0, NetworkType.ELECTRICITY, 0.0001, 0, PORT_UNDEFINED);
+		Coupler heatpump3 = new CSVCoupler("heatpump3", 25.0, 2.5, -1, NetworkType.ELECTRICITY, NetworkType.HEAT, 0.0591, 0.202, PORT_UNDEFINED);
+		Storage thermalStorage3 = new CSVStorage("thermalStorage3", 300, 180, 180, 0.9, 0.9, NetworkType.HEAT, 0.0001, 0.0001,
 				PORT_UNDEFINED);
 		building3.attach(pv3);
 		building3.attach(heatpump3);
@@ -101,13 +101,13 @@ public abstract class ExampleLoader {
 
 		BuildingController building4 = new CSVBuildingController("Building4", false, 50);
 		Consumer consumer4 = new CSVConsumer("demand4", "EXAMPLE4", 0);
-		Coupler chp4 = new CSVCoupler("chp4", 43, 0.61, 0.29, true, PORT_UNDEFINED);
+		Coupler chp4 = new CSVCoupler("chp4", 43, 0.61, 0.29, NetworkType.HEAT, NetworkType.ELECTRICITY, 0.0591, 0.202, PORT_UNDEFINED);
 		building4.attach(chp4);
 		building4.attach(consumer4);
 
 		BuildingController building5 = new CSVBuildingController("Building5", false, 50);
 		Consumer consumer5 = new CSVConsumer("demand5", "EXAMPLE5", 0);
-		Producer solarThermic5 = new CSVVolatileProducer("solarThermic5", 10, NetworkType.HEAT, PORT_UNDEFINED);
+		Producer solarThermic5 = new CSVVolatileProducer("solarThermic5", 30, NetworkType.HEAT, 0, 0, PORT_UNDEFINED);
 		building5.attach(solarThermic5);
 		building5.attach(consumer5);
 

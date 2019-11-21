@@ -28,8 +28,8 @@ public abstract class Device extends BehaviorModel {
 		super();
 		this.actorName = actorName;
 		if (port != 0) {
-			display = new M2MDisplay(port); // add port in to display a json
-			display.run();
+			//display = new M2MDisplay(port); // add port in to display a json
+			//display.run();
 			System.out.println("Device-Display Port: " + port);
 		}
 	}
@@ -64,7 +64,7 @@ public abstract class Device extends BehaviorModel {
 	
 	public void updateDisplay(Object o) {		
 		if (display != null) {
-			display.update(gson.toJson(o));
+			//display.update(gson.toJson(o));
 		}		
 	}
 }

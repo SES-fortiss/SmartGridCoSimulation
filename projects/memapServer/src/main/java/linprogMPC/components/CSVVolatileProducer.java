@@ -11,12 +11,24 @@ public class CSVVolatileProducer extends Producer {
 	static double efficiency = 1.0;
 	public VolatileProducerMessage volatileProducerMessage;
 	public NetworkType networkType;
+	double opCost;
+	double costCO2;
 
-	public CSVVolatileProducer(String name, double installedPower, NetworkType networkType, int port) {
+	/**
+	 * @param name           volatile producer name
+	 * @param installedPower volatile power [kW]
+	 * @param networkType
+	 * @param opCost         optimization cost [EUR]
+	 * @param costCO2        CO2 cost [kg CO2/kWh]
+	 * @param port
+	 */
+	public CSVVolatileProducer(String name, double installedPower, NetworkType networkType, double opCost,
+			double costCO2, int port) {
 		super(name, installedPower, efficiency, port);
 		volatileProducerMessage = new VolatileProducerMessage();
 		this.networkType = networkType;
-
+		this.opCost = opCost;
+		this.costCO2 = costCO2;
 	}
 
 	@Override
@@ -24,7 +36,8 @@ public class CSVVolatileProducer extends Producer {
 		int cts = GlobalTime.getCurrentTimeStep();
 		volatileProducerMessage.name = this.actorName;
 		volatileProducerMessage.id = this.fullActorPath;
-		volatileProducerMessage.operationalPriceEURO = 0.00001;
+		volatileProducerMessage.operationalCostEUR = opCost;
+		volatileProducerMessage.operationalCostCO2 = costCO2;
 		volatileProducerMessage.efficiency = efficiency;
 		volatileProducerMessage.installedPower = installedPower;
 		volatileProducerMessage.networkType = this.networkType;

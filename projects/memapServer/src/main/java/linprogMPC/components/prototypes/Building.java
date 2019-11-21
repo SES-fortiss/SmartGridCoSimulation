@@ -35,12 +35,13 @@ import opcMEMAP.MemapOpcServerStarter;
 public class Building extends BehaviorModel {
 
 	protected Gson gson = new Gson();
-	private MemapOpcServerStarter mServer;
+	//private MemapOpcServerStarter mServer;
 
 	public int port;
 
 	// some long term values
 	double[] buildingsTotalCosts = new double[TopologyConfig.NR_OF_ITERATIONS];
+	double[] buildingsTotalCO2 = new double[TopologyConfig.NR_OF_ITERATIONS];
 	double[][] buildingsSolutionPerTimeStep = new double[TopologyConfig.NR_OF_ITERATIONS][];
 
 	public int nStepsMPC = TopologyConfig.N_STEPS_MPC;
@@ -146,10 +147,12 @@ public class Building extends BehaviorModel {
 			solveOptProblem();
 
 			double costTotal = 0;
+			double CO2Total = 0;
 			for (int i = 0; i < buildingsTotalCosts.length; i++) {
 				costTotal += buildingsTotalCosts[i];
+				CO2Total += buildingsTotalCO2[i];
 			}
-			System.out.println(this.actorName + " cost = " + costTotal);
+			System.out.println(this.actorName+" cost = " + String.format("%.02f", costTotal) + " € ; CO2: " + String.format("%.02f", CO2Total) + " kg");
 		}
 
 		buildingMessage = addMetering(buildingMessage);
@@ -190,26 +193,41 @@ public class Building extends BehaviorModel {
 			double[] buildingCostPerTimestep = new double[nStepsMPC];
 			buildingCostPerTimestep = solHandler.calculateTimeStepCosts(optSolution, problem.lambda);
 			buildingsTotalCosts[GlobalTime.getCurrentTimeStep()] += buildingCostPerTimestep[0];
-
+			double[] buildingCO2PerTimestep = new double[nStepsMPC];
+			buildingCostPerTimestep = solHandler.calculateTimeStepCosts(optSolution, problem.lambda);
+			buildingCO2PerTimestep = solHandler.calculateTimeStepCosts(optSolution, problem.lambdaCO2);
+			buildingsTotalCosts[GlobalTime.getCurrentTimeStep()] += buildingCostPerTimestep[0];
+			buildingsTotalCO2[GlobalTime.getCurrentTimeStep()] += buildingCO2PerTimestep[0];
+			
 			// Creation of the result vector
 			double[] currentStep = { getActualTimeStep() };
 			double[] currentOptVector = solHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
 			double[] currentDemand = solHandler.getDemandForThisTimestep(problem, nStepsMPC);
 			double[] currentSOC = solHandler.getCurrentSOC(buildingMessage.storageList);
 			double[] currentCost = { buildingCostPerTimestep[0] };
+			double[] currentCO2 = {buildingCO2PerTimestep[0]};
+			
+			//double[] currentPosDemand = solHandler.getPositiveDemandForThisTimestep(problem, nStepsMPC);
+ 			//double[] currentEffOptVector = solHandler.getEffSolutionForThisTimeStep(optSolution, problem, nStepsMPC);
+ 			
 			double[] electricalPrice = { energyPrices.getElectricityPriceInEuro(this.getActualTimeStep()) };
+			// double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, currentCO2, electricalPrice, currentPosDemand, currentEffOptVector);
 			double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC,
-					currentCost, electricalPrice);
+					currentCost, currentCO2, electricalPrice);
 
 			String[] timeStep = { "Time step" };
 			String[] currentNamesPartly = solHandler.getNamesForThisTimeStep(problem, nStepsMPC);
+			//String[] currentEffNames= solHandler.getEffNamesForThisTimeStep(problem, nStepsMPC);
+			//String[] posDemandStrings = {"positiveDemandHeat", "positiveDemandHeatTotal", "positiveDemandElectricity"}; 
 			String[] demandStrings = solHandler.getNamesForDemand();
 			String[] storageNames = solHandler.getNamesForSOC(buildingMessage.storageList);
 			String[] costName = { "Cost" };
+			String[] CO2Name = {"CO2"};
 			String[] priceName = { "Price" };
 
+			// String[] namesAll = HelperConcat.concatAllObjects(timeStep, demandStrings, currentNamesPartly, storageNames, costName, CO2Name, priceName, posDemandStrings, currentEffNames);
 			String[] namesAll = HelperConcat.concatAllObjects(timeStep, demandStrings, currentNamesPartly, storageNames,
-					costName, priceName);
+					costName, CO2Name, priceName);
 
 			// Save
 			buildingsSolutionPerTimeStep[this.getActualTimeStep()] = vectorAll;
@@ -309,9 +327,9 @@ public class Building extends BehaviorModel {
 			// String filePath = "src/main/java/Building1.json";
 
 			if (port != 0) {
-				this.mServer = new MemapOpcServerStarter(false, gson.toJson(buildingMessage), port);
+				//this.mServer = new MemapOpcServerStarter(false, gson.toJson(buildingMessage), port);
 				try {
-					this.mServer.start();
+					//this.mServer.start();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -321,8 +339,8 @@ public class Building extends BehaviorModel {
 
 		if (port != 0) {
 			try {
-				mServer.update(gson.toJson(buildingMessage));
-				Thread.sleep(1000);
+				//mServer.update(gson.toJson(buildingMessage));
+				//Thread.sleep(1000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -347,7 +365,7 @@ public class Building extends BehaviorModel {
 	@Override
 	public void stop() {
 		if (port != 0) {
-			mServer.stop();
+			//mServer.stop();
 		}
 		super.stop();
 	}

@@ -145,7 +145,7 @@ public class SolutionHandler {
 			}
 		}
 	}
-	
+
 	/**
 	 * Export a vector of costs
 	 * 
@@ -167,7 +167,7 @@ public class SolutionHandler {
 		exportVector(costVector, filename);
 		return costs;
 	}
-	
+
 	/**
 	 * Export a vector of production
 	 * 
@@ -184,7 +184,26 @@ public class SolutionHandler {
 		}
 		return;
 	}
-	
+
+	public double[][] getCorrectedSolutionVector(double[][] matrix, double[] vec, int NumberOfStorages)
+			throws IOException {
+		if (matrix[0].length == vec.length) {
+			int size = (int) (matrix[0].length / nMPC - 4);
+			double[][] TotalDeviceProduction = new double[size + NumberOfStorages][2];
+
+			for (int i = 0; i < size + NumberOfStorages; i++) {
+				for (int j = 0; j < nMPC; j++) {
+
+					TotalDeviceProduction[i][0] += matrix[j][i * nMPC + j] * vec[i * nMPC + j]; // Heat
+					TotalDeviceProduction[i][1] += matrix[j + nMPC][i * nMPC + j] * vec[i * nMPC + j]; // Electricity
+				}
+			}
+			return TotalDeviceProduction;
+		}
+		return null;
+
+	}
+
 	public double[] calculateTimeStepCosts(double[] sol, double[] lambda) {
 		// The Costs are evaluated only for the first timestep of the MPC calculation
 		double[] costVector = new double[nMPC];
@@ -272,8 +291,8 @@ public class SolutionHandler {
 
 	/**
 	 * @param optSolution
-	 * @param nStepsMPC the number of steps for MPC
-	 * @return an array with the solution 
+	 * @param nStepsMPC   the number of steps for MPC
+	 * @return an array with the solution
 	 */
 	public double[] getSolutionForThisTimeStep(double[] optSolution, int nStepsMPC) {
 		double[] result = new double[optSolution.length / nStepsMPC];
@@ -284,7 +303,7 @@ public class SolutionHandler {
 	}
 
 	/**
-	 * @param problem an optimization problem
+	 * @param problem   an optimization problem
 	 * @param nStepsMPC the number of steps for MPC
 	 * @return an array with the demand values
 	 */
@@ -293,6 +312,30 @@ public class SolutionHandler {
 		for (int i = 0; i < result.length; i++) {
 			result[i] = problem.b_eq[i * nStepsMPC];
 		}
+		return result;
+	}
+
+	public double[] getEffSolutionForThisTimeStep(double[] optSolution, OptimizationProblem problem, int nStepsMPC) {
+		double[] result = new double[optSolution.length / nStepsMPC];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = optSolution[i * nStepsMPC] * problem.etas[i * nStepsMPC];
+		}
+		return result;
+	}
+
+	/**
+	 * @param problem   an optimization problem
+	 * @param nStepsMPC the number of steps for MPC
+	 * @return an array with the positive demand values
+	 */
+	public double[] getPositiveDemandForThisTimestep(OptimizationProblem problem, int nStepsMPC) {
+		double[] result = new double[problem.b_eq.length / nStepsMPC + 1];
+
+		for (int i = 0; i < result.length - 2; i++) {
+			result[i] = -problem.b_eq[i * nStepsMPC];
+			result[result.length - 2] += result[i];
+		}
+		result[result.length - 1] = -problem.b_eq[(result.length - 2) * nStepsMPC];
 		return result;
 	}
 
@@ -323,6 +366,19 @@ public class SolutionHandler {
 	}
 
 	/**
+	 * @return an array with the demand names when Global MEMAP optimization is ON
+	 */
+	public String[] getNamesForDemand(ArrayList<BuildingMessage> buildingMessageList, int nStepsMPC) {
+		String[] result = new String[buildingMessageList.size() + 1];
+
+		for (int i = 0; i < result.length - 1; i++) {
+			result[i] = "Heat demand - " + buildingMessageList.get(i).name;
+		}
+		result[result.length - 1] = "Combined electricity demand";
+		return result;
+	}
+
+	/**
 	 * @return an array with the demand type names
 	 */
 	public String[] getNamesForDemand() {
@@ -331,7 +387,33 @@ public class SolutionHandler {
 	}
 
 	/**
-	 * @param problem an optimization problem
+	 * @return an array with the demand names when Global MEMAP optimization is ON
+	 */
+	public String[] getNamesForPositiveDemand(ArrayList<BuildingMessage> buildingMessageList) {
+		String[] result = new String[buildingMessageList.size() + 2];
+
+		for (int i = 0; i < result.length - 2; i++) {
+			result[i] = "(+) Heat demand - " + buildingMessageList.get(i).name;
+		}
+		result[result.length - 2] = "Combined heat demand";
+		result[result.length - 1] = "Combined electricity demand";
+		return result;
+	}
+
+	public String[] getEffNamesForThisTimeStep(OptimizationProblem problem, int nStepsMPC) {
+		String[] result = new String[problem.namesUB.length / nStepsMPC];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = "(+) " + problem.namesUB[i * nStepsMPC];
+			if (result[i].contains(".")) {
+				String[] strSplit = result[i].split("\\.");
+				result[i] = "(+) " + strSplit[strSplit.length - 1];
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * @param problem   an optimization problem
 	 * @param nStepsMPC the number of steps for MPC
 	 * @return an array with the names of storage objects
 	 */
@@ -339,14 +421,14 @@ public class SolutionHandler {
 		String[] result = new String[problem.namesUB.length / nStepsMPC];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = problem.namesUB[i * nStepsMPC];
-			if(result[i].contains(".")) {
+			if (result[i].contains(".")) {
 				String[] strSplit = result[i].split("\\.");
-				result[i] = strSplit[strSplit.length-1];
+				result[i] = strSplit[strSplit.length - 1];
 			}
 		}
 		return result;
 	}
-	
+
 	/**
 	 * @param storageMessageList a list of storage messages
 	 * @return an array with the names of storage objects
@@ -354,10 +436,10 @@ public class SolutionHandler {
 	public String[] getNamesForSOC(ArrayList<StorageMessage> storageMessageList) {
 		String[] result = new String[storageMessageList.size()];
 		for (int i = 0; i < result.length; i++) {
-			result[i] = storageMessageList.get(i).name; 
-			if(result[i].contains(".")) {
+			result[i] = storageMessageList.get(i).name;
+			if (result[i].contains(".")) {
 				String[] strSplit = result[i].split("\\.");
-				result[i] = strSplit[strSplit.length-1];
+				result[i] = strSplit[strSplit.length - 1];
 			}
 		}
 		return result;
@@ -375,5 +457,4 @@ public class SolutionHandler {
 		return getNamesForSOC(storeMessageList);
 	}
 
-	
 }
