@@ -12,8 +12,6 @@ public class MenuListener implements TreeSelectionListener {
 
 	private DefaultMutableTreeNode sel;
 	private DefaultMutableTreeNode par;
-	// private ArrayList<ArrayList<Double>> data;
-	private int seriesIndex;
 	private int index;
 
 	/**
@@ -60,7 +58,7 @@ public class MenuListener implements TreeSelectionListener {
 	 * @return a name to be assigned to a data series in the results interface.
 	 */
 	public String getSeriesName() {
-		String name = par.toString() + " - " + Reporter.output.getDataLabel(index, seriesIndex);
+		String name = par.toString() + " - " + sel.toString();
 		return name;
 	}
 
