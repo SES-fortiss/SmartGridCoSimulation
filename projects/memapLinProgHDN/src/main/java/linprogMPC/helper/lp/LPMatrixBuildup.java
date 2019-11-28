@@ -1,9 +1,10 @@
 package linprogMPC.helper.lp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import akka.systemActors.GlobalTime;
-import linprogMPC.TopologySimple;
+import linprogMPC.MILPTopology;
 import linprogMPC.helper.EnergyPrices;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.extension.NetworkType;
@@ -27,8 +28,12 @@ public class LPMatrixBuildup {
 	//  =========================== Matrix Filling ==============================
 	int nStepsMPC = 0;
 	
+	HashMap<String, Integer> mapBuildingToInt = new HashMap<>();
+	ArrayList<String> arrayOfBuildings = new ArrayList<>();
+	
+	
 	public LPMatrixBuildup() {
-		 nStepsMPC = TopologySimple.N_STEPS_MPC;
+		 nStepsMPC = MILPTopology.N_STEPS_MPC;
 	}
 		
 	public LPOptimizationProblem singleBuilding(BuildingMessage buildingMessage) {		
@@ -90,7 +95,7 @@ public class LPMatrixBuildup {
 		return problem;
 	}
 		
-	public LPOptimizationProblem multipleBuildings(ArrayList<BuildingMessage> buildingMessageList) {			
+	public LPOptimizationProblem multipleBuildings(ArrayList<BuildingMessage> buildingMessageList) {
 		
 		int nrOfBuildings = 0;
 		int nrOfProducers = 0;
@@ -98,15 +103,21 @@ public class LPMatrixBuildup {
 		int nrOfCouplers = 0;
 		int nrOfConnections = 0;
 		
+		
+		
 		for (BuildingMessage buildingMessage : buildingMessageList) {
+			
+			mapBuildingToInt.put(buildingMessage.name, nrOfBuildings);
+			arrayOfBuildings.add(buildingMessage.name);
+			
 			nrOfBuildings++;
 			nrOfStorages += buildingMessage.getNrOfStorages();
 			nrOfProducers += buildingMessage.getNrOfControllableProducers() + buildingMessage.getNrOfVolatileProducers();
 			nrOfCouplers += buildingMessage.getNrOfCouplers();
-			nrOfConnections += buildingMessage.getNrOfConnections();
+			nrOfConnections += buildingMessage.getNrOfConnections();			
 		}
 		
-		LPOptimizationProblem problem = new LPOptimizationProblem(nStepsMPC, nrOfBuildings, nrOfProducers, nrOfStorages, nrOfCouplers, nrOfConnections); // initiert nur die vektoren, matrizen, ohne f�llung
+		LPOptimizationProblem problem = new LPOptimizationProblem(nStepsMPC, nrOfBuildings, nrOfProducers, nrOfStorages, nrOfCouplers, nrOfConnections); // initiert nur die vektoren, matrizen, ohne fuellung
 		
 		/**
 		 *  ======= BUILD CONSUMPTION VECTOR b =========
@@ -343,8 +354,8 @@ public class LPMatrixBuildup {
 		double[][] couplingMatrix_el = new double[nStepsMPC][2*nStepsMPC];		
 		
 		for(int i = 0; i < nStepsMPC; i++) { // zuerst kommt das ent-laden (produzieren), dann das be-laden (verbrauchen)
-			lambda[i] = storageMessage.operationalPriceEURO;
-			lambda[nStepsMPC+i] = storageMessage.operationalPriceEURO;
+			lambda[i] = storageMessage.operationalPriceEURO; // + 0.0001*i;
+			lambda[nStepsMPC+i] = storageMessage.operationalPriceEURO; // + 0.0001*i;
 			lambdaCO2[i] = storageMessage.operationalPriceCO2;
 			lambdaCO2[nStepsMPC+i] = storageMessage.operationalPriceCO2;
 			lb[i] = 0;
@@ -404,7 +415,7 @@ public class LPMatrixBuildup {
 		}
 		
 		
-		double factor = 24.0 / TopologySimple.TIMESTEPS_PER_DAY; // = 0.25 f�r 96 Schritte /Tag
+		double factor = 24.0 / MILPTopology.TIMESTEPS_PER_DAY; // = 0.25 fuer 96 Schritte /Tag
 		
 		for(int i = 0; i < nStepsMPC; i++) {		
 			for(int j = 0; j <= i; j++) {
@@ -419,7 +430,7 @@ public class LPMatrixBuildup {
 			h_vector[nStepsMPC + i] = maxChargeCapacity;
 		}
 		
-		// Matrizen in das Gesamtsystem �bernehmen
+		// Matrizen in das Gesamtsystem uebernehmen
 		int n_index = nStepsMPC*(producersHandledSoFar+2*storagesHandledSoFar+couplersHandledSoFar+2*connectionsHandledSoFar);
 		int b_index = nStepsMPC*buildingsHandledSoFar;
 		int el_index = nStepsMPC*problem.getNrOfBuildings();
@@ -449,8 +460,8 @@ public class LPMatrixBuildup {
 			int connectionsHandledSoFar) {
 		
 			int n_index = nStepsMPC*(producersHandledSoFar+2*storagesHandledSoFar+couplersHandledSoFar+2*connectionsHandledSoFar);
-			int bi_index = nStepsMPC*buildingsHandledSoFar;
-			int bj_index = nStepsMPC*(connectionMessage.connectedBuilding-1);
+			int bi_index = nStepsMPC*buildingsHandledSoFar;						
+			int bj_index = nStepsMPC*(mapBuildingToInt.get(connectionMessage.connectedBuilding));
 			
 			double[] lb = new double[2*nStepsMPC];
 			double[] ub = new double[2*nStepsMPC];
@@ -463,28 +474,28 @@ public class LPMatrixBuildup {
 			for(int i = 0; i < nStepsMPC; i++) { // zuerst kommt die Verbindung ij, dann ji
 				lb[i] = 0;
 				lb[nStepsMPC+i] = 0;
-				ub[i] = connectionMessage.maxOut;
-				ub[nStepsMPC + i] = connectionMessage.maxIn;
+				ub[i] = connectionMessage.q_max;
+				ub[nStepsMPC + i] = connectionMessage.q_max;
 				namesUB[i] = connectionMessage.name+"_"+(buildingsHandledSoFar+1)+connectionMessage.connectedBuilding;
 				namesUB[nStepsMPC+i] = connectionMessage.name+"_"+connectionMessage.connectedBuilding+(buildingsHandledSoFar+1);
-				etas[i] = connectionMessage.efficiencyOut;
-				etas[nStepsMPC+i] = connectionMessage.efficiencyIn;
+				etas[i] = connectionMessage.efficiency;
+				etas[nStepsMPC+i] = connectionMessage.efficiency;
 				
 				couplingMatrix_H_i[i][i] = 1;
-				couplingMatrix_H_i[i][nStepsMPC + i] = -connectionMessage.efficiencyIn;
-				couplingMatrix_H_j[i][i] = -connectionMessage.efficiencyOut;
+				couplingMatrix_H_i[i][nStepsMPC + i] = -connectionMessage.efficiency;
+				couplingMatrix_H_j[i][i] = -connectionMessage.efficiency;
 				couplingMatrix_H_j[i][nStepsMPC + i] = 1;
 			}
 			
-			// Matrizen in das Gesamtsystem �bernehmen
+			// Matrizen in das Gesamtsystem uebernehmen
 
 			for(int i = 0; i < nStepsMPC; i++) {
 				if(i < nStepsMPC) {
 					for(int j = 0; j < 2*nStepsMPC; j++) {
 						problem.a_eq[bi_index+i][n_index+j] = couplingMatrix_H_i[i][j];
-						problem.a_eq[bj_index+i][n_index+j] = couplingMatrix_H_j[i][j];
-						problem.lambda[n_index+j] = connectionMessage.operationalPriceEURO;
-						problem.lambdaCO2[n_index+j] = connectionMessage.operationalPriceCO2;
+						problem.a_eq[bj_index+i][n_index+j] = couplingMatrix_H_j[i][j]; 
+						problem.lambda[n_index+j] = connectionMessage.operationalPrice;
+						problem.lambdaCO2[n_index+j] = connectionMessage.operationalPrice;
 						problem.x_lb[n_index+j] = lb[j];
 						problem.x_ub[n_index+j] = ub[j];
 						problem.namesUB[n_index+j] = namesUB[j];
@@ -502,7 +513,6 @@ public class LPMatrixBuildup {
 		if (producersHandled+storagesHandled+couplersHandled+connectionsHandled == problem.getNumberofProducers()+problem.getNumberofStorages()+ problem.getNumberofCouplers()+problem.getNrOfConnections()) {				
 			int n_index = nStepsMPC*(producersHandled+2*storagesHandled+couplersHandled+2*connectionsHandled);
 			int b_index = 0;
-			EnergyPrices energyPrices = new EnergyPrices();	
 			int cts = GlobalTime.getCurrentTimeStep();
 						
 			for(int i = 0; i < nStepsMPC; i++) {
@@ -522,10 +532,10 @@ public class LPMatrixBuildup {
 				problem.etas[nStepsMPC+n_index+b_index+i] = -1;
 				
 				// Extended price vector for market
-				problem.lambda[n_index+b_index+i] = energyPrices.getElectricityPriceInEuro(cts+i);					// electricity buy price
-				problem.lambda[n_index+b_index+nStepsMPC+i] = -energyPrices.getElectricityPriceInEuro(cts+i)*0.5;   // electricity sell price
+				problem.lambda[n_index+b_index+i] = EnergyPrices.getElectricityPriceInEuro(cts+i);					// electricity buy price
+				problem.lambda[n_index+b_index+nStepsMPC+i] = -EnergyPrices.getElectricityPriceInEuro(cts+i)*0.5;   // electricity sell price
 				problem.lambdaCO2[n_index+b_index+i] = 0.474; 														// Emissionen deutscher Strommix   kg CO2 / kWh
-				problem.lambdaCO2[n_index+b_index+nStepsMPC+i] = 0.0 ;   											// electricity sell price
+				problem.lambdaCO2[n_index+b_index+nStepsMPC+i] = 0.0 ;	 											// electricity sell price
 			}
 		}		
 	}

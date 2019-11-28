@@ -43,8 +43,8 @@ public class LPOptimizationStarter {
 			
 			System.out.println("G:");
 			System.out.println(or.getG());					
-		*/			
-		
+					
+		*/
 		//==== Check Matrix and Vector Sizes: ====
 		/*
 		System.out.println("Size of Matrices:");
@@ -66,15 +66,7 @@ public class LPOptimizationStarter {
 			e.printStackTrace();
 		}
 		
-		
-		
-		double[] sol = opt.getLPOptimizationResponse().getSolution();
-		
-		
-		//System.out.println("SOL:");
-		//System.out.println(Arrays.toString(sol));
-		
-		
+		double[] sol = opt.getLPOptimizationResponse().getSolution();							
 		return sol;
 		
 	}

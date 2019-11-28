@@ -8,7 +8,7 @@ import topology.ActorTopology;
  *
  */
 public class MILPTopology {
-	public static String simulationName = "MILPTEST";	
+	public static String simulationName = "MEMAPwithMILP";	
 	
 	// ================= Model Predictive Control (MPC) =================
 	public static int N_STEPS_MPC = 1;
@@ -29,13 +29,41 @@ public class MILPTopology {
 		ConsumptionProfiles consumptionProfiles = new ConsumptionProfiles(NR_OF_CONSUMERS);
 		
 		ActorTopology top = new ActorTopology(simulationName);
+		top.addActor(simulationName, ActorFactory.createMEMAPCoordinationBehavior2());
 		
 		String building1Name = "Building1";
-		top.addActor(building1Name, ActorFactory.createBuilding(PORT_UNDEFINED));
-		top.addActorAsChild(building1Name + "/Consumption", ActorFactory.createConsumer(consumptionProfiles, 0, PORT_UNDEFINED));
-		top.addActorAsChild(building1Name + "/PV", ActorFactory.createPV(5, PORT_UNDEFINED));
-		top.addActorAsChild(building1Name + "/Battery", ActorFactory.createBattery(12, 3.3, 3.3, 0.99, 0.99, PORT_UNDEFINED));
-		top.addActorAsChild(building1Name + "/HeatPump", ActorFactory.createHeatPump(10, 0, 3.8, -1 , PORT_UNDEFINED));			
+		ActorTopology building1 = new ActorTopology(building1Name);			
+		building1.addActor(building1Name, ActorFactory.createBuilding(PORT_UNDEFINED));
+		building1.addActorAsChild(building1Name + "/Consumption", ActorFactory.createConsumer(consumptionProfiles, 0, PORT_UNDEFINED));
+		building1.addActorAsChild(building1Name + "/PV", ActorFactory.createPV(5, PORT_UNDEFINED));
+		building1.addActorAsChild(building1Name + "/Battery", ActorFactory.createBattery(12, 3.3, 3.3, 0.99, 0.99, PORT_UNDEFINED));
+		building1.addActorAsChild(building1Name + "/HeatStorage", ActorFactory.createThermalStorage(30, 10, 10, 0.95, 0.95, PORT_UNDEFINED));
+		//top.addActorAsChild(building1Name + "/HeatPump", ActorFactory.createHeatPump(10, 1, 3.8, -1 , PORT_UNDEFINED));		
+		//top.addActorAsChild(building1Name + "/CHP", ActorFactory.createCHP(10, 5, 0.62, 0.21 , PORT_UNDEFINED));
+		building1.addActorAsChild(building1Name + "/GasBoiler", ActorFactory.createGasBoiler(10, 0, 0.95, 0.0591 , PORT_UNDEFINED));		
+				
+		top.addSubTopology(simulationName, building1);
+		
+		
+		String building2Name = "Building2";
+		ActorTopology building2 = new ActorTopology(building1Name);
+		building2.addActor(building2Name, ActorFactory.createBuilding(PORT_UNDEFINED));
+		building2.addActorAsChild(building2Name + "/Consumption2", ActorFactory.createConsumer(consumptionProfiles, 0, PORT_UNDEFINED));
+		building2.addActorAsChild(building2Name + "/PV2", ActorFactory.createPV(5, PORT_UNDEFINED));
+		building2.addActorAsChild(building2Name + "/Battery2", ActorFactory.createBattery(12, 3.3, 3.3, 0.99, 0.99, PORT_UNDEFINED));
+		building2.addActorAsChild(building2Name + "/HeatStorage2", ActorFactory.createThermalStorage(30, 10, 10, 0.95, 0.95, PORT_UNDEFINED));
+		//top.addActorAsChild(building1Name + "/HeatPump", ActorFactory.createHeatPump(10, 1, 3.8, -1 , PORT_UNDEFINED));		
+		//top.addActorAsChild(building1Name + "/CHP", ActorFactory.createCHP(10, 5, 0.62, 0.21 , PORT_UNDEFINED));
+		building2.addActorAsChild(building2Name + "/GasBoiler2", ActorFactory.createGasBoiler(10, 5, 0.95, 0.02 , PORT_UNDEFINED));
+		
+		// TODO
+		building2.addActorAsChild(building2Name + "/Connection21", ActorFactory.createThermalConnection(building1Name, 150, 0.99, 999));
+		
+		
+		top.addSubTopology(simulationName, building2);
+		
+		
+		
 		
 		return top;
 		

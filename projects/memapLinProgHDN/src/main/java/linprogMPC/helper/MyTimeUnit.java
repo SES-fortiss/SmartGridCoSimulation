@@ -2,12 +2,12 @@ package linprogMPC.helper;
 
 import java.util.concurrent.TimeUnit;
 
-import linprogMPC.TopologySimple;
+import linprogMPC.MILPTopology;
 
 public class MyTimeUnit {
 	
 	public static double stepLength(TimeUnit timeUnit) {
-		double stepLengthInSeconds = 24*3600/TopologySimple.TIMESTEPS_PER_DAY;
+		double stepLengthInSeconds = 24*3600/MILPTopology.TIMESTEPS_PER_DAY;
 		switch (timeUnit) {
 		case SECONDS:
 			return stepLengthInSeconds;

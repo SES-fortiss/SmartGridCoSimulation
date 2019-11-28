@@ -10,12 +10,12 @@ public class SimulationMILP {
 	
 	private void run() throws InterruptedException {
 		
-		int nMPC = 24;
+		int nMPC = 6;
 		
 		// **************MEMAP OFF *******************		
 		topology = MILPTopology.createTopology(nMPC, false);
 		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
-        SimulationStarter.startSimulation(actorSystem, 12, 13);
+        SimulationStarter.startSimulation(actorSystem, 0, 96);
 	}
 	
 	public static void main(String[] args){

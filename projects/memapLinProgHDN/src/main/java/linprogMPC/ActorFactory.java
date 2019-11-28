@@ -11,7 +11,7 @@ import linprogMPC.components.Connection;
 import linprogMPC.components.Consumer;
 import linprogMPC.components.GasBoiler;
 import linprogMPC.components.HeatPump;
-import linprogMPC.components.LinProgBehavior;
+import linprogMPC.components.MEMAPCoordination;
 import linprogMPC.components.PV;
 import linprogMPC.components.SolarThermic;
 import linprogMPC.components.ThermalStorage;
@@ -19,10 +19,17 @@ import linprogMPC.helper.ConsumptionProfiles;
 
 public abstract class ActorFactory {
 	
-	public static ActorOptions createLinProgBehavior(){
+	public static ActorOptions createMEMAPCoordinationBehavior(){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new LinProgBehavior());
+				new MEMAPCoordination());
+		return result;
+	}
+	
+	public static ActorOptions createMEMAPCoordinationBehavior2(){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new MEMAPCoordination());
 		return result;
 	}
 
@@ -95,13 +102,11 @@ public abstract class ActorFactory {
 	}
 	
 	public static ActorOptions createThermalConnection(
-			int connectedBuilding, double qdot_max_in, double qdot_max_out, 
-			double pipeLength, int port
-			){
+			String connectedBuilding, double pipeLengthInMeter, double lossesPer100m, double q_max){
 		ActorOptions result = 
 				new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new Connection(connectedBuilding, qdot_max_in, qdot_max_out, pipeLength, port));	
+				new Connection(connectedBuilding, pipeLengthInMeter, lossesPer100m, q_max));	
 		return result;
 	}
 	

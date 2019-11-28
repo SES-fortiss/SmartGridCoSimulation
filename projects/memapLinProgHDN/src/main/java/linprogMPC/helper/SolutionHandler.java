@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import helper.IoHelper;
-import linprogMPC.TopologySimple;
+import linprogMPC.MILPTopology;
 import linprogMPC.helper.lp.LPOptimizationProblem;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.planning.StorageMessage;
@@ -16,7 +16,7 @@ import linprogMPC.messages.planning.StorageMessage;
 
 public class SolutionHandler {
 	
-	int nMPC = TopologySimple.N_STEPS_MPC;
+	int nMPC = MILPTopology.N_STEPS_MPC;
 	
 	public void exportVector(double[] data, String filename) {
 		BufferedWriter bw = null;
@@ -80,17 +80,17 @@ public class SolutionHandler {
 		return costs;	
 	}
 	
-	public double[] calculateTimeStepCosts(double[] sol, double[] lambda) {
-		// The Costs are evaluated only for the first timestep of the MPC calculation
-		double[] costVector = new double[nMPC];
-		
-		for (int j=0; j<nMPC; j++) {
-			for (int i=0; i<lambda.length/nMPC; i++) {
-				costVector[j] += lambda[j+(i*nMPC)]*sol[j+(i*nMPC)]*0.25;
-			}	
+	/*
+	 * modified on 26.11.2019
+	 */
+	public double calculateTimeStepCosts(double[] sol, double[] lambda) {
+		double result = 0;
+				
+		for (int i=0; i < lambda.length/nMPC; i++) {
+			result += lambda[(i*nMPC)] * sol[(i*nMPC)]*0.25;			
 		}
 		
-		return costVector;	
+		return result;	
 	
 	}
 
@@ -120,9 +120,9 @@ public class SolutionHandler {
 			    for (int j = 0; j < vec.length; j++) {
 			            result[i] += matrix[i][j] * vec[j];
 			    }
-			}	
+			}
 			return result;
-		}		
+		}	
 		return null;
 	}
 
@@ -220,8 +220,8 @@ public class SolutionHandler {
 		
 		
 		for (int i=x1; i < x1+nMPC ; i++ ) {
-			purchase_el += sol[nMPC+i]-sol[i];		 //difference between purchased and sold electricity
-			purchase_H += sol[3*nMPC+i]-sol[2*nMPC+i]; //difference between purchased and sold heat
+			purchase_el += sol[nMPC+i]-sol[i];		 	//difference between purchased and sold electricity
+			purchase_H += sol[3*nMPC+i]-sol[2*nMPC+i]; 	//difference between purchased and sold heat
 		}
 		
 		double purchasedEnergy = purchase_el + purchase_H;
@@ -273,47 +273,47 @@ public class SolutionHandler {
 		
 		for (int i = 0; i < result.length; i++) {
 			result[i] = optSolution[i*nStepsMPC];
-		}
+		}	
 		
 		return result;
 	}
 	
-	public double[] getEffSolutionForThisTimeStep(double[] optSolution, LPOptimizationProblem problem, int nStepsMPC) {
+	public double[] getEffSolutionForThisTimeStep(double[] optSolution, double[] etas, int nStepsMPC) {
 		
 		double[] result = new double[optSolution.length / nStepsMPC];
 		
 		for (int i = 0; i < result.length; i++) {
-			result[i] = optSolution[i*nStepsMPC]*problem.etas[i*nStepsMPC];
+			result[i] = optSolution[i*nStepsMPC]*etas[i*nStepsMPC];
 		}
 		
 		return result;
 	}
 
-	public String[] getNamesForThisTimeStep(LPOptimizationProblem problem, int nStepsMPC) {
-		String[] result = new String[problem.namesUB.length / nStepsMPC];
+	public String[] getNamesForThisTimeStep(String[] names, int nStepsMPC) {
+		String[] result = new String[names.length / nStepsMPC];
 		
 		for (int i = 0; i < result.length; i++) {
-			result[i] = problem.namesUB[i*nStepsMPC];
+			result[i] = names[i*nStepsMPC];
 		}
 		
 		return result;
 	}
 	
-	public String[] getEffNamesForThisTimeStep(LPOptimizationProblem problem, int nStepsMPC) {
-		String[] result = new String[problem.namesUB.length / nStepsMPC];
+	public String[] getEffNamesForThisTimeStep(String[] names, int nStepsMPC) {
+		String[] result = new String[names.length / nStepsMPC];
 		
 		for (int i = 0; i < result.length; i++) {
-			result[i] = "plus"+problem.namesUB[i*nStepsMPC];
+			result[i] = names[i*nStepsMPC] + "timesETA";
 		}
 		
 		return result;
 	}
 
-	public double[] getDemandForThisTimestep(LPOptimizationProblem problem, int nStepsMPC) {
-		double[] result = new double[problem.b_eq.length / nStepsMPC];
+	public double[] getDemandForThisTimestep(double[] demand, int nStepsMPC) {
+		double[] result = new double[demand.length / nStepsMPC];
 		
 		for (int i = 0; i < result.length; i++) {
-			result[i] = problem.b_eq[i*nStepsMPC];
+			result[i] = demand[i*nStepsMPC];
 		}
 		
 		return result;
@@ -426,18 +426,18 @@ public class SolutionHandler {
 				if (index == data.length - 1){
 					for (int j=0; j< data[0].length; j++) {
 						if (j == data[0].length -1) {
-							bw.write( String.format(Locale.US, "%1$,.2f", data[index][j])   );
+							bw.write( String.format(Locale.US, "%1$,.3f", data[index][j])   );
 						} else {
-							bw.write( String.format(Locale.US, "%1$,.2f", data[index][j]) + ";");
+							bw.write( String.format(Locale.US, "%1$,.3f", data[index][j]) + ";");
 						}
 					}
 			    }
 			    else {
 			    	for (int j=0; j< data[0].length; j++) {
 			    		if (j == data[0].length -1) {
-							bw.write(  String.format(Locale.US, "%.2f", data[index][j])  );
+							bw.write(  String.format(Locale.US, "%.3f", data[index][j])  );
 						} else {
-							bw.write( String.format(Locale.US, "%.2f", data[index][j]) + ";");
+							bw.write( String.format(Locale.US, "%.3f", data[index][j]) + ";");
 						}
 			    	}
 					bw.newLine();

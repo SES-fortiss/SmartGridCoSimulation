@@ -10,10 +10,12 @@ import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
+import linprogMPC.ConfigurationMEMAP;
 import linprogMPC.MILPTopology;
 import linprogMPC.helper.SolutionHandler;
 import linprogMPC.helper.lp.LPSolver;
 import linprogMPC.helper.milp.MILPSolver;
+import linprogMPC.helper.milp.MILPlogging;
 import linprogMPC.helperOPCua.OpcServerContextGenerator;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.OptimizationResultMessage;
@@ -29,22 +31,26 @@ import linprogMPC.messages.realTime.CurrentMeterValues;
 import lpsolve.LpSolveException;
 import opcMEMAP.MemapOpcServerStarter;
 
-public class Building extends BehaviorModel {
-	
+public class Building extends BehaviorModel {	
 	
 	protected Gson gson = new Gson();
 	private MemapOpcServerStarter mServer;
-	
 	public int port;
 	
 	// some long term values
 	double[] buildingsTotalCosts = new double[MILPTopology.NR_OF_ITERATIONS];
 	double[] buildingsTotalCO2 = new double[MILPTopology.NR_OF_ITERATIONS];
 	double[][] buildingsSolutionPerTimeStep = new double[MILPTopology.NR_OF_ITERATIONS][];
+
+	// some long term values2
+	double[] buildingsTotalCostsMILP = new double[MILPTopology.NR_OF_ITERATIONS];
+	double[] buildingsTotalCO2MILP = new double[MILPTopology.NR_OF_ITERATIONS];
+	double[][] buildingsSolutionPerTimeStepMILP = new double[MILPTopology.NR_OF_ITERATIONS][];
 	
 	public int nStepsMPC = MILPTopology.N_STEPS_MPC;
 	
-	SolutionHandler solHandler = new SolutionHandler();
+	SolutionHandler lpSolHandler = new SolutionHandler();
+	SolutionHandler milpSolHandler = new SolutionHandler();
 	
 	// ================================
 	
@@ -64,7 +70,7 @@ public class Building extends BehaviorModel {
 		buildingMessage.id = this.fullActorPath;
 		buildingMessage.name = this.actorName;
 		
-		this.actor.getContext().getChildren().forEach(child -> 
+		this.actor.getContext().getChildren().forEach(child ->
 			buildingMessage.childrenList.add(new ChildSpecification(this.fullActorPath + "/" + child.path().name())));		
 		
 		for(BasicAnswer basicAnswer : answerListReceived) {
@@ -94,39 +100,63 @@ public class Building extends BehaviorModel {
 				buildingMessage.connectionList.add((ConnectionMessage) answerContent);
 			}
 		}
-		refactorDemandList();
 		
-		if (!MILPTopology.MEMAP_ON) {
-			
+		harmonizeDemandList();		
+				
+		if (ConfigurationMEMAP.chosenOptimizationHierarchy == ConfigurationMEMAP.OptHierarchy.BUILDING) {
+			optimizeBuilding();
+		}		
+		
+		buildingMessage = addMetering(buildingMessage);
+	}
+	
+	private void optimizeBuilding() {
+		
+		if(ConfigurationMEMAP.chosenOptimizer == ConfigurationMEMAP.Optimizer.LP) {
 			LPSolver lpsolver = new LPSolver(
-					buildingMessage, nStepsMPC, solHandler, 
+					buildingMessage, nStepsMPC, lpSolHandler, 
 					buildingsTotalCosts, buildingsTotalCO2, 
-					getActualTimeStep(),buildingsSolutionPerTimeStep,
-					this.actorName,optResult);
+					getActualTimeStep(), buildingsSolutionPerTimeStep,
+					this.actorName, optResult);
 			lpsolver.solveLPOptProblem();
-			
 			double costTotal = 0;
 			double CO2Total = 0;
 			for (int i = 0; i < buildingsTotalCosts.length; i++) {
 				costTotal += buildingsTotalCosts[i];
 				CO2Total += buildingsTotalCO2[i];
 			}
-			System.out.println(this.actorName+" cost = " + String.format("%.02f", costTotal) + " € ; CO2: " + String.format("%.02f", CO2Total) + " kg");
+			System.out.println("LP: " + this.actorName+" cost = " + String.format("%.03f", costTotal) + " € ; CO2: " + String.format("%.03f", CO2Total) + " kg");			
 		}
+				
 		
-		// TODO MILP
-		if (true) {
-			MILPSolver milpSolver = new MILPSolver(buildingMessage, nStepsMPC);
+		if(ConfigurationMEMAP.chosenOptimizer == ConfigurationMEMAP.Optimizer.MILP) {
+			MILPSolver milpSolver = new MILPSolver(
+					buildingMessage, nStepsMPC, MILPlogging.OFF, milpSolHandler,
+					buildingsTotalCostsMILP, buildingsTotalCO2MILP, 
+					getActualTimeStep(), buildingsSolutionPerTimeStepMILP, 
+					this.actorName, optResult);			
+			
 			try {
-				milpSolver.solveMILP();
+				milpSolver.createModel();				
+				milpSolver.solveMILP(); // and work through results
+				
+				double costTotal = 0;
+				double CO2Total = 0;
+				
+				for (int i = 0; i < buildingsTotalCostsMILP.length; i++) {
+					costTotal += buildingsTotalCostsMILP[i];
+					CO2Total += buildingsTotalCO2MILP[i];
+				}
+				
+				System.out.println("MILP: " + this.actorName+" cost = " + String.format("%.03f", costTotal) + " € ; CO2: " + String.format("%.03f", CO2Total) + " kg");
+				
 			} catch (LpSolveException e) {			
 				e.printStackTrace();
 			}
 		}
-		
-		buildingMessage = addMetering(buildingMessage);
+
 	}
-	
+
 	private BuildingMessage addMetering(BuildingMessage bmIn) {
 		
 		BuildingMessage result = bmIn;
@@ -148,7 +178,7 @@ public class Building extends BehaviorModel {
 		return result;
 	}
 
-	private void refactorDemandList() {		
+	private void harmonizeDemandList() {		
 		BuildingMessage bm = this.buildingMessage;
 		
 		ArrayList<DemandMessage> newDemandList = new ArrayList<DemandMessage>(); 
@@ -201,8 +231,7 @@ public class Building extends BehaviorModel {
 			}
 		}
 		
-		buildingMessage.demandList = newDemandList;
-		
+		buildingMessage.demandList = newDemandList;		
 	}
 
 	@Override

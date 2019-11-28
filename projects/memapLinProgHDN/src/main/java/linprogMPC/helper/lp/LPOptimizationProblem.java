@@ -39,7 +39,7 @@ public class LPOptimizationProblem {
 		g = new double[nStepsMPC*2*nrOfStorages][nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
 		
 		b_eq = new double[nStepsMPC*(nrOfBuildings+1)];
-		a_eq = new double[nStepsMPC*(nrOfBuildings+1)][nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
+		a_eq = new double[nStepsMPC*(nrOfBuildings+1)][nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];		
 		
 		x_lb = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
 		x_ub = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];		

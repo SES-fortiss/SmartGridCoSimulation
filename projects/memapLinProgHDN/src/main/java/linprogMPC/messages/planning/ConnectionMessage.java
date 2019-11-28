@@ -8,16 +8,13 @@ public class ConnectionMessage implements AnswerContent {
 	public String name;
 	public String id;
 	
-	public int connectedBuilding;
+	public String connectedBuilding;
 	
-	public double maxIn;
-	public double maxOut;
+	public double q_max;	
+	public double efficiency;
+	public double pipeLengthInMeter;
 	
-	public double efficiencyIn;
-	public double efficiencyOut;
-	
-	public double operationalPriceEURO;
-	public double operationalPriceCO2;
+	public double operationalPrice;
 	
 	public NetworkType networkType;
 

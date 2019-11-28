@@ -1,7 +1,5 @@
 package linprogMPC.helper.milp;
 
-import java.util.Arrays;
-
 import akka.systemActors.GlobalTime;
 import linprogMPC.MILPTopology;
 import linprogMPC.helper.EnergyPrices;
@@ -28,7 +26,7 @@ public class MILPProblem {
 		
         int controllableHandled = 0;
         int volatileHandled = 0;
-        int couplerHandled = 0;        
+        int couplerHandled = 0;
         int storageHandled = 0;
         
 		for(ProducerMessage producerMessage : buildingMessage.controllableProducerList) {
@@ -56,8 +54,7 @@ public class MILPProblem {
 		return problem;
 	}	
 
-	private void addControllableToProblem(ProducerMessage producerMessage,LpSolve optProblem,int controllableHandled) throws LpSolveException {
-		
+	private void addControllableToProblem(ProducerMessage producerMessage,LpSolve optProblem,int controllableHandled) throws LpSolveException {		
 		for (int i = 0; i < nStepsMPC; i++) {			
 			int index = i + 1 + nStepsMPC * (controllableHandled * 2);
 			String string1 = producerMessage.name + "_T" + i;
@@ -83,7 +80,7 @@ public class MILPProblem {
 		for (int i = 0; i < nStepsMPC; i++) {			
 			int index = i + 1 + nStepsMPC * ( (controllableHandled * 2) + volatileHandled + (couplerHandled *2));
 			String string1 = couplerMessage.name + "_T" + i;
-			String string2 = couplerMessage.name + "_OFF_T" + i;
+			String string2 = couplerMessage.name + "OFF_T" + i;
 			problem.setColName(index, string1);
 			problem.setColName(index + nStepsMPC, string2);
 			problem.setBinary(index + nStepsMPC, true);
@@ -96,11 +93,11 @@ public class MILPProblem {
 				
 		for (int i = 0; i < nStepsMPC; i++) {			
 			int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
-			String string1 = storageMessage.name + "_DIS_T" + i;
-			String string2 = storageMessage.name + "_CHA_T" + i;
+			String string1 = storageMessage.name+"Discharge_T" + i;
+			String string2 = storageMessage.name+"Charge_T" + i;
 			problem.setColName(index, string1);
 			problem.setColName(index + nStepsMPC, string2);
-		}		
+		}
 	}
 	
 	private void addMarkets(LpSolve problem, int controllableHandled, int volatileHandled, int couplerHandled,
@@ -108,19 +105,17 @@ public class MILPProblem {
 				
 		for (int i = 0; i < nStepsMPC; i++) {			
 			int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
-			String string1 = "MA_BUY_T" + i;
-			String string2 = "MA_SEL_T" + i;
+			String string1 = "ElecBuy_T" + i;
+			String string2 = "ElecSell_T" + i;
 			problem.setColName(index, string1);
 			problem.setColName(index + nStepsMPC, string2);
 		}	
-		
-	}
+	}	
 
 	public LpSolve createDemandConstraints(LpSolve problem, BuildingMessage buildingMessage) throws LpSolveException {
 
-        double [] demand = buildingMessage.getCombinedDemandVector();        
-        System.out.println("Demand:  " + Arrays.toString(demand) + "    List size: " + buildingMessage.demandList.size());
-
+        double [] demand = buildingMessage.getCombinedDemandVector();
+        
         /* first HEAT components */
         for (int i = 0; i < demand.length / 2; i++) {
         	
@@ -149,7 +144,8 @@ public class MILPProblem {
     			couplerHandled++;
 			}
         	        	
-        	for (StorageMessage sm : buildingMessage.storageList) {
+        	for (StorageMessage sm : buildingMessage.storageList) {        	
+        		
         		int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );        		
         		if (sm.networkType == NetworkType.HEAT) {
         			rowHEAT[index] = -1;
@@ -191,6 +187,7 @@ public class MILPProblem {
  			}
          	        	
          	for (StorageMessage sm : buildingMessage.storageList) {
+         		
          		int index = countTimeStep + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );        		
         		if (sm.networkType == NetworkType.ELECTRICITY) {
         			rowELEC[index] = -1;
@@ -352,7 +349,6 @@ public class MILPProblem {
         int[] colno  = new int[nCols];
         double[] row = new double[nCols];
         
-        EnergyPrices energyPrices = new EnergyPrices();	
 		int cts = GlobalTime.getCurrentTimeStep();
         
         
@@ -386,24 +382,26 @@ public class MILPProblem {
             	couplerHandled++;
     		}
         	
-        	for (StorageMessage sm : buildingMessage.storageList) {    
+        	for (StorageMessage sm : buildingMessage.storageList) {
+        		
+        		double price = sm.operationalPriceEURO;// + 0.0001 * i; // damit es später etwas teuerer wird.
+        		
         		int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  	
             	colno[counter] = index;
-            	row[counter++] = sm.operationalPriceEURO;
-            	couplerHandled++;
+            	row[counter++] = price;
+            	colno[counter] = index+nStepsMPC;
+            	row[counter++] = price;
+            	storageHandled++;
     		}
         	
         	// buy
         	int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );
         	colno[counter] = index;
-        	row[counter++] = energyPrices.getElectricityPriceInEuro(cts+i);
+        	row[counter++] = EnergyPrices.getElectricityPriceInEuro(cts+i);
         	// sell
         	colno[counter] = index+nStepsMPC;
-        	row[counter++] = -energyPrices.getElectricityPriceInEuro(cts+i)*0.5;
-        }
-        
-        //System.out.println("Adding objective --> row: " + Arrays.toString(row));
-        //System.out.println("Adding objective --> col: " + Arrays.toString(colno));
+        	row[counter++] = -EnergyPrices.getElectricityPriceInEuro(cts+i)*0.5;
+        }        
         
         /* set the objective in lpsolve */
         problem.setObjFnex(counter, row, colno);        
@@ -412,5 +410,116 @@ public class MILPProblem {
         problem.setMinim(); 
 		return problem;
 	}
+	
+	/**
+	 * return the cost vector lambda in EUR, vector is according to names
+	 * @param buildingMessage
+	 * @return
+	 */
+	public double[] getLambdaEUR(BuildingMessage buildingMessage) {
+		double[] result = new double[nCols];
+		
+        int controllableHandled = 0;
+        int volatileHandled = 0;
+        int couplerHandled = 0;        
+        int storageHandled = 0;
+        
+		for(ProducerMessage producerMessage : buildingMessage.controllableProducerList) {					
+			for (int i = 0; i < nStepsMPC; i++) {		
+				int index = i + nStepsMPC * (controllableHandled * 2);
+				result[index] = producerMessage.operationalPriceEURO;
+				result[index + nStepsMPC] = 0;
+			}
+			controllableHandled++;
+		}
+		
+		for(ProducerMessage producerMessage : buildingMessage.volatileProducerList) {
+			for (int i = 0; i < nStepsMPC; i++) {			
+				int index = i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled);
+				result[index] = producerMessage.operationalPriceEURO;
+			}
+			volatileHandled++;
+		}
+		
+		for(CouplerMessage couplerMessage : buildingMessage.couplerList) {
+			for (int i = 0; i < nStepsMPC; i++) {			
+				int index = i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled + (couplerHandled *2));
+				result[index] = couplerMessage.operationalCostEUR;
+				result[index + nStepsMPC] = 0;
+			}
+			couplerHandled++;
+		}
+		
+		for(StorageMessage storageMessage : buildingMessage.storageList) {
+			for (int i = 0; i < nStepsMPC; i++) {			
+				int index = i + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
+				result[index] = storageMessage.operationalPriceEURO;
+				result[index+ nStepsMPC] = storageMessage.operationalPriceEURO;
+			}
+			storageHandled++;
+		}
+        
+		/* Markets */
+		int cts = GlobalTime.getCurrentTimeStep();		
+		for (int i = 0; i < nStepsMPC; i++) {			
+			int index = i + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
+			result[index] = EnergyPrices.getElectricityPriceInEuro(cts+i);
+			result[index+ nStepsMPC] = -EnergyPrices.getElectricityPriceInEuro(cts+i)*0.5;
+		}		
+		return result;
+	}
+
+	public double[] getLambdaCO2(BuildingMessage buildingMessage) {
+		double[] result = new double[nCols];
+		
+        int controllableHandled = 0;
+        int volatileHandled = 0;
+        int couplerHandled = 0;        
+        int storageHandled = 0;
+        
+		for(ProducerMessage producerMessage : buildingMessage.controllableProducerList) {					
+			for (int i = 0; i < nStepsMPC; i++) {		
+				int index = i + nStepsMPC * (controllableHandled * 2);
+				result[index] = producerMessage.operationalPriceCO2;
+				result[index + nStepsMPC] = 0;
+			}
+			controllableHandled++;
+		}
+		
+		for(ProducerMessage producerMessage : buildingMessage.volatileProducerList) {
+			for (int i = 0; i < nStepsMPC; i++) {			
+				int index = i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled);
+				result[index] = producerMessage.operationalPriceCO2;
+			}
+			volatileHandled++;
+		}
+		
+		for(CouplerMessage couplerMessage : buildingMessage.couplerList) {
+			for (int i = 0; i < nStepsMPC; i++) {			
+				int index = i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled + (couplerHandled *2));
+				result[index] = couplerMessage.operationalCostCO2;
+				result[index + nStepsMPC] = 0;
+			}
+			couplerHandled++;
+		}
+		
+		for(StorageMessage storageMessage : buildingMessage.storageList) {
+			for (int i = 0; i < nStepsMPC; i++) {			
+				int index = i + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
+				result[index] = storageMessage.operationalPriceCO2;
+				result[index+ nStepsMPC] = storageMessage.operationalPriceCO2;
+			}
+			storageHandled++;
+		}
+        
+		/* Markets */	
+		for (int i = 0; i < nStepsMPC; i++) {			
+			int index = i + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
+			result[index] = 0.474; // buying --> TODO improve maybe later
+			result[index+ nStepsMPC] = 0; // selling (same as for LP)
+		}		
+		return result;
+	}
 
 }
+
