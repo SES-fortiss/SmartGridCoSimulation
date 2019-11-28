@@ -167,7 +167,7 @@ public class CouplerInputPanel extends JPanel {
 		add(txtCEfficiencySecondary, "4, 18, fill, default");
 		txtCEfficiencySecondary.setColumns(10);
 
-		lbCCost = new JLabel("Cost [cent/kWh]");
+		lbCCost = new JLabel("Cost [cent EUR/kWh]");
 		add(lbCCost, "2, 20");
 
 		txtCCost = new JTextField();
@@ -176,7 +176,7 @@ public class CouplerInputPanel extends JPanel {
 		add(txtCCost, "4, 20, fill, default");
 		txtCCost.setColumns(10);
 
-		lbCCOEmission = new JLabel("CO2 Emissions [g/kWh]");
+		lbCCOEmission = new JLabel("CO2 Emissions [kg/kWh]");
 		add(lbCCOEmission, "2, 22");
 
 		txtCCOEmission = new JTextField();

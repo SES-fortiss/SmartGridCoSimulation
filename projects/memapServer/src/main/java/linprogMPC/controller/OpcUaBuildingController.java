@@ -85,7 +85,7 @@ public class OpcUaBuildingController implements BuildingController {
 		EndpointConfigHandler endpointConfigHandler = new EndpointConfigHandler();
 		NodesConfigHandler nodesConfigHandler = new NodesConfigHandler();
 
-		// TODO: How should these valued be accessed?
+		// TODO: Remove. Comes with MILP integration
 		this.heatTransportLength = 50;
 		this.hasLDHeating = false;
 
@@ -229,8 +229,8 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId effOutId = NodeId.parse((String) battery.get("effOutId"));
 							NodeId opCostId = NodeId.parse(String.valueOf(0.0001));
 							NodeId costCO2Id = NodeId.parse(String.valueOf(0.0001));
-							attach(new ClientStorage(client, "battery" + i, capacityId, maxChargingId, maxDischargingId, effInId,
-									effOutId, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0));
+							attach(new ClientStorage(client, "battery" + i, capacityId, maxChargingId, maxDischargingId,
+									effInId, effOutId, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0));
 							System.out.println("Added battery to " + name);
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add battery " + i + " to building " + name
@@ -266,7 +266,8 @@ public class OpcUaBuildingController implements BuildingController {
 							JsonObject consumer = (JsonObject) consumers.get(i);
 							NodeId heatConsumptionId = NodeId.parse((String) consumer.get("heatConsumptionId"));
 							NodeId powerConsumptionId = NodeId.parse((String) consumer.get("powerConsumptionId"));
-							attach(new ClientConsumer(client, "consumer" + i, heatConsumptionId, powerConsumptionId, 0));
+							attach(new ClientConsumer(client, "consumer" + i, heatConsumptionId, powerConsumptionId,
+									0));
 							System.out.println("Added consumer to " + name);
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add consumer " + i + " to building " + name
@@ -284,7 +285,8 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId effId = NodeId.parse((String) gasboiler.get("effId"));
 							NodeId opCostId = NodeId.parse((String) gasboiler.get("opCostId"));
 							NodeId costCO2Id = NodeId.parse((String) gasboiler.get("costCO2Id"));
-							attach(new ClientProducer(client, "gasboilers" + i, installedPowerId, effId, opCostId, costCO2Id, NetworkType.HEAT, 0));
+							attach(new ClientProducer(client, "gasboilers" + i, installedPowerId, effId,
+									NetworkType.HEAT, opCostId, costCO2Id, 0));
 							System.out.println("Added gasboiler to " + name);
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add gasboiler " + i + " to building " + name
@@ -323,7 +325,7 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId productionId = NodeId.parse((String) pv.get("productionId"));
 							NodeId opCostId = NodeId.parse((String) pv.get("opCostId"));
 							NodeId costCO2Id = NodeId.parse((String) pv.get("costCO2Id"));
-							attach(new ClientVolatileProducer(client, "pvs" + i,  installedPowerId, effId, productionId,
+							attach(new ClientVolatileProducer(client, "pvs" + i, installedPowerId, effId, productionId,
 									NetworkType.ELECTRICITY, opCostId, costCO2Id, 0));
 							System.out.println("Added pv to " + name);
 						} catch (Exception e) {
@@ -343,8 +345,8 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId productionId = NodeId.parse((String) solarthermic.get("productionId"));
 							NodeId opCostId = NodeId.parse((String) solarthermic.get("opCostId"));
 							NodeId costCO2Id = NodeId.parse((String) solarthermic.get("costCO2Id"));
-							attach(new ClientVolatileProducer(client, "solarthermic" + i,  installedPowerId, effId, productionId,
-									NetworkType.HEAT, opCostId, costCO2Id, 0));
+							attach(new ClientVolatileProducer(client, "solarthermic" + i, installedPowerId, effId,
+									productionId, NetworkType.HEAT, opCostId, costCO2Id, 0));
 							System.out.println("Added solarthermic to " + name);
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add solarthermic " + i + " to building " + name

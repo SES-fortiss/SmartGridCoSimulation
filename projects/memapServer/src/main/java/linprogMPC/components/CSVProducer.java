@@ -4,6 +4,7 @@ import linprogMPC.components.prototypes.Producer;
 import linprogMPC.messages.extension.NetworkType;
 
 public class CSVProducer extends Producer {
+	public NetworkType networkType;
 	double opCost;
 	double costCO2;
 
@@ -19,19 +20,20 @@ public class CSVProducer extends Producer {
 	public CSVProducer(String name, double installedPower, double efficiency, NetworkType networkType, double opCost,
 			double costCO2, int port) {
 		super(name, installedPower, efficiency, port);
+		this.networkType = networkType;
 		this.opCost = opCost;
 		this.costCO2 = costCO2;
 	}
 
 	@Override
 	public void makeDecision() {
-		producerMessage.id = this.fullActorPath;
-		producerMessage.name = this.actorName;
+		producerMessage.id = fullActorPath;
+		producerMessage.name = actorName;
+		producerMessage.installedPower = installedPower;
 		producerMessage.operationalCostEUR = opCost;
 		producerMessage.operationalCostCO2 = costCO2;
 		producerMessage.efficiency = efficiency;
-		producerMessage.installedPower = installedPower;
-		producerMessage.networkType = NetworkType.HEAT;
+		producerMessage.networkType = networkType;
 	}
 
 }

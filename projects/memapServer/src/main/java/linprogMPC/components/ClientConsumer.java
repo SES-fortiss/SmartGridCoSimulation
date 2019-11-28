@@ -32,6 +32,13 @@ public class ClientConsumer extends Consumer {
 	public List<UaMonitoredItem> itemsHeat;
 	public List<UaMonitoredItem> itemsElectricity;
 
+	/**
+	 * @param client
+	 * @param name              consumer name
+	 * @param nodeIdHeat        heat consumption profile values
+	 * @param nodeIdElectricity electricity consumption profile values
+	 * @param port
+	 */
 	public ClientConsumer(BasicClient client, String name, NodeId nodeIdHeat, NodeId nodeIdElectricity, int port) {
 		super(name, port);
 		this.client = client;

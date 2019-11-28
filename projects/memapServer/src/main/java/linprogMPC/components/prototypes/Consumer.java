@@ -20,6 +20,10 @@ import linprogMPC.messages.planning.DemandMessage;
  */
 public abstract class Consumer extends Device {
 
+	/**
+	 * @param name                consumer name
+	 * @param port
+	 */
 	public Consumer(String name, int port) {
 		super(name, port);
 	}
@@ -41,16 +45,15 @@ public abstract class Consumer extends Device {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 		}
 
+		consumptionMessage.name = actorName;
+		consumptionMessage.id = fullActorPath;
 		consumptionMessage.setDemandVector(demandVectorB);
-		consumptionMessage.networkType = NetworkType.DEMANDWITHBOTH;
-		consumptionMessage.name = this.actorName;
-		consumptionMessage.id = this.fullActorPath;
 		consumptionMessage.forecastType = "Profile";
 		consumptionMessage.optimizationCriteria = TopologyConfig.OPTIMIZATION_CRITERIA;
-
+		consumptionMessage.networkType = NetworkType.DEMANDWITHBOTH;
+		
 		super.updateDisplay(consumptionMessage);
 	}
 

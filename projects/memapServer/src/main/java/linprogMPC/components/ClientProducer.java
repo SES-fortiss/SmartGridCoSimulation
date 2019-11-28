@@ -9,12 +9,9 @@ import linprogMPC.helperOPCua.BasicClient;
 import linprogMPC.messages.extension.NetworkType;
 
 public class ClientProducer extends Producer {
+	public final NetworkType networkType;
 	public double opCost;
 	public double costCO2;
-	public final NetworkType networkType;
-
-	public ClientProducer(BasicClient client, String name, NodeId installedPowerId, NodeId effId, NodeId opCostId,
-			NodeId costCO2Id, NetworkType networkType, int port) throws InterruptedException, ExecutionException {
 
 	/**
 	 * @param client
@@ -30,18 +27,18 @@ public class ClientProducer extends Producer {
 			NetworkType networkType, NodeId opCostId, NodeId costCO2Id, int port)
 			throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(installedPowerId), client.readFinalDoubleValue(effId), port);
+		this.networkType = networkType;
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
-		this.networkType = networkType;
 	}
 
 	public void makeDecision() {
-		producerMessage.id = this.fullActorPath;
-		producerMessage.name = this.actorName;
+		producerMessage.id = fullActorPath;
+		producerMessage.name = actorName;
+		producerMessage.installedPower = installedPower;
 		producerMessage.operationalCostEUR = opCost;
 		producerMessage.operationalCostCO2 = costCO2; // kg CO2/kWh
 		producerMessage.efficiency = efficiency;
-		producerMessage.installedPower = installedPower;
 		producerMessage.networkType = networkType;
 	}
 

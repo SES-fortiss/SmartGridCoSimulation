@@ -8,11 +8,12 @@ import linprogMPC.messages.extension.NetworkType;
 import linprogMPC.messages.planning.VolatileProducerMessage;
 
 public class CSVVolatileProducer extends Producer {
-	static double efficiency = 1.0;
-	public VolatileProducerMessage volatileProducerMessage;
 	public NetworkType networkType;
 	double opCost;
 	double costCO2;
+	static double efficiency = 1.0;
+	public VolatileProducerMessage volatileProducerMessage;
+	private SolarRadiation solarRadiation = null;
 
 	/**
 	 * @param name           volatile producer name
@@ -22,28 +23,27 @@ public class CSVVolatileProducer extends Producer {
 	 * @param costCO2        CO2 cost [kg CO2/kWh]
 	 * @param port
 	 */
-	public CSVVolatileProducer(String name, double installedPower, NetworkType networkType, double opCost,
-			double costCO2, int port) {
+	public CSVVolatileProducer(String name, String csvFile, double installedPower, NetworkType networkType,
+			double opCost, double costCO2, int port) {
 		super(name, installedPower, efficiency, port);
 		volatileProducerMessage = new VolatileProducerMessage();
 		this.networkType = networkType;
 		this.opCost = opCost;
 		this.costCO2 = costCO2;
+		solarRadiation = new SolarRadiation(csvFile);
 	}
 
 	@Override
 	public void makeDecision() {
 		int cts = GlobalTime.getCurrentTimeStep();
-		volatileProducerMessage.name = this.actorName;
-		volatileProducerMessage.id = this.fullActorPath;
+		volatileProducerMessage.id = fullActorPath;
+		volatileProducerMessage.name = actorName;
+		volatileProducerMessage.installedPower = installedPower;
 		volatileProducerMessage.operationalCostEUR = opCost;
 		volatileProducerMessage.operationalCostCO2 = costCO2;
 		volatileProducerMessage.efficiency = efficiency;
-		volatileProducerMessage.installedPower = installedPower;
-		volatileProducerMessage.networkType = this.networkType;
+		volatileProducerMessage.networkType = networkType;
 		volatileProducerMessage.forecast = new double[nStepsMPC];
-
-		SolarRadiation solarRadiation = new SolarRadiation();
 
 		for (int i = 0; i < nStepsMPC; i++) {
 			volatileProducerMessage.forecast[i] = solarRadiation.getSolarProductionPerKWp(cts + i) * installedPower;
@@ -55,5 +55,4 @@ public class CSVVolatileProducer extends Producer {
 	public AnswerContent returnAnswerContentToSend() {
 		return volatileProducerMessage;
 	}
-
 }

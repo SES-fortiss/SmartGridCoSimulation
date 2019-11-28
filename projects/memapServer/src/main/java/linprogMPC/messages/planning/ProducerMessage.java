@@ -15,6 +15,7 @@ public class ProducerMessage implements AnswerContent {
 	public double operationalCostCO2;
 	
 	public double efficiency;
+	
 	public NetworkType networkType;
 
 }

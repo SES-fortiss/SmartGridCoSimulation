@@ -44,8 +44,8 @@ public class Connection extends Device {
 		connectionMessage.maxOut= this.maxOut;
 		connectionMessage.efficiencyIn = this.efficiencyIn;
 		connectionMessage.efficiencyOut = this.efficiencyOut;	
-		connectionMessage.operationalPriceEURO = this.operationalPriceEURO;
-		connectionMessage.operationalPriceCO2 = this.operationalPriceCO2;
+		connectionMessage.operationalCostEUR = this.operationalPriceEURO;
+		connectionMessage.operationalCostCO2 = this.operationalPriceCO2;
 	}
 	
 	@Override

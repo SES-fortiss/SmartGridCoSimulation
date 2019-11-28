@@ -137,7 +137,7 @@ public class ControllableInputPanel extends JPanel {
 		add(txtCPEfficiency, "4, 14, fill, default");
 		txtCPEfficiency.setColumns(10);
 
-		lbCPCost = new JLabel("Cost [cent/kWh]");
+		lbCPCost = new JLabel("Cost [cent EUR/kWh]");
 		add(lbCPCost, "2, 16");
 
 		txtCPCost = new JTextField();
@@ -146,7 +146,7 @@ public class ControllableInputPanel extends JPanel {
 		add(txtCPCost, "4, 16, fill, default");
 		txtCPCost.setColumns(10);
 
-		lbCPCOEmission = new JLabel("CO2 Emissions [g/kWh]");
+		lbCPCOEmission = new JLabel("CO2 Emissions [kg/kWh]");
 		add(lbCPCOEmission, "2, 18");
 
 		txtCPCOEmission = new JTextField();

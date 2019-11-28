@@ -15,12 +15,17 @@ import linprogMPC.components.prototypes.Consumer;
 import linprogMPC.examples.ExampleFiles;
 import linprogMPC.helper.FileManager;
 import linprogMPC.helper.MyTimeUnit;
+import simulation.SimulationStarter;
 
 public class CSVConsumer extends Consumer {
-	private FileManager mgr = new FileManager();
 	private ArrayList<Double> heatProfile = new ArrayList<Double>();
 	private ArrayList<Double> electricityProfile = new ArrayList<Double>();
 
+	/**
+	 * @param name    consumer name
+	 * @param csvFile consumption profile file path
+	 * @param port
+	 */
 	public CSVConsumer(String name, String csvFile, int port) {
 		super(name, port);
 		setProfiles(csvFile);
@@ -55,6 +60,7 @@ public class CSVConsumer extends Consumer {
 			}
 		} catch (IOException | ParseException e) {
 			System.err.println("Error reading or parsing CSV data from " + csvFile);
+			SimulationStarter.stopSimulation();
 			e.printStackTrace();
 		}
 
@@ -65,6 +71,7 @@ public class CSVConsumer extends Consumer {
 	 * @param csvFile consumption profiles CSV file
 	 */
 	private BufferedReader getBuffer(String csvFile) {
+		FileManager mgr = new FileManager();
 		ExampleFiles examples = new ExampleFiles();
 		if (examples.isExample(csvFile)) {
 			System.out.println(">> Reading from resources: " + csvFile);

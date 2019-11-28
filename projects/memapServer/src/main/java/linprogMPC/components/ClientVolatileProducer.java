@@ -27,12 +27,9 @@ import linprogMPC.messages.extension.NetworkType;
 import linprogMPC.messages.planning.VolatileProducerMessage;
 
 public class ClientVolatileProducer extends Producer {
-
-	static double eff = 1.0;
-	public NetworkType networkType;
-	VolatileProducerMessage volatileProducerMessage;
 	public double productionProfile[] = new double[nStepsMPC];
 	public List<UaMonitoredItem> itemsProduction;
+	public NetworkType networkType;
 	double opCost;
 	double costCO2;
 
@@ -54,7 +51,7 @@ public class ClientVolatileProducer extends Producer {
 			throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(installedPowerId), client.readFinalDoubleValue(effId), port);
 
-		this.volatileProducerMessage = new VolatileProducerMessage();
+		volatileProducerMessage = new VolatileProducerMessage();
 		this.networkType = networkType;
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
@@ -78,11 +75,9 @@ public class ClientVolatileProducer extends Producer {
 			Variant var = value.getValue();
 			if (var.getValue() instanceof Double) {
 				Arrays.fill(productionProfile, (Math.abs((Double) value.getValue().getValue())));
-				// System.out.println("New productionProfile" + productionProfile);
 			} else {
 				System.out.println("Value " + value + " is not in double format");
 			}
-			// System.out.format("%s -> %s%n", item, value);
 		};
 
 		// setting the consumer after the subscription creation
@@ -107,12 +102,12 @@ public class ClientVolatileProducer extends Producer {
 
 	@Override
 	public void makeDecision() {
-		volatileProducerMessage.name = this.actorName;
-		volatileProducerMessage.id = this.fullActorPath;
+		volatileProducerMessage.id = fullActorPath;
+		volatileProducerMessage.name = actorName;
+		volatileProducerMessage.installedPower = installedPower;
 		volatileProducerMessage.operationalCostEUR = opCost;
 		volatileProducerMessage.operationalCostCO2 = costCO2;
 		volatileProducerMessage.efficiency = efficiency;
-		volatileProducerMessage.installedPower = installedPower;
 		volatileProducerMessage.networkType = networkType;
 		volatileProducerMessage.forecast = productionProfile;
 	}
@@ -121,5 +116,4 @@ public class ClientVolatileProducer extends Producer {
 	public AnswerContent returnAnswerContentToSend() {
 		return volatileProducerMessage;
 	}
-
 }

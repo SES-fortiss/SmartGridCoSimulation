@@ -332,10 +332,10 @@ public class MatrixBuildup {
 
 		for (int i = 0; i < nStepsMPC; i++) { 
 			// first comes the unload (produce), then the load (consume)
-			lambda[i] = storageMessage.operationalPriceEURO;
-			lambda[nStepsMPC + i] = storageMessage.operationalPriceEURO;
-			lambdaCO2[i] = storageMessage.operationalPriceCO2;
-			lambdaCO2[nStepsMPC + i] = storageMessage.operationalPriceCO2;
+			lambda[i] = storageMessage.operationalCostEUR;
+			lambda[nStepsMPC + i] = storageMessage.operationalCostEUR;
+			lambdaCO2[i] = storageMessage.operationalCostCO2;
+			lambdaCO2[nStepsMPC + i] = storageMessage.operationalCostCO2;
 			lb[i] = 0;
 			lb[nStepsMPC + i] = 0;
 			ub[i] = storageMessage.maxDischarge;
@@ -419,8 +419,8 @@ public class MatrixBuildup {
 					problem.a_eq[el_index + i][n_index + j] = couplingMatrix_el[i][j];
 					problem.g[nStepsMPC * (2 * storagesHandledSoFar) + i][n_index + j] = capacityMatrix1[i][j];
 					problem.g[nStepsMPC * (1 + 2 * storagesHandledSoFar) + i][n_index + j] = capacityMatrix2[i][j];
-					problem.lambda[n_index + j] = storageMessage.operationalPriceEURO;
-					problem.lambdaCO2[n_index + j] = storageMessage.operationalPriceCO2;
+					problem.lambda[n_index + j] = storageMessage.operationalCostEUR;
+					problem.lambdaCO2[n_index + j] = storageMessage.operationalCostCO2;
 					problem.x_lb[n_index + j] = lb[j];
 					problem.x_ub[n_index + j] = ub[j];
 					problem.namesUB[n_index + j] = namesUB[j];
@@ -474,8 +474,8 @@ public class MatrixBuildup {
 				for (int j = 0; j < 2 * nStepsMPC; j++) {
 					problem.a_eq[bi_index + i][n_index + j] = couplingMatrix_H_i[i][j];
 					problem.a_eq[bj_index + i][n_index + j] = couplingMatrix_H_j[i][j];
-					problem.lambda[n_index + j] = connectionMessage.operationalPriceEURO;
-					problem.lambdaCO2[n_index + j] = connectionMessage.operationalPriceCO2;
+					problem.lambda[n_index + j] = connectionMessage.operationalCostEUR;
+					problem.lambdaCO2[n_index + j] = connectionMessage.operationalCostCO2;
 					problem.x_lb[n_index + j] = lb[j];
 					problem.x_ub[n_index + j] = ub[j];
 					problem.namesUB[n_index + j] = namesUB[j];

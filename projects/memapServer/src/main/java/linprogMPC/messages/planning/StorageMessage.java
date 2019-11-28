@@ -5,11 +5,11 @@ import linprogMPC.messages.extension.NetworkType;
 
 public class StorageMessage implements AnswerContent {
 	
-	public String name;
 	public String id;
+	public String name;
 	
-	public double operationalPriceEURO;
-	public double operationalPriceCO2;
+	public double operationalCostEUR;
+	public double operationalCostCO2;
 	
 	public double capacity;
 	public double stateOfCharge;

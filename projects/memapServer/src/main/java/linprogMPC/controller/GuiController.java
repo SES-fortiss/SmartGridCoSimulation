@@ -99,8 +99,8 @@ public class GuiController {
 			JsonObject jObject = (JsonObject) jsonElement;
 
 			// Creating the building
-			BuildingController building = new CSVBuildingController(jObject.get("name").getAsString(), jObject.get("ldHeating").getAsBoolean(),
-					jObject.get("heatTransportLength").getAsInt());
+			BuildingController building = new CSVBuildingController(jObject.get("name").getAsString(),
+					jObject.get("ldHeating").getAsBoolean(), jObject.get("heatTransportLength").getAsInt());
 
 			// Attaching devices
 			JsonArray couplers = (JsonArray) jObject.get("coupler_list");
@@ -140,13 +140,13 @@ public class GuiController {
 				CSVStorage storage = gson.fromJson(storageConfig, CSVStorage.class);
 				building.attach(storage);
 			}
-			
+
 			for (JsonElement consumerEl : consumers) {
 				JsonObject consumerConfig = (JsonObject) consumerEl;
 				CSVConsumer consumer = gson.fromJson(consumerConfig, CSVConsumer.class);
 				building.attach(consumer);
 			}
-			
+
 			return building;
 		}
 	}
@@ -157,15 +157,20 @@ public class GuiController {
 				throws JsonParseException {
 			JsonObject jObject = (JsonObject) jsonElement;
 			String networkP = jObject.get("networkTypeP").getAsString();
+
+			// Assuming primary network type is electricity
 			NetworkType primaryNetworkType = NetworkType.ELECTRICITY;
 			NetworkType secondaryNetworkType = NetworkType.HEAT;
-			if (networkP == "Heat") {
+			// If primary network type is heat
+			if (networkP.equals("Heat")) {
 				primaryNetworkType = NetworkType.HEAT;
 				secondaryNetworkType = NetworkType.ELECTRICITY;
 			}
-			
-			return new CSVCoupler(jObject.get("name").getAsString(), jObject.get("power").getAsDouble(), jObject.get("efficiencyPrimary").getAsDouble(),
-					jObject.get("efficiencySecondary").getAsDouble(), primaryNetworkType, secondaryNetworkType, jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
+
+			return new CSVCoupler(jObject.get("name").getAsString(), jObject.get("power").getAsDouble(),
+					jObject.get("efficiencyPrimary").getAsDouble(), jObject.get("efficiencySecondary").getAsDouble(),
+					primaryNetworkType, secondaryNetworkType, jObject.get("cost").getAsDouble(),
+					jObject.get("coEmission").getAsDouble(), 0);
 		}
 	}
 
@@ -174,9 +179,18 @@ public class GuiController {
 		public CSVProducer deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context)
 				throws JsonParseException {
 			JsonObject jObject = (JsonObject) jsonElement;
+			String networkT = jObject.get("networkType").getAsString();
 
-			return new CSVProducer(jObject.get("name").getAsString(), jObject.get("power").getAsDouble(), jObject.get("efficiency").getAsDouble(),
-					jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
+			// Assuming network type is electricity
+			NetworkType networkType = NetworkType.ELECTRICITY;
+			// If primary network type is heat
+			if (networkT.equals("Heat")) {
+				networkType = NetworkType.HEAT;
+			}
+
+			return new CSVProducer(jObject.get("name").getAsString(), jObject.get("power").getAsDouble(),
+					jObject.get("efficiency").getAsDouble(), networkType, jObject.get("cost").getAsDouble(),
+					jObject.get("coEmission").getAsDouble(), 0);
 		}
 	}
 
@@ -185,14 +199,17 @@ public class GuiController {
 		public CSVVolatileProducer deserialize(JsonElement jsonElement, Type typeOfT,
 				JsonDeserializationContext context) throws JsonParseException {
 			JsonObject jObject = (JsonObject) jsonElement;
+			String networkT = jObject.get("networkType").getAsString();
 
-			String networkS = jObject.get("networkType").getAsString();
+			// Assuming network type is electricity
 			NetworkType networkType = NetworkType.ELECTRICITY;
-			if (networkS == "Heat") {
+			// If primary network type is heat
+			if (networkT.equals("Heat")) {
 				networkType = NetworkType.HEAT;
 			}
 
-			return new CSVVolatileProducer(jObject.get("name").getAsString(), jObject.get("power").getAsDouble(), networkType, jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
+			return new CSVVolatileProducer(jObject.get("name").getAsString(), jObject.get("forecastFile").getAsString(), jObject.get("power").getAsDouble(),
+					networkType, jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
 		}
 	}
 
@@ -201,17 +218,19 @@ public class GuiController {
 		public CSVStorage deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context)
 				throws JsonParseException {
 			JsonObject jObject = (JsonObject) jsonElement;
+			String networkT = jObject.get("networkType").getAsString();
 
-			String networkS = jObject.get("networkType").getAsString();
+			// Assuming network type is electricity
 			NetworkType networkType = NetworkType.ELECTRICITY;
-
-			if (networkS == "Heat") {
+			// If primary network type is heat
+			if (networkT.equals("Heat")) {
 				networkType = NetworkType.HEAT;
 			}
 
-			return new CSVStorage(jObject.get("name").getAsString(), jObject.get("capacity").getAsDouble(), jObject.get("maxCharging").getAsDouble(),
-					jObject.get("maxDischarging").getAsDouble(), jObject.get("effIN").getAsDouble(),
-					jObject.get("effOUT").getAsDouble(), networkType, 0.0001, 0.0001, 0);
+			return new CSVStorage(jObject.get("name").getAsString(), jObject.get("capacity").getAsDouble(),
+					jObject.get("maxCharging").getAsDouble(), jObject.get("maxDischarging").getAsDouble(),
+					jObject.get("effIN").getAsDouble(), jObject.get("effOUT").getAsDouble(), networkType, 0.0001,
+					0.0001, 0);
 		}
 	}
 
@@ -220,8 +239,9 @@ public class GuiController {
 		public CSVConsumer deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context)
 				throws JsonParseException {
 			JsonObject jObject = (JsonObject) jsonElement;
-			
-			return new CSVConsumer(jObject.get("name").getAsString(), jObject.get("consumptionProfile").getAsString(), 0);
+
+			return new CSVConsumer(jObject.get("name").getAsString(), jObject.get("consumptionProfile").getAsString(),
+					0);
 		}
 	}
 

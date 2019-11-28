@@ -9,25 +9,16 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import linprogMPC.TopologyConfig;
+import linprogMPC.examples.ExampleFiles;
 import simulation.SimulationStarter;
 
 public class SolarRadiation {
 
-	/** Solar production CSV name */
-	private static String SOLARPRODUCTION_FILENAME = "Discovergy_PVAnlage15kWp.csv";
 	/** Solar production per KWp */
 	private ArrayList<Double> solarProductionPerKWp;
 
-	public SolarRadiation() {
-		// Production of a 15kWp solar installation (source:
-		// https://my.discovergy.com/export?)
-		try {
-			readSolarProduction(getBuffer(SOLARPRODUCTION_FILENAME));
-		} catch (IOException | ParseException e) {
-			System.err.println("Error reading or parsing CSV data from " + SOLARPRODUCTION_FILENAME);
-			SimulationStarter.stopSimulation();
-			e.printStackTrace();
-		}
+	public SolarRadiation(String csvFile) {
+		setSolarProductionPerKWp(csvFile);
 	}
 
 	/**
@@ -40,19 +31,42 @@ public class SolarRadiation {
 	}
 
 	/**
+	 * Assign values to SolarProductionPerKWp
+	 */
+	private void setSolarProductionPerKWp(String csvFile) {
+		try {
+			if (csvFile.isEmpty()) {
+				readSolarProduction(getBuffer("SOLARPRODUCTIONEXAMPLE"));
+			} else {
+				readSolarProduction(getBuffer(csvFile));
+			}
+		} catch (IOException | ParseException e) {
+			System.err.println("Error reading or parsing CSV data from " + csvFile);
+			SimulationStarter.stopSimulation();
+			e.printStackTrace();
+		}
+
+	}
+	
+	/**
 	 * @return a buffer with the data from CSV filename
 	 * @param filename CSV file
 	 */
-	private BufferedReader getBuffer(String filename) {
+	private BufferedReader getBuffer(String csvFile) {
 		FileManager mgr = new FileManager();
-		System.out.println(">> Reading from resources: " + filename);
-		return mgr.readFromResources(filename);
+		ExampleFiles examples = new ExampleFiles();
+		if (examples.isExample(csvFile)) {
+			System.out.println(">> Reading from resources: " + csvFile);
+			return mgr.readFromResources(examples.getFile(csvFile));
+		} else {
+			System.out.println(">> Reading from source: " + csvFile);
+			return mgr.readFromSource(csvFile);
+		}
 	}
 
 	/**
 	 * Assign values to solar production {@link #solarProductionPerKWp} from buffer
-	 * 
-	 * @return br buffer
+	 * @param br buffer
 	 */
 	private void readSolarProduction(BufferedReader br) throws IOException, ParseException {
 		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);

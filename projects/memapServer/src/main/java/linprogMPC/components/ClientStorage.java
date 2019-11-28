@@ -39,20 +39,17 @@ public class ClientStorage extends Storage {
 
 	@Override
 	public void makeDecision() {
-
+		storageMessage.id = fullActorPath;
+		storageMessage.name = actorName;
+		storageMessage.operationalCostEUR = opCost;
+		storageMessage.operationalCostCO2 = costCO2;
+		storageMessage.capacity = capacity;
 		storageMessage.stateOfCharge = myStateOfCharge;
-
-		// alle parameter ändern sich nicht während der laufzeit
-		storageMessage.networkType = this.networkType;
-		storageMessage.name = this.actorName;
-		storageMessage.id = this.fullActorPath;
-		storageMessage.operationalPriceEURO = opCost;
-		storageMessage.operationalPriceCO2 = costCO2;
-		storageMessage.capacity = this.capacity;
-		storageMessage.maxLoad = this.max_charging;
-		storageMessage.maxDischarge = this.max_discharging;
-		storageMessage.efficiencyCharge = this.effIN;
-		storageMessage.efficiencyDischarge = this.effOUT;
+		storageMessage.maxLoad = max_charging;
+		storageMessage.maxDischarge = max_discharging;
+		storageMessage.efficiencyCharge = effIN;
+		storageMessage.efficiencyDischarge = effOUT;
+		storageMessage.networkType = networkType;
 	}
 
 }

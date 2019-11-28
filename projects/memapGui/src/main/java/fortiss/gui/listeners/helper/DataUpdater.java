@@ -24,7 +24,7 @@ public class DataUpdater {
 		Designer.demandPanel.txtDName.setText(name);
 		Designer.demandPanel.txtDConsumption.setText(consumption);
 		Designer.demandPanel.plotPanel.clearSeries();
-		if(!consumption.isEmpty()) {
+		if (!consumption.isEmpty()) {
 			Designer.demandPanel.setData(consumption);
 		}
 		Designer.cl.show(Designer.pl_comp_detail, "demand");
@@ -49,10 +49,9 @@ public class DataUpdater {
 	/**
 	 * Updates and shows the data of the selected volatile.
 	 */
-	public void updateVolProductionData(String producer, int index, String networktype, double power,
-			String forcastFile, double cost, double coEmission) {
+	public void updateVolProductionData(String producer, String networktype, double power, String forcastFile,
+			double cost, double coEmission) {
 		Designer.volatilePanel.txtVName.setText(producer);
-		Designer.volatilePanel.txtVIndex.setText(Integer.toString(index));
 		Designer.volatilePanel.sVNetworkType.setSelectedItem(networktype);
 		Designer.volatilePanel.txtVPower.setText(Double.toString(power));
 		Designer.volatilePanel.txtVForecastFile.setText(forcastFile);
