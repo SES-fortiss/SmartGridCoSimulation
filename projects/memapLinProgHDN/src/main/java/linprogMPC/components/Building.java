@@ -14,8 +14,7 @@ import linprogMPC.ConfigurationMEMAP;
 import linprogMPC.MILPTopology;
 import linprogMPC.helper.SolutionHandler;
 import linprogMPC.helper.lp.LPSolver;
-import linprogMPC.helper.milp.MILPSolver;
-import linprogMPC.helper.milp.MILPlogging;
+import linprogMPC.helper.milp.MILPSolverNoConnections;
 import linprogMPC.helperOPCua.OpcServerContextGenerator;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.OptimizationResultMessage;
@@ -130,8 +129,8 @@ public class Building extends BehaviorModel {
 				
 		
 		if(ConfigurationMEMAP.chosenOptimizer == ConfigurationMEMAP.Optimizer.MILP) {
-			MILPSolver milpSolver = new MILPSolver(
-					buildingMessage, nStepsMPC, MILPlogging.OFF, milpSolHandler,
+			MILPSolverNoConnections milpSolver = new MILPSolverNoConnections(
+					buildingMessage, nStepsMPC, milpSolHandler,
 					buildingsTotalCostsMILP, buildingsTotalCO2MILP, 
 					getActualTimeStep(), buildingsSolutionPerTimeStepMILP, 
 					this.actorName, optResult);			

@@ -8,7 +8,8 @@ public class ConnectionMessage implements AnswerContent {
 	public String name;
 	public String id;
 	
-	public String connectedBuilding;
+	public String connectedBuildingTo;
+	public String connectedBuildingFrom;
 	
 	public double q_max;	
 	public double efficiency;

@@ -103,8 +103,6 @@ public class LPMatrixBuildup {
 		int nrOfCouplers = 0;
 		int nrOfConnections = 0;
 		
-		
-		
 		for (BuildingMessage buildingMessage : buildingMessageList) {
 			
 			mapBuildingToInt.put(buildingMessage.name, nrOfBuildings);

@@ -1,10 +1,12 @@
 package linprogMPC.helper.milp;
 
 import akka.systemActors.GlobalTime;
+import linprogMPC.ConfigurationMEMAP;
 import linprogMPC.MILPTopology;
 import linprogMPC.helper.EnergyPrices;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.extension.NetworkType;
+import linprogMPC.messages.planning.ConnectionMessage;
 import linprogMPC.messages.planning.CouplerMessage;
 import linprogMPC.messages.planning.ProducerMessage;
 import linprogMPC.messages.planning.StorageMessage;
@@ -12,22 +14,24 @@ import linprogMPC.messages.planning.VolatileProducerMessage;
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
 
-public class MILPProblem {
+public class MILPProblemNoConnections {
 			
 	int nStepsMPC;
 	int nCols;
 	
-	public MILPProblem(int nStepsMPC, int nCols) {
+	public MILPProblemNoConnections(int nStepsMPC, int nCols) {
 		this.nStepsMPC = nStepsMPC;
 		this.nCols = nCols;
 	}
 	
+	// TODO, original form without connections...
 	public LpSolve createNames(LpSolve problem, BuildingMessage buildingMessage) throws LpSolveException {		
 		
         int controllableHandled = 0;
         int volatileHandled = 0;
         int couplerHandled = 0;
         int storageHandled = 0;
+        int connectionHandled = 0;
         
 		for(ProducerMessage producerMessage : buildingMessage.controllableProducerList) {
 			addControllableToProblem(producerMessage, problem, controllableHandled);
@@ -48,8 +52,17 @@ public class MILPProblem {
 			addStorageToProblem(storageMessage, problem, controllableHandled, volatileHandled, couplerHandled, storageHandled);
 			storageHandled++;
 		}
+				
+		if (ConfigurationMEMAP.chosenOptimizationHierarchy == ConfigurationMEMAP.OptHierarchy.MEMAP && 
+				ConfigurationMEMAP.chosenOptimizer == ConfigurationMEMAP.Optimizer.MILPwithConnections) {
+			
+			for(ConnectionMessage connectionMessage : buildingMessage.connectionList) {
+				addConnectionToProblem(connectionMessage, problem, controllableHandled, volatileHandled, couplerHandled, storageHandled, connectionHandled);
+				connectionHandled++;
+			}
+		}
         
-		addMarkets(problem, controllableHandled, volatileHandled, couplerHandled, storageHandled);
+		addMarkets(problem, controllableHandled, volatileHandled, couplerHandled, storageHandled, connectionHandled);
                 
 		return problem;
 	}	
@@ -100,11 +113,23 @@ public class MILPProblem {
 		}
 	}
 	
+	private void addConnectionToProblem(ConnectionMessage connectionMessage, LpSolve problem, int controllableHandled,
+			int volatileHandled, int couplerHandled, int storageHandled, int connectionHandled) throws LpSolveException {
+		
+			for (int i = 0; i < nStepsMPC; i++) {			
+				int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2) + (connectionHandled * 2)  );
+				String string1 = connectionMessage.name+"_From"+connectionMessage.connectedBuildingFrom+"_To" + connectionMessage.connectedBuildingTo + "_T" + i;
+				String string2 = connectionMessage.name+"_Back_From"+connectionMessage.connectedBuildingFrom+"_To" + connectionMessage.connectedBuildingTo + "_T" + i;
+				problem.setColName(index, string1);
+				problem.setColName(index + nStepsMPC, string2);
+			}		
+	}
+	
 	private void addMarkets(LpSolve problem, int controllableHandled, int volatileHandled, int couplerHandled,
-			int storageHandled) throws LpSolveException {
+			int storageHandled, int connectionHandled) throws LpSolveException {
 				
 		for (int i = 0; i < nStepsMPC; i++) {			
-			int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
+			int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2) + (connectionHandled * 2) );
 			String string1 = "ElecBuy_T" + i;
 			String string2 = "ElecSell_T" + i;
 			problem.setColName(index, string1);
@@ -112,8 +137,7 @@ public class MILPProblem {
 		}	
 	}	
 
-	public LpSolve createDemandConstraints(LpSolve problem, BuildingMessage buildingMessage) throws LpSolveException {
-
+	public LpSolve createDemandConstraints(LpSolve problem, BuildingMessage buildingMessage) throws LpSolveException {		
         double [] demand = buildingMessage.getCombinedDemandVector();
         
         /* first HEAT components */
@@ -121,8 +145,8 @@ public class MILPProblem {
         	
             int controllableHandled = 0;
             int volatileHandled = 0;
-            int couplerHandled = 0;        
-            int storageHandled = 0;        	
+            int couplerHandled = 0;
+            int storageHandled = 0;
         	
         	double[] rowHEAT = new double[nCols+1];
         	

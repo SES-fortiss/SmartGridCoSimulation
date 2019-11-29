@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import akka.systemActors.GlobalTime;
 import linprogMPC.ConfigurationMEMAP;
+import linprogMPC.ConfigurationMEMAP.MilpLogging;
 import linprogMPC.MILPTopology;
 import linprogMPC.helper.EnergyPrices;
 import linprogMPC.helper.HelperConcat;
@@ -19,15 +20,17 @@ import lpsolve.LpSolveException;
  * @author bytschkow
  *
  */
-public class MILPSolver {
+public class MILPSolverNoConnections {
 	
-	MILPProblem mp;
+	MILPProblemNoConnections mp;
 	
 	BuildingMessage buildingMessage;
+	
+	
 	int nStepsMPC = 0;
 	int nCols = 0;
 	LpSolve problem = null;
-	MILPlogging logging = MILPlogging.OFF;	
+	MilpLogging logging;	
 
 	SolutionHandler milpSolHandler;
 	String actorName;
@@ -39,21 +42,16 @@ public class MILPSolver {
 	double[][] buildingsSolutionPerTimeStepMILP;
 	int timeStepIndex = 0;	
 
-	public MILPSolver(BuildingMessage buildingMessage, int nStepsMPC)  {
+	public MILPSolverNoConnections(BuildingMessage buildingMessage, int nStepsMPC)  {
 		this.buildingMessage = buildingMessage;
-		this.nStepsMPC = nStepsMPC;				
+		this.nStepsMPC = nStepsMPC;		
+		this.logging = ConfigurationMEMAP.chosenMilpLogging;
 	}
 	
-	/* A second constructor, if logging control is desired */
-	public MILPSolver(BuildingMessage buildingMessage, int nStepsMPC, MILPlogging log)  {
-		this(buildingMessage, nStepsMPC);
-		this.logging = log;
-	}
-	
-	public MILPSolver(BuildingMessage buildingMessage2, int nStepsMPC2, MILPlogging files, SolutionHandler milpSolHandler,
+	public MILPSolverNoConnections(BuildingMessage buildingMessage2, int nStepsMPC2, SolutionHandler milpSolHandler,
 			double[] buildingStepCostsMILP, double[] buildingStepCO2MILP, int actualTimeStep,
 			double[][] buildingsSolutionPerTimeStepMILP2, String actorName, OptimizationResultMessage optResult) {
-		this(buildingMessage2,nStepsMPC2,files);
+		this(buildingMessage2,nStepsMPC2);
 		this.buildingStepCostsMILP = buildingStepCostsMILP;
 		this.buildingStepCO2MILP = buildingStepCO2MILP;
 		this.buildingsSolutionPerTimeStepMILP = buildingsSolutionPerTimeStepMILP2;
@@ -64,8 +62,7 @@ public class MILPSolver {
 	}
 
 	/**  
-	 * note the difficulty is that all goes into one big matrix. Therefore, it needs to be carefully, to keep it modular.
-	 * 
+	 * Note, the difficulty is that all goes into one big matrix. Therefore, it needs to be carefully, to keep it modular. 
 	 * TODO: consider the connections
 	 */
 	public LpSolve createModel() throws LpSolveException {
@@ -73,8 +70,7 @@ public class MILPSolver {
 		int numberControllableProducers = buildingMessage.getNrOfControllableProducers();
 		int numberVolatileProducers = buildingMessage.getNrOfVolatileProducers();
 		int numberCouplers = buildingMessage.getNrOfCouplers();
-		int numberStorages = buildingMessage.getNrOfStorages();
-		
+		int numberStorages = buildingMessage.getNrOfStorages();		
 		int nrOfConnections = 0;
 		
 		// **** DESIGN DECISIONS ****
@@ -91,7 +87,7 @@ public class MILPSolver {
 		if (ConfigurationMEMAP.chosenOptimizationHierarchy == ConfigurationMEMAP.OptHierarchy.MEMAP && 
 				ConfigurationMEMAP.chosenOptimizer == ConfigurationMEMAP.Optimizer.MILPwithConnections) {
 			
-			nCols = nStepsMPC * ( 
+			nCols = nStepsMPC * (
 					(numberControllableProducers*2) + 
 					(numberVolatileProducers) + 
 					(numberCouplers * 2) + 
@@ -107,12 +103,12 @@ public class MILPSolver {
 		 *              BUILD Matrices
 		 **********************************************/
         
-        mp = new MILPProblem(nStepsMPC, nCols);
+        mp = new MILPProblemNoConnections(nStepsMPC, nCols);
         
         // 1) create model and include all names 
-        problem = mp.createNames(problem, buildingMessage);       
+        problem = mp.createNames(problem, buildingMessage);
         
-        if (logging == MILPlogging.ALL) {
+        if (logging == ConfigurationMEMAP.MilpLogging.ALL) {
         	
             String[] names = new String[nCols+1];
             for (int i = 0; i < names.length; i++) {
@@ -124,32 +120,32 @@ public class MILPSolver {
             System.out.println("*****************");
             System.out.println("nCols: " + nCols);
             System.out.println("Colnames: " + Arrays.toString(names));
-		}        
+		}
         
 		// 2) add the demand constraints (equality constraints)
         problem = mp.createDemandConstraints(problem, buildingMessage);
         
-        if (logging == MILPlogging.ALL) {
+        if (logging == ConfigurationMEMAP.MilpLogging.ALL) {
         	double [] demand = buildingMessage.getCombinedDemandVector();
         	System.out.println("Demand:  " + Arrays.toString(demand) + "    List size: " + buildingMessage.demandList.size());
         }
         
-        if (logging == MILPlogging.ALL || logging == MILPlogging.FILES) problem.writeLp("MILP_MEMAP_DEMAND.lp");
+        if (logging == ConfigurationMEMAP.MilpLogging.ALL || logging == ConfigurationMEMAP.MilpLogging.FILES) problem.writeLp("MILP_MEMAP_DEMAND.lp");
         
 		// 3) add the inequality constraints (component boundaries)
     	problem = mp.createComponentBoundaries(problem, buildingMessage);
-    	if (logging == MILPlogging.ALL || logging == MILPlogging.FILES) problem.writeLp("MILP_MEMAP_Boundaries.lp");    
+    	if (logging == ConfigurationMEMAP.MilpLogging.ALL || logging == ConfigurationMEMAP.MilpLogging.FILES) problem.writeLp("MILP_MEMAP_Boundaries.lp");    
 		
 		// 4) soc inequalitiy constraints.    	
     	problem = mp.createSOCBoundaries(problem, buildingMessage);
-    	if (logging == MILPlogging.ALL || logging == MILPlogging.FILES) problem.writeLp("MILP_MEMAP_SOC_Boundaries.lp");
+    	if (logging == ConfigurationMEMAP.MilpLogging.ALL || logging == ConfigurationMEMAP.MilpLogging.FILES) problem.writeLp("MILP_MEMAP_SOC_Boundaries.lp");
 
         problem.setAddRowmode(false); /* rowmode should be turned off again when done building the model */
         
 		// 5) Set objective function    	
     	problem = mp.createObjectiveFunction(problem, buildingMessage);    	
     	
-    	if (logging == MILPlogging.ALL || logging == MILPlogging.FILES) {
+    	if (logging == ConfigurationMEMAP.MilpLogging.ALL || logging == ConfigurationMEMAP.MilpLogging.FILES) {
     		problem.writeLp("MILP_MEMAP_FINAL.lp");
     		System.out.println("MILP_MEMAP_FINAL.lp written");
     	}
@@ -179,7 +175,7 @@ public class MILPSolver {
             for(int j = 0; j < nCols; j++) names[j] = problem.getColName(j + 1);
 
             // ONLY FOR LOGGING
-            if (logging == MILPlogging.ALL) {
+            if (logging == ConfigurationMEMAP.MilpLogging.ALL) {
             	for(int j = 0; j < nCols; j++) {
                 	System.out.println(names[j] + ": " + optSolution[j]);
                 };

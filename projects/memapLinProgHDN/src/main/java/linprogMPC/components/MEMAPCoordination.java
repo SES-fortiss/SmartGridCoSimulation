@@ -8,10 +8,11 @@ import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
+import static linprogMPC.ConfigurationMEMAP.*;
 import linprogMPC.MILPTopology;
 import linprogMPC.helper.SolutionHandler;
-import linprogMPC.helper.milp.MILPSolver;
-import linprogMPC.helper.milp.MILPlogging;
+import linprogMPC.helper.milp.MILPSolverNoConnections;
+import linprogMPC.helper.milp.MILPSolverWithConnections;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.OptimizationResultMessage;
 import linprogMPC.messages.extension.ChildSpecification;
@@ -34,7 +35,7 @@ import lpsolve.LpSolveException;
  */
 public class MEMAPCoordination extends BehaviorModel {
 	
-	// some long term values2
+	// some long term values
 	double[] buildingsTotalCostsMILP = new double[MILPTopology.NR_OF_ITERATIONS];
 	double[] buildingsTotalCO2MILP = new double[MILPTopology.NR_OF_ITERATIONS];
 	double[][] buildingsSolutionPerTimeStepMILP = new double[MILPTopology.NR_OF_ITERATIONS][];
@@ -54,8 +55,7 @@ public class MEMAPCoordination extends BehaviorModel {
 	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 
 	@Override
-	public void handleRequest() {}
-	
+	public void handleRequest() {}	
 
 	@Override
 	public void makeDecision() {
@@ -66,39 +66,70 @@ public class MEMAPCoordination extends BehaviorModel {
 		buildingMessage.name = this.actorName;
 		
 		this.actor.getContext().getChildren().forEach(child ->
-			buildingMessage.childrenList.add(new ChildSpecification(this.fullActorPath + "/" + child.path().name())));		
+			buildingMessage.childrenList.add(new ChildSpecification(this.fullActorPath + "/" + child.path().name())));				
 		
 		for(BasicAnswer basicAnswer : answerListReceived) {
 			AnswerContent answerContent = basicAnswer.answerContent;						
-			addToBuildingMessage(answerContent);			
+			addToBuildingMessage(answerContent); // makes one large building message (easier to optimize at once)	
 		}
 		
 		refactorDemandList();
 		
-		if (true) {			
-			MILPSolver milpSolver = new MILPSolver(
-					buildingMessage, nStepsMPC, MILPlogging.OFF, milpSolHandler,
-					buildingsTotalCostsMILP, buildingsTotalCO2MILP, 
-					getActualTimeStep(), buildingsSolutionPerTimeStepMILP,
-					this.actorName, optResult);
-			try {
-				milpSolver.createModel();				
-				milpSolver.solveMILP(); // and work through results
-				
-				double costTotal = 0;
-				double CO2Total = 0;
-				
-				for (int i = 0; i < buildingsTotalCostsMILP.length; i++) {
-					costTotal += buildingsTotalCostsMILP[i];
-					CO2Total += buildingsTotalCO2MILP[i];
+		if (chosenOptimizationHierarchy == OptHierarchy.MEMAP) {
+			if(chosenOptimizer == Optimizer.MILP){	
+				MILPSolverNoConnections milpSolver = new MILPSolverNoConnections(
+						buildingMessage, nStepsMPC, milpSolHandler,
+						buildingsTotalCostsMILP, buildingsTotalCO2MILP, 
+						getActualTimeStep(), buildingsSolutionPerTimeStepMILP,
+						this.actorName, optResult);
+				try {
+					milpSolver.createModel();				
+					milpSolver.solveMILP(); // and work through results
+					
+					double costTotal = 0;
+					double CO2Total = 0;
+					
+					for (int i = 0; i < buildingsTotalCostsMILP.length; i++) {
+						costTotal += buildingsTotalCostsMILP[i];
+						CO2Total += buildingsTotalCO2MILP[i];
+					}
+					
+					System.out.println("MILP: " + this.actorName+" cost = " + String.format("%.03f", costTotal) + " € ; CO2: " + String.format("%.03f", CO2Total) + " kg");
+					
+				} catch (LpSolveException e) {			
+					e.printStackTrace();
 				}
-				
-				System.out.println("MILP: " + this.actorName+" cost = " + String.format("%.03f", costTotal) + " € ; CO2: " + String.format("%.03f", CO2Total) + " kg");
-				
-			} catch (LpSolveException e) {			
-				e.printStackTrace();
 			}
-		}		
+			
+			if(chosenOptimizer == Optimizer.MILPwithConnections) {
+				
+				MILPSolverWithConnections milpWithConnections = new MILPSolverWithConnections(
+						answerListReceived, nStepsMPC, milpSolHandler, 
+						buildingsTotalCostsMILP, buildingsTotalCO2MILP, 
+						getActualTimeStep(), buildingsSolutionPerTimeStepMILP, 
+						actorName, optResult);
+				
+				try {
+					milpWithConnections.createModel();
+					//milpWithConnections.solveMILP(); // and work through results
+					
+					double costTotal = 0;
+					double CO2Total = 0;
+					
+					for (int i = 0; i < buildingsTotalCostsMILP.length; i++) {
+						costTotal += buildingsTotalCostsMILP[i];
+						CO2Total += buildingsTotalCO2MILP[i];
+					}
+					
+					System.out.println("MILP: " + this.actorName+" cost = " + String.format("%.03f", costTotal) + " € ; CO2: " + String.format("%.03f", CO2Total) + " kg");
+					
+				} catch (LpSolveException e) {			
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		
 		
 	}
 

@@ -20,14 +20,14 @@ public class Connection extends Device {
 	
 	public Connection(String connectedBuilding, double pipeLengthInMeter, double lossesPer100m, double q_max) {
 		super(0);
-		
+		 
 		this.connectedBuilding = connectedBuilding;
 		this.q_max = q_max;
 		this.operationalPrice = 0.0001;
 		
 		// Verlust abhängig von Leitungslaenge
 		this.efficiency = Math.pow(1.0 - lossesPer100m,  pipeLengthInMeter / 100);
-		this.pipeLengthInMeter = pipeLengthInMeter;
+		this.pipeLengthInMeter = pipeLengthInMeter;		
 	}
 
 	@Override
@@ -35,7 +35,10 @@ public class Connection extends Device {
 		connectionMessage.networkType = NetworkType.HEAT;
 		connectionMessage.name = this.actorName;
 		connectionMessage.id = this.fullActorPath;
-		connectionMessage.connectedBuilding = this.connectedBuilding;
+		
+		connectionMessage.connectedBuildingFrom = this.fullActorPath.split("/")[this.fullActorPath.split("/").length-2];		
+		connectionMessage.connectedBuildingTo = this.connectedBuilding;
+		
 		connectionMessage.efficiency = this.efficiency;
 		connectionMessage.q_max = this.q_max;
 		connectionMessage.pipeLengthInMeter = this.pipeLengthInMeter;
