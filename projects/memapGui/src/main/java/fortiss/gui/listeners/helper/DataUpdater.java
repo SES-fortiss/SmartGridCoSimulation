@@ -33,11 +33,12 @@ public class DataUpdater {
 	/**
 	 * Updates and shows the data of the selected storage.
 	 */
-	public void updateStorageData(String name, String networkType, double capacity, double maxCharging, double maxDRate,
-			double chargeE, double dischargeE) {
+	public void updateStorageData(String name, String networkType, double capacity, double soc, double maxCharging,
+			double maxDRate, double chargeE, double dischargeE) {
 		Designer.storagePanel.txtSName.setText(name);
 		Designer.storagePanel.sSNetworkType.setSelectedItem(networkType);
 		Designer.storagePanel.txtSCapacity.setText(Double.toString(capacity));
+		Designer.storagePanel.txtSStateOfCharge.setText(Double.toString(soc));
 		Designer.storagePanel.txtSMaxCharge.setText(Double.toString(maxCharging));
 		Designer.storagePanel.txtSMaxDischarge.setText(Double.toString(maxDRate));
 		Designer.storagePanel.txtSEffIN.setText(Double.toString(chargeE));

@@ -439,7 +439,7 @@ public class SolutionHandler {
 			result[i] = storageMessageList.get(i).name;
 			if (result[i].contains(".")) {
 				String[] strSplit = result[i].split("\\.");
-				result[i] = strSplit[strSplit.length - 1];
+				result[i] = strSplit[strSplit.length - 1] + " SOC";
 			}
 		}
 		return result;

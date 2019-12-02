@@ -84,7 +84,7 @@ public abstract class ExampleLoader {
 
 		BuildingController building2 = new CSVBuildingController("Building2", false, 50);
 		Consumer consumer2 = new CSVConsumer("demand2", "EXAMPLE2", 0);
-		Storage battery2 = new CSVStorage("storage2", 30.0, 0.9, 0.9, 0.95, 0.95, NetworkType.ELECTRICITY, 0.0001,
+		Storage battery2 = new CSVStorage("storage2", 30.0, 0.9, 0.9, 0.9, 0.95, 0.95, NetworkType.ELECTRICITY, 0.0001,
 				0.0001, 0);
 		Producer producer2 = new CSVProducer("producer2", 40.0, 0.89, NetworkType.HEAT, 0.0591, 0.202, PORT_UNDEFINED);
 		building2.attach(producer2);
@@ -96,7 +96,7 @@ public abstract class ExampleLoader {
 		Producer pv3 = new CSVVolatileProducer("pv3", "", 40.0, NetworkType.ELECTRICITY, 0.0001, 0, PORT_UNDEFINED);
 		Coupler heatpump3 = new CSVCoupler("heatpump3", 62.0, 2.5, -1, NetworkType.ELECTRICITY, NetworkType.HEAT,
 				0.0591, 0.202, PORT_UNDEFINED);
-		Storage thermalStorage3 = new CSVStorage("thermalStorage3", 300, 180, 180, 0.9, 0.9, NetworkType.HEAT, 0.0001,
+		Storage thermalStorage3 = new CSVStorage("thermalStorage3", 300, 0.9, 180, 180, 0.9, 0.9, NetworkType.HEAT, 0.0001,
 				0.0001, PORT_UNDEFINED);
 		building3.attach(pv3);
 		building3.attach(heatpump3);

@@ -20,9 +20,9 @@ public class CSVStorage extends Storage {
 	 * @param costCO2         CO2 cost [kg CO2/kWh]
 	 * @param port
 	 */
-	public CSVStorage(String name, double capacity, double max_charging, double max_discharging, double effIN,
-			double effOUT, NetworkType networkType, double opCost, double costCO2, int port) {
-		super(name, capacity, max_charging, max_discharging, effIN, effOUT, port);
+	public CSVStorage(String name, double capacity, double stateOfCharge, double max_charging, double max_discharging,
+			double effIN, double effOUT, NetworkType networkType, double opCost, double costCO2, int port) {
+		super(name, capacity, stateOfCharge, max_charging, max_discharging, effIN, effOUT, port);
 		this.networkType = networkType;
 		this.opCost = opCost;
 		this.costCO2 = costCO2;
@@ -35,7 +35,7 @@ public class CSVStorage extends Storage {
 		storageMessage.operationalCostEUR = opCost;
 		storageMessage.operationalCostCO2 = costCO2;
 		storageMessage.capacity = capacity;
-		storageMessage.stateOfCharge = myStateOfCharge;
+		storageMessage.stateOfCharge = stateOfCharge;
 		storageMessage.maxLoad = max_charging;
 		storageMessage.maxDischarge = max_discharging;
 		storageMessage.efficiencyCharge = effIN;

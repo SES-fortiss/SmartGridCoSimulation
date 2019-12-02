@@ -223,13 +223,14 @@ public class OpcUaBuildingController implements BuildingController {
 						try {
 							JsonObject battery = (JsonObject) batteries.get(i);
 							NodeId capacityId = NodeId.parse((String) battery.get("capacityId"));
+							NodeId stateOfChargeId = NodeId.parse((String) battery.get("stateOfChargeId"));
 							NodeId maxChargingId = NodeId.parse((String) battery.get("maxChargingId"));
 							NodeId maxDischargingId = NodeId.parse((String) battery.get("maxDischargingId"));
 							NodeId effInId = NodeId.parse((String) battery.get("effInId"));
 							NodeId effOutId = NodeId.parse((String) battery.get("effOutId"));
 							NodeId opCostId = NodeId.parse(String.valueOf(0.0001));
 							NodeId costCO2Id = NodeId.parse(String.valueOf(0.0001));
-							attach(new ClientStorage(client, "battery" + i, capacityId, maxChargingId, maxDischargingId,
+							attach(new ClientStorage(client, "battery" + i, capacityId, stateOfChargeId, maxChargingId, maxDischargingId,
 									effInId, effOutId, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0));
 							System.out.println("Added battery to " + name);
 						} catch (Exception e) {
@@ -361,13 +362,14 @@ public class OpcUaBuildingController implements BuildingController {
 						try {
 							JsonObject thermalStorage = (JsonObject) thermalStorages.get(i);
 							NodeId capacityId = NodeId.parse((String) thermalStorage.get("capacityId"));
+							NodeId stateOfChargeId = NodeId.parse((String) thermalStorage.get("stateOfChargeId"));
 							NodeId maxChargingId = NodeId.parse((String) thermalStorage.get("maxChargingId"));
 							NodeId maxDischargingId = NodeId.parse((String) thermalStorage.get("maxDischargingId"));
 							NodeId effInId = NodeId.parse((String) thermalStorage.get("effInId"));
 							NodeId effOutId = NodeId.parse((String) thermalStorage.get("effOutId"));
 							NodeId opCostId = NodeId.parse(String.valueOf(0.0001));
 							NodeId costCO2Id = NodeId.parse(String.valueOf(0.0001));
-							attach(new ClientStorage(client, "thermalstorage" + 1, capacityId, maxChargingId,
+							attach(new ClientStorage(client, "thermalstorage" + 1, capacityId, stateOfChargeId, maxChargingId,
 									maxDischargingId, effInId, effOutId, NetworkType.HEAT, opCostId, costCO2Id,
 									0));
 							System.out.println("Added thermalstorage to " + name);

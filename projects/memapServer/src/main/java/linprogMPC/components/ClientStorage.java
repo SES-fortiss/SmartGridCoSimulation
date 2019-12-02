@@ -26,12 +26,12 @@ public class ClientStorage extends Storage {
 	 * @param costCO2Id        CO2 cost [kg CO2/kWh]
 	 * @param port
 	 */
-	public ClientStorage(BasicClient client, String name, NodeId capacityId, NodeId maxChargingId,
+	public ClientStorage(BasicClient client, String name, NodeId capacityId, NodeId stateOfCharge, NodeId maxChargingId,
 			NodeId maxDischargingId, NodeId effInId, NodeId effOutId, NetworkType networkType, NodeId opCostId,
 			NodeId costCO2Id, int port) throws InterruptedException, ExecutionException {
-		super(name, client.readFinalDoubleValue(capacityId), client.readFinalDoubleValue(maxChargingId),
-				client.readFinalDoubleValue(maxDischargingId), client.readFinalDoubleValue(effInId),
-				client.readFinalDoubleValue(effOutId), port);
+		super(name, client.readFinalDoubleValue(capacityId), client.readFinalDoubleValue(stateOfCharge),
+				client.readFinalDoubleValue(maxChargingId), client.readFinalDoubleValue(maxDischargingId),
+				client.readFinalDoubleValue(effInId), client.readFinalDoubleValue(effOutId), port);
 		this.networkType = networkType;
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
@@ -44,7 +44,7 @@ public class ClientStorage extends Storage {
 		storageMessage.operationalCostEUR = opCost;
 		storageMessage.operationalCostCO2 = costCO2;
 		storageMessage.capacity = capacity;
-		storageMessage.stateOfCharge = myStateOfCharge;
+		storageMessage.stateOfCharge = stateOfCharge;
 		storageMessage.maxLoad = max_charging;
 		storageMessage.maxDischarge = max_discharging;
 		storageMessage.efficiencyCharge = effIN;
