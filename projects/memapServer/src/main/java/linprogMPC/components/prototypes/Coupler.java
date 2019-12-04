@@ -32,11 +32,11 @@ public abstract class Coupler extends Device {
 	
 	@Override
 	public void handleRequest() {
-		if(requestContentReceived instanceof OptimizationResultMessage) {
-			
+		if(requestContentReceived instanceof OptimizationResultMessage) {	
 			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
+			
 			for (String key : optResult.resultMap.keySet()) {		
-				if (key.contains(this.actorName)) {
+				if (key.contains(actorName)) {
 					mpcSignal = optResult.resultMap.get(key);
 				}
 			}

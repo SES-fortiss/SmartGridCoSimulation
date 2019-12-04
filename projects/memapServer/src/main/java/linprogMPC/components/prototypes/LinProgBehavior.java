@@ -15,7 +15,6 @@ import akka.basicMessages.RequestContent;
 import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import linprogMPC.TopologyConfig;
-import linprogMPC.helper.DirectoryManager;
 import linprogMPC.helper.HelperConcat;
 import linprogMPC.helper.MatrixBuildup;
 import linprogMPC.helper.MyTimeUnit;
@@ -189,38 +188,15 @@ public class LinProgBehavior extends BehaviorModel {
 			}
 
 			// ================= AnswerContentToSend ==================
-			// Here the structure of the server results is specified
-
-			// Caution!!! Building 1 does in the CSV example not contain any devices.
-			// Hence, there is no folder for building one initialized.
-
-			// A new folder for every building is added
-			DirectoryManager dm = new DirectoryManager(optResult, buildingMessageList);
-			dm.createDirectoryHierarchy();
-
-			/*
-			 * We assign all the devices and generalResult data-points to the respective
-			 * folders. The first loop runs over the data-points and devices. The second
-			 * loop runs over the respective nMpc Horizon points.
-			 */
-			for (int i = 0; i < sol.length / nStepsMPC - 4; i++) {
+			for (int i = 0; i < sol.length/nStepsMPC; i++) {
 				double[] result = new double[nStepsMPC];
+				
 				for (int j = 0; j < result.length; j++) {
-					result[j] = sol[i * nStepsMPC + j];
+					result[j] = sol[i*nStepsMPC + j];
 				}
-				String str = problem.namesUB[i * nStepsMPC];
-				String[] strSplit = str.split("\\.");
-				dm.addBuildingResult(strSplit[0], strSplit[1], result);
-			}
-
-			// Putting values to the generalResultsMap. Loops same as above
-			for (int i = sol.length / nStepsMPC - 4; i < sol.length / nStepsMPC; i++) {
-				double[] result = new double[nStepsMPC];
-				for (int j = 0; j < result.length; j++) {
-					result[j] = sol[i * nStepsMPC + j];
-				}
-				String str = problem.namesUB[i * nStepsMPC];
-				dm.addGeneralResult(str, result);
+				
+				String str = problem.namesUB[i*nStepsMPC];
+				optResult.resultMap.put(str, result);
 			}
 
 			try {
@@ -229,7 +205,6 @@ public class LinProgBehavior extends BehaviorModel {
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	@Override

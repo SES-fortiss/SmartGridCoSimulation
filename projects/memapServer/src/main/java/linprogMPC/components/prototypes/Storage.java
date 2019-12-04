@@ -21,8 +21,6 @@ public abstract class Storage extends Device {
 	public double[] linprogStorageInput = new double[nStepsMPC];
 	public double[] linprogStorageOutput = new double[nStepsMPC];
 
-	
-
 	/**
 	 * Parameters: capacity, maxIN, maxOUT, effIN, effOUT, port;
 	 * 
@@ -34,10 +32,9 @@ public abstract class Storage extends Device {
 	 * @param effOUT
 	 * @param port
 	 */
-	public Storage(String name, double capacity, double stateOfCharge, double max_charging, double max_discharging, double effIN,
-			double effOUT, int port) {
+	public Storage(String name, double capacity, double stateOfCharge, double max_charging, double max_discharging,
+			double effIN, double effOUT, int port) {
 		super(name, port);
-
 		this.capacity = capacity;
 		this.stateOfCharge = stateOfCharge;
 		this.max_charging = max_charging;
@@ -59,14 +56,18 @@ public abstract class Storage extends Device {
 		if (requestContentReceived instanceof OptimizationResultMessage) {
 			OptimizationResultMessage linprogResult = ((OptimizationResultMessage) requestContentReceived);
 
-			String key = this.actorName + "Discharge";
-			if (linprogResult.resultMap.containsKey(key)) {
-				linprogStorageOutput = linprogResult.resultMap.get(key);
+			String dataKey = actorName + "Discharge";
+			for (String key : linprogResult.resultMap.keySet()) {		
+				if (key.contains(dataKey)) {
+					linprogStorageOutput = linprogResult.resultMap.get(key);
+				}
 			}
-
-			key = this.actorName + "Charge";
-			if (linprogResult.resultMap.containsKey(key)) {
-				linprogStorageInput = linprogResult.resultMap.get(key);
+			
+			dataKey = actorName + "Charge";
+			for (String key : linprogResult.resultMap.keySet()) {		
+				if (key.contains(dataKey)) {
+					linprogStorageInput = linprogResult.resultMap.get(key);
+				}
 			}
 
 			double soc_alt = stateOfCharge;
@@ -74,5 +75,4 @@ public abstract class Storage extends Device {
 			stateOfCharge = soc_alt + leistung * MyTimeUnit.stepLength(TimeUnit.MINUTES) / 60;
 		}
 	}
-
 }
