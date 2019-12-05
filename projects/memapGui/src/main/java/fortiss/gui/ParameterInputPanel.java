@@ -3,6 +3,8 @@ package fortiss.gui;
 import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -21,7 +23,6 @@ import com.jgoodies.forms.layout.RowSpec;
 
 import fortiss.gui.listeners.button.AcceptListener;
 import fortiss.gui.listeners.button.PriceListener;
-import fortiss.gui.listeners.button.WeatherListener;
 import fortiss.gui.listeners.label.MemapListener;
 import fortiss.gui.listeners.label.OptimizationCriteriaListener;
 import fortiss.gui.listeners.selectionitem.DaysListener;
@@ -32,8 +33,6 @@ import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
 import fortiss.simulation.Parameters;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 /**
  * Parameter input panel
@@ -49,10 +48,6 @@ public class ParameterInputPanel extends JPanel {
 	public JTextField txtSteps;
 	/** length MemapSimulation steps. An integer */
 	public JTextField txtLength;
-	/** Good weather button */
-	public JRadioButton btGood;
-	/** Bad weather button */
-	public JRadioButton btBad;
 	/** Fixed price button */
 	public JRadioButton btFixed;
 	/** Volatile price button */
@@ -72,8 +67,6 @@ public class ParameterInputPanel extends JPanel {
 	private JLabel lbSteps;
 	/** label for number of days */
 	private JLabel lbDays;
-	/** label for weather */
-	private JLabel lbWeather;
 	/** label for optimization criteria */
 	private JLabel lbOptCriteria;
 	/** label for optimization mode */
@@ -87,10 +80,6 @@ public class ParameterInputPanel extends JPanel {
 		super.paintComponent(g);
 		setBackground(Colors.background);
 		setForeground(Colors.normal);
-		btGood.setBackground(Colors.background);
-		btGood.setForeground(Colors.normal);
-		btBad.setBackground(Colors.background);
-		btBad.setForeground(Colors.normal);
 		btFixed.setBackground(Colors.background);
 		btFixed.setForeground(Colors.normal);
 		btVolatile.setBackground(Colors.background);
@@ -99,7 +88,6 @@ public class ParameterInputPanel extends JPanel {
 		lbLength.setForeground(Colors.normal);
 		lbSteps.setForeground(Colors.normal);
 		lbDays.setForeground(Colors.normal);
-		lbWeather.setForeground(Colors.normal);
 		lbMemap.setForeground(Colors.normal);
 		lbPrice.setForeground(Colors.normal);
 		lbOptCriteria2.setForeground(Colors.normal);
@@ -138,10 +126,6 @@ public class ParameterInputPanel extends JPanel {
 				FormSpecs.UNRELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC,
 				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC,
 				FormSpecs.UNRELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC,
@@ -195,31 +179,15 @@ public class ParameterInputPanel extends JPanel {
 		sDays.addItemListener(new DaysListener());
 		add(sDays, "4, 12, fill, default");
 
-		lbWeather = new JLabel("Weather");
-		add(lbWeather, "2, 14");
-
-		btGood = new JRadioButton("Good");
-		btGood.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		btGood.setName("good");
-		btGood.setSelected(true);
-		btGood.addMouseListener(new WeatherListener());
-		add(btGood, "4, 14, left, center");
-
-		btBad = new JRadioButton("Bad");
-		btBad.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		btBad.setName("bad");
-		btBad.addMouseListener(new WeatherListener());
-		add(btBad, "4, 16, left, center");
-
 		lbPrice = new JLabel("Market price");
-		add(lbPrice, "2, 18");
+		add(lbPrice, "2, 14");
 
 		btFixed = new JRadioButton("Fixed");
 		btFixed.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btFixed.setName("fixed");
 		btFixed.setSelected(true);
 		btFixed.addMouseListener(new PriceListener());
-		add(btFixed, "4, 18, left, center");
+		add(btFixed, "4, 14, left, center");
 
 		JButton btAccept = new JButton("Start simulation");
 		btAccept.addActionListener(new ActionListener() {
@@ -232,25 +200,25 @@ public class ParameterInputPanel extends JPanel {
 		btVolatile.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btVolatile.setName("volatile");
 		btVolatile.addMouseListener(new PriceListener());
-		add(btVolatile, "4, 20, left, center");
+		add(btVolatile, "4, 16, left, center");
 
 		lbMemap = new JLabel("Global optimization");
-		add(lbMemap, "2, 22");
+		add(lbMemap, "2, 18");
 
 		lbMemap2 = new JLabel();
 		lbMemap2.setIcon(Icon.offMemap);
 		lbMemap2.addMouseListener(new MemapListener());
-		add(lbMemap2, "4, 22");
+		add(lbMemap2, "4, 18");
 
 		lbOptCriteria = new JLabel("Optimization criteria");
-		add(lbOptCriteria, "2, 24");
+		add(lbOptCriteria, "2, 20");
 
 		lbOptCriteria2 = new JLabel("");
 		lbOptCriteria2.setIcon(Icon.optCost);
 		lbOptCriteria2.addMouseListener(new OptimizationCriteriaListener());
-		add(lbOptCriteria2, "4, 24");
+		add(lbOptCriteria2, "4, 20");
 
-		add(btAccept, "1, 28, 5, 1, center, center");
+		add(btAccept, "1, 24, 5, 1, center, center");
 
 	}
 

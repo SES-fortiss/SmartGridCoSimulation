@@ -29,8 +29,6 @@ public class Parameters {
 	private int steps;
 	/** days Number of days to be simulated */
 	private int days;
-	/** weather a boolean. Good weather (true)/ bad weather(false) */
-	private boolean weather;
 	/** price a boolean. Fixed (true)/ volatile (false) */
 	private boolean price;
 	/** memapON a boolean. On(true)/ off (false) */
@@ -49,7 +47,6 @@ public class Parameters {
 		setLength(96);
 		setSteps(24);
 		setDays(1);
-		setWeather(true);
 		setPrice(true);
 		setMemapON(false);
 		setRunInServer(false);
@@ -86,14 +83,6 @@ public class Parameters {
 
 	public void setDays(int days) {
 		this.days = days;
-	}
-
-	public boolean isWeather() {
-		return weather;
-	}
-
-	public void setWeather(boolean weather) {
-		this.weather = weather;
 	}
 
 	public boolean isPrice() {
