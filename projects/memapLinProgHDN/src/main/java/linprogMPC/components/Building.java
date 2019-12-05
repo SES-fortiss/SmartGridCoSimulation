@@ -57,13 +57,14 @@ public class Building extends BehaviorModel {
 	public OptimizationResultMessage optResult = new OptimizationResultMessage(); // optResult = selbst berechnet
 	public OptimizationResultMessage requestContentToSend = new OptimizationResultMessage();
 
-	public Building(int port) {
-		this.port = port;
+	public Building(int port) {		
+		if (ConfigurationMEMAP.chosenToolUsage == ConfigurationMEMAP.ToolUsage.SERVER) {
+			this.port = port;
+		} else this.port = 0;
 	}
 	
 	@Override
-	public void makeDecision() {	
-		
+	public void makeDecision() {		
 		//	=======================  RECEIVING =======================				
 		buildingMessage = new BuildingMessage();
 		buildingMessage.id = this.fullActorPath;
@@ -104,7 +105,7 @@ public class Building extends BehaviorModel {
 				
 		if (ConfigurationMEMAP.chosenOptimizationHierarchy == ConfigurationMEMAP.OptHierarchy.BUILDING) {
 			optimizeBuilding();
-		}		
+		}
 		
 		buildingMessage = addMetering(buildingMessage);
 	}
@@ -235,39 +236,38 @@ public class Building extends BehaviorModel {
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {		
-		
-		if (this.getActualTimeStep() == 0) {
-			//String filePath = "src/main/java/Building1.json";
+		if (ConfigurationMEMAP.chosenToolUsage == ConfigurationMEMAP.ToolUsage.SERVER) {
+			if (this.getActualTimeStep() == 0) {
+				if (port != 0) {
+					this.mServer = new MemapOpcServerStarter(false, gson.toJson(buildingMessage), port);
+					try {
+						this.mServer.start();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}						
+				OpcServerContextGenerator.generateJson(this.actorName, buildingMessage);
+			}
 			
-			if (port != 0) {
-				this.mServer = new MemapOpcServerStarter(false, gson.toJson(buildingMessage), port);
-				try {
-					this.mServer.start();
+			if(port != 0) {
+				try {				
+					mServer.update(gson.toJson(buildingMessage));
+					Thread.sleep(1000);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}						
-			OpcServerContextGenerator.generateJson(this.actorName, buildingMessage);
-		}
-		
-		if(port != 0) {
-			try {				
-				mServer.update(gson.toJson(buildingMessage));
-				Thread.sleep(1000);
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
-		}		
-		
+		}
 		return buildingMessage;
 	}
 
 	@Override	
 	public void handleRequest() {		
 		requestContentToSend = optResult;		
-		if (MILPTopology.MEMAP_ON) {
+		if (ConfigurationMEMAP.chosenOptimizationHierarchy == ConfigurationMEMAP.OptHierarchy.MEMAP) {
+			// Overwrite the requestContentToSend
 			requestContentToSend = (OptimizationResultMessage) requestContentReceived;
-		}		
+		}
 	}
 
 
@@ -277,11 +277,13 @@ public class Building extends BehaviorModel {
 	}
 	
 	@Override
-	public void stop() {
-		if(port != 0) {
-			mServer.stop();
-		}		
-		super.stop();
+	public void stop() {		
+		if (ConfigurationMEMAP.chosenToolUsage == ConfigurationMEMAP.ToolUsage.SERVER) {
+			if(port != 0) {
+				mServer.stop();
+			}		
+			super.stop();
+		}
 	}
 
 	@Override

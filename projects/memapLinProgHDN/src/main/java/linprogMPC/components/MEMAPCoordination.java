@@ -111,7 +111,7 @@ public class MEMAPCoordination extends BehaviorModel {
 				
 				try {
 					milpWithConnections.createModel();
-					//milpWithConnections.solveMILP(); // and work through results
+					milpWithConnections.solveMILP();
 					
 					double costTotal = 0;
 					double CO2Total = 0;
