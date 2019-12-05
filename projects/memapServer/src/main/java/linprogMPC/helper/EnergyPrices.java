@@ -9,22 +9,49 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import linprogMPC.TopologyConfig;
+import linprogMPC.examples.ExampleFiles;
 import simulation.SimulationStarter;
 
 /**
  * Helper class to return the gas price.
  */
 public class EnergyPrices {
-	/** Electricity price CSV name */
-	private static String STROMPREISE_CSV_FILENAME = "Strompreise_7Tage_simple.csv";
 	/** Electricity price per KWp */
 	private ArrayList<Double> electricityPrices;
 
-	public EnergyPrices() {
+	/**
+	 * Constructor with double value. Creates a array list with all its entries
+	 * equal to MarketPrice
+	 * @param MarketPrice a double value
+	 */
+	public EnergyPrices(double MarketPrice) {
+		electricityPrices = new ArrayList<Double>();
+		for (int i = 0; i < TopologyConfig.N_STEPS * 2; i++) {
+			electricityPrices.add(MarketPrice);
+		}
+	}
+
+	/**
+	 * Constructor with CSV. Creates a array list reading from the file path MarketPrice
+	 * @param MarketPriceCSV a path to a CSV file
+	 */
+	public EnergyPrices(String MarketPriceCSV) {
+		setEnergyPrices(MarketPriceCSV);
+	}
+
+	/**
+	 * Assign values to electricityPrices
+	 * @param csvFile
+	 */	
+	private void setEnergyPrices(String csvFile) {
 		try {
-			readElectricityPrices(getBuffer(STROMPREISE_CSV_FILENAME));
+			if (csvFile.isEmpty()) {
+				readElectricityPrices(getBuffer("ELECTRICITYPRICEEXAMPLE"));
+			} else {
+				readElectricityPrices(getBuffer(csvFile));
+			}
 		} catch (IOException | ParseException e) {
-			System.err.println("Error reading or parsing CSV data from " + STROMPREISE_CSV_FILENAME);
+			System.err.println("Error reading or parsing CSV data from " + csvFile);
 			SimulationStarter.stopSimulation();
 			e.printStackTrace();
 		}
@@ -38,7 +65,7 @@ public class EnergyPrices {
 	 * @param time the timestep for which to get the gas price
 	 * @return gas price in ct/kWh at specified timestep
 	 */
-	public static double getGasPriceInEuro(int timestep) {
+	public double getGasPriceInEuro(int timestep) {
 		return 0.0685d;
 	}
 
@@ -50,7 +77,7 @@ public class EnergyPrices {
 	 * @param time the timestep for which to get the gas price
 	 * @return gas price in ct/kWh at specified timestep
 	 */
-	public static double getHeatPriceInEuro(int timestep) {
+	public double getHeatPriceInEuro(int timestep) {
 		double value = 0.0534d;
 		value = 0.7;
 		return value;
@@ -74,10 +101,16 @@ public class EnergyPrices {
 	 * @return a buffer with the data from csv filename
 	 * @param filename CSV file
 	 */
-	private BufferedReader getBuffer(String filename) {
+	private BufferedReader getBuffer(String csvFile) {
 		FileManager mgr = new FileManager();
-		System.out.println(">> Reading from resources: " + filename);
-		return mgr.readFromResources(filename);
+		ExampleFiles examples = new ExampleFiles();
+		if (examples.isExample(csvFile)) {
+			System.out.println(">> Reading from resources: " + csvFile);
+			return mgr.readFromResources(examples.getFile(csvFile));
+		} else {
+			System.out.println(">> Reading from source: " + csvFile);
+			return mgr.readFromSource(csvFile);
+		}
 	}
 
 	/**

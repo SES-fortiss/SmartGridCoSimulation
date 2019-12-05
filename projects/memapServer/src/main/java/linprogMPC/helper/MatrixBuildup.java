@@ -495,7 +495,6 @@ public class MatrixBuildup {
 			int n_index = nStepsMPC
 					* (producersHandled + 2 * storagesHandled + couplersHandled + 2 * connectionsHandled);
 			int b_index = 0;
-			EnergyPrices energyPrices = new EnergyPrices();
 			int cts = GlobalTime.getCurrentTimeStep();
 			if (lDHeating) {
 				for (int k = 0; k < buildingsHandled; k++) {
@@ -516,7 +515,7 @@ public class MatrixBuildup {
 						problem.namesUB[nStepsMPC + n_index + b_index + i] = "HeatSell" + (k + 1);
 
 						// Extended price vector for market
-						problem.lambda[n_index + b_index + i] = EnergyPrices.getHeatPriceInEuro(cts + i); // heat buy
+						problem.lambda[n_index + b_index + i] = TopologyConfig.energyPrices.getHeatPriceInEuro(cts + i); // heat buy
 																											// price
 						problem.lambda[n_index + b_index + nStepsMPC + i] = -0.0; // heat sell price
 						problem.lambdaCO2[n_index + b_index + i] = 0.196; // Emissionen deutscher Fernwärme kg CO2 / kWh
@@ -547,9 +546,9 @@ public class MatrixBuildup {
 				problem.etas[nStepsMPC + n_index + b_index + i] = -1;
 
 				// Extended price vector for market
-				problem.lambda[n_index + b_index + i] = energyPrices.getElectricityPriceInEuro(cts + i); // electricity
+				problem.lambda[n_index + b_index + i] = TopologyConfig.energyPrices.getElectricityPriceInEuro(cts + i); // electricity
 																											// buy price
-				problem.lambda[n_index + b_index + nStepsMPC + i] = -energyPrices.getElectricityPriceInEuro(cts + i)
+				problem.lambda[n_index + b_index + nStepsMPC + i] = -TopologyConfig.energyPrices.getElectricityPriceInEuro(cts + i)
 						* 0.5; // electricity sell price
 				problem.lambdaCO2[n_index + b_index + i] = 0.474; // Emissionen deutscher Strommix kg CO2 / kWh
 				problem.lambdaCO2[n_index + b_index + nStepsMPC + i] = 0.0; // electricity sell price

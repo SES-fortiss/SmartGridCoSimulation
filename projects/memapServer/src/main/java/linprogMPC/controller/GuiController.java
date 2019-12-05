@@ -3,6 +3,7 @@ package linprogMPC.controller;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -56,11 +57,22 @@ public class GuiController {
 				throws JsonParseException {
 
 			JsonObject jObject = (JsonObject) jsonElement;
-
+			
+			boolean fixedPrice = jObject.get("fixedPrice").getAsBoolean();
+			
 			// Creating topologyController
-			TopologyController top = new TopologyController("Memap", jObject.get("memapON").getAsBoolean(),
-					jObject.get("steps").getAsInt(), jObject.get("length").getAsInt(), jObject.get("days").getAsInt(),
-					jObject.get("optCriteria").getAsString(), 0, false, 0);
+			TopologyController top;
+			if(fixedPrice) {
+				double fixedMarketPrice = jObject.get("fixedMarketPrice").getAsDouble();
+				top = new TopologyController("Memap", jObject.get("memapON").getAsBoolean(),
+						jObject.get("steps").getAsInt(), jObject.get("length").getAsInt(), jObject.get("days").getAsInt(),
+						fixedMarketPrice, jObject.get("optCriteria").getAsString(), 0, false, 0);
+			} else {
+				String marketPriceFile = jObject.get("marketPriceFile").getAsString();
+				top = new TopologyController("Memap", jObject.get("memapON").getAsBoolean(),
+						jObject.get("steps").getAsInt(), jObject.get("length").getAsInt(), jObject.get("days").getAsInt(),
+						marketPriceFile, jObject.get("optCriteria").getAsString(), 0, false, 0);
+			}
 
 			// Attaching buildings
 			JsonArray buildingPathList = (JsonArray) jObject.get("descriptorFiles");

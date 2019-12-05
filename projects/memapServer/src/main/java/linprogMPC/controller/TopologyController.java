@@ -8,6 +8,7 @@ import linprogMPC.TopologyConfig;
 import linprogMPC.components.prototypes.Building;
 import linprogMPC.components.prototypes.Device;
 import linprogMPC.components.prototypes.LinProgBehavior;
+import linprogMPC.helper.EnergyPrices;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 
@@ -30,7 +31,7 @@ public class TopologyController extends TopologyConfig {
 	public ActorTopology top;
 
 	public TopologyController(String name, boolean memapOn, int nrStepsMPC, int timeStepsPerDay, int nrDays,
-			String optimizationCriteria, int predUncertainty, boolean hasLDHeating, int portUndefined) {
+			String energyPriceFile, String optimizationCriteria, int predUncertainty, boolean hasLDHeating, int portUndefined) {
 
 		TopologyConfig.simulationName = name;
 		TopologyConfig.PORT_UNDEFINED = portUndefined;
@@ -43,6 +44,26 @@ public class TopologyController extends TopologyConfig {
 		TopologyConfig.OPTIMIZATION_CRITERIA = optimizationCriteria;
 		TopologyConfig.calcNrIterations();
 		TopologyConfig.calcNrSteps();
+		EnergyPrices energyPrices = new EnergyPrices(energyPriceFile);
+		TopologyConfig.energyPrices = energyPrices;
+	}
+	
+	public TopologyController(String name, boolean memapOn, int nrStepsMPC, int timeStepsPerDay, int nrDays,
+			double energyPriceValue, String optimizationCriteria, int predUncertainty, boolean hasLDHeating, int portUndefined) {
+
+		TopologyConfig.simulationName = name;
+		TopologyConfig.PORT_UNDEFINED = portUndefined;
+		TopologyConfig.N_STEPS_MPC = nrStepsMPC;
+		TopologyConfig.TIMESTEPS_PER_DAY = timeStepsPerDay;
+		TopologyConfig.PREDICTION_UNCERTAINTY = predUncertainty;
+		TopologyConfig.MEMAP_LDHeating = hasLDHeating;
+		TopologyConfig.MEMAP_ON = memapOn;
+		TopologyConfig.NR_DAYS = nrDays;
+		TopologyConfig.OPTIMIZATION_CRITERIA = optimizationCriteria;
+		TopologyConfig.calcNrIterations();
+		TopologyConfig.calcNrSteps();
+		EnergyPrices energyPrices = new EnergyPrices(energyPriceValue);
+		TopologyConfig.energyPrices = energyPrices;
 	}
 
 	public void attach(BuildingController buildingController) {

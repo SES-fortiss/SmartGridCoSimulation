@@ -2,6 +2,7 @@ package linprogMPC.examples;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+
 import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
@@ -23,9 +24,8 @@ import linprogMPC.helper.DirectoryConfiguration;
 import linprogMPC.messages.extension.NetworkType;
 
 public abstract class ExampleLoader {
-
 	public static TopologyController OpcUaExample() {
-		TopologyController topologyController = new TopologyController("MEMAP", true, 5, 96, 7, "cost", 0, false, 4880);
+		TopologyController topologyController = new TopologyController("MEMAP", true, 5, 96, 7, "ELECTRICITYPRICEEXAMPLE", "cost", 0, false, 4880);
 
 		try {
 			BufferedReader endpoint1 = new BufferedReader(new InputStreamReader(ExampleLoader.class.getClassLoader()
@@ -73,8 +73,7 @@ public abstract class ExampleLoader {
 
 	public static TopologyController CsvExample() {
 		final int PORT_UNDEFINED = 0;
-
-		TopologyController topologyController = new TopologyController("MEMAP", true, 2, 96, 2, "cost", 0, false, 4880);
+		TopologyController topologyController = new TopologyController("MEMAP", true, 2, 96, 2, "ELECTRICITYPRICEEXAMPLE", "cost", 0, false, 4880);
 
 		BuildingController building1 = new CSVBuildingController("Building1", false, 50);
 		Consumer consumer1 = new CSVConsumer("demand1", "EXAMPLE1", 0);

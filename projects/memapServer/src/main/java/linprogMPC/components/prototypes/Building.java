@@ -13,7 +13,6 @@ import akka.basicMessages.RequestContent;
 import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import linprogMPC.TopologyConfig;
-import linprogMPC.helper.EnergyPrices;
 import linprogMPC.helper.HelperConcat;
 import linprogMPC.helper.MatrixBuildup;
 import linprogMPC.helper.OptimizationProblem;
@@ -49,7 +48,6 @@ public class Building extends BehaviorModel {
 	// NEW(7.8.18 by JMr): Long-distance heating supply
 	public boolean LDHeating;
 	public int heatTransportLength;
-	EnergyPrices energyPrices = new EnergyPrices();
 	SolutionHandler solHandler = new SolutionHandler();
 
 	// ================================
@@ -210,7 +208,7 @@ public class Building extends BehaviorModel {
 			//double[] currentPosDemand = solHandler.getPositiveDemandForThisTimestep(problem, nStepsMPC);
  			//double[] currentEffOptVector = solHandler.getEffSolutionForThisTimeStep(optSolution, problem, nStepsMPC);
  			
-			double[] electricalPrice = { energyPrices.getElectricityPriceInEuro(this.getActualTimeStep()) };
+			double[] electricalPrice = { TopologyConfig.energyPrices.getElectricityPriceInEuro(this.getActualTimeStep()) };
 			// double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, currentCO2, electricalPrice, currentPosDemand, currentEffOptVector);
 			double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC,
 					currentCost, currentCO2, electricalPrice);

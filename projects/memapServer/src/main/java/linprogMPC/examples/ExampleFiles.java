@@ -16,6 +16,7 @@ public class ExampleFiles {
 		 * (source:https://my.discovergy.com/export?)
 		 */
 		exampleFiles.put("SOLARPRODUCTIONEXAMPLE", "Discovergy_PVAnlage15kWp.csv");
+		exampleFiles.put("ELECTRICITYPRICEEXAMPLE", "Strompreise_7Tage_simple.csv");
 	}
 
 	public String getFile(String example) {

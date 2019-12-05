@@ -54,8 +54,8 @@ public class JettyStart {
 	 */
 
 	public void run(JsonArray endpointValues) {
-		topologyMemapOn = new TopologyController("MemapOn", true, 1, 96, 7, "cost", 0, false, 9999);
-		topologyMemapOff = new TopologyController("MemapOff", false, 5, 96, 7, "cost", 0, false, 9999);
+		topologyMemapOn = new TopologyController("MemapOn", true, 1, 96, 7, "ELECTRICITYPRICEEXAMPLE", "cost", 0, false, 9999);
+		topologyMemapOff = new TopologyController("MemapOff", false, 5, 96, 7, "ELECTRICITYPRICEEXAMPLE", "cost", 0, false, 9999);
 		errorCode = new JsonObject();
 
 		/*
