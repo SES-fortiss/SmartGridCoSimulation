@@ -246,11 +246,12 @@ public class OpcUaBuildingController implements BuildingController {
 						try {
 							JsonObject chp = (JsonObject) chps.get(i);
 							NodeId installedPowerId = NodeId.parse((String) chp.get("installedPowerId"));
+							NodeId minPowerId = NodeId.parse((String) chp.get("minPowerId"));
 							NodeId effHeatId = NodeId.parse((String) chp.get("effHeatId"));
 							NodeId effElecId = NodeId.parse((String) chp.get("effElecId"));
 							NodeId opCostId = NodeId.parse((String) chp.get("opCostId"));
 							NodeId costCO2Id = NodeId.parse((String) chp.get("costCO2Id"));
-							attach(new ClientCoupler(client, "chp" + i, installedPowerId, effHeatId, effElecId,
+							attach(new ClientCoupler(client, "chp" + i, installedPowerId, minPowerId, effHeatId, effElecId,
 									NetworkType.HEAT, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0));
 							System.out.println("Added chp to " + name);
 						} catch (Exception e) {
@@ -302,11 +303,12 @@ public class OpcUaBuildingController implements BuildingController {
 						try {
 							JsonObject heatpump = (JsonObject) heatpumps.get(i);
 							NodeId installedPowerId = NodeId.parse((String) heatpump.get("installedPowerId"));
+							NodeId minPowerId = NodeId.parse((String) heatpump.get("minPowerId"));
 							NodeId effHeatId = NodeId.parse((String) heatpump.get("effHeatId"));
 							NodeId effElecId = NodeId.parse((String) heatpump.get("effElecId"));
 							NodeId opCostId = NodeId.parse((String) heatpump.get("opCostId"));
 							NodeId costCO2Id = NodeId.parse((String) heatpump.get("costCO2Id"));
-							attach(new ClientCoupler(client, "heatpump" + i, installedPowerId, effHeatId, effElecId,
+							attach(new ClientCoupler(client, "heatpump" + i, installedPowerId, minPowerId, effHeatId, effElecId,
 									NetworkType.HEAT, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0));
 							System.out.println("Added heatpump to " + name);
 						} catch (Exception e) {

@@ -179,7 +179,9 @@ public class GuiController {
 				secondaryNetworkType = NetworkType.ELECTRICITY;
 			}
 
-			return new CSVCoupler(jObject.get("name").getAsString(), jObject.get("power").getAsDouble(),
+			// TODO
+			double minPower = 0.0;
+			return new CSVCoupler(jObject.get("name").getAsString(), jObject.get("power").getAsDouble(), minPower,
 					jObject.get("efficiencyPrimary").getAsDouble(), jObject.get("efficiencySecondary").getAsDouble(),
 					primaryNetworkType, secondaryNetworkType, jObject.get("cost").getAsDouble(),
 					jObject.get("coEmission").getAsDouble(), 0);
