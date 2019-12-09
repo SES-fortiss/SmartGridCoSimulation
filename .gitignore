@@ -1,7 +1,13 @@
+# Excluded folders:
+
 target/
 bin/
 .settings/
 .svn/
+projects/*/res/results/
+
+# Excluded files:
+
 *.project
 *.classpath
 *.class
