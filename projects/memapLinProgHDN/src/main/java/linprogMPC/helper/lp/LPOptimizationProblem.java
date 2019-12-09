@@ -1,8 +1,9 @@
-package linprogMPC.helper;
+package linprogMPC.helper.lp;
 
-public class OptimizationProblem {
+public class LPOptimizationProblem {
 	
 	public double[] lambda;
+	public double[] lambdaCO2;
 	public double[] h;
 	public double[][] g;
 	public double[] b_eq;
@@ -18,8 +19,9 @@ public class OptimizationProblem {
 	int nrOfCouplers;
 	int nrOfConnections;
 	int marketmatrices;
+	
 
-	public OptimizationProblem(int nStepsMPC, int nrOfBuildings, int nrOfProducers, int nrOfStorages, int nrOfCouplers, int nrOfConnections, boolean lDHeating) {
+	public LPOptimizationProblem(int nStepsMPC, int nrOfBuildings, int nrOfProducers, int nrOfStorages, int nrOfCouplers, int nrOfConnections) {
 		
 		this.nrOfBuildings = nrOfBuildings;
 		this.nrOfProducers = nrOfProducers;
@@ -27,21 +29,17 @@ public class OptimizationProblem {
 		this.nrOfCouplers = nrOfCouplers;
 		this.nrOfConnections = nrOfConnections;
 		
-		if (lDHeating) {
-			this.marketmatrices = 2+2*nrOfBuildings; // selling/buying(2) of electricity/heat(2)
-		}
-		else {
-			this.marketmatrices = 2; // selling/buying(2) of electricity
-		}
+		this.marketmatrices = 2; // selling/buying(2) of electricity
 		
 		
 		lambda  = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages) + nrOfCouplers + nrOfConnections*2 + marketmatrices)];
+		lambdaCO2  = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages) + nrOfCouplers + nrOfConnections*2 + marketmatrices)];
 		
 		h = new double[nStepsMPC*2*nrOfStorages];
 		g = new double[nStepsMPC*2*nrOfStorages][nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
 		
 		b_eq = new double[nStepsMPC*(nrOfBuildings+1)];
-		a_eq = new double[nStepsMPC*(nrOfBuildings+1)][nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
+		a_eq = new double[nStepsMPC*(nrOfBuildings+1)][nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];		
 		
 		x_lb = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
 		x_ub = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];		

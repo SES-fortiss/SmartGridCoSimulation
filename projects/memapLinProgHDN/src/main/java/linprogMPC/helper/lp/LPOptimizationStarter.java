@@ -1,15 +1,24 @@
-package linprogMPC.helper;
+package linprogMPC.helper.lp;
 
 import com.joptimizer.optimizers.LPOptimizationRequest;
 import com.joptimizer.optimizers.LPPrimalDualMethod;
 
-public class OptimizationStarter {
+import linprogMPC.ConfigurationMEMAP;
+
+public class LPOptimizationStarter {
 	
-	public double[] runLinProg(OptimizationProblem problem) {
+	public double[] runLinProg(LPOptimizationProblem problem) {
 	
 		LPOptimizationRequest or = new LPOptimizationRequest();
 		
-		or.setC(problem.lambda);
+		if (ConfigurationMEMAP.chosenGoal == ConfigurationMEMAP.OptimizationGoal.EUR) {
+			or.setC(problem.lambda);
+		}
+		
+		if (ConfigurationMEMAP.chosenGoal == ConfigurationMEMAP.OptimizationGoal.CO2) {
+			or.setC(problem.lambdaCO2);
+		}
+		
 		or.setG(problem.g);
 		or.setH(problem.h);
 		or.setA(problem.a_eq);
@@ -42,8 +51,8 @@ public class OptimizationStarter {
 			
 			System.out.println("G:");
 			System.out.println(or.getG());					
-		*/			
-		
+					
+		*/
 		//==== Check Matrix and Vector Sizes: ====
 		/*
 		System.out.println("Size of Matrices:");
@@ -65,15 +74,7 @@ public class OptimizationStarter {
 			e.printStackTrace();
 		}
 		
-		
-		
-		double[] sol = opt.getLPOptimizationResponse().getSolution();
-		
-		
-		//System.out.println("SOL:");
-		//System.out.println(Arrays.toString(sol));
-		
-		
+		double[] sol = opt.getLPOptimizationResponse().getSolution();							
 		return sol;
 		
 	}

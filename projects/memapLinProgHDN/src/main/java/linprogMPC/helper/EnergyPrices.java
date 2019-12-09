@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import linprogMPC.ThesisTopologySimple;
+import linprogMPC.MILPTopology;
 import simulation.SimulationStarter;
 
 /**
@@ -20,7 +20,7 @@ public class EnergyPrices {
 	private static String STROMPREISE_CSV_FILENAME = "Strompreise_7Tage_simple.csv";
 	//private static String STROMPREISE_CSV_FILENAME = "Strompreise_7Tage.csv";
 	
-	private ArrayList<Double> electricityPrices;
+	private static ArrayList<Double> electricityPrices;
 
 	public EnergyPrices() {
 		electricityPrices = readElectricityPrices(STROMPREISE_CSV_FILENAME);
@@ -34,8 +34,7 @@ public class EnergyPrices {
 	 * @return gas price in ct/kWh at specified timestep
 	 */
 	public static double getGasPriceInEuro(int timestep) {
-		return 0.0685d; //thesis
-		//return 0.0612d;
+		return 0.0685d;
 	}
 	
 	/**
@@ -61,14 +60,16 @@ public class EnergyPrices {
 	 * @param time the timestep for which to get the electricity price
 	 * @return electricity price in ct/kWh at specified timestep
 	 */
-	public double getElectricityPriceInEuro(int timestep) {
+	public static double getElectricityPriceInEuro(int timestep) {
+		
+		if (electricityPrices == null) {
+			electricityPrices = readElectricityPrices(STROMPREISE_CSV_FILENAME);
+		}
+		
 		return electricityPrices.get(timestep % electricityPrices.size())/100;
 	}
 		
-	
-	
-	
-	private ArrayList<Double> readElectricityPrices(String filename){
+	private static ArrayList<Double> readElectricityPrices(String filename){
 		ArrayList<Double> electricityPrices = new ArrayList<Double>();
 		try {
 			String source = "res/"+ filename;			
@@ -90,7 +91,7 @@ public class EnergyPrices {
 	
 
 	
-	private void read(BufferedReader br, ArrayList<Double> electricityPrices) throws IOException, ParseException{
+	private static void read(BufferedReader br, ArrayList<Double> electricityPrices) throws IOException, ParseException{
 	    
 		String zeile;   
 	    NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
@@ -108,9 +109,9 @@ public class EnergyPrices {
     		y[i]=originalValues.get(i);
     	}
 		
-    	double[] xi = new double[ThesisTopologySimple.N_STEPS];
+    	double[] xi = new double[MILPTopology.N_STEPS];
     	
-		for (int j = 0; j < ThesisTopologySimple.N_STEPS ; j++) {
+		for (int j = 0; j < MILPTopology.N_STEPS ; j++) {
     		xi[j]=j*MyTimeUnit.stepLength(TimeUnit.HOURS);    
     	}	   		
 		

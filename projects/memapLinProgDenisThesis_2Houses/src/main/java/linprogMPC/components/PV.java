@@ -12,8 +12,8 @@ public class PV extends Producer {
 	// static double efficiency = 1.0;
 	VolatileProducerMessage volatileProducerMessage; 
 	
-	public PV(double installedPower, double efficiency, int port) {
-		super(installedPower, efficiency, port); //qdot_max not used here
+	public PV(double installedPower, int port) {
+		super(installedPower, 1, port); //qdot_max not used here
 		volatileProducerMessage = new VolatileProducerMessage();
 	}
 
@@ -23,7 +23,7 @@ public class PV extends Producer {
 		volatileProducerMessage.name = this.actorName;
 		volatileProducerMessage.id = this.fullActorPath;		
 		volatileProducerMessage.operationalPriceEURO = 0.00001;
-		volatileProducerMessage.efficiency = efficiency;
+		volatileProducerMessage.efficiency = 1;
 		volatileProducerMessage.installedPower = installedPower;
 		volatileProducerMessage.networkType = NetworkType.ELECTRICITY;
 		volatileProducerMessage.forecast = new double[nStepsMPC];

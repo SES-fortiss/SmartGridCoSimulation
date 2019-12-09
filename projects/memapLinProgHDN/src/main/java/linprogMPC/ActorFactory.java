@@ -11,7 +11,7 @@ import linprogMPC.components.Connection;
 import linprogMPC.components.Consumer;
 import linprogMPC.components.GasBoiler;
 import linprogMPC.components.HeatPump;
-import linprogMPC.components.LinProgBehavior;
+import linprogMPC.components.MEMAPCoordination;
 import linprogMPC.components.PV;
 import linprogMPC.components.SolarThermic;
 import linprogMPC.components.ThermalStorage;
@@ -19,32 +19,39 @@ import linprogMPC.helper.ConsumptionProfiles;
 
 public abstract class ActorFactory {
 	
-	public static ActorOptions createLinProgBehavior(){
+	public static ActorOptions createMEMAPCoordinationBehavior(){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new LinProgBehavior());
+				new MEMAPCoordination());
+		return result;
+	}
+	
+	public static ActorOptions createMEMAPCoordinationBehavior2(){
+		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
+				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
+				new MEMAPCoordination());
 		return result;
 	}
 
-	public static ActorOptions createCHP(double qdot_max, double efficiency_el, double efficiency_H, int port){
+	public static ActorOptions createCHP(double qdot_max, double qdot_min, double efficiencyHeat, double efficiencyElec, int port){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new CHP(qdot_max, efficiency_el, efficiency_H, port));	
+				new CHP(qdot_max, qdot_min, efficiencyHeat, efficiencyElec, port));	
 		return result;
 	}
 	
-	public static ActorOptions createGasBoiler(double qdot_max, double efficiency, double costs, int port){
+	public static ActorOptions createGasBoiler(double max, double min, double efficiency, double costs, int port){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new GasBoiler(qdot_max, efficiency, costs, port));	
+				new GasBoiler(max, min, efficiency, costs, port));	
 		return result;
 	}	
 	
-	public static ActorOptions createHeatPump(double qdot_max, double efficiencyHeat, double efficiencyElec, int port){
+	public static ActorOptions createHeatPump(double qdot_max, double qdot_min, double efficiencyHeat, double efficiencyElec, int port){
 		ActorOptions result = new ActorOptions(
 				LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new HeatPump(qdot_max, efficiencyHeat, efficiencyElec, port));	
+				new HeatPump(qdot_max, qdot_min, efficiencyHeat, efficiencyElec, port));
 		return result;
 	}
 	
@@ -95,20 +102,18 @@ public abstract class ActorFactory {
 	}
 	
 	public static ActorOptions createThermalConnection(
-			int connectedBuilding, double qdot_max_in, double qdot_max_out, 
-			double pipeLength, int port
-			){
+			String connectedBuilding, double pipeLengthInMeter, double lossesPer100m, double q_max){
 		ActorOptions result = 
 				new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new Connection(connectedBuilding, qdot_max_in, qdot_max_out, pipeLength, port));	
+				new Connection(connectedBuilding, pipeLengthInMeter, lossesPer100m, q_max));	
 		return result;
 	}
 	
-	public static ActorOptions createBuilding(int port, boolean LDHeating, int heatTransportLength){
+	public static ActorOptions createBuilding(int port){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new Building(port, LDHeating, heatTransportLength));	
+				new Building(port));	
 		return result;
 	}
 	

@@ -6,17 +6,17 @@ import linprogMPC.messages.planning.ProducerMessage;
 
 public abstract class Producer extends Device {
 
-	public double installedPower;
+	public double maxPower;
 	public double efficiency;
 	
 	public ProducerMessage producerMessage = new ProducerMessage();
 	
 	public double[] linprogAdvice  = new double[nStepsMPC];
 	
-	public Producer(double installedPower, double efficiency, int port) {
+	public Producer(double maxPower, double efficiency, int port) {
 		super(port);
 		
-		this.installedPower = installedPower;
+		this.maxPower = maxPower;
 		this.efficiency = efficiency;				
 	}
 

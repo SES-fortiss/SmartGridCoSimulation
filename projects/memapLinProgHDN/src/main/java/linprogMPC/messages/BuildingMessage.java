@@ -2,6 +2,8 @@ package linprogMPC.messages;
 
 import java.util.ArrayList;
 
+import com.google.gson.Gson;
+
 import akka.basicMessages.AnswerContent;
 import linprogMPC.messages.extension.ChildSpecification;
 import linprogMPC.messages.extension.NetworkType;
@@ -16,19 +18,18 @@ import linprogMPC.messages.realTime.CurrentSetPoints;
 
 public class BuildingMessage implements AnswerContent {
 	
-	public String name;
-	public String id;
-	
-	// NEW(7.8.18 by JMr): Long-distance heating supply
-	
-	public boolean LDHeating;
-	public int heatTransportLength;
-	public boolean ack  = true;
-	// ================================
+	public String name; // contains the name of the actor, i.e. building
+	public String id;  // unique id of the sender
+
+	// ========SOME Placeholders for OPC UA interface ====================
 	
 	public ArrayList<CurrentSetPoints> currentSetPointList = new ArrayList<CurrentSetPoints>();
 	public ArrayList<CurrentMeterValues> currentMeterValueList = new ArrayList<CurrentMeterValues>();
 	public ArrayList<AvailableFlexibilities> availableFlexibilitiesList = new ArrayList<AvailableFlexibilities>();
+	public ArrayList<ChildSpecification> childrenList = new ArrayList<ChildSpecification>();
+	
+	
+	// ========Required for Optimization (MILP) ====================
 	
 	public ArrayList<DemandMessage> demandList = new ArrayList<DemandMessage>();
 	public ArrayList<StorageMessage> storageList = new ArrayList<StorageMessage>();
@@ -37,10 +38,13 @@ public class BuildingMessage implements AnswerContent {
 	public ArrayList<ProducerMessage> controllableProducerList = new ArrayList<ProducerMessage>();
 	public ArrayList<ConnectionMessage> connectionList = new ArrayList<ConnectionMessage>();
 	
-	public ArrayList<ChildSpecification> childrenList = new ArrayList<ChildSpecification>();
 	
-	public int getNrOfProducers() {
-		return volatileProducerList.size() + controllableProducerList.size();
+	public int getNrOfControllableProducers() {
+		return controllableProducerList.size();
+	}
+	
+	public int getNrOfVolatileProducers() {
+		return volatileProducerList.size();
 	}
 	
 	public int getNrOfStorages() {
@@ -99,6 +103,14 @@ public class BuildingMessage implements AnswerContent {
 			
 		}
 		
+		return result;
+	}
+	
+	public String toString() {
+		
+		Gson gson = new Gson();
+		String result = "";
+		result = gson.toJson(this);		
 		return result;
 	}
 }

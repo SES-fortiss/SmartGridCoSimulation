@@ -3,9 +3,6 @@ package linprogMPC.components;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
-
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 import com.google.gson.Gson;
 
@@ -15,9 +12,7 @@ import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
-import linprogMPC.ThesisSimulation;
 import linprogMPC.ThesisTopologySimple;
-import linprogMPC.helperOPCua.ReadClient;
 import linprogMPC.helper.EnergyPrices;
 import linprogMPC.helper.HelperConcat;
 import linprogMPC.helper.MatrixBuildup;

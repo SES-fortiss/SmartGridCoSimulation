@@ -32,7 +32,8 @@ public class ThermalStorage extends Storage {
 		storageMessage.networkType = NetworkType.HEAT;
 		storageMessage.name = this.actorName;
 		storageMessage.id = this.fullActorPath;
-		storageMessage.operationalPriceEURO = 0.0001;						
+		storageMessage.operationalCostEUR = 0.0001;	
+		storageMessage.operationalCostCO2 = 0.0;
 		storageMessage.capacity = this.capacity;		
 		storageMessage.maxLoad = this.max_charging;
 		storageMessage.maxDischarge = this.max_discharging;
