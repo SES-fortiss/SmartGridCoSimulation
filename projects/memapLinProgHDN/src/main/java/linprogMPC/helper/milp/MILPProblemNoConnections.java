@@ -388,14 +388,14 @@ public class MILPProblemNoConnections {
         	for (ProducerMessage pm : buildingMessage.controllableProducerList) {    
         		int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  	
             	colno[counter] = index;
-            	row[counter++] = pm.operationalPriceEURO;
+            	row[counter++] = pm.operationalCostEUR;
             	controllableHandled++;
     		}
         	
         	for (ProducerMessage pm : buildingMessage.volatileProducerList) {    
         		int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  	
             	colno[counter] = index;
-            	row[counter++] = pm.operationalPriceEURO;
+            	row[counter++] = pm.operationalCostEUR;
             	volatileHandled++;
     		}
         	
@@ -408,7 +408,7 @@ public class MILPProblemNoConnections {
         	
         	for (StorageMessage sm : buildingMessage.storageList) {
         		
-        		double price = sm.operationalPriceEURO;// + 0.0001 * i; // damit es später etwas teuerer wird.
+        		double price = sm.operationalCostEUR;// + 0.0001 * i; // damit es später etwas teuerer wird.
         		
         		int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  	
             	colno[counter] = index;
@@ -451,7 +451,7 @@ public class MILPProblemNoConnections {
 		for(ProducerMessage producerMessage : buildingMessage.controllableProducerList) {					
 			for (int i = 0; i < nStepsMPC; i++) {		
 				int index = i + nStepsMPC * (controllableHandled * 2);
-				result[index] = producerMessage.operationalPriceEURO;
+				result[index] = producerMessage.operationalCostEUR;
 				result[index + nStepsMPC] = 0;
 			}
 			controllableHandled++;
@@ -460,7 +460,7 @@ public class MILPProblemNoConnections {
 		for(ProducerMessage producerMessage : buildingMessage.volatileProducerList) {
 			for (int i = 0; i < nStepsMPC; i++) {			
 				int index = i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled);
-				result[index] = producerMessage.operationalPriceEURO;
+				result[index] = producerMessage.operationalCostEUR;
 			}
 			volatileHandled++;
 		}
@@ -477,8 +477,8 @@ public class MILPProblemNoConnections {
 		for(StorageMessage storageMessage : buildingMessage.storageList) {
 			for (int i = 0; i < nStepsMPC; i++) {			
 				int index = i + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
-				result[index] = storageMessage.operationalPriceEURO;
-				result[index+ nStepsMPC] = storageMessage.operationalPriceEURO;
+				result[index] = storageMessage.operationalCostEUR;
+				result[index+ nStepsMPC] = storageMessage.operationalCostEUR;
 			}
 			storageHandled++;
 		}
@@ -504,7 +504,7 @@ public class MILPProblemNoConnections {
 		for(ProducerMessage producerMessage : buildingMessage.controllableProducerList) {					
 			for (int i = 0; i < nStepsMPC; i++) {		
 				int index = i + nStepsMPC * (controllableHandled * 2);
-				result[index] = producerMessage.operationalPriceCO2;
+				result[index] = producerMessage.operationalCostCO2;
 				result[index + nStepsMPC] = 0;
 			}
 			controllableHandled++;
@@ -513,7 +513,7 @@ public class MILPProblemNoConnections {
 		for(ProducerMessage producerMessage : buildingMessage.volatileProducerList) {
 			for (int i = 0; i < nStepsMPC; i++) {			
 				int index = i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled);
-				result[index] = producerMessage.operationalPriceCO2;
+				result[index] = producerMessage.operationalCostCO2;
 			}
 			volatileHandled++;
 		}
@@ -530,8 +530,8 @@ public class MILPProblemNoConnections {
 		for(StorageMessage storageMessage : buildingMessage.storageList) {
 			for (int i = 0; i < nStepsMPC; i++) {			
 				int index = i + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
-				result[index] = storageMessage.operationalPriceCO2;
-				result[index+ nStepsMPC] = storageMessage.operationalPriceCO2;
+				result[index] = storageMessage.operationalCostCO2;
+				result[index+ nStepsMPC] = storageMessage.operationalCostCO2;
 			}
 			storageHandled++;
 		}

@@ -1,6 +1,11 @@
 package linprogMPC;
-
+import static linprogMPC.ConfigurationMEMAP.*;
 import akka.actor.ActorSystem;
+import linprogMPC.ConfigurationMEMAP.MEMAPLogging;
+import linprogMPC.ConfigurationMEMAP.OptHierarchy;
+import linprogMPC.ConfigurationMEMAP.OptimizationGoal;
+import linprogMPC.ConfigurationMEMAP.Optimizer;
+import linprogMPC.ConfigurationMEMAP.ToolUsage;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 
@@ -10,7 +15,14 @@ public class SimulationMILP {
 	
 	private void run() throws InterruptedException {
 		
-		int nMPC = 2;
+		int nMPC = 36;
+		
+		chosenOptimizer = Optimizer.MILP;
+		chosenGoal = OptimizationGoal.EUR;
+		//chosenGoal = OptimizationGoal.CO2;
+		chosenOptimizationHierarchy = OptHierarchy.MEMAP;
+		chosenToolUsage = ToolUsage.PLANNING;
+		chosenMEMAPLogging =  MEMAPLogging.FILES;
 		
 		// **************MEMAP OFF *******************		
 		topology = MILPTopology.createTopology(nMPC);

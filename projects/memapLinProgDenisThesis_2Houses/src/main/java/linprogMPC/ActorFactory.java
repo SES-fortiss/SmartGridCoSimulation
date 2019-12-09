@@ -66,17 +66,17 @@ public abstract class ActorFactory {
 		return result;
 	}
 	
-	public static ActorOptions createPV(double installedPower, double efficiency, int port){
+	public static ActorOptions createPV(double installedPower, int port){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new PV(installedPower, efficiency, port));	
+				new PV(installedPower, port));	
 		return result;
 	}
 	
-	public static ActorOptions createSolarThermic(double installedPower, double efficiency, int port){
+	public static ActorOptions createSolarThermic(double installedPower, int port){
 		ActorOptions result = new ActorOptions(LoggingMode.MINIMAL,							
 				new HashSet<String>(),new HashSet<String>(),new HashSet<String>(),
-				new SolarThermic(installedPower, efficiency, port));	
+				new SolarThermic(installedPower, port));	
 		return result;
 	}
 	

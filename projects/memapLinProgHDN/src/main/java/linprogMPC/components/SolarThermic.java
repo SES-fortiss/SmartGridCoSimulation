@@ -27,8 +27,8 @@ public class SolarThermic extends Producer {
 		int cts = GlobalTime.getCurrentTimeStep();	
 		volatileProducerMessage.name = this.actorName;
 		volatileProducerMessage.id = this.fullActorPath;
-		volatileProducerMessage.operationalPriceEURO = 0.00001;
-		volatileProducerMessage.operationalPriceCO2 = 0.0;
+		volatileProducerMessage.operationalCostEUR = 0.00001;
+		volatileProducerMessage.operationalCostCO2 = 0.0;
 		volatileProducerMessage.efficiency = efficiency;
 		volatileProducerMessage.maxPower = maxPower;
 		volatileProducerMessage.networkType = NetworkType.HEAT;

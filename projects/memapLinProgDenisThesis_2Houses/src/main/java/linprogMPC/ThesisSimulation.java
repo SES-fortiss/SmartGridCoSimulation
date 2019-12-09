@@ -42,7 +42,8 @@ public class ThesisSimulation {
 
   }
 
-  public static void main(String[] args) {
+  @SuppressWarnings("unused")
+public static void main(String[] args) {
     ConfigInterface jsonInterface = new ConfigInterface();
     String server = jsonInterface.getHost();
     int port = jsonInterface.getPort();

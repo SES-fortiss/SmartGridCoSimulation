@@ -1,8 +1,13 @@
 package linprogMPC.helper.lp;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 import akka.systemActors.GlobalTime;
+import linprogMPC.ConfigurationMEMAP;
 import linprogMPC.MILPTopology;
 import linprogMPC.helper.EnergyPrices;
 import linprogMPC.helper.HelperConcat;
@@ -11,10 +16,10 @@ import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.OptimizationResultMessage;
 
 public class LPSolver {
-	
-	static EnergyPrices energyPrices = new EnergyPrices(); // is only used once.
-	
+		
 	BuildingMessage buildingMessage;
+	private ArrayList<BuildingMessage> buildingMessageList;
+	
 	int nStepsMPC = 0;
 	SolutionHandler solHandler;
 	double[] buildingsTotalCosts;
@@ -28,19 +33,19 @@ public class LPSolver {
 			BuildingMessage buildingMessage, 
 			int nStepsMPC, 
 			SolutionHandler solHandler, 
-			double[] buildingsTotalCosts, 
-			double[] buildingsTotalCO2, 
+			double[] totalEURVector, 
+			double[] totalCO2Vector, 
 			int actualTimeStep, 
-			double[][] buildingsSolutionPerTimeStep, 
+			double[][] solutionPerTimeStep, 
 			String actorName, 
 			OptimizationResultMessage optResult) {
 		this.buildingMessage = buildingMessage;
 		this.nStepsMPC = nStepsMPC;
 		this.solHandler = solHandler;
-		this.buildingsTotalCosts = buildingsTotalCosts;
-		this.buildingsTotalCO2 = buildingsTotalCO2;
+		this.buildingsTotalCosts = totalEURVector;
+		this.buildingsTotalCO2 = totalCO2Vector;
 		this.actualTimeStep = actualTimeStep;
-		this.buildingsSolutionPerTimeStep = buildingsSolutionPerTimeStep;
+		this.buildingsSolutionPerTimeStep = solutionPerTimeStep;
 		this.actorName = actorName;
 		this.optResult = optResult;
 	}
@@ -51,7 +56,20 @@ public class LPSolver {
 		try {
 			// ******* LP Optimierung ********************************
 			LPMatrixBuildup mb = new LPMatrixBuildup();
-			problem = mb.singleBuilding(buildingMessage);
+			
+			if (ConfigurationMEMAP.chosenOptimizer == ConfigurationMEMAP.Optimizer.LP) {
+				problem = mb.singleBuilding(buildingMessage);
+			}
+			
+			if (ConfigurationMEMAP.chosenOptimizer == ConfigurationMEMAP.Optimizer.LPwithConnections) {				
+				if(buildingMessageList != null) {
+					problem = mb.multipleBuildings(getBuildingMessageList());
+				} else {
+					System.err.println(this.getClass() + ": trying to solve LPwithConnections, but buildingMessageListIsEmpty, will do it  without Connections" );					
+					problem = mb.singleBuilding(buildingMessage);					
+				}
+			}			
+			
 			LPOptimizationStarter os = new LPOptimizationStarter();
 			double[] optSolution = os.runLinProg(problem);
 			
@@ -69,12 +87,11 @@ public class LPSolver {
 			double[] currentDemand = solHandler.getDemandForThisTimestep(problem.b_eq, nStepsMPC);
 			double[] currentSOC = solHandler.getCurrentSOC(buildingMessage.storageList);
 			double[] currentCost = {buildingCostPerTimestep};
-			double[] currentCO2 = {buildingCO2PerTimestep};
-			
+			double[] currentCO2 = {buildingCO2PerTimestep};			
 			double[] currentPosDemand = solHandler.getPositiveDemandForThisTimestep(problem, nStepsMPC);
-			double[] currentEffOptVector = solHandler.getEffSolutionForThisTimeStep(optSolution, problem.etas, nStepsMPC);
-			
+			double[] currentEffOptVector = solHandler.getEffSolutionForThisTimeStep(optSolution, problem.etas, nStepsMPC);			
 			double[] electricalPrice = {EnergyPrices.getElectricityPriceInEuro(actualTimeStep)};			
+
 			//double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, electricalPrice);
 			double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, currentCO2, electricalPrice, currentPosDemand, currentEffOptVector);
 			
@@ -84,17 +101,23 @@ public class LPSolver {
 			String[] demandStrings = {"demandHeat", "demandElectricity"};
 			String[] posDemandStrings = {"positiveDemandHeat", "positiveDemandHeatTotal", "positiveDemandElectricity"}; 
 			String[] storageNames = solHandler.getNamesForSOC(buildingMessage.storageList);
-			String[] costName = {"Cost"};
-			String[] CO2Name = {"CO2"};
-			String[] priceName = {"Price"};
+			String[] costEUR = {"costEUR"};
+			String[] costCO2 = {"costCO2"};
+			String[] marketPrice = {"marketPrice"};
 			
-			String[] namesAll = HelperConcat.concatAllObjects(timeStep, demandStrings, currentNamesPartly, storageNames, costName, CO2Name, priceName, posDemandStrings, currentEffNames);
-						
-			//System.out.println(this.actorName + " " + Arrays.toString(namesAll));
-			//System.out.println(this.actorName + " " + Arrays.toString(vectorAll));
+			String[] namesAll = HelperConcat.concatAllObjects(timeStep, demandStrings, currentNamesPartly, storageNames, costEUR, costCO2, marketPrice, posDemandStrings, currentEffNames);
+									
+
+			String[] vectorResultStr = new String[vectorAll.length];		
+			DecimalFormat df = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.ENGLISH));
 			
-			System.out.println("LP: " + this.actorName + " " + Arrays.toString(currentNamesPartly));
-			System.out.println("LP: " + this.actorName + " " + Arrays.toString(currentOptVector));
+			for (int i = 0; i < vectorResultStr.length; i++) {
+				vectorResultStr[i] = df.format(vectorAll[i]);
+			}
+			
+			System.out.println("LP: "+ this.actorName + " Names: " + Arrays.toString(currentNamesPartly));		
+			System.out.println("LP: "+ this.actorName + " Result: " + Arrays.toString(vectorResultStr));
+			
 			
 			//********* Speichern
 			
@@ -130,5 +153,12 @@ public class LPSolver {
 		
 	}
 
+	public ArrayList<BuildingMessage> getBuildingMessageList() {
+		return buildingMessageList;
+	}
 
+	public void setBuildingMessageList(ArrayList<BuildingMessage> buildingMessageList) {
+		//this.buildingMessage = null;
+		this.buildingMessageList = buildingMessageList;
+	}
 }

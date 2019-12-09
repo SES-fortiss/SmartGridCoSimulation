@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import akka.systemActors.GlobalTime;
 import linprogMPC.ConfigurationMEMAP;
-import linprogMPC.ConfigurationMEMAP.MilpLogging;
+import linprogMPC.ConfigurationMEMAP.MEMAPLogging;
 import linprogMPC.MILPTopology;
 import linprogMPC.helper.EnergyPrices;
 import linprogMPC.helper.HelperConcat;
@@ -15,22 +15,19 @@ import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
 
 /**
- * TODO This class shall be responsible to create the MILP Optimization Problem and solve it.
- * 
+ * This class creates the MILP Optimization Problem and solves it.
  * @author bytschkow
  *
  */
 public class MILPSolverNoConnections {
 	
-	MILPProblemNoConnections mp;
-	
-	BuildingMessage buildingMessage;
-	
+	MILPProblemNoConnections mp;	
+	BuildingMessage buildingMessage;	
 	
 	int nStepsMPC = 0;
 	int nCols = 0;
 	LpSolve problem = null;
-	MilpLogging logging;	
+	MEMAPLogging logging;	
 
 	SolutionHandler milpSolHandler;
 	String actorName;
@@ -45,7 +42,7 @@ public class MILPSolverNoConnections {
 	public MILPSolverNoConnections(BuildingMessage buildingMessage, int nStepsMPC)  {
 		this.buildingMessage = buildingMessage;
 		this.nStepsMPC = nStepsMPC;		
-		this.logging = ConfigurationMEMAP.chosenMilpLogging;
+		this.logging = ConfigurationMEMAP.chosenMEMAPLogging;
 	}
 	
 	public MILPSolverNoConnections(BuildingMessage buildingMessage2, int nStepsMPC2, SolutionHandler milpSolHandler,
@@ -63,7 +60,6 @@ public class MILPSolverNoConnections {
 
 	/**  
 	 * Note, the difficulty is that all goes into one big matrix. Therefore, it needs to be carefully, to keep it modular. 
-	 * TODO: consider the connections
 	 */
 	public LpSolve createModel() throws LpSolveException {
 		// 0) find out the number of individual contributers.		
@@ -71,29 +67,17 @@ public class MILPSolverNoConnections {
 		int numberVolatileProducers = buildingMessage.getNrOfVolatileProducers();
 		int numberCouplers = buildingMessage.getNrOfCouplers();
 		int numberStorages = buildingMessage.getNrOfStorages();		
-		int nrOfConnections = 0;
 		
 		// **** DESIGN DECISIONS ****
 		// + Controllable have booleans + linear value for production
 		// + Volatile have only linear values for production
-		// + Couplers have boolean and + linear for production
+		// + Couplers have boolean + linear for production
 		// + Storages have two linear values for production
 		// + E-market is linear
 		
 		/* this represents the x vector*/
 		nCols = nStepsMPC * ( (numberControllableProducers*2) + 
-				+ (numberVolatileProducers) + (numberCouplers * 2) + (numberStorages*2) + (2) ); 
-		
-		if (ConfigurationMEMAP.chosenOptimizationHierarchy == ConfigurationMEMAP.OptHierarchy.MEMAP && 
-				ConfigurationMEMAP.chosenOptimizer == ConfigurationMEMAP.Optimizer.MILPwithConnections) {
-			
-			nCols = nStepsMPC * (
-					(numberControllableProducers*2) + 
-					(numberVolatileProducers) + 
-					(numberCouplers * 2) + 
-					(numberStorages*2) + 
-					(nrOfConnections*2) + (2) );
-		}
+				+ (numberVolatileProducers) + (numberCouplers * 2) + (numberStorages*2) + (2) ); 		
 	 	
 	 	/* Create an empty model  */
 	 	LpSolve problem = LpSolve.makeLp(0, nCols);
@@ -108,7 +92,7 @@ public class MILPSolverNoConnections {
         // 1) create model and include all names 
         problem = mp.createNames(problem, buildingMessage);
         
-        if (logging == ConfigurationMEMAP.MilpLogging.ALL) {
+        if (logging == ConfigurationMEMAP.MEMAPLogging.ALL) {
         	
             String[] names = new String[nCols+1];
             for (int i = 0; i < names.length; i++) {
@@ -125,27 +109,27 @@ public class MILPSolverNoConnections {
 		// 2) add the demand constraints (equality constraints)
         problem = mp.createDemandConstraints(problem, buildingMessage);
         
-        if (logging == ConfigurationMEMAP.MilpLogging.ALL) {
+        if (logging == ConfigurationMEMAP.MEMAPLogging.ALL) {
         	double [] demand = buildingMessage.getCombinedDemandVector();
         	System.out.println("Demand:  " + Arrays.toString(demand) + "    List size: " + buildingMessage.demandList.size());
         }
         
-        if (logging == ConfigurationMEMAP.MilpLogging.ALL || logging == ConfigurationMEMAP.MilpLogging.FILES) problem.writeLp("MILP_MEMAP_DEMAND.lp");
+        if (logging == ConfigurationMEMAP.MEMAPLogging.ALL || logging == ConfigurationMEMAP.MEMAPLogging.FILES) problem.writeLp("MILP_MEMAP_DEMAND.lp");
         
 		// 3) add the inequality constraints (component boundaries)
     	problem = mp.createComponentBoundaries(problem, buildingMessage);
-    	if (logging == ConfigurationMEMAP.MilpLogging.ALL || logging == ConfigurationMEMAP.MilpLogging.FILES) problem.writeLp("MILP_MEMAP_Boundaries.lp");    
+    	if (logging == ConfigurationMEMAP.MEMAPLogging.ALL || logging == ConfigurationMEMAP.MEMAPLogging.FILES) problem.writeLp("MILP_MEMAP_Boundaries.lp");    
 		
 		// 4) soc inequalitiy constraints.    	
     	problem = mp.createSOCBoundaries(problem, buildingMessage);
-    	if (logging == ConfigurationMEMAP.MilpLogging.ALL || logging == ConfigurationMEMAP.MilpLogging.FILES) problem.writeLp("MILP_MEMAP_SOC_Boundaries.lp");
+    	if (logging == ConfigurationMEMAP.MEMAPLogging.ALL || logging == ConfigurationMEMAP.MEMAPLogging.FILES) problem.writeLp("MILP_MEMAP_SOC_Boundaries.lp");
 
         problem.setAddRowmode(false); /* rowmode should be turned off again when done building the model */
         
 		// 5) Set objective function    	
     	problem = mp.createObjectiveFunction(problem, buildingMessage);    	
     	
-    	if (logging == ConfigurationMEMAP.MilpLogging.ALL || logging == ConfigurationMEMAP.MilpLogging.FILES) {
+    	if (logging == ConfigurationMEMAP.MEMAPLogging.ALL || logging == ConfigurationMEMAP.MEMAPLogging.FILES) {
     		problem.writeLp("MILP_MEMAP_FINAL.lp");
     		System.out.println("MILP_MEMAP_FINAL.lp written");
     	}
@@ -175,7 +159,7 @@ public class MILPSolverNoConnections {
             for(int j = 0; j < nCols; j++) names[j] = problem.getColName(j + 1);
 
             // ONLY FOR LOGGING
-            if (logging == ConfigurationMEMAP.MilpLogging.ALL) {
+            if (logging == ConfigurationMEMAP.MEMAPLogging.ALL) {
             	for(int j = 0; j < nCols; j++) {
                 	System.out.println(names[j] + ": " + optSolution[j]);
                 };
@@ -185,17 +169,15 @@ public class MILPSolverNoConnections {
         
 		// ******** Ermittlung der Kosten *********************       
         
-        // TODO CO2		
 		double[] lambda = mp.getLambdaEUR(buildingMessage);
 		double[] lambdaCO2 = mp.getLambdaCO2(buildingMessage);	
 		
-		System.out.println("****************MILP: *******************");
 		double buildingCostPerTimestep = 0;
 		double buildingCO2PerTimestep = 0;
 		buildingCostPerTimestep = milpSolHandler.calculateTimeStepCosts(optSolution, lambda);
-		buildingCO2PerTimestep = milpSolHandler.calculateTimeStepCosts(optSolution, lambdaCO2); // TODO
+		buildingCO2PerTimestep = milpSolHandler.calculateTimeStepCosts(optSolution, lambdaCO2); 
 		buildingStepCostsMILP[timeStepIndex] = buildingCostPerTimestep;
-		buildingStepCO2MILP[GlobalTime.getCurrentTimeStep()] = buildingCO2PerTimestep; // TODO
+		buildingStepCO2MILP[GlobalTime.getCurrentTimeStep()] = buildingCO2PerTimestep;
 		
 		// ******** Erstellung des Ergebnisvektors *********************
 		
@@ -211,9 +193,9 @@ public class MILPSolverNoConnections {
 		
 		String[] timeStep = {"timeStep"};
 		String[] currentNamesPartly = milpSolHandler.getNamesForThisTimeStep(names, nStepsMPC);
-		String[] currentEffNames= milpSolHandler.getEffNamesForThisTimeStep(names, nStepsMPC);
+		//String[] currentEffNames= milpSolHandler.getEffNamesForThisTimeStep(names, nStepsMPC);
 		String[] demandStrings = {"demandHeat", "demandElectricity"};
-		String[] posDemandStrings = {"positiveDemandHeat", "positiveDemandHeatTotal", "positiveDemandElectricity"}; 
+		//String[] posDemandStrings = {"positiveDemandHeat", "positiveDemandHeatTotal", "positiveDemandElectricity"}; 
 		String[] storageNames = milpSolHandler.getNamesForSOC(buildingMessage.storageList);
 		String[] costName = {"Cost"};
 		String[] CO2Name = {"CO2"};

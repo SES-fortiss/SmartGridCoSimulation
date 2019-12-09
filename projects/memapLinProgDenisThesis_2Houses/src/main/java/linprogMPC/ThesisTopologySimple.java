@@ -11,6 +11,7 @@ import topology.ActorTopology;
  * @author andreas.thut
  *
  */
+@SuppressWarnings("unused")
 public class ThesisTopologySimple {
 	
 	public static String simulationName = "2Houses";
@@ -30,7 +31,7 @@ public class ThesisTopologySimple {
 	public static int NR_OF_CONSUMERS = 5;
 	private static int PORT_UNDEFINED = 0;
 	
-	@SuppressWarnings("unused")
+	
 	private static int port = 8081;	
 	
 	// Does MEMAP has a long-distance heating connection to buy heat ?
@@ -82,7 +83,7 @@ public class ThesisTopologySimple {
 		ActorTopology building1 = new ActorTopology(building1Name);		
 		building1.addActor(building1Name, ActorFactory.createBuilding(port++, LDHeatingB1, heatTransportLengthB1));
 		building1.addActorAsChild(building1Name + "/Consumption", ActorFactory.createConsumer(consumptionProfiles, 0, PORT_UNDEFINED));
-		building1.addActorAsChild(building1Name + "/PV", ActorFactory.createPV(AREA_PV * EFFICIENCY_PV, EFFICIENCY_PV, PORT_UNDEFINED));
+		building1.addActorAsChild(building1Name + "/PV", ActorFactory.createPV(5, PORT_UNDEFINED));
 		building1.addActorAsChild(building1Name + "/Battery", ActorFactory.createBattery(CAPACITY_BATTERY, P_MAX_BATTERY_IN, P_MAX_BATTERY_OUT, EFFICIENCY_BAT, EFFICIENCY_BAT, PORT_UNDEFINED));
 		building1.addActorAsChild(building1Name + "/HeatPump", ActorFactory.createHeatPump(P_MAX_HEATPUMP, EFFICIENCY_HEATPUMP, -1 , PORT_UNDEFINED));
 		
@@ -93,7 +94,7 @@ public class ThesisTopologySimple {
 		ActorTopology building2 = new ActorTopology(building2Name);		
 		building2.addActor(building2Name, ActorFactory.createBuilding(port++, LDHeatingB2, heatTransportLengthB2));
 		building2.addActorAsChild(building2Name + "/Consumption", ActorFactory.createConsumer(consumptionProfiles, 2, PORT_UNDEFINED));
-		building2.addActorAsChild(building2Name + "/SolarThermic", ActorFactory.createSolarThermic(AREA_SOLARTHERMIC * EFFICIENCY_SOLARTHERMIC, EFFICIENCY_SOLARTHERMIC, port++));		
+		building2.addActorAsChild(building2Name + "/SolarThermic", ActorFactory.createSolarThermic(4, port++));		
 		building2.addActorAsChild(building2Name + "/ThermalStorage", ActorFactory.createThermalStorage(CAPACITY_THERMALSTORAGE, QDOT_MAX_THERMALSTORAGE_IN, QDOT_MAX_THERMALSTORAGE_OUT, EFFICIENCY_THERMALSTORAGE, EFFICIENCY_THERMALSTORAGE, PORT_UNDEFINED));
 		building2.addActorAsChild(building2Name + "/CHP", ActorFactory.createCHP( QDOT_MAX_CHP, EFFICIENCY_CHP_H, EFFICIENCY_CHP_EL, port++));
 

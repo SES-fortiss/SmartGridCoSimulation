@@ -8,7 +8,7 @@ import topology.ActorTopology;
  *
  */
 public class MILPTopology {
-	public static String simulationName = "MEMAPwithMILP";	
+	public static String simulationName = "MEMAPcoordinator";	
 	
 	// ================= Model Predictive Control (MPC) =================
 	public static int N_STEPS_MPC = 1;
@@ -63,7 +63,7 @@ public class MILPTopology {
 		ActorTopology building3 = new ActorTopology(building1Name);
 		building3.addActor(building3Name, ActorFactory.createBuilding(PORT_UNDEFINED));
 		building3.addActorAsChild(building3Name + "/Consumption3", ActorFactory.createConsumer(consumptionProfiles, 2, PORT_UNDEFINED));
-		building3.addActorAsChild(building3Name + "/GasBoiler3", ActorFactory.createGasBoiler(100, 5, 0.93, 0.12 , PORT_UNDEFINED));
+		building3.addActorAsChild(building3Name + "/GasBoiler3", ActorFactory.createGasBoiler(100, 0, 0.93, 0.12 , PORT_UNDEFINED));
 		
 		building3.addActorAsChild(building3Name + "/Connection32", ActorFactory.createThermalConnection(building2Name, 1250, 0.01, 999));			
 		top.addSubTopology(simulationName, building3);

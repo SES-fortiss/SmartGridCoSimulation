@@ -8,10 +8,11 @@ package linprogMPC;
  */
 public class ConfigurationMEMAP {
 		
-	public static Optimizer chosenOptimizer = Optimizer.MILPwithConnections;
-	public static OptHierarchy chosenOptimizationHierarchy = OptHierarchy.MEMAP;
+	public static Optimizer chosenOptimizer = Optimizer.LP;
+	public static OptimizationGoal chosenGoal = OptimizationGoal.EUR;
+	public static OptHierarchy chosenOptimizationHierarchy = OptHierarchy.BUILDING;
 	public static ToolUsage chosenToolUsage = ToolUsage.PLANNING;
-	public static MilpLogging chosenMilpLogging =  MilpLogging.RESULTS_ONLY;		
+	public static MEMAPLogging chosenMEMAPLogging =  MEMAPLogging.FILES;
 	
 	public enum OptHierarchy {
         BUILDING, MEMAP;
@@ -21,11 +22,15 @@ public class ConfigurationMEMAP {
 		MILP, LP, MILPwithConnections, LPwithConnections;
 	}
 	
+	public enum OptimizationGoal {
+		CO2, EUR
+	}
+	
 	public enum ToolUsage{
 		PLANNING, SERVER;
 	}
 	
-	public enum MilpLogging{
+	public enum MEMAPLogging{
 		ALL, FILES, RESULTS_ONLY
 	}
 }

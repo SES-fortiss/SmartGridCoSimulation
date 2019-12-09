@@ -1,32 +1,27 @@
 package linprogMPC.components;
 
-import java.util.ArrayList;
+import static linprogMPC.ConfigurationMEMAP.*;
+
 import java.util.LinkedList;
 
 import com.google.gson.Gson;
 
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
-import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
-import linprogMPC.ConfigurationMEMAP;
+import linprogMPC.ConfigurationMEMAP.OptHierarchy;
+import linprogMPC.ConfigurationMEMAP.Optimizer;
+import linprogMPC.ConfigurationMEMAP.ToolUsage;
 import linprogMPC.MILPTopology;
 import linprogMPC.helper.SolutionHandler;
 import linprogMPC.helper.lp.LPSolver;
 import linprogMPC.helper.milp.MILPSolverNoConnections;
 import linprogMPC.helperOPCua.OpcServerContextGenerator;
 import linprogMPC.messages.BuildingMessage;
+import linprogMPC.messages.BuildingMessageHandler;
 import linprogMPC.messages.OptimizationResultMessage;
 import linprogMPC.messages.extension.ChildSpecification;
-import linprogMPC.messages.extension.NetworkType;
-import linprogMPC.messages.planning.ConnectionMessage;
-import linprogMPC.messages.planning.CouplerMessage;
-import linprogMPC.messages.planning.DemandMessage;
-import linprogMPC.messages.planning.ProducerMessage;
-import linprogMPC.messages.planning.StorageMessage;
-import linprogMPC.messages.planning.VolatileProducerMessage;
-import linprogMPC.messages.realTime.CurrentMeterValues;
 import lpsolve.LpSolveException;
 import opcMEMAP.MemapOpcServerStarter;
 
@@ -36,15 +31,12 @@ public class Building extends BehaviorModel {
 	private MemapOpcServerStarter mServer;
 	public int port;
 	
+	private BuildingMessageHandler buildingMessageHandler = new BuildingMessageHandler();
+	
 	// some long term values
-	double[] buildingsTotalCosts = new double[MILPTopology.NR_OF_ITERATIONS];
-	double[] buildingsTotalCO2 = new double[MILPTopology.NR_OF_ITERATIONS];
-	double[][] buildingsSolutionPerTimeStep = new double[MILPTopology.NR_OF_ITERATIONS][];
-
-	// some long term values2
-	double[] buildingsTotalCostsMILP = new double[MILPTopology.NR_OF_ITERATIONS];
-	double[] buildingsTotalCO2MILP = new double[MILPTopology.NR_OF_ITERATIONS];
-	double[][] buildingsSolutionPerTimeStepMILP = new double[MILPTopology.NR_OF_ITERATIONS][];
+	double[] toralEURVector = new double[MILPTopology.NR_OF_ITERATIONS];
+	double[] totalCO2Vector = new double[MILPTopology.NR_OF_ITERATIONS];
+	double[][] solutionPerTimeStep = new double[MILPTopology.NR_OF_ITERATIONS][];
 	
 	public int nStepsMPC = MILPTopology.N_STEPS_MPC;
 	
@@ -58,7 +50,7 @@ public class Building extends BehaviorModel {
 	public OptimizationResultMessage requestContentToSend = new OptimizationResultMessage();
 
 	public Building(int port) {		
-		if (ConfigurationMEMAP.chosenToolUsage == ConfigurationMEMAP.ToolUsage.SERVER) {
+		if (chosenToolUsage == ToolUsage.SERVER) {
 			this.port = port;
 		} else this.port = 0;
 	}
@@ -73,170 +65,55 @@ public class Building extends BehaviorModel {
 		this.actor.getContext().getChildren().forEach(child ->
 			buildingMessage.childrenList.add(new ChildSpecification(this.fullActorPath + "/" + child.path().name())));		
 		
-		for(BasicAnswer basicAnswer : answerListReceived) {
-			AnswerContent answerContent = basicAnswer.answerContent;
-			if(answerContent instanceof DemandMessage) {
-				DemandMessage dm = (DemandMessage) answerContent;
-				buildingMessage.demandList.add( (DemandMessage) dm);
-			}
-			
-			if(answerContent instanceof ProducerMessage) {				
-				if(answerContent instanceof VolatileProducerMessage) {
-					buildingMessage.volatileProducerList.add((VolatileProducerMessage) answerContent);
-				} else {
-					buildingMessage.controllableProducerList.add((ProducerMessage) answerContent);
-				}				
-			}
-			
-			if(answerContent instanceof StorageMessage) {
-				buildingMessage.storageList.add((StorageMessage) answerContent);
-			}		
-			
-			if(answerContent instanceof CouplerMessage) {
-				buildingMessage.couplerList.add((CouplerMessage) answerContent);
-			}
-			
-			if(answerContent instanceof ConnectionMessage) {
-				buildingMessage.connectionList.add((ConnectionMessage) answerContent);
-			}
-		}
-		
-		harmonizeDemandList();		
+		buildingMessage = buildingMessageHandler.aggregateBuildingMessages(buildingMessage, answerListReceived);
+		buildingMessage = buildingMessageHandler.refactorDemandList(buildingMessage);		
 				
-		if (ConfigurationMEMAP.chosenOptimizationHierarchy == ConfigurationMEMAP.OptHierarchy.BUILDING) {
+		if (chosenOptimizationHierarchy == OptHierarchy.BUILDING) {
 			optimizeBuilding();
 		}
 		
-		buildingMessage = addMetering(buildingMessage);
+		buildingMessage = buildingMessageHandler.addMetering(buildingMessage, this.fullActorPath);
 	}
 	
 	private void optimizeBuilding() {
 		
-		if(ConfigurationMEMAP.chosenOptimizer == ConfigurationMEMAP.Optimizer.LP) {
+		if(chosenOptimizer == Optimizer.LP || chosenOptimizer == Optimizer.LPwithConnections) {			
 			LPSolver lpsolver = new LPSolver(
 					buildingMessage, nStepsMPC, lpSolHandler, 
-					buildingsTotalCosts, buildingsTotalCO2, 
-					getActualTimeStep(), buildingsSolutionPerTimeStep,
+					toralEURVector, totalCO2Vector,
+					getActualTimeStep(), solutionPerTimeStep,
 					this.actorName, optResult);
-			lpsolver.solveLPOptProblem();
-			double costTotal = 0;
-			double CO2Total = 0;
-			for (int i = 0; i < buildingsTotalCosts.length; i++) {
-				costTotal += buildingsTotalCosts[i];
-				CO2Total += buildingsTotalCO2[i];
-			}
-			System.out.println("LP: " + this.actorName+" cost = " + String.format("%.03f", costTotal) + " € ; CO2: " + String.format("%.03f", CO2Total) + " kg");			
-		}
-				
+			lpsolver.solveLPOptProblem();		
+		}			
 		
-		if(ConfigurationMEMAP.chosenOptimizer == ConfigurationMEMAP.Optimizer.MILP) {
+		if(chosenOptimizer == Optimizer.MILP || chosenOptimizer == Optimizer.MILPwithConnections) {
 			MILPSolverNoConnections milpSolver = new MILPSolverNoConnections(
 					buildingMessage, nStepsMPC, milpSolHandler,
-					buildingsTotalCostsMILP, buildingsTotalCO2MILP, 
-					getActualTimeStep(), buildingsSolutionPerTimeStepMILP, 
+					toralEURVector, totalCO2Vector, 
+					getActualTimeStep(), solutionPerTimeStep, 
 					this.actorName, optResult);			
-			
 			try {
 				milpSolver.createModel();				
 				milpSolver.solveMILP(); // and work through results
-				
-				double costTotal = 0;
-				double CO2Total = 0;
-				
-				for (int i = 0; i < buildingsTotalCostsMILP.length; i++) {
-					costTotal += buildingsTotalCostsMILP[i];
-					CO2Total += buildingsTotalCO2MILP[i];
-				}
-				
-				System.out.println("MILP: " + this.actorName+" cost = " + String.format("%.03f", costTotal) + " € ; CO2: " + String.format("%.03f", CO2Total) + " kg");
 				
 			} catch (LpSolveException e) {			
 				e.printStackTrace();
 			}
 		}
-
-	}
-
-	private BuildingMessage addMetering(BuildingMessage bmIn) {
 		
-		BuildingMessage result = bmIn;
-		
-		for (DemandMessage demand : bmIn.demandList) {
-			CurrentMeterValues cm = new CurrentMeterValues();			
-			if (demand.networkType == NetworkType.HEAT) {
-				cm.name = "HEATDemand";
-				cm.id = this.fullActorPath + "/HEATDemand";
-			}			
-			if (demand.networkType == NetworkType.ELECTRICITY) {
-				cm.name = "ELECTRICITYDemand";
-				cm.id = this.fullActorPath + "/ELECTRICITYDemand";
-			}									
-			cm.networkType = demand.networkType;
-			cm.powerInjection = demand.getDemandVector()[0];						
-			result.currentMeterValueList.add(cm);
-		}		
-		return result;
-	}
-
-	private void harmonizeDemandList() {		
-		BuildingMessage bm = this.buildingMessage;
-		
-		ArrayList<DemandMessage> newDemandList = new ArrayList<DemandMessage>(); 
-		
-		for (DemandMessage demandMessage : bm.demandList) {
-			
-			if (demandMessage.networkType == NetworkType.DEMANDWITHBOTH) {
-				// Zwei draus machen
-				
-				DemandMessage heatDemand = new DemandMessage();
-				DemandMessage elecDemand = new DemandMessage();
-				
-				heatDemand.forecastType = demandMessage.forecastType;
-				elecDemand.forecastType = demandMessage.forecastType;
-				
-				heatDemand.id = demandMessage.id + "HEAT";
-				elecDemand.id = demandMessage.id + "ELECTRICITY";
-				
-				heatDemand.name = "HEAT_" + demandMessage.name;
-				elecDemand.name = "ELECTRICITY_" + demandMessage.name;
-				
-				heatDemand.networkType = NetworkType.HEAT;
-				elecDemand.networkType = NetworkType.ELECTRICITY;
-				
-				heatDemand.optimizationCriteria = demandMessage.optimizationCriteria;
-				elecDemand.optimizationCriteria = demandMessage.optimizationCriteria;
-				
-				int length = demandMessage.getDemandVector().length / 2;
-				double[] aInput =  new double[length];
-				double[] bInput =  new double[length];
-				
-				for (int i = 0; i < length; i++) {
-					aInput[i] = demandMessage.getDemandVector()[i];
-					bInput[i] = demandMessage.getDemandVector()[length+i];
-				}
-				
-				heatDemand.setDemandVector(aInput);
-				elecDemand.setDemandVector(bInput);
-				
-				newDemandList.add(heatDemand);
-				newDemandList.add(elecDemand);
-			}
-			
-			if (demandMessage.networkType == NetworkType.ELECTRICITY) {
-				newDemandList.add(demandMessage);
-			}
-			
-			if (demandMessage.networkType == NetworkType.HEAT) {
-				newDemandList.add(demandMessage);
-			}
+		double costTotal = 0;
+		double CO2Total = 0;
+		for (int i = 0; i < toralEURVector.length; i++) {
+			costTotal += toralEURVector[i];
+			CO2Total += totalCO2Vector[i];
 		}
-		
-		buildingMessage.demandList = newDemandList;		
+		System.out.println(chosenOptimizer + ": "+ this.actorName+" cost = " + String.format("%.03f", costTotal) + " € ; CO2: " + String.format("%.03f", CO2Total) + " kg");	
+
 	}
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {		
-		if (ConfigurationMEMAP.chosenToolUsage == ConfigurationMEMAP.ToolUsage.SERVER) {
+		if (chosenToolUsage == ToolUsage.SERVER) {			
 			if (this.getActualTimeStep() == 0) {
 				if (port != 0) {
 					this.mServer = new MemapOpcServerStarter(false, gson.toJson(buildingMessage), port);
@@ -263,9 +140,11 @@ public class Building extends BehaviorModel {
 
 	@Override	
 	public void handleRequest() {		
-		requestContentToSend = optResult;		
-		if (ConfigurationMEMAP.chosenOptimizationHierarchy == ConfigurationMEMAP.OptHierarchy.MEMAP) {
-			// Overwrite the requestContentToSend
+		if (chosenOptimizationHierarchy == OptHierarchy.BUILDING) {
+			requestContentToSend = optResult;
+		}
+		
+		if (chosenOptimizationHierarchy == OptHierarchy.MEMAP) {
 			requestContentToSend = (OptimizationResultMessage) requestContentReceived;
 		}
 	}
@@ -278,7 +157,7 @@ public class Building extends BehaviorModel {
 	
 	@Override
 	public void stop() {		
-		if (ConfigurationMEMAP.chosenToolUsage == ConfigurationMEMAP.ToolUsage.SERVER) {
+		if (chosenToolUsage == ToolUsage.SERVER) {
 			if(port != 0) {
 				mServer.stop();
 			}		

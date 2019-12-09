@@ -1,5 +1,7 @@
 package linprogMPC.helper.milp;
 
+import static linprogMPC.ConfigurationMEMAP.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,6 +9,7 @@ import java.util.HashMap;
 import akka.systemActors.GlobalTime;
 import linprogMPC.ConfigurationMEMAP;
 import linprogMPC.MILPTopology;
+import linprogMPC.helper.CO2profiles;
 import linprogMPC.helper.EnergyPrices;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.extension.NetworkType;
@@ -102,7 +105,7 @@ public class MILPProblemWithConnections {
 		for (int i = 0; i < nStepsMPC; i++) {			
 			int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2) + (connectionHandled * 2)  );
 			String string1 = couplerMessage.name + "_T" + i;
-			String string2 = couplerMessage.name + "OFF_T" + i;
+			String string2 = couplerMessage.name + "_OFF_T" + i;
 			problem.setColName(index, string1);
 			problem.setColName(index + nStepsMPC, string2);
 			problem.setBinary(index + nStepsMPC, true);
@@ -128,7 +131,7 @@ public class MILPProblemWithConnections {
 			for (int i = 0; i < nStepsMPC; i++) {			
 				int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2) + (connectionHandled * 2)  );
 				String string1 = connectionMessage.name+"_From"+connectionMessage.connectedBuildingFrom+"_To" + connectionMessage.connectedBuildingTo + "_T" + i;
-				String string2 = connectionMessage.name+"_Back_From"+connectionMessage.connectedBuildingFrom+"_To" + connectionMessage.connectedBuildingTo + "_T" + i;
+				String string2 = connectionMessage.name+"_From"+connectionMessage.connectedBuildingTo+"_To" + connectionMessage.connectedBuildingFrom + "_T" + i;
 				problem.setColName(index, string1);
 				problem.setColName(index + nStepsMPC, string2);
 			}		
@@ -181,7 +184,7 @@ public class MILPProblemWithConnections {
 			totalStorage += bm.getNrOfStorages();
 		}
 		
-        if (ConfigurationMEMAP.chosenMilpLogging == ConfigurationMEMAP.MilpLogging.ALL) {        	
+        if (ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {        	
         	for (BuildingMessage bm : buildingMessages) {
         		double [] demand = bm.getCombinedDemandVector();
             	System.out.println("Demand of " + bm.name + ":  " + Arrays.toString(demand) + "    List size: " + bm.demandList.size());
@@ -271,7 +274,7 @@ public class MILPProblemWithConnections {
             	
             	problem.addConstraint(rowHEAT, LpSolve.EQ, demandHEAT[i + b_counter*nStepsMPC]);
             	
-            	if (ConfigurationMEMAP.chosenMilpLogging == ConfigurationMEMAP.MilpLogging.ALL) {            	
+            	if (ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {            	
             		System.out.println("Adding HEAT --> rowHEAT: " + Arrays.toString(rowHEAT) + " EQ: " + demandHEAT[i+b_counter*nStepsMPC]);
             	}
             	
@@ -328,7 +331,7 @@ public class MILPProblemWithConnections {
         	
         	problem.addConstraint(rowELEC, LpSolve.EQ, demandELEC[i]);
         	
-        	if (ConfigurationMEMAP.chosenMilpLogging == ConfigurationMEMAP.MilpLogging.ALL) {
+        	if (ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
         		System.out.println("Adding markets --> rowELEC: " + Arrays.toString(rowELEC) + " EQ: " + demandELEC[i]);
 			}       	     	        	
 		}
@@ -480,16 +483,14 @@ public class MILPProblemWithConnections {
 	}
 
 	public LpSolve createObjectiveFunction(LpSolve problem, ArrayList<BuildingMessage> buildingMessages) throws LpSolveException {
+		
         int[] colno  = new int[nCols];
         double[] row = new double[nCols];
         
 		int cts = GlobalTime.getCurrentTimeStep();
-        
-        
         int counter = 0;
         
-        for (int i = 0; i < nStepsMPC; i++) {
-        	
+        for (int i = 0; i < nStepsMPC; i++) {        	
         	for (BuildingMessage bm : buildingMessages) {
 
 	            int controllableHandled = 0;
@@ -502,27 +503,59 @@ public class MILPProblemWithConnections {
 	        	for (ProducerMessage pm : bm.controllableProducerList) {    
 	        		int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  	
 	            	colno[counter] = index;
-	            	row[counter++] = pm.operationalPriceEURO;
+	            	
+	            	if (chosenGoal == OptimizationGoal.EUR) {
+	            		row[counter++] = pm.operationalCostEUR;
+					}
+	            	
+	            	if (chosenGoal == OptimizationGoal.CO2) {
+	            		row[counter++] = pm.operationalCostCO2;
+	            	}
+	            	
 	            	controllableHandled++;
 	    		}
 	        	
 	        	for (ProducerMessage pm : bm.volatileProducerList) {    
 	        		int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  	
 	            	colno[counter] = index;
-	            	row[counter++] = pm.operationalPriceEURO;
+	            	
+	            	if (chosenGoal == OptimizationGoal.EUR) {
+	            		row[counter++] = pm.operationalCostEUR;
+					}
+	            	
+	            	if (chosenGoal == OptimizationGoal.CO2) {
+	            		row[counter++] = pm.operationalCostCO2;
+	            	}	            	
+	            	
 	            	volatileHandled++;
 	    		}
 	        	
 	        	for (CouplerMessage cm : bm.couplerList) {    
 	        		int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  	
 	            	colno[counter] = index;
-	            	row[counter++] = cm.operationalCostEUR;
+	            	
+	            	if (chosenGoal == OptimizationGoal.EUR) {
+	            		row[counter++] = cm.operationalCostEUR;
+					}
+	            	
+	            	if (chosenGoal == OptimizationGoal.CO2) {
+	            		row[counter++] = cm.operationalCostCO2;
+	            	}
+	            	
 	            	couplerHandled++;
 	    		}
 	        	
 	        	for (StorageMessage sm : bm.storageList) {
 	        		
-	        		double price = sm.operationalPriceEURO;// + 0.0001 * i; // damit es später etwas teuerer wird.
+	        		double price = 0;
+	        		
+	            	if (chosenGoal == OptimizationGoal.EUR) {
+	            		price = sm.operationalCostEUR + 0.0001 * i; // damit es später etwas teuerer wird (besseres Ergebnis)
+					}
+	            	
+	            	if (chosenGoal == OptimizationGoal.CO2) {
+	            		price = sm.operationalCostCO2 + 0.0001 * i;
+	            	}
 	        		
 	        		int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  	
 	            	colno[counter] = index;
@@ -538,11 +571,25 @@ public class MILPProblemWithConnections {
         	
         	int index = nCols + 1 - 2*nStepsMPC + i;
         	
-        	colno[counter] = index;
-        	row[counter++] = EnergyPrices.getElectricityPriceInEuro(cts+i);
-        	// sell
-        	colno[counter] = index+nStepsMPC;
-        	row[counter++] = -EnergyPrices.getElectricityPriceInEuro(cts+i)*0.5;
+        	if (chosenGoal == OptimizationGoal.EUR) {
+        		// buy
+            	colno[counter] = index;
+            	row[counter++] = EnergyPrices.getElectricityPriceInEuro(cts+i);
+            	// sell
+            	colno[counter] = index+nStepsMPC;
+            	row[counter++] = -EnergyPrices.getElectricityPriceInEuro(cts+i)*0.5;
+			}
+        	
+        	if (chosenGoal == OptimizationGoal.CO2) {
+        		// buy
+            	colno[counter] = index;
+            	row[counter++] = CO2profiles.getCO2emissions(cts+i);
+            	// sell, no compensation for selling
+            	colno[counter] = index+nStepsMPC;
+            	row[counter++] = 0;
+        	}
+        	
+
         }        
         
         /* set the objective in lpsolve */
@@ -572,7 +619,7 @@ public class MILPProblemWithConnections {
 			for(ProducerMessage producerMessage : bm.controllableProducerList) {					
 				for (int i = 0; i < nStepsMPC; i++) {		
 					int index = indexBuilding + i + nStepsMPC * (controllableHandled * 2);
-					result[index] = producerMessage.operationalPriceEURO;
+					result[index] = producerMessage.operationalCostEUR;
 					result[index + nStepsMPC] = 0;
 				}
 				controllableHandled++;
@@ -581,7 +628,7 @@ public class MILPProblemWithConnections {
 			for(ProducerMessage producerMessage : bm.volatileProducerList) {
 				for (int i = 0; i < nStepsMPC; i++) {			
 					int index = indexBuilding+i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled);
-					result[index] = producerMessage.operationalPriceEURO;
+					result[index] = producerMessage.operationalCostEUR;
 				}
 				volatileHandled++;
 			}
@@ -598,8 +645,8 @@ public class MILPProblemWithConnections {
 			for(StorageMessage storageMessage : bm.storageList) {
 				for (int i = 0; i < nStepsMPC; i++) {			
 					int index = indexBuilding+i + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
-					result[index] = storageMessage.operationalPriceEURO;
-					result[index+ nStepsMPC] = storageMessage.operationalPriceEURO;
+					result[index] = storageMessage.operationalCostEUR;
+					result[index+ nStepsMPC] = storageMessage.operationalCostEUR;
 				}
 				storageHandled++;
 			}
@@ -629,7 +676,7 @@ public class MILPProblemWithConnections {
 			for(ProducerMessage producerMessage : bm.controllableProducerList) {					
 				for (int i = 0; i < nStepsMPC; i++) {		
 					int index = indexBuilding + i + nStepsMPC * (controllableHandled * 2);
-					result[index] = producerMessage.operationalPriceCO2;
+					result[index] = producerMessage.operationalCostCO2;
 					result[index + nStepsMPC] = 0;
 				}
 				controllableHandled++;
@@ -638,7 +685,7 @@ public class MILPProblemWithConnections {
 			for(ProducerMessage producerMessage : bm.volatileProducerList) {
 				for (int i = 0; i < nStepsMPC; i++) {			
 					int index = indexBuilding+i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled);
-					result[index] = producerMessage.operationalPriceCO2;
+					result[index] = producerMessage.operationalCostCO2;
 				}
 				volatileHandled++;
 			}
@@ -655,8 +702,8 @@ public class MILPProblemWithConnections {
 			for(StorageMessage storageMessage : bm.storageList) {
 				for (int i = 0; i < nStepsMPC; i++) {			
 					int index = indexBuilding+i + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
-					result[index] = storageMessage.operationalPriceCO2;
-					result[index+ nStepsMPC] = storageMessage.operationalPriceEURO;
+					result[index] = storageMessage.operationalCostCO2;
+					result[index+ nStepsMPC] = storageMessage.operationalCostEUR;
 				}
 				storageHandled++;
 			}

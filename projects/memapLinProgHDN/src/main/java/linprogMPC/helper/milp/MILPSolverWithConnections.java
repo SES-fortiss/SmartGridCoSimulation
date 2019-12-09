@@ -1,14 +1,18 @@
 package linprogMPC.helper.milp;
 
+import static linprogMPC.ConfigurationMEMAP.*;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.systemActors.GlobalTime;
-import linprogMPC.ConfigurationMEMAP;
-import linprogMPC.ConfigurationMEMAP.MilpLogging;
 import linprogMPC.MILPTopology;
+import linprogMPC.helper.CO2profiles;
 import linprogMPC.helper.EnergyPrices;
 import linprogMPC.helper.HelperConcat;
 import linprogMPC.helper.SolutionHandler;
@@ -19,8 +23,7 @@ import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
 
 /**
- * Note, almost a clone of MILPSolverNoConnections. Refactor if possible.
- * 
+ * Note, this class might have many cloning from MILP with no connections
  * @author bytschkow
  *
  */
@@ -39,17 +42,15 @@ public class MILPSolverWithConnections {
 		this.milpSolHandler = milpSolHandler;
 		this.actorName = actorName; 
 		this.optResult = optResult;
-	}
-	
+	}	
 
-	MILPProblemWithConnections mp;
-	
+	MILPProblemWithConnections mp;	
 	ArrayList<BuildingMessage> buildingMessages = new ArrayList<>();
+	BuildingMessageHandler buildingMessageHandler = new BuildingMessageHandler();
 	
 	int nStepsMPC = 0;
 	int nCols = 0;
 	LpSolve problem = null;
-	MilpLogging logging;	
 
 	SolutionHandler milpSolHandler;
 	String actorName;
@@ -63,7 +64,6 @@ public class MILPSolverWithConnections {
 
 	public MILPSolverWithConnections(ArrayList<BasicAnswer> answerListReceived, int nStepsMPC)  {
 		this.nStepsMPC = nStepsMPC;		
-		this.logging = ConfigurationMEMAP.chosenMilpLogging;
 		
 		for (BasicAnswer basicAnswer : answerListReceived) {
 			AnswerContent answerContent = basicAnswer.answerContent;
@@ -113,7 +113,7 @@ public class MILPSolverWithConnections {
         // 1) create model and include all names 
         problem = mp.createNames(problem, buildingMessages);
         
-        if (logging == ConfigurationMEMAP.MilpLogging.ALL) {
+        if (chosenMEMAPLogging == MEMAPLogging.ALL) {
         	
             String[] names = new String[nCols+1];
             for (int i = 0; i < names.length; i++) {
@@ -130,7 +130,7 @@ public class MILPSolverWithConnections {
 		// 2) add the demand constraints (equality constraints)
         problem = mp.createDemandConstraints(problem, buildingMessages);                
         
-        if (logging == ConfigurationMEMAP.MilpLogging.ALL || logging == ConfigurationMEMAP.MilpLogging.FILES) {
+        if (chosenMEMAPLogging == MEMAPLogging.ALL || chosenMEMAPLogging == MEMAPLogging.FILES) {
         	problem.writeLp("MILP_MEMAP_DEMAND.lp");
         	System.out.println("MILP_MEMAP_DEMAND.lp - written");
         }
@@ -139,7 +139,7 @@ public class MILPSolverWithConnections {
 		// 3) add the inequality constraints (component boundaries)
     	problem = mp.createComponentBoundaries(problem, buildingMessages);
     	
-    	if (logging == ConfigurationMEMAP.MilpLogging.ALL || logging == ConfigurationMEMAP.MilpLogging.FILES) {
+    	if (chosenMEMAPLogging == MEMAPLogging.ALL || chosenMEMAPLogging == MEMAPLogging.FILES) {
     		problem.writeLp("MILP_MEMAP_Boundaries.lp");
     		System.out.println("MILP_MEMAP_Boundaries.lp - written");
     	}
@@ -148,7 +148,7 @@ public class MILPSolverWithConnections {
 		// 4) soc inequalitiy constraints.    	
     	problem = mp.createSOCBoundaries(problem, buildingMessages);
     	
-    	if (logging == ConfigurationMEMAP.MilpLogging.ALL || logging == ConfigurationMEMAP.MilpLogging.FILES) {
+    	if (chosenMEMAPLogging == MEMAPLogging.ALL || chosenMEMAPLogging == MEMAPLogging.FILES) {
     		problem.writeLp("MILP_MEMAP_SOC_Boundaries.lp");
     		System.out.println("MILP_MEMAP_SOC_Boundaries.lp - written");
     	}
@@ -159,7 +159,7 @@ public class MILPSolverWithConnections {
 		// 5) Set objective function    	
     	problem = mp.createObjectiveFunction(problem, buildingMessages);    	
     	
-    	if (logging == ConfigurationMEMAP.MilpLogging.ALL || logging == ConfigurationMEMAP.MilpLogging.FILES) {
+    	if (chosenMEMAPLogging == MEMAPLogging.ALL || chosenMEMAPLogging == MEMAPLogging.FILES) {
     		problem.writeLp("MILP_MEMAP_FINAL.lp");
     		System.out.println("MILP_MEMAP_FINAL.lp written");
     	}
@@ -171,7 +171,7 @@ public class MILPSolverWithConnections {
 
 	
 	public int solveMILP() throws LpSolveException {		
-		int result;	
+		int result;
 		
         problem.setVerbose(LpSolve.IMPORTANT); // only important messages                
         result = problem.solve();
@@ -190,7 +190,7 @@ public class MILPSolverWithConnections {
             for(int j = 0; j < nCols; j++) names[j] = problem.getColName(j + 1);
 
             // ONLY FOR LOGGING
-            if (logging == ConfigurationMEMAP.MilpLogging.ALL) {
+            if (chosenMEMAPLogging == MEMAPLogging.ALL) {
             	for(int j = 0; j < nCols; j++) {
                 	System.out.println(names[j] + ": " + optSolution[j]);
                 };
@@ -217,37 +217,48 @@ public class MILPSolverWithConnections {
 		
 		// ******** Erstellung des Ergebnisvektors *********************
 		
-		double[] demandVector = BuildingMessageHandler.getCombinedDemandVector(buildingMessages,nStepsMPC); 
-		double[] socVector = BuildingMessageHandler.getSOC(buildingMessages,nStepsMPC); 
+		double[] demandVector = buildingMessageHandler.getCombinedDemandVector(buildingMessages,nStepsMPC); 
+		double[] socVector = buildingMessageHandler.getSOC(buildingMessages,nStepsMPC); 
 		
 		//System.out.println("demandVector: " + Arrays.toString(demandVector));
 
 		double[] currentStep = {timeStepIndex};
-		double[] currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
+		double[] optResultVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
 		double[] currentDemand = milpSolHandler.getDemandForThisTimestep(demandVector, nStepsMPC);
 		double[] currentSOC = socVector;
 		double[] currentCost = {buildingCostPerTimestep};
 		double[] currentCO2 = {buildingCO2PerTimestep};
 		double[] electricalPrice = {EnergyPrices.getElectricityPriceInEuro(timeStepIndex)};
+		double[] co2Price = {CO2profiles.getCO2emissions(timeStepIndex)};
 		
 		String[] timeStep = {"timeStep"};
-		String[] currentNamesPartly = milpSolHandler.getNamesForThisTimeStep(names, nStepsMPC);
+		String[] optResultNames = milpSolHandler.getNamesForThisTimeStep(names, nStepsMPC);
 		//String[] currentEffNames= milpSolHandler.getEffNamesForThisTimeStep(names, nStepsMPC);
-		String[] demandStrings = BuildingMessageHandler.getCombinedDemandNames(buildingMessages,nStepsMPC); 
+		String[] demandStrings = buildingMessageHandler.getCombinedDemandNames(buildingMessages,nStepsMPC); 
 		//String[] posDemandStrings = {"positiveDemandHeat", "positiveDemandHeatTotal", "positiveDemandElectricity"}; 
-		String[] storageNames = BuildingMessageHandler.getSOCNames(buildingMessages,nStepsMPC);
-		String[] costName = {"Cost"};
-		String[] CO2Name = {"CO2"};
-		String[] priceName = {"EURPrice"};
+		String[] storageNames = buildingMessageHandler.getSOCNames(buildingMessages,nStepsMPC);
+		String[] costEUR = {"costEUR"};
+		String[] costCO2 = {"costCO2"};
+		String[] marketEUR = {"marketPrice"};
+		String[] marketCO2 = {"marketCO2"};
 				
-		String[] namesResult = HelperConcat.concatAllObjects(timeStep, demandStrings, currentNamesPartly, storageNames, costName, CO2Name, priceName);
-		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, currentCO2, electricalPrice);						
+		String[] namesResult = HelperConcat.concatAllObjects(timeStep, demandStrings, optResultNames, storageNames, costEUR, costCO2, marketEUR, marketCO2);
+		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, optResultVector, currentSOC, currentCost, currentCO2, electricalPrice, co2Price);
 		
+		//String[] namesResult = HelperConcat.concatAllObjects(currentNamesPartly);
+		//double[] vectorResult = HelperConcat.concatAlldoubles(currentOptVector);
+					
 		buildingsSolutionPerTimeStepMILP[timeStepIndex] = vectorResult;
+		String[] vectorResultStr = new String[vectorResult.length];		
+		DecimalFormat df = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.ENGLISH));
 		
-		System.out.println("MILP: "+ this.actorName + " Names: " + Arrays.toString(namesResult));
-		System.out.println("MILP: "+ this.actorName + " Result: " + Arrays.toString(vectorResult));
-				
+		for (int i = 0; i < vectorResultStr.length; i++) {
+			vectorResultStr[i] = df.format(vectorResult[i]);
+		}
+		
+		System.out.println("MILP: "+ this.actorName + " Names: " + Arrays.toString(namesResult));		
+		System.out.println("MILP: "+ this.actorName + " Result: " + Arrays.toString(vectorResultStr));
+
 		/*************************
 		 ****** Save results *****
 		 *************************/

@@ -3,14 +3,22 @@ package linprogMPC.helper.lp;
 import com.joptimizer.optimizers.LPOptimizationRequest;
 import com.joptimizer.optimizers.LPPrimalDualMethod;
 
+import linprogMPC.ConfigurationMEMAP;
+
 public class LPOptimizationStarter {
 	
 	public double[] runLinProg(LPOptimizationProblem problem) {
 	
 		LPOptimizationRequest or = new LPOptimizationRequest();
 		
-		or.setC(problem.lambda);
-//		or.setC(problem.lambdaCO2);
+		if (ConfigurationMEMAP.chosenGoal == ConfigurationMEMAP.OptimizationGoal.EUR) {
+			or.setC(problem.lambda);
+		}
+		
+		if (ConfigurationMEMAP.chosenGoal == ConfigurationMEMAP.OptimizationGoal.CO2) {
+			or.setC(problem.lambdaCO2);
+		}
+		
 		or.setG(problem.g);
 		or.setH(problem.h);
 		or.setA(problem.a_eq);

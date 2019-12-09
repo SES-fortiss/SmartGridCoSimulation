@@ -18,8 +18,8 @@ public class GasBoiler extends Producer {
 	public void makeDecision() {
 		producerMessage.id = this.fullActorPath;
 		producerMessage.name = this.actorName;		
-		producerMessage.operationalPriceEURO = this.cost;
-		producerMessage.operationalPriceCO2 = 0.202; // kg CO2/kWh
+		producerMessage.operationalCostEUR = this.cost;
+		producerMessage.operationalCostCO2 = 0.202; // kg CO2/kWh
 		producerMessage.efficiency = efficiency;
 		producerMessage.maxPower = maxPower;
 		producerMessage.minPower = minPower;
