@@ -4,39 +4,43 @@ import linprogMPC.components.prototypes.Storage;
 import linprogMPC.messages.extension.NetworkType;
 
 public class CSVStorage extends Storage {
-    NetworkType networkType;
+	NetworkType networkType;
+	double opCost;
+	double costCO2;
 
-    /**
-     * Parameters: capacity, maxIN, maxOUT, effIN, effOUT, port;
-     * 
-     * 
-     * @param capacity
-     * @param qdot_max_in
-     * @param qdot_max_out
-     * @param effIN
-     * @param effOUT
-     * @param port
-     */
-    public CSVStorage(double capacity, double max_charging, double max_dischariging, double effIN, double effOUT,
-	    NetworkType networkType, int port) {
-	super(capacity, max_charging, max_dischariging, effIN, effOUT, port);
-	this.networkType = networkType;
-    }
+	/**
+	 * @param name            storage name
+	 * @param capacity        storage capacity in [kWh]
+	 * @param max_charging    maximum charge rate [kW]
+	 * @param max_discharging maximum discharge rate [kW]
+	 * @param effIN           charge efficiency [0-1]
+	 * @param effOUT          discharge efficiency [0-1]
+	 * @param networkType
+	 * @param opCost          optimization cost [EUR]
+	 * @param costCO2         CO2 cost [kg CO2/kWh]
+	 * @param port
+	 */
+	public CSVStorage(String name, double capacity, double stateOfCharge, double max_charging, double max_discharging,
+			double effIN, double effOUT, NetworkType networkType, double opCost, double costCO2, int port) {
+		super(name, capacity, stateOfCharge, max_charging, max_discharging, effIN, effOUT, port);
+		this.networkType = networkType;
+		this.opCost = opCost;
+		this.costCO2 = costCO2;
+	}
 
-    @Override
-    public void makeDecision() {
-	storageMessage.stateOfCharge = myStateOfCharge;
-
-	// alle parameter ändern sich nicht während der laufzeit.
-	storageMessage.networkType = this.networkType;
-	storageMessage.name = this.actorName;
-	storageMessage.id = this.fullActorPath;
-	storageMessage.operationalPriceEURO = 0.0001;
-	storageMessage.capacity = this.capacity;
-	storageMessage.maxLoad = this.max_charging;
-	storageMessage.maxDischarge = this.max_discharging;
-	storageMessage.efficiencyCharge = this.effIN;
-	storageMessage.efficiencyDischarge = this.effOUT;
-    }
+	@Override
+	public void makeDecision() {
+		storageMessage.id = fullActorPath;
+		storageMessage.name = actorName;
+		storageMessage.operationalCostEUR = opCost;
+		storageMessage.operationalCostCO2 = costCO2;
+		storageMessage.capacity = capacity;
+		storageMessage.stateOfCharge = stateOfCharge;
+		storageMessage.maxLoad = max_charging;
+		storageMessage.maxDischarge = max_discharging;
+		storageMessage.efficiencyCharge = effIN;
+		storageMessage.efficiencyDischarge = effOUT;
+		storageMessage.networkType = networkType;
+	}
 
 }

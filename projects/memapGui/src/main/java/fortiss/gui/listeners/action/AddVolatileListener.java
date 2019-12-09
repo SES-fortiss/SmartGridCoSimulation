@@ -19,7 +19,7 @@ public class AddVolatileListener extends MouseAdapter {
 
 		// Create Volatile
 		Designer.buildings.get(Designer.currentBuilding)
-				.addVolProduction(new Volatile("Volatile" + Designer.currentComponent, 0, "Heat", 0.0, "", 0.0, 0.0));
+				.addVolProduction(new Volatile("Volatile" + Designer.currentComponent, "Heat", 0.0, "", 0.0, 0.0));
 		Volatile v = Designer.buildings.get(Designer.currentBuilding).getVolatile().get(Designer.currentComponent);
 
 		// Create label
@@ -28,7 +28,7 @@ public class AddVolatileListener extends MouseAdapter {
 
 		// Show data
 		DataUpdater up = new DataUpdater();
-		up.updateVolProductionData(v.getName(), v.getIndex(), v.getNetworkType(), v.getPower(), v.getForecastFile(),
-				v.getCost(), v.getCOEmission());
+		up.updateVolProductionData(v.getName(), v.getNetworkType(), v.getPower(), v.getForecastFile(), v.getCost(),
+				v.getCOEmission());
 	}
 }

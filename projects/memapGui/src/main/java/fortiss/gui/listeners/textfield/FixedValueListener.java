@@ -4,40 +4,37 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import fortiss.components.Demand;
 import fortiss.gui.Designer;
-import fortiss.gui.listeners.helper.FocusManager;
 import fortiss.gui.listeners.helper.InsertionVerifier;
+import fortiss.simulation.Parameters;
 
-public class DIndexListener extends KeyAdapter implements FocusListener {
+public class FixedValueListener extends KeyAdapter implements FocusListener {
 
-	private static int building;
-	private static int component;
 	private static boolean check;
 	private static boolean valid;
 	private static JTextField source;
 	private static String input;
 	private static String message;
-	private static Demand o;
+	private static Parameters o;
+	private static InsertionVerifier v;
 
 	/**
 	 * Initialize variables when the text field gets the focus.
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = Designer.currentBuilding;
-		component = Designer.currentComponent;
-		o = Designer.buildings.get(building).getDemand().get(component);
+		o = Designer.parameterPanel.pars;
 		check = false;
 		valid = true;
 
 		source = (JTextField) e.getSource();
 		message = "An unidentified error has occurred.";
-		FocusManager.focusDemand(building, component);
+		v = new InsertionVerifier();
 	}
 
 	/**
@@ -47,13 +44,12 @@ public class DIndexListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
-			String currentVal = Integer.toString(o.getIndex());
+			String currentVal = Double.toString(o.getFixedMarketPrice());
 			JOptionPane.showMessageDialog(Designer.contentPane, message);
 			source.setText(currentVal);
 		}
-		FocusManager.focusLostDemand(building, component);
 	}
-
+	
 	/**
 	 * Verifies if the input is a non-empty value. In that case, @param valid is set
 	 * to <code>true</code>, and the value is saved to the corresponding object.
@@ -63,15 +59,28 @@ public class DIndexListener extends KeyAdapter implements FocusListener {
 	public void keyReleased(KeyEvent e) {
 		input = source.getText();
 
+		if (!input.contains(".")) {
+			v.validKeys.add('.');
+		}
+
+		if (input.isEmpty()) {
+			v.validKeys.add('-');
+		} else {
+			v.validKeys.remove('-');
+		}
+
 		if (check) {
-			if (input.isEmpty()) {
+			boolean containsNumber = Pattern.compile("[0-9]").matcher(input).find();
+			if (!containsNumber) {
 				valid = false;
-				message = "Error. This field can not be empty.";
+				message = "Error. Invalid input or empty field.";
 			} else {
 				valid = true;
-				o.setIndex(Integer.parseUnsignedInt(input));
+				double num = Double.parseDouble(input);
+				o.setFixedMarketPrice(num);
 			}
 		}
+
 	}
 
 	/**
@@ -81,7 +90,6 @@ public class DIndexListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void keyTyped(KeyEvent e) {
 		char c = e.getKeyChar();
-		InsertionVerifier v = new InsertionVerifier();
 		if (v.isNumber(c, source.getText().length())) {
 			check = true;
 		} else {

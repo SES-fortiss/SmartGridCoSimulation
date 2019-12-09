@@ -20,7 +20,7 @@ public class AddDemandListener extends MouseAdapter {
 
 		// Create demand
 		Designer.buildings.get(Designer.currentBuilding)
-				.addDemand(new Demand("Demand" + Designer.currentComponent, 0, "", "Heat"));
+				.addDemand(new Demand("Demand" + Designer.currentComponent, ""));
 		Demand d = Designer.buildings.get(Designer.currentBuilding).getDemand().get(Designer.currentComponent);
 
 		// Create label
@@ -29,6 +29,6 @@ public class AddDemandListener extends MouseAdapter {
 
 		// Show data
 		DataUpdater up = new DataUpdater();
-		up.updateDemandData(d.getName(), d.getIndex(), d.getConsumptionProfile(), d.getNetworkType());
+		up.updateDemandData(d.getName(), d.getConsumptionProfile());
 	}
 }

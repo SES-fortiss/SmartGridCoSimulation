@@ -34,7 +34,10 @@ abstract public class Icon {
 	private static String offMemapPath = "/resources/offMemap.png";
 	private static String optCostPath = "/resources/optCost.png";
 	private static String optCO2Path = "/resources/optCO2.png";
+	private static String variableMarketPath = "/resources/variableMarket.png";
+	private static String fixedMarketPath = "/resources/fixedMarket.png";
 	private static String visualizePath = "/resources/visualize.png";
+	private static String vsvFormatPath = "/resources/csvFormat.png";
 
 	public static ImageIcon fortissLogo = new ImageIcon(new ImageIcon(Icon.class.getResource(fortissLogoPath))
 			.getImage().getScaledInstance(180, 60, Image.SCALE_SMOOTH));
@@ -57,6 +60,8 @@ abstract public class Icon {
 			.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 	public static ImageIcon visualize = new ImageIcon(new ImageIcon(Icon.class.getResource(visualizePath)).getImage()
 			.getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+	public static ImageIcon csvFormat = new ImageIcon(new ImageIcon(Icon.class.getResource(vsvFormatPath)).getImage()
+			.getScaledInstance(100, 100, Image.SCALE_SMOOTH));
 
 	public static ImageIcon uDemandMenu = new ImageIcon(new ImageIcon(Icon.class.getResource(uDemandPath)).getImage()
 			.getScaledInstance(25, 35, Image.SCALE_SMOOTH));
@@ -94,13 +99,17 @@ abstract public class Icon {
 	public static ImageIcon sCoupler = new ImageIcon(new ImageIcon(Icon.class.getResource(sCouplerPath)).getImage()
 			.getScaledInstance(50, 70, Image.SCALE_SMOOTH));
 	public static ImageIcon onMemap = new ImageIcon(new ImageIcon(Icon.class.getResource(onMemapPath)).getImage()
-			.getScaledInstance(60, 30, Image.SCALE_SMOOTH));
+			.getScaledInstance(80, 30, Image.SCALE_SMOOTH));
 	public static ImageIcon offMemap = new ImageIcon(new ImageIcon(Icon.class.getResource(offMemapPath)).getImage()
-			.getScaledInstance(60, 30, Image.SCALE_SMOOTH));
+			.getScaledInstance(80, 30, Image.SCALE_SMOOTH));
 	public static ImageIcon optCost = new ImageIcon(new ImageIcon(Icon.class.getResource(optCostPath)).getImage()
-			.getScaledInstance(60, 30, Image.SCALE_SMOOTH));
+			.getScaledInstance(80, 30, Image.SCALE_SMOOTH));
 	public static ImageIcon optCO2 = new ImageIcon(
-			new ImageIcon(Icon.class.getResource(optCO2Path)).getImage().getScaledInstance(60, 30, Image.SCALE_SMOOTH));
+			new ImageIcon(Icon.class.getResource(optCO2Path)).getImage().getScaledInstance(80, 30, Image.SCALE_SMOOTH));
+	public static ImageIcon variableMarket = new ImageIcon(new ImageIcon(Icon.class.getResource(variableMarketPath))
+			.getImage().getScaledInstance(80, 30, Image.SCALE_SMOOTH));
+	public static ImageIcon fixedMarket = new ImageIcon(new ImageIcon(Icon.class.getResource(fixedMarketPath))
+			.getImage().getScaledInstance(80, 30, Image.SCALE_SMOOTH));
 	@SuppressWarnings("serial")
 	public static ArrayList<ImageIcon> optCriteria = new ArrayList<ImageIcon>() {
 		{

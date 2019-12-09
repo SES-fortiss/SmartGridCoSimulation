@@ -20,14 +20,12 @@ public class DataUpdater {
 	/**
 	 * Updates and shows the data of the selected demand.
 	 */
-	public void updateDemandData(String name, int index, String consumption, String networkType) {
+	public void updateDemandData(String name, String consumption) {
 		Designer.demandPanel.txtDName.setText(name);
-		Designer.demandPanel.txtDIndex.setText(Integer.toString(index));
 		Designer.demandPanel.txtDConsumption.setText(consumption);
-		Designer.demandPanel.sDNetworkType.setSelectedItem(networkType);
 		Designer.demandPanel.plotPanel.clearSeries();
-		if(!consumption.isEmpty()) {
-			Designer.demandPanel.plotPanel.setData(consumption);
+		if (!consumption.isEmpty()) {
+			Designer.demandPanel.setData(consumption);
 		}
 		Designer.cl.show(Designer.pl_comp_detail, "demand");
 	}
@@ -35,11 +33,12 @@ public class DataUpdater {
 	/**
 	 * Updates and shows the data of the selected storage.
 	 */
-	public void updateStorageData(String name, String networkType, double capacity, double maxCharging, double maxDRate,
-			double chargeE, double dischargeE) {
+	public void updateStorageData(String name, String networkType, double capacity, double soc, double maxCharging,
+			double maxDRate, double chargeE, double dischargeE) {
 		Designer.storagePanel.txtSName.setText(name);
 		Designer.storagePanel.sSNetworkType.setSelectedItem(networkType);
 		Designer.storagePanel.txtSCapacity.setText(Double.toString(capacity));
+		Designer.storagePanel.txtSStateOfCharge.setText(Double.toString(soc));
 		Designer.storagePanel.txtSMaxCharge.setText(Double.toString(maxCharging));
 		Designer.storagePanel.txtSMaxDischarge.setText(Double.toString(maxDRate));
 		Designer.storagePanel.txtSEffIN.setText(Double.toString(chargeE));
@@ -51,10 +50,9 @@ public class DataUpdater {
 	/**
 	 * Updates and shows the data of the selected volatile.
 	 */
-	public void updateVolProductionData(String producer, int index, String networktype, double power,
-			String forcastFile, double cost, double coEmission) {
+	public void updateVolProductionData(String producer, String networktype, double power, String forcastFile,
+			double cost, double coEmission) {
 		Designer.volatilePanel.txtVName.setText(producer);
-		Designer.volatilePanel.txtVIndex.setText(Integer.toString(index));
 		Designer.volatilePanel.sVNetworkType.setSelectedItem(networktype);
 		Designer.volatilePanel.txtVPower.setText(Double.toString(power));
 		Designer.volatilePanel.txtVForecastFile.setText(forcastFile);

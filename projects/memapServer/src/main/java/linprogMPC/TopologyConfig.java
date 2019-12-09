@@ -1,5 +1,7 @@
 package linprogMPC;
 
+import linprogMPC.helper.EnergyPrices;
+
 /**
  * Stores topology configuration
  */
@@ -43,6 +45,9 @@ public abstract class TopologyConfig {
 	public static boolean MEMAP_LDHeating;
 	/** Losses due to heat */
 	public static double HEAT_LOSSES;
+	
+	/** Energy prices for simulation */
+	public static EnergyPrices energyPrices;
 	
 	public static void calcNrSteps() {
 		N_STEPS = NR_OF_ITERATIONS + N_STEPS_MPC;

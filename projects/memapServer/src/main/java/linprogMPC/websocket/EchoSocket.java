@@ -132,14 +132,14 @@ public class EchoSocket extends WebSocketAdapter {
 			    if (device instanceof ClientProducer) {
 				ClientProducer producer = (ClientProducer) device;
 				getRemote().sendStringByFuture("    Producer");
-				String output = "        Costs: " + producer.costs + " Efficiency: "
+				String output = "        Costs: " + producer.opCost + " Efficiency: "
 					+ producer.efficiency + " Installed Power: " + producer.installedPower;
 				getRemote().sendStringByFuture(output);
 			    }
 			    if (device instanceof ClientStorage) {
 				ClientStorage storage = (ClientStorage) device;
 				getRemote().sendStringByFuture("    Storage");
-				String output = "        State of Charge: " + storage.myStateOfCharge + " Capacity: "
+				String output = "        State of Charge: " + storage.stateOfCharge + " Capacity: "
 					+ storage.capacity + " Efficiency: " + storage.effIN;
 				getRemote().sendStringByFuture(output);
 			    }

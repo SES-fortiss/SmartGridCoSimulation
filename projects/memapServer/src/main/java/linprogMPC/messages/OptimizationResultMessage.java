@@ -6,13 +6,7 @@ import java.util.TreeMap;
 import akka.basicMessages.RequestContent;
 
 public class OptimizationResultMessage implements RequestContent {
-	
-	// TODO it is not clear, what is a basicMap, resultMar or marketMap
-	
-	public SortedMap<String, double[]> basicsMap = new TreeMap<String, double[]>();
-	public SortedMap<String, double[]> resultMap = new TreeMap<String, double[]>();	
-	public SortedMap<String, double[]> marketMap = new TreeMap<String, double[]>();	
-	public TreeMap<String, Object> buildingResultsMap = new TreeMap<String, Object>();
-	public SortedMap<String, double[]> generalResultsMap =  new TreeMap<String, double[]>();
 
+	/** Stores the results using <BuilidingName>.<DeviceName><DataName> as key */
+	public SortedMap<String, double[]> resultMap = new TreeMap<String, double[]>();		
 }

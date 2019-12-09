@@ -4,16 +4,17 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import fortiss.components.Volatile;
+import fortiss.components.Storage;
 import fortiss.gui.Designer;
 import fortiss.gui.listeners.helper.FocusManager;
 import fortiss.gui.listeners.helper.InsertionVerifier;
 
-public class VIndexListener extends KeyAdapter implements FocusListener {
+public class SStateOfChargeListener extends KeyAdapter implements FocusListener {
 
 	private static int building;
 	private static int component;
@@ -22,7 +23,8 @@ public class VIndexListener extends KeyAdapter implements FocusListener {
 	private static JTextField source;
 	private static String input;
 	private static String message;
-	private static Volatile o;
+	private static Storage o;
+	private static InsertionVerifier v;
 
 	/**
 	 * Initialize variables when the text field gets the focus.
@@ -31,13 +33,14 @@ public class VIndexListener extends KeyAdapter implements FocusListener {
 	public void focusGained(FocusEvent e) {
 		building = Designer.currentBuilding;
 		component = Designer.currentComponent;
-		o = Designer.buildings.get(building).getVolatile().get(component);
+		o = Designer.buildings.get(building).getStorage().get(component);
 		check = false;
 		valid = true;
 
 		source = (JTextField) e.getSource();
 		message = "An unidentified error has occurred.";
-		FocusManager.focusVolatile(building, component);
+		v = new InsertionVerifier();
+		FocusManager.focusStorage(building, component);
 	}
 
 	/**
@@ -47,11 +50,11 @@ public class VIndexListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
-			String currentVal = Integer.toString(o.getIndex());
+			String currentVal = Double.toString(o.getSoc());
 			JOptionPane.showMessageDialog(Designer.contentPane, message);
 			source.setText(currentVal);
 		}
-		FocusManager.focusLostVolatile(building, component);
+		FocusManager.focusLostStorage(building, component);
 	}
 
 	/**
@@ -63,13 +66,24 @@ public class VIndexListener extends KeyAdapter implements FocusListener {
 	public void keyReleased(KeyEvent e) {
 		input = source.getText();
 
+		if (!input.contains(".")) {
+			v.validKeys.add('.');
+		}
+
 		if (check) {
-			if (input.isEmpty()) {
+			boolean containsNumber = Pattern.compile("[0-9]").matcher(input).find();
+			if (!containsNumber) {
 				valid = false;
-				message = "Error. This field can not be empty.";
+				message = "Error. Invalid input or empty field.";
 			} else {
-				valid = true;
-				o.setIndex(Integer.parseUnsignedInt(input));
+				double num = Double.parseDouble(input);
+				if (num > 1) {
+					valid = false;
+					message = "Error. Invalid SOC. Only values between 0 and 1 are valid.";
+				} else {
+					valid = true;
+					o.setSoc(Double.parseDouble(input));
+				}
 			}
 		}
 	}
@@ -81,7 +95,6 @@ public class VIndexListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void keyTyped(KeyEvent e) {
 		char c = e.getKeyChar();
-		InsertionVerifier v = new InsertionVerifier();
 		if (v.isNumber(c, source.getText().length())) {
 			check = true;
 		} else {

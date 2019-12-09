@@ -14,8 +14,8 @@ public abstract class Coupler extends Device {
 	
 	public double[] mpcSignal  = new double[nStepsMPC];
 	
-	public Coupler(double installedPower, double efficiencyHeat, double efficiencyElec, int port) {
-		super(port);
+	public Coupler(String name, double installedPower, double efficiencyHeat, double efficiencyElec, int port) {
+		super(name, port);
 		this.installedPower = installedPower;
 		this.efficiencyHeat = efficiencyHeat;
 		this.efficiencyElec = efficiencyElec;
@@ -32,11 +32,11 @@ public abstract class Coupler extends Device {
 	
 	@Override
 	public void handleRequest() {
-		if(requestContentReceived instanceof OptimizationResultMessage) {
-			
+		if(requestContentReceived instanceof OptimizationResultMessage) {	
 			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
+			
 			for (String key : optResult.resultMap.keySet()) {		
-				if (key.contains(this.actorName)) {
+				if (key.contains(actorName)) {
 					mpcSignal = optResult.resultMap.get(key);
 				}
 			}

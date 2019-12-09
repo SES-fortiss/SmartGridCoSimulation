@@ -6,7 +6,6 @@ package fortiss.components;
  */
 public class Volatile {
 	private String name;
-	private int index;
 	private String networkType; // Values: Heat or Electricity
 	private double power;
 	private String forecastFile;
@@ -17,16 +16,15 @@ public class Volatile {
 	 * Constructor for class Volatile
 	 * 
 	 * @param name         an alphanumeric string
-	 * @param index        a positive integer
 	 * @param networkType  a string: Heat or Electricity
 	 * @param power        a positive double
 	 * @param forecastFile a path to an existing file
 	 * @param cost         a positive double
-	 * @param coEmission          CO2 Emissions measured in [g/kWh]
+	 * @param coEmission   CO2 Emissions measured in [g/kWh]
 	 */
-	public Volatile(String name, int index, String networkType, double power, String forecastFile, double cost, double coEmission) {
+	public Volatile(String name, String networkType, double power, String forecastFile, double cost,
+			double coEmission) {
 		this.setName(name);
-		this.setIndex(index);
 		this.setNetworkType(networkType);
 		this.setPower(power);
 		this.setForecastFile(forecastFile);
@@ -74,14 +72,6 @@ public class Volatile {
 		this.cost = cost;
 	}
 
-	public int getIndex() {
-		return index;
-	}
-
-	public void setIndex(int index) {
-		this.index = index;
-	}
-	
 	public double getCOEmission() {
 		return coEmission;
 	}

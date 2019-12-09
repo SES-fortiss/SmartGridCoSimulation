@@ -23,7 +23,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
 import linprogMPC.components.prototypes.Consumer;
 import linprogMPC.helperOPCua.BasicClient;
-import linprogMPC.messages.extension.NetworkType;
 
 public class ClientConsumer extends Consumer {
 	public BasicClient client;
@@ -33,8 +32,15 @@ public class ClientConsumer extends Consumer {
 	public List<UaMonitoredItem> itemsHeat;
 	public List<UaMonitoredItem> itemsElectricity;
 
-	public ClientConsumer(BasicClient client, NodeId nodeIdHeat, NodeId nodeIdElectricity, int port) {
-		super(port);
+	/**
+	 * @param client
+	 * @param name              consumer name
+	 * @param nodeIdHeat        heat consumption profile values
+	 * @param nodeIdElectricity electricity consumption profile values
+	 * @param port
+	 */
+	public ClientConsumer(BasicClient client, String name, NodeId nodeIdHeat, NodeId nodeIdElectricity, int port) {
+		super(name, port);
 		this.client = client;
 		Arrays.fill(heatProfile, 0.0);
 		Arrays.fill(electricityProfile, 0.0);

@@ -10,7 +10,6 @@ import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
 import fortiss.gui.style.Colors;
-import fortiss.results.Data;
 
 /**
  * Plots series of data
@@ -23,8 +22,7 @@ public class PlotPanel extends JPanel {
 	 * <code>false</code> otherwise
 	 */
 	private boolean plotted = false;
-	/** Data read from consumption profiles file */
-	private Data data;
+
 	/** Chart containing data series */
 	private XYChart chart;
 
@@ -52,16 +50,7 @@ public class PlotPanel extends JPanel {
 		}
 	}
 
-	/**
-	 * Add all the series in a data object to the chart.
-	 */
-	private void addSeries() {
-		int numSeries = data.labels.size();
-		for (int i = 0; i < numSeries; i++) {
-			XYSeries seriesx = chart.addSeries(data.labels.get(i), data.values.get(i));
-			seriesx.setMarker(SeriesMarkers.NONE);
-		}
-	}
+	
 
 	/**
 	 * Remove a series from the list of data series to be plotted (series).
@@ -116,23 +105,4 @@ public class PlotPanel extends JPanel {
 	public void setPlotted(boolean plotted) {
 		this.plotted = plotted;
 	}
-
-	/**
-	 * @return data
-	 */
-	public Data getData() {
-		return data;
-	}
-
-	/**
-	 * Set data to new data object. Add the series in the new data set to the chart
-	 * and set plotter to <code>false</code>
-	 */
-	public void setData(String location) {
-		this.data = new Data(location);
-		clearSeries();
-		addSeries();
-		setPlotted(false);
-	}
-
 }

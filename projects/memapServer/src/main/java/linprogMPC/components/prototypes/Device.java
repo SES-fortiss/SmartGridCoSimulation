@@ -24,11 +24,12 @@ public abstract class Device extends BehaviorModel {
 	 *
 	 * @param port
 	 */
-	public Device(int port) {	
-		
+	public Device(String actorName, int port) {
+		super();
+		this.actorName = actorName;
 		if (port != 0) {
-			display = new M2MDisplay(port); // add port in to display a json
-			display.run();
+			//display = new M2MDisplay(port); // add port in to display a json
+			//display.run();
 			System.out.println("Device-Display Port: " + port);
 		}
 	}
@@ -51,7 +52,7 @@ public abstract class Device extends BehaviorModel {
 	@Override
 	public void stop() {
 		try {			
-			Thread.sleep(waitDisplayClose); // displays are keept for 1 minute alive after the simulation is executed
+			Thread.sleep(waitDisplayClose); // displays are kept for 1 minute alive after the simulation is executed
 			if (display != null) {
 				display.server.stop();
 			}			
@@ -63,7 +64,7 @@ public abstract class Device extends BehaviorModel {
 	
 	public void updateDisplay(Object o) {		
 		if (display != null) {
-			display.update(gson.toJson(o));
+			//display.update(gson.toJson(o));
 		}		
 	}
 }

@@ -11,10 +11,11 @@ public class ProducerMessage implements AnswerContent {
 	
 	public double installedPower;
 	
-	public double operationalPriceEURO;
-	public double operationalPriceCO2;
+	public double operationalCostEUR;
+	public double operationalCostCO2;
 	
 	public double efficiency;
+	
 	public NetworkType networkType;
 
 }

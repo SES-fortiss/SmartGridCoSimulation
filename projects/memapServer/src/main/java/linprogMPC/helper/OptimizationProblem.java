@@ -3,6 +3,7 @@ package linprogMPC.helper;
 public class OptimizationProblem {
 	
 	public double[] lambda;
+	public double[] lambdaCO2;
 	public double[] h;
 	public double[][] g;
 	public double[] b_eq;
@@ -10,33 +11,51 @@ public class OptimizationProblem {
 	public double[] x_lb;
 	public double[] x_ub;
 	public String[] namesUB;
+	public double[] etas;
 	
+	int nrOfBuildings;
 	int nrOfProducers;
 	int nrOfStorages;
 	int nrOfCouplers;
-	int marketmatrices = 4; // selling/buying(2) of electricity/heat(2) und das ganze mal Anzahl nMPC
+	int nrOfConnections;
+	int marketmatrices;
 
-	public OptimizationProblem(int nStepsMPC, int nrOfProducers, int nrOfStorages, int nrOfCouplers) {
+	public OptimizationProblem(int nStepsMPC, int nrOfBuildings, int nrOfProducers, int nrOfStorages, int nrOfCouplers, int nrOfConnections, boolean lDHeating) {
 		
+		this.nrOfBuildings = nrOfBuildings;
 		this.nrOfProducers = nrOfProducers;
 		this.nrOfStorages = nrOfStorages;
-		this.nrOfCouplers = nrOfCouplers;		
+		this.nrOfCouplers = nrOfCouplers;
+		this.nrOfConnections = nrOfConnections;		
 		
-		lambda  = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages) + nrOfCouplers + marketmatrices)];
+		if (lDHeating) {
+			this.marketmatrices = 2+2*nrOfBuildings; // selling/buying(2) of electricity/heat(2)
+		}
+		else {
+			this.marketmatrices = 2; // selling/buying(2) of electricity
+		}
+		
+		lambda  = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages) + nrOfCouplers + nrOfConnections*2 + marketmatrices)];
+		lambdaCO2  = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages) + nrOfCouplers + nrOfConnections*2 + marketmatrices)];
 		
 		h = new double[nStepsMPC*2*nrOfStorages];
-		g = new double[nStepsMPC*2*nrOfStorages][nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+marketmatrices)];
+		g = new double[nStepsMPC*2*nrOfStorages][nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
 		
-		b_eq = new double[2*nStepsMPC];
-		a_eq = new double[2*nStepsMPC][nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+marketmatrices)];
+		b_eq = new double[nStepsMPC*(nrOfBuildings+1)];
+		a_eq = new double[nStepsMPC*(nrOfBuildings+1)][nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
 		
-		x_lb = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+marketmatrices)];
-		x_ub = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+marketmatrices)];		
+		x_lb = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
+		x_ub = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];		
 		
-		namesUB = new String[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+marketmatrices)];
+		namesUB = new String[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
+		etas = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
 		
 		//System.out.println(nStepsMPC + " * ( " + nrOfProducers + " " + nrOfStorages + " " + nrOfCouplers + " und " + marketmatrices + ")");
 		
+	}
+	
+	public int getNrOfBuildings() {
+		return nrOfBuildings;
 	}
 	
 	public int getNumberofProducers() {		
@@ -49,6 +68,10 @@ public class OptimizationProblem {
 	
 	public int getNumberofCouplers() {		
 		return nrOfCouplers;
+	}
+	
+	public int getNrOfConnections() {
+		return nrOfConnections;
 	}
 	
 	@Override

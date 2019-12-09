@@ -19,7 +19,7 @@ public class AddStorageListener extends MouseAdapter {
 
 		// Create storage
 		Designer.buildings.get(Designer.currentBuilding)
-				.addStorage(new Storage("Storage" + Designer.currentComponent, "Heat", 0.0, 0.0, 0.0, 1.0, 1.0));
+				.addStorage(new Storage("Storage" + Designer.currentComponent, "Heat", 0.0, 0.0, 0.0, 0.0, 1.0, 1.0));
 		Storage s = Designer.buildings.get(Designer.currentBuilding).getStorage().get(Designer.currentComponent);
 
 		// Create label
@@ -28,7 +28,7 @@ public class AddStorageListener extends MouseAdapter {
 
 		// Show data
 		DataUpdater up = new DataUpdater();
-		up.updateStorageData(s.getName(), s.getNetworkType(), s.getCapacity(), s.getMaxCharging(),
+		up.updateStorageData(s.getName(), s.getNetworkType(), s.getCapacity(), s.getSoc(), s.getMaxCharging(),
 				s.getMaxDischarging(), s.getEffIN(), s.getEffOUT());
 	}
 }

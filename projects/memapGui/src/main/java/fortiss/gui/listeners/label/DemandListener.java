@@ -30,7 +30,7 @@ public class DemandListener extends MouseAdapter implements FocusListener {
 		Demand d = Designer.buildings.get(building).getDemand().get(Designer.currentComponent);
 
 		DataUpdater up = new DataUpdater();
-		up.updateDemandData(d.getName(), d.getIndex(), d.getConsumptionProfile(), d.getNetworkType());
+		up.updateDemandData(d.getName(), d.getConsumptionProfile());
 	}
 
 	/**

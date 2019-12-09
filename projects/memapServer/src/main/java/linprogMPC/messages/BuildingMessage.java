@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import akka.basicMessages.AnswerContent;
 import linprogMPC.messages.extension.ChildSpecification;
 import linprogMPC.messages.extension.NetworkType;
+import linprogMPC.messages.planning.ConnectionMessage;
 import linprogMPC.messages.planning.CouplerMessage;
 import linprogMPC.messages.planning.DemandMessage;
 import linprogMPC.messages.planning.ProducerMessage;
@@ -34,9 +35,14 @@ public class BuildingMessage implements AnswerContent {
 	public ArrayList<CouplerMessage> couplerList = new ArrayList<CouplerMessage>();
 	public ArrayList<ProducerMessage> volatileProducerList = new ArrayList<ProducerMessage>();
 	public ArrayList<ProducerMessage> controllableProducerList = new ArrayList<ProducerMessage>();
+	public ArrayList<ConnectionMessage> connectionList = new ArrayList<ConnectionMessage>();
 	public OptimizationResultMessage currentOptimizationResults;
 	
 	public ArrayList<ChildSpecification> childrenList = new ArrayList<ChildSpecification>();
+	
+	public int getNrOfConsumers() {
+		return demandList.size();
+	}
 	
 	public int getNrOfProducers() {
 		return volatileProducerList.size() + controllableProducerList.size();
@@ -50,6 +56,10 @@ public class BuildingMessage implements AnswerContent {
 		return couplerList.size();
 	}
 
+	public int getNrOfConnections() {
+		return connectionList.size();
+	}
+	
 	/**
 	 * returns a single double[] array, where the heat represents the first 
 	 * n-entries and electricity the second n-entries. 

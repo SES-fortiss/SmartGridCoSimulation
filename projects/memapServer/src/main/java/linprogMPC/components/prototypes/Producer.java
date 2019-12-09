@@ -13,8 +13,8 @@ public abstract class Producer extends Device {
 	
 	public double[] linprogAdvice  = new double[nStepsMPC];
 	
-	public Producer(double installedPower, double efficiency, int port) {
-		super(port);
+	public Producer(String name, double installedPower, double efficiency, int port) {
+		super(name, port);
 		
 		this.installedPower = installedPower;
 		this.efficiency = efficiency;				
@@ -31,10 +31,10 @@ public abstract class Producer extends Device {
 	@Override
 	public void handleRequest() {
 		if(requestContentReceived instanceof OptimizationResultMessage) {
-			
 			OptimizationResultMessage linprogResult = ((OptimizationResultMessage) requestContentReceived);
+			
 			for (String key : linprogResult.resultMap.keySet()) {		
-				if (key.contains(this.actorName)) {
+				if (key.contains(actorName)) {
 					linprogAdvice = linprogResult.resultMap.get(key);
 				}
 			}

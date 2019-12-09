@@ -21,6 +21,7 @@ import fortiss.gui.listeners.textfield.SEffOUTListener;
 import fortiss.gui.listeners.textfield.SMaxChargeListener;
 import fortiss.gui.listeners.textfield.SMaxDischargeListener;
 import fortiss.gui.listeners.textfield.SNameListener;
+import fortiss.gui.listeners.textfield.SStateOfChargeListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
@@ -34,6 +35,8 @@ public class StorageInputPanel extends JPanel {
 	public JTextField txtSName;
 	/** Storage capacity */
 	public JTextField txtSCapacity;
+	/** Storage state of charge (SOC)*/
+	public JTextField txtSStateOfCharge;
 	/** Storage maximum charge rate */
 	public JTextField txtSMaxCharge;
 	/** Storage maximum discharge rate */
@@ -52,6 +55,8 @@ public class StorageInputPanel extends JPanel {
 	private JLabel lbSNetworkType;
 	/** Storage capacity label */
 	private JLabel lbSCapacity;
+	/** Storage state of charge (SOC) label */
+	private JLabel lbSStateOfCharge;
 	/** Storage maximum charge rate label */
 	private JLabel lbMaxCharge;
 	/** Storage maximum discharge rate label */
@@ -60,7 +65,7 @@ public class StorageInputPanel extends JPanel {
 	private JLabel lbSChargeE;
 	/** Storage discharge efficiency label */
 	private JLabel lbSDischargeE;
-
+	
 	private static final long serialVersionUID = 1L;
 
 	/** Necessary for dark mode on/off implementation */
@@ -73,6 +78,7 @@ public class StorageInputPanel extends JPanel {
 		lbSlName.setForeground(Colors.normal);
 		lbSNetworkType.setForeground(Colors.normal);
 		lbSCapacity.setForeground(Colors.normal);
+		lbSStateOfCharge.setForeground(Colors.normal);
 		lbMaxCharge.setForeground(Colors.normal);
 		lbSMaxDRate.setForeground(Colors.normal);
 		lbSChargeE.setForeground(Colors.normal);
@@ -100,6 +106,8 @@ public class StorageInputPanel extends JPanel {
 			new RowSpec[] {
 				FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.PREF_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
 				FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC,
 				FormSpecs.RELATED_GAP_ROWSPEC,
@@ -150,41 +158,50 @@ public class StorageInputPanel extends JPanel {
 		txtSCapacity.addKeyListener(new SCapacityListener());
 		txtSCapacity.addFocusListener(new SCapacityListener());
 		add(txtSCapacity, "4, 12");
+		
+		lbSStateOfCharge = new JLabel("State of charge [0-1]");
+		add(lbSStateOfCharge, "2, 14");
+		
+		txtSStateOfCharge = new JTextField();
+		txtSStateOfCharge.addKeyListener(new SStateOfChargeListener());
+		txtSStateOfCharge.addFocusListener(new SStateOfChargeListener());
+		add(txtSStateOfCharge, "4, 14, fill, default");
+		txtSStateOfCharge.setColumns(10);
 
 		lbMaxCharge = new JLabel("Max. Charge rate [kW]");
-		add(lbMaxCharge, "2, 14, left, default");
+		add(lbMaxCharge, "2, 16, left, default");
 
 		txtSMaxCharge = new JTextField();
 		txtSMaxCharge.addKeyListener(new SMaxChargeListener());
 		txtSMaxCharge.addFocusListener(new SMaxChargeListener());
-		add(txtSMaxCharge, "4, 14, fill, default");
+		add(txtSMaxCharge, "4, 16, fill, default");
 		txtSMaxCharge.setColumns(10);
 
 		lbSMaxDRate = new JLabel("Max. Discharge rate [kW]");
-		add(lbSMaxDRate, "2, 16, left, default");
+		add(lbSMaxDRate, "2, 18, left, default");
 
 		txtSMaxDischarge = new JTextField();
 		txtSMaxDischarge.addKeyListener(new SMaxDischargeListener());
 		txtSMaxDischarge.addFocusListener(new SMaxDischargeListener());
-		add(txtSMaxDischarge, "4, 16, fill, default");
+		add(txtSMaxDischarge, "4, 18, fill, default");
 		txtSMaxDischarge.setColumns(10);
 
 		lbSChargeE = new JLabel("Charge efficiency [0-1]");
-		add(lbSChargeE, "2, 18, left, default");
+		add(lbSChargeE, "2, 20, left, default");
 
 		txtSEffIN = new JTextField();
 		txtSEffIN.addKeyListener(new SEffINListener());
 		txtSEffIN.addFocusListener(new SEffINListener());
-		add(txtSEffIN, "4, 18, fill, default");
+		add(txtSEffIN, "4, 20, fill, default");
 		txtSEffIN.setColumns(10);
 
 		lbSDischargeE = new JLabel("Discharge Efficiency [0-1]");
-		add(lbSDischargeE, "2, 20, left, default");
+		add(lbSDischargeE, "2, 22, left, default");
 
 		txtSEffOUT = new JTextField();
 		txtSEffOUT.addKeyListener(new SEffOUTListener());
 		txtSEffOUT.addFocusListener(new SEffOUTListener());
-		add(txtSEffOUT, "4, 20, fill, default");
+		add(txtSEffOUT, "4, 22, fill, default");
 		txtSEffOUT.setColumns(10);
 	}
 

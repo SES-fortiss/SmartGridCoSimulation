@@ -2,7 +2,6 @@ package fortiss.results;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.ArrayList;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -19,7 +18,7 @@ import linprogMPC.TopologyConfig;
 @SuppressWarnings("serial")
 public class Menu extends JTree {
 	static int buildingCount = Designer.buildingCount;
-	private static ArrayList<String> series;
+	// private static ArrayList<String> series;
 
 	@Override
 	public void paintComponent(Graphics g) {
@@ -61,13 +60,13 @@ public class Menu extends JTree {
 		Object[] structure = new Object[buildingCount + 1];
 		structure[0] = "Results";
 		for (int i = 1; i <= buildingCount; i++) {
-			series = new ArrayList<>(Reporter.output.getData(i - 1).labels);
-			series.remove(0); // remove time series
-			Object[] subs = new Object[series.size()];
+			int numberOfSeries = Reporter.output.getDataSetSize(i - 1);
+
+			Object[] subs = new Object[numberOfSeries];
 			subs[0] = Designer.buildings.get(i - 1).getName();
 
 			for (int j = 1; j < subs.length; j++) {
-				subs[j] = series.get(j - 1);
+				subs[j] = Reporter.output.getDataLabel(i - 1, j);
 			}
 			structure[i] = subs;
 		}
@@ -79,12 +78,11 @@ public class Menu extends JTree {
 	 * Tree structure when Memap is on
 	 */
 	private static Object[] memapOnStructure() {
-		series = new ArrayList<>(Reporter.output.getData(0).labels);
-		series.remove(0); // remove time series
-		Object[] structure = new Object[series.size() + 1];
+		int numberOfSeries = Reporter.output.getDataSetSize(0);
+		Object[] structure = new Object[numberOfSeries];
 		structure[0] = "Results";
 		for (int j = 1; j < structure.length; j++) {
-			structure[j] = series.get(j - 1);
+			structure[j] = Reporter.output.getDataLabel(0, j);
 		}
 		return structure;
 	}

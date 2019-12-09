@@ -22,17 +22,19 @@ public class Parameters {
 	};
 
 	/** paths to descriptor files */
-	private ArrayList<File> descriptorFiles = new  ArrayList<File>();
+	private ArrayList<File> descriptorFiles = new ArrayList<File>();
 	/** length MemapSimulation steps. An integer */
 	private int length;
 	/** steps MPC horizon. An integer */
 	private int steps;
 	/** days Number of days to be simulated */
 	private int days;
-	/** weather a boolean. Good weather (true)/ bad weather(false) */
-	private boolean weather;
-	/** price a boolean. Fixed (true)/ volatile (false) */
-	private boolean price;
+	/** fixedPrice a boolean. Fixed (true)/ variable (false) */
+	private boolean fixedPrice;
+	/** path to a file that describe variability in market prices */
+	private String marketPriceFile;
+	/** A fixed value for market price */
+	private double fixedMarketPrice = 0;
 	/** memapON a boolean. On(true)/ off (false) */
 	private boolean memapON;
 	/** optCriteria a String. Optimization criteria: {cost, co2} */
@@ -49,8 +51,8 @@ public class Parameters {
 		setLength(96);
 		setSteps(24);
 		setDays(1);
-		setWeather(true);
-		setPrice(true);
+		setFixedPrice(true);
+		setMarketPriceFile("");
 		setMemapON(false);
 		setRunInServer(false);
 		setOptCriteria(criteriaOptions.get(0));
@@ -88,20 +90,12 @@ public class Parameters {
 		this.days = days;
 	}
 
-	public boolean isWeather() {
-		return weather;
+	public boolean isFixedPrice() {
+		return fixedPrice;
 	}
 
-	public void setWeather(boolean weather) {
-		this.weather = weather;
-	}
-
-	public boolean isPrice() {
-		return price;
-	}
-
-	public void setPrice(boolean price) {
-		this.price = price;
+	public void setFixedPrice(boolean price) {
+		this.fixedPrice = price;
 	}
 
 	public boolean isMemapON() {
@@ -138,5 +132,21 @@ public class Parameters {
 
 	public void addDescriptorFile(File descriptorFile) {
 		descriptorFiles.add(descriptorFile);
+	}
+
+	public String getMarketPriceFile() {
+		return marketPriceFile;
+	}
+
+	public void setMarketPriceFile(String marketPriceFile) {
+		this.marketPriceFile = marketPriceFile;
+	}
+
+	public double getFixedMarketPrice() {
+		return fixedMarketPrice;
+	}
+
+	public void setFixedMarketPrice(double fixedMarketPrice) {
+		this.fixedMarketPrice = fixedMarketPrice;
 	}
 }
