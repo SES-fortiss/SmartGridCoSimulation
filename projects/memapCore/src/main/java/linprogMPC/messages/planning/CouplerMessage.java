@@ -10,7 +10,8 @@ public class CouplerMessage implements AnswerContent {
 	public NetworkType primaryNetwork;
 	public NetworkType secondaryNetwork;
 	
-	public double installedPower;
+	public double minPower;
+	public double maxPower;
 	
 	public double operationalCostEUR;
 	public double operationalCostCO2;

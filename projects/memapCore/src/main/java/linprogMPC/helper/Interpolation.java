@@ -1,27 +1,21 @@
 package linprogMPC.helper;
 
-/**
- * 
- */
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-
-
 /**
- * This class is responsible for linear interpolation. I have tested its results 
- * by comparing them with the matlab results and it work absolutely fine. 
- * For interpolation it is important to know that series must be monotonic and it
- * must not contain zero values. Therefore we must remove zero values from the series. 
- * we must prepare data for the interpolation before we call the intrepLinear function.
+ * This class is responsible for linear interpolation. Its results were tested
+ * against MATLAB results. It works fine. For interpolation it is important to
+ * know that series must be monotonic and it must not contain zero values.
+ * Therefore zero values must be removed from the series. Data must be prepared
+ * for the interpolation before calling the intrepLinear function.
+ * 
  * @version 1.0
- * @author Muhammad Muaaz 
+ * @author Muhammad Muaaz
  *
  */
 public class Interpolation {
-
 
 	public static final double[] interpLinear(double[] x, double[] y, double[] xi) throws IllegalArgumentException {
 
@@ -55,14 +49,12 @@ public class Interpolation {
 		for (int i = 0; i < xi.length; i++) {
 			if ((xi[i] > x[x.length - 1]) || (xi[i] < x[0])) {
 				yi[i] = Double.NaN;
-			}
-			else {
+			} else {
 				int loc = Arrays.binarySearch(x, xi[i]);
 				if (loc < -1) {
 					loc = -loc - 2;
 					yi[i] = slope[loc] * xi[i] + intercept[loc];
-				}
-				else {
+				} else {
 					yi[i] = y[loc];
 				}
 			}
@@ -88,7 +80,6 @@ public class Interpolation {
 		BigDecimal minusOne = new BigDecimal(-1);
 
 		for (int i = 0; i < x.length - 1; i++) {
-			//dx[i] = x[i + 1] - x[i];
 			dx[i] = x[i + 1].subtract(x[i]);
 			if (dx[i].equals(new BigDecimal(zero, dx[i].scale()))) {
 				throw new IllegalArgumentException("X must be montotonic. A duplicate " + "x-value was found");
@@ -96,30 +87,22 @@ public class Interpolation {
 			if (dx[i].signum() < 0) {
 				throw new IllegalArgumentException("X must be sorted");
 			}
-			//dy[i] = y[i + 1] - y[i];
 			dy[i] = y[i + 1].subtract(y[i]);
-			//slope[i] = dy[i] / dx[i];
 			slope[i] = dy[i].divide(dx[i]);
-			//intercept[i] = y[i] - x[i] * slope[i];
 			intercept[i] = x[i].multiply(slope[i]).subtract(y[i]).multiply(minusOne);
-			//intercept[i] = y[i].subtract(x[i]).multiply(slope[i]);
 		}
 
 		// Perform the interpolation here
 		BigDecimal[] yi = new BigDecimal[xi.length];
 		for (int i = 0; i < xi.length; i++) {
-			//if ((xi[i] > x[x.length - 1]) || (xi[i] < x[0])) {
 			if (xi[i].compareTo(x[x.length - 1]) > 0 || xi[i].compareTo(x[0]) < 0) {
 				yi[i] = null; // same as NaN
-			}
-			else {
+			} else {
 				int loc = Arrays.binarySearch(x, xi[i]);
 				if (loc < -1) {
 					loc = -loc - 2;
-					//yi[i] = slope[loc] * xi[i] + intercept[loc];
 					yi[i] = slope[loc].multiply(xi[i]).add(intercept[loc]);
-				}
-				else {
+				} else {
 					yi[i] = y[loc];
 				}
 			}
@@ -142,8 +125,5 @@ public class Interpolation {
 
 		return interpLinear(xd, y, xid);
 	}
-
-	
-
 
 }

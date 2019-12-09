@@ -20,9 +20,30 @@ public class Parameters {
 			add("co2");
 		}
 	};
+	
+	/** optimizerOptions List of optimizers available */
+	@SuppressWarnings("serial")
+	private transient ArrayList<String> optimizerOptions = new ArrayList<String>() {
+		{
+			add("lp");
+			add("milp");
+		}
+	};
+	
+	/** loggingOptions List of logging modes available */
+	@SuppressWarnings("serial")
+	private transient ArrayList<String> loggingOptions = new ArrayList<String>() {
+		{
+			add("resultLogs");
+			add("fileLogs");
+			add("allLogs");
+		}
+	};
 
 	/** paths to descriptor files */
 	private ArrayList<File> descriptorFiles = new ArrayList<File>();
+	/** Simulation name */
+	private String simulationName;
 	/** length MemapSimulation steps. An integer */
 	private int length;
 	/** steps MPC horizon. An integer */
@@ -39,33 +60,35 @@ public class Parameters {
 	private boolean memapON;
 	/** optCriteria a String. Optimization criteria: {cost, co2} */
 	private String optCriteria;
-	/**
-	 * runInServer a boolean. Simulation is run in the server if <code>true</code>
-	 */
-	private boolean runInServer;
+	/** optimizer a String. Optimizer: {LP, MILP} */
+	private String optimizer;
+	/** loggingMode a String. loggingMode: {allLogs, fileLogs, resultLogs} */
+	private String loggingMode;
 
 	/**
 	 * Constructor for class Parameters
 	 */
 	public Parameters() {
+		setSimulationName("InteractiveMEMAP");
 		setLength(96);
 		setSteps(24);
 		setDays(1);
 		setFixedPrice(true);
 		setMarketPriceFile("");
+		setOptimizer(optimizerOptions.get(0));
 		setMemapON(false);
-		setRunInServer(false);
 		setOptCriteria(criteriaOptions.get(0));
+		setLoggingMode(loggingOptions.get(0));
 	}
 
-	public void setRunInServer(boolean runInServer) {
-		this.runInServer = runInServer;
+	public String getSimulationName() {
+		return simulationName;
 	}
 
-	public boolean getRunInServer() {
-		return runInServer;
+	public void setSimulationName(String simulationName) {
+		this.simulationName = simulationName;
 	}
-
+	
 	public int getLength() {
 		return length;
 	}
@@ -98,6 +121,26 @@ public class Parameters {
 		this.fixedPrice = price;
 	}
 
+	public String getOptimizer() {
+		return optimizer;
+	}
+
+	private void setOptimizer(String optimizer) {
+		this.optimizer = optimizer;
+	}
+	
+	public void nextOptimizer() {
+		int index = optimizerOptions.indexOf(optimizer);
+
+		if (index == optimizerOptions.size() - 1) {
+			setOptimizer(optimizerOptions.get(0));
+			Designer.parameterPanel.lbOptimizer2.setIcon(Icon.optimizer.get(0));
+		} else {
+			setOptimizer(optimizerOptions.get(index + 1));
+			Designer.parameterPanel.lbOptimizer2.setIcon(Icon.optimizer.get(index + 1));
+		}
+	}
+
 	public boolean isMemapON() {
 		return memapON;
 	}
@@ -110,7 +153,7 @@ public class Parameters {
 		return optCriteria;
 	}
 
-	public void setOptCriteria(String optCriteria) {
+	private void setOptCriteria(String optCriteria) {
 		this.optCriteria = optCriteria;
 	}
 
@@ -148,5 +191,25 @@ public class Parameters {
 
 	public void setFixedMarketPrice(double fixedMarketPrice) {
 		this.fixedMarketPrice = fixedMarketPrice;
+	}
+
+	public String getLoggingMode() {
+		return loggingMode;
+	}
+
+	private void setLoggingMode(String loggingMode) {
+		this.loggingMode = loggingMode;
+	}
+	
+	public void nextLoggingMode() {
+		int index = loggingOptions.indexOf(loggingMode);
+
+		if (index == loggingOptions.size() - 1) {
+			setLoggingMode(loggingOptions.get(0));
+			Designer.parameterPanel.lbLoggingMode2.setIcon(Icon.loggingMode.get(0));
+		} else {
+			setLoggingMode(loggingOptions.get(index + 1));
+			Designer.parameterPanel.lbLoggingMode2.setIcon(Icon.loggingMode.get(index + 1));
+		}
 	}
 }

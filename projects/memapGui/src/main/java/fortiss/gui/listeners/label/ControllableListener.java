@@ -30,8 +30,8 @@ public class ControllableListener extends MouseAdapter implements FocusListener 
 		Controllable cp = Designer.buildings.get(building).getControllable().get(Designer.currentComponent);
 
 		DataUpdater up = new DataUpdater();
-		up.updateContProductionData(cp.getName(), cp.getNetworkType(), cp.getPower(), cp.getEfficiency(), cp.getCost(),
-				cp.getCOEmission());
+		up.updateContProductionData(cp.getName(), cp.getNetworkType(), cp.getMinimumPower(), cp.getMaximumPower(),
+				cp.getEfficiency(), cp.getCost(), cp.getCOEmission());
 	}
 
 	/**

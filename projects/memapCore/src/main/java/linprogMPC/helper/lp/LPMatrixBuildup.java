@@ -1,8 +1,10 @@
-package linprogMPC.helper;
+package linprogMPC.helper.lp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import akka.systemActors.GlobalTime;
+import linprogMPC.ConfigurationMEMAP;
 import linprogMPC.TopologyConfig;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.extension.NetworkType;
@@ -13,44 +15,55 @@ import linprogMPC.messages.planning.ProducerMessage;
 import linprogMPC.messages.planning.StorageMessage;
 import linprogMPC.messages.planning.VolatileProducerMessage;
 
-public class MatrixBuildup {
+/**
+ * Note, this class is used to solve the LP problem. The class was re-factored
+ * in 15.11.2019 in the process of introducing MILP. In that process we removed
+ * the dependency on the old LDHeating boolean in that class.
+ * 
+ * @author bytschkow
+ *
+ */
+public class LPMatrixBuildup {
 
-	// =========================== Matrix Filling ==============================
+	// Matrix Filling
 	int nStepsMPC = 0;
 
-	public MatrixBuildup() {
+	HashMap<String, Integer> mapBuildingToInt = new HashMap<>();
+	HashMap<String, Integer> mapConnectionMessageToInt = new HashMap<>();
+	ArrayList<String> arrayOfBuildings = new ArrayList<>();
+
+	public LPMatrixBuildup() {
 		nStepsMPC = TopologyConfig.N_STEPS_MPC;
 	}
 
-	public OptimizationProblem singleBuilding(BuildingMessage buildingMessage) {
+	public LPOptimizationProblem singleBuilding(BuildingMessage buildingMessage) {
 
 		int nrOfStorages = buildingMessage.getNrOfStorages();
-		int nrOfProducers = buildingMessage.getNrOfProducers();
+		int nrOfProducers = buildingMessage.getNrOfControllableProducers() + buildingMessage.getNrOfVolatileProducers();
 		int nrOfCouplers = buildingMessage.getNrOfCouplers();
 
-		OptimizationProblem problem = new OptimizationProblem(nStepsMPC, 1, nrOfProducers, nrOfStorages, nrOfCouplers,
-				0, buildingMessage.LDHeating);
+		LPOptimizationProblem problem = new LPOptimizationProblem(nStepsMPC, 1, nrOfProducers, nrOfStorages,
+				nrOfCouplers, 0);
 
-		// ======= BUILD CONSUMPTION VECTOR b =========
-		DemandMessage b_kopp = new DemandMessage();
-		// account for heat transport Losses:
-		problem.b_eq = b_kopp.calcHeatLosses(buildingMessage);
+		// Build consumption vector b
+		problem.b_eq = buildingMessage.getCombinedDemandVector();
 
-		/**********************************************
-		 * BUILD Matrices
-		 **********************************************/
+		// Build Matrices
+
 		int producersHandled = 0;
 		int storagesHandled = 0;
 		int couplersHandled = 0;
 
-		if (GlobalTime.getCurrentTimeStep() == 0) {
+		if (GlobalTime.getCurrentTimeStep() == 0
+				&& ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
 			System.out.println(" << " + buildingMessage.name + " >> ");
 		}
 
 		for (ProducerMessage producerMessage : buildingMessage.volatileProducerList) {
 			addProducerToProblem(producerMessage, problem, 0, producersHandled, storagesHandled, couplersHandled, 0);
 			producersHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (GlobalTime.getCurrentTimeStep() == 0
+					&& ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
 				System.out.println("Prod-Nr.: " + producersHandled + ", " + producerMessage.name);
 			}
 		}
@@ -58,7 +71,8 @@ public class MatrixBuildup {
 		for (ProducerMessage producerMessage : buildingMessage.controllableProducerList) {
 			addProducerToProblem(producerMessage, problem, 0, producersHandled, storagesHandled, couplersHandled, 0);
 			producersHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (GlobalTime.getCurrentTimeStep() == 0
+					&& ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
 				System.out.println("Prod-Nr.: " + producersHandled + ", " + producerMessage.name);
 			}
 		}
@@ -66,7 +80,8 @@ public class MatrixBuildup {
 		for (StorageMessage storageMessage : buildingMessage.storageList) {
 			addStorageToProblem(storageMessage, problem, 0, producersHandled, storagesHandled, couplersHandled, 0);
 			storagesHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (GlobalTime.getCurrentTimeStep() == 0
+					&& ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
 				System.out.println("Stor-Nr.: " + storagesHandled + ", " + storageMessage.name);
 			}
 		}
@@ -74,17 +89,18 @@ public class MatrixBuildup {
 		for (CouplerMessage couplerMessage : buildingMessage.couplerList) {
 			addCouplerToProblem(couplerMessage, problem, 0, producersHandled, storagesHandled, couplersHandled, 0);
 			couplersHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (GlobalTime.getCurrentTimeStep() == 0
+					&& ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
 				System.out.println("Coupler-Nr.: " + couplersHandled + ", " + couplerMessage.name);
 			}
 		}
 
-		addMarkets(problem, 1, producersHandled, storagesHandled, couplersHandled, 0, buildingMessage.LDHeating);
+		addMarkets(problem, 1, producersHandled, storagesHandled, couplersHandled, 0);
 
 		return problem;
 	}
 
-	public OptimizationProblem multipleBuildings(ArrayList<BuildingMessage> buildingMessageList, boolean LDHeating) {
+	public LPOptimizationProblem multipleBuildings(ArrayList<BuildingMessage> buildingMessageList) {
 
 		int nrOfBuildings = 0;
 		int nrOfProducers = 0;
@@ -93,40 +109,61 @@ public class MatrixBuildup {
 		int nrOfConnections = 0;
 
 		for (BuildingMessage buildingMessage : buildingMessageList) {
+
+			mapBuildingToInt.put(buildingMessage.name, nrOfBuildings);
+			arrayOfBuildings.add(buildingMessage.name);
+
+			// Note, this is a hack, that assumes that buildings are named "B...1", "B..2",
+			// etc. This might be super buggy.
+
+			for (ConnectionMessage cm : buildingMessage.connectionList) {
+				if (cm.connectedBuildingTo.contains("1"))
+					mapConnectionMessageToInt.put(cm.name, 0);
+				if (cm.connectedBuildingTo.contains("2"))
+					mapConnectionMessageToInt.put(cm.name, 1);
+				if (cm.connectedBuildingTo.contains("3"))
+					mapConnectionMessageToInt.put(cm.name, 2);
+				if (cm.connectedBuildingTo.contains("4"))
+					mapConnectionMessageToInt.put(cm.name, 3);
+				if (cm.connectedBuildingTo.contains("5"))
+					mapConnectionMessageToInt.put(cm.name, 4);
+			}
+
 			nrOfBuildings++;
 			nrOfStorages += buildingMessage.getNrOfStorages();
-			nrOfProducers += buildingMessage.getNrOfProducers();
+			nrOfProducers += buildingMessage.getNrOfControllableProducers()
+					+ buildingMessage.getNrOfVolatileProducers();
 			nrOfCouplers += buildingMessage.getNrOfCouplers();
 			nrOfConnections += buildingMessage.getNrOfConnections();
 		}
 
-		OptimizationProblem problem = new OptimizationProblem(nStepsMPC, nrOfBuildings, nrOfProducers, nrOfStorages,
-				nrOfCouplers, nrOfConnections, LDHeating); // initiert nur die vektoren, matrizen, ohne fï¿½llung
+		LPOptimizationProblem problem = new LPOptimizationProblem(nStepsMPC, nrOfBuildings, nrOfProducers, nrOfStorages,
+				nrOfCouplers, nrOfConnections); // only initiates the vectors, matrices, without filling them
 
 		/**
-		 * ======= BUILD CONSUMPTION VECTOR b =========
+		 * Note, this version was used for the LP. In the mean time, we removed some
+		 * part of the old code, so that we needed to adapted this code.
 		 */
 		DemandMessage b_kopp = new DemandMessage();
 		int b_index = 0;
 		double[] b_building = new double[nStepsMPC * 2];
 		// Sum of Consumption over all Buildings
+		// Heat
 		for (BuildingMessage buildingMessage : buildingMessageList) {
-			// account for heat transport Losses:
-			b_building = b_kopp.calcHeatLosses(buildingMessage);
+			b_building = buildingMessage.getCombinedDemandVector();
 			for (int i = 0; i < nStepsMPC; i++) {
 				problem.b_eq[b_index * nStepsMPC + i] = b_building[i];
 			}
 			b_kopp.addConsumption(b_building);
 			b_index++;
 		}
+
+		// Electricity
 		for (int i = 0; i < nStepsMPC; i++) {
 			problem.b_eq[b_index * nStepsMPC + i] = b_kopp.getDemandVector()[nStepsMPC + i];
 		}
 
-		/**
-		 * ====== BUILD PRODUCER & STORAGES Matrices =========
-		 */
-//		System.out.println("****************************************************************");		
+		// Build producer & storage matrices
 		if (GlobalTime.getCurrentTimeStep() == 0) {
 			System.out.println(" << MEMAP >> ");
 		}
@@ -189,8 +226,7 @@ public class MatrixBuildup {
 			buildingsHandled++;
 		}
 
-		addMarkets(problem, buildingsHandled, producersHandled, storagesHandled, couplersHandled, connectionsHandled,
-				LDHeating);
+		addMarkets(problem, buildingsHandled, producersHandled, storagesHandled, couplersHandled, connectionsHandled);
 
 		if (GlobalTime.getCurrentTimeStep() == 0) {
 			System.out.println("****************************************************************");
@@ -199,7 +235,7 @@ public class MatrixBuildup {
 		return problem;
 	}
 
-	private void addProducerToProblem(ProducerMessage producerMessage, OptimizationProblem optProblem,
+	private void addProducerToProblem(ProducerMessage producerMessage, LPOptimizationProblem optProblem,
 			int buildingsHandledSoFar, int producersHandledSoFar, int storagesHandledSoFar, int couplersHandledSoFar,
 			int connectionsHandledSoFar) {
 
@@ -218,12 +254,12 @@ public class MatrixBuildup {
 		double[][] couplingMatrix_H = new double[nStepsMPC][nStepsMPC];
 		double[][] couplingMatrix_el = new double[nStepsMPC][nStepsMPC];
 
-		// fill the basic vectors and matrices
+		// Fill the basic vectors and matrices
 		for (int i = 0; i < nStepsMPC; i++) {
 			lambda[i] = producerMessage.operationalCostEUR;
 			lambdaCO2[i] = producerMessage.operationalCostCO2;
 			lb[i] = 0;
-			ub[i] = producerMessage.installedPower;
+			ub[i] = producerMessage.maxPower;
 			namesUB[i] = producerMessage.name;
 		}
 
@@ -245,7 +281,7 @@ public class MatrixBuildup {
 			}
 		}
 
-		// fill the problem matrices
+		// Fill the problem matrices
 		for (int i = 0; i < nStepsMPC; i++) {
 			optProblem.lambda[n_index + i] = lambda[i];
 			optProblem.lambdaCO2[n_index + i] = lambdaCO2[i];
@@ -261,7 +297,7 @@ public class MatrixBuildup {
 		}
 	}
 
-	private void addCouplerToProblem(CouplerMessage couplerMessage, OptimizationProblem optProblem,
+	private void addCouplerToProblem(CouplerMessage couplerMessage, LPOptimizationProblem optProblem,
 			int buildingsHandledSoFar, int producersHandledSoFar, int storagesHandledSoFar, int couplersHandledSoFar,
 			int connectionsHandledSoFar) {
 
@@ -274,7 +310,7 @@ public class MatrixBuildup {
 		double[][] couplingMatrix_H = new double[nStepsMPC][nStepsMPC];
 		double[][] couplingMatrix_el = new double[nStepsMPC][nStepsMPC];
 
-		// fill the matrices
+		// Fill the matrices
 		int n_index = nStepsMPC * (producersHandledSoFar + 2 * storagesHandledSoFar + couplersHandledSoFar
 				+ 2 * connectionsHandledSoFar);
 		int b_index = nStepsMPC * buildingsHandledSoFar;
@@ -285,9 +321,9 @@ public class MatrixBuildup {
 			lambdaCO2[i] = couplerMessage.operationalCostCO2;
 			lb[i] = 0;
 			// Attention here, the efficiencies play a role, because of the specified
-			// Services.
-			// Z.b. a 10kW heat pump does not need 10kW of electricity.
-			ub[i] = couplerMessage.installedPower / couplerMessage.efficiencyHeat;
+			// services.
+			// Z.b. need a 10kW heat pump no 10kW electricity.
+			ub[i] = couplerMessage.maxPower / couplerMessage.efficiencyHeat;
 			namesUB[i] = couplerMessage.name;
 
 		}
@@ -300,7 +336,7 @@ public class MatrixBuildup {
 			couplingMatrix_el[i][i] = -couplerMessage.efficiencyElec;
 		}
 
-		// fill the problem matrices
+		// Fill the problem matrices
 		for (int i = 0; i < nStepsMPC; i++) {
 			optProblem.lambda[n_index + i] = lambda[i];
 			optProblem.lambdaCO2[n_index + i] = lambdaCO2[i];
@@ -316,7 +352,7 @@ public class MatrixBuildup {
 		}
 	}
 
-	private void addStorageToProblem(StorageMessage storageMessage, OptimizationProblem problem,
+	private void addStorageToProblem(StorageMessage storageMessage, LPOptimizationProblem problem,
 			int buildingsHandledSoFar, int producersHandledSoFar, int storagesHandledSoFar, int couplersHandledSoFar,
 			int connectionsHandledSoFar) {
 
@@ -330,8 +366,8 @@ public class MatrixBuildup {
 		double[][] couplingMatrix_H = new double[nStepsMPC][2 * nStepsMPC];
 		double[][] couplingMatrix_el = new double[nStepsMPC][2 * nStepsMPC];
 
-		for (int i = 0; i < nStepsMPC; i++) { 
-			// first comes the unload (produce), then the load (consume)
+		for (int i = 0; i < nStepsMPC; i++) {
+			// First comes the unload (produce), then the load (consume)
 			lambda[i] = storageMessage.operationalCostEUR;
 			lambda[nStepsMPC + i] = storageMessage.operationalCostEUR;
 			lambdaCO2[i] = storageMessage.operationalCostCO2;
@@ -343,7 +379,7 @@ public class MatrixBuildup {
 			namesUB[i] = storageMessage.name + "Discharge";
 			namesUB[nStepsMPC + i] = storageMessage.name + "Charge";
 		}
-		
+
 		double effIN = storageMessage.efficiencyCharge;
 		double effOUT = storageMessage.efficiencyDischarge;
 
@@ -351,22 +387,13 @@ public class MatrixBuildup {
 			for (int i = 0; i < nStepsMPC; i++) {
 				couplingMatrix_H[i][i] = -1;
 				couplingMatrix_H[i][nStepsMPC + i] = 1;
-				/*
-				 * couplingMatrix_H[i][i] = -effOUT; couplingMatrix_H[i][nStepsMPC + i] = effIN;
-				 */
 			}
 		}
 
 		if (storageMessage.networkType.equals(NetworkType.ELECTRICITY)) {
 			for (int i = 0; i < nStepsMPC; i++) {
-
 				couplingMatrix_el[i][i] = -1;
 				couplingMatrix_el[i][nStepsMPC + i] = 1;
-
-				/*
-				 * couplingMatrix_el[i][i] = -effOUT; couplingMatrix_el[i][nStepsMPC + i] =
-				 * effIN;
-				 */
 			}
 		}
 
@@ -391,7 +418,7 @@ public class MatrixBuildup {
 			maxChargeCapacity = storageMessage.capacity;
 		}
 
-		double factor = 24.0 / TopologyConfig.TIMESTEPS_PER_DAY; // = 0.25 fï¿½r 96 Schritte /Tag
+		double factor = 24.0 / TopologyConfig.TIMESTEPS_PER_DAY; // 0.25 for 96 steps / day
 
 		for (int i = 0; i < nStepsMPC; i++) {
 			for (int j = 0; j <= i; j++) {
@@ -432,14 +459,14 @@ public class MatrixBuildup {
 		}
 	}
 
-	private void addConnectionToProblem(ConnectionMessage connectionMessage, OptimizationProblem problem,
+	private void addConnectionToProblem(ConnectionMessage connectionMessage, LPOptimizationProblem problem,
 			int buildingsHandledSoFar, int producersHandledSoFar, int storagesHandledSoFar, int couplersHandledSoFar,
 			int connectionsHandledSoFar) {
 
 		int n_index = nStepsMPC * (producersHandledSoFar + 2 * storagesHandledSoFar + couplersHandledSoFar
 				+ 2 * connectionsHandledSoFar);
 		int bi_index = nStepsMPC * buildingsHandledSoFar;
-		int bj_index = nStepsMPC * (connectionMessage.connectedBuilding - 1);
+		int bj_index = nStepsMPC * (mapConnectionMessageToInt.get(connectionMessage.name));
 
 		double[] lb = new double[2 * nStepsMPC];
 		double[] ub = new double[2 * nStepsMPC];
@@ -449,25 +476,25 @@ public class MatrixBuildup {
 		double[][] couplingMatrix_H_i = new double[nStepsMPC][2 * nStepsMPC];
 		double[][] couplingMatrix_H_j = new double[nStepsMPC][2 * nStepsMPC];
 
-		for (int i = 0; i < nStepsMPC; i++) { // zuerst kommt die Verbindung ij, dann ji
+		for (int i = 0; i < nStepsMPC; i++) { // First comes the connection {i,j}, then {j,i}
 			lb[i] = 0;
 			lb[nStepsMPC + i] = 0;
-			ub[i] = connectionMessage.maxOut;
-			ub[nStepsMPC + i] = connectionMessage.maxIn;
-			namesUB[i] = connectionMessage.name + "_" + (buildingsHandledSoFar + 1)
-					+ connectionMessage.connectedBuilding;
-			namesUB[nStepsMPC + i] = connectionMessage.name + "_" + connectionMessage.connectedBuilding
+			ub[i] = connectionMessage.maxPower;
+			ub[nStepsMPC + i] = connectionMessage.maxPower;
+			namesUB[i] = connectionMessage.name + "_FROM" + (buildingsHandledSoFar + 1) + "_TO"
+					+ connectionMessage.connectedBuildingTo;
+			namesUB[nStepsMPC + i] = connectionMessage.name + "_FROM" + connectionMessage.connectedBuildingTo + "_TO"
 					+ (buildingsHandledSoFar + 1);
-			etas[i] = connectionMessage.efficiencyOut;
-			etas[nStepsMPC + i] = connectionMessage.efficiencyIn;
+			etas[i] = connectionMessage.efficiency;
+			etas[nStepsMPC + i] = connectionMessage.efficiency;
 
 			couplingMatrix_H_i[i][i] = 1;
-			couplingMatrix_H_i[i][nStepsMPC + i] = -connectionMessage.efficiencyIn;
-			couplingMatrix_H_j[i][i] = -connectionMessage.efficiencyOut;
+			couplingMatrix_H_i[i][nStepsMPC + i] = -connectionMessage.efficiency;
+			couplingMatrix_H_j[i][i] = -connectionMessage.efficiency;
 			couplingMatrix_H_j[i][nStepsMPC + i] = 1;
 		}
 
-		// Apply matrices to the overall system
+		// Take over matrices into the overall system
 
 		for (int i = 0; i < nStepsMPC; i++) {
 			if (i < nStepsMPC) {
@@ -486,8 +513,8 @@ public class MatrixBuildup {
 
 	}
 
-	private void addMarkets(OptimizationProblem problem, int buildingsHandled, int producersHandled,
-			int storagesHandled, int couplersHandled, int connectionsHandled, boolean lDHeating) {
+	private void addMarkets(LPOptimizationProblem problem, int buildingsHandled, int producersHandled,
+			int storagesHandled, int couplersHandled, int connectionsHandled) {
 		// After the last systems was added, more matrices will be added to handle
 		// buying and selling of electricity and heat
 		if (producersHandled + storagesHandled + couplersHandled + connectionsHandled == problem.getNumberofProducers()
@@ -496,34 +523,6 @@ public class MatrixBuildup {
 					* (producersHandled + 2 * storagesHandled + couplersHandled + 2 * connectionsHandled);
 			int b_index = 0;
 			int cts = GlobalTime.getCurrentTimeStep();
-			if (lDHeating) {
-				for (int k = 0; k < buildingsHandled; k++) {
-					for (int i = 0; i < nStepsMPC; i++) {
-						// limits for JOptimizer: selling or buying of heat
-						problem.x_lb[n_index + b_index + i] = 0.0;
-						problem.x_ub[n_index + b_index + i] = 999.0; // able to purchase heat
-
-						problem.x_lb[n_index + b_index + nStepsMPC + i] = 0.0;
-						problem.x_ub[n_index + b_index + nStepsMPC + i] = 999.0; // able to sell heat
-
-						problem.a_eq[k * nStepsMPC + i][n_index + b_index + i] = -1.0; // matrix: buying of heat
-						problem.namesUB[n_index + b_index + i] = "HeatBuy" + (k + 1);
-
-						problem.a_eq[k * nStepsMPC + i][n_index + b_index + nStepsMPC + i] = 1.0; // matrix:
-																									// selling/disposing
-																									// of heat
-						problem.namesUB[nStepsMPC + n_index + b_index + i] = "HeatSell" + (k + 1);
-
-						// Extended price vector for market
-						problem.lambda[n_index + b_index + i] = TopologyConfig.energyPrices.getHeatPriceInEuro(cts + i); // heat buy
-																											// price
-						problem.lambda[n_index + b_index + nStepsMPC + i] = -0.0; // heat sell price
-						problem.lambdaCO2[n_index + b_index + i] = 0.196; // Emissionen deutscher Fernwärme kg CO2 / kWh
-						problem.lambdaCO2[n_index + b_index + nStepsMPC + i] = -0.0; // heat sell price
-					}
-					b_index = (k + 1) * 2 * nStepsMPC;
-				}
-			}
 
 			for (int i = 0; i < nStepsMPC; i++) {
 				// limits for JOptimizer: selling or buying of electricity
@@ -531,28 +530,27 @@ public class MatrixBuildup {
 				problem.x_ub[n_index + b_index + i] = 999.9;
 
 				problem.x_lb[n_index + b_index + nStepsMPC + i] = 0.0;
-				problem.x_ub[n_index + b_index + nStepsMPC + i] = 999.9;
-
-				problem.a_eq[buildingsHandled * nStepsMPC + i][n_index + b_index + i] = -1.0; // matrix: buying of
-																								// electricity
+				problem.x_ub[n_index + b_index + nStepsMPC + i] = 999.9; // able to sell electricity
+				// matrix: buying of electricity
+				problem.a_eq[buildingsHandled * nStepsMPC + i][n_index + b_index + i] = -1.0;
 				problem.namesUB[n_index + b_index + i] = "ElecBuy";
 				problem.etas[n_index + b_index + i] = 1;
 
-				problem.a_eq[buildingsHandled * nStepsMPC + i][n_index + b_index + nStepsMPC + i] = 1.0; // matrix:
-																											// selling
-																											// of
-																											// electricity
+				// matrix: selling of electricity
+				problem.a_eq[buildingsHandled * nStepsMPC + i][n_index + b_index + nStepsMPC + i] = 1.0;
 				problem.namesUB[nStepsMPC + n_index + b_index + i] = "ElecSell";
 				problem.etas[nStepsMPC + n_index + b_index + i] = -1;
 
 				// Extended price vector for market
-				problem.lambda[n_index + b_index + i] = TopologyConfig.energyPrices.getElectricityPriceInEuro(cts + i); // electricity
-																											// buy price
-				problem.lambda[n_index + b_index + nStepsMPC + i] = -TopologyConfig.energyPrices.getElectricityPriceInEuro(cts + i)
-						* 0.5; // electricity sell price
-				problem.lambdaCO2[n_index + b_index + i] = 0.474; // Emissionen deutscher Strommix kg CO2 / kWh
-				problem.lambdaCO2[n_index + b_index + nStepsMPC + i] = 0.0; // electricity sell price
-
+				// electricity buy price
+				problem.lambda[n_index + b_index + i] = TopologyConfig.energyPrices.getElectricityPriceInEuro(cts + i);
+				// electricity sell price
+				problem.lambda[n_index + b_index + nStepsMPC
+						+ i] = -TopologyConfig.energyPrices.getElectricityPriceInEuro(cts + i) * 0.5;
+				// Emissions of German electricity kg CO2 / kWh
+				problem.lambdaCO2[n_index + b_index + i] = 0.474;
+				// electricity sell price
+				problem.lambdaCO2[n_index + b_index + nStepsMPC + i] = 0.0;
 			}
 		}
 	}

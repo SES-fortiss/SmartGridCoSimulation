@@ -7,7 +7,8 @@ public class Coupler {
 	private String name;
 	private String networkTypeP; // Primary, Values: Heat or Electricity
 	private String networkTypeS; // Secondary, Values: Heat or Electricity
-	private double power;
+	private double minimumPower;
+	private double maximumPower;
 	private double efficiencyPrimary;
 	private double efficiencySecondary;
 	private double cost;
@@ -21,18 +22,20 @@ public class Coupler {
 	 *                            Electricity
 	 * @param networkTypeS        secondary network type. A string: Heat or
 	 *                            Electricity
-	 * @param power               a positive double
+	 * @param minimumPower        a positive double [kW]
+	 * @param maximumPower        a positive double [kW]
 	 * @param efficiencyPrimary   primary network efficiency. A positive double
 	 * @param efficiencySecondary secondary network efficiency. A negative double
-	 * @param cost                cost
+	 * @param cost                cost [EUR]
 	 * @param coEmission          CO2 Emissions measured in [g/kWh]
 	 */
-	public Coupler(String name, String networkTypeP, String networkTypeS, double power, double efficiencyPrimary,
-			double efficiencySecondary, double cost, double coEmission) {
+	public Coupler(String name, String networkTypeP, String networkTypeS, double minimumPower, double maximumPower,
+			double efficiencyPrimary, double efficiencySecondary, double cost, double coEmission) {
 		this.setName(name);
 		this.setNetworkTypeP(networkTypeP);
 		this.setNetworkTypeS(networkTypeS);
-		this.setPower(power);
+		this.setMinimumPower(minimumPower);
+		this.setMaximumPower(maximumPower);
 		this.setEfficiencyPrimary(efficiencyPrimary);
 		this.setEfficiencySecondary(efficiencySecondary);
 		this.setCost(cost);
@@ -63,12 +66,20 @@ public class Coupler {
 		this.networkTypeS = networkTypeS;
 	}
 
-	public double getPower() {
-		return power;
+	public double getMinimumPower() {
+		return minimumPower;
 	}
 
-	public void setPower(double power) {
-		this.power = power;
+	public void setMinimumPower(double minimumPower) {
+		this.minimumPower = minimumPower;
+	}
+
+	public double getMaximumPower() {
+		return maximumPower;
+	}
+
+	public void setMaximumPower(double maximumPower) {
+		this.maximumPower = maximumPower;
 	}
 
 	public double getEfficiencyPrimary() {

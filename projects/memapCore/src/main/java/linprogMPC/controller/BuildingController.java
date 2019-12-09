@@ -23,20 +23,6 @@ public interface BuildingController {
 	public String getName();
 
 	/**
-	 * If true, the optimizer will enable long-distance heating for this building.
-	 * 
-	 * @return long-distance heating enabled
-	 */
-	public boolean hasLDHeaeting();
-
-	/**
-	 * Heat transport length is needed by the optimizer to calculate the heat loss of the pipes.
-	 * 
-	 * @return heat transport length to the next building
-	 */
-	public int getHeatTransportLength();
-
-	/**
 	 * Returns a set of devices attached to this building. Options can be found in 
 	 * linprogMPC.components.
 	 * 

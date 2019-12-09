@@ -10,7 +10,7 @@ import fortiss.simulation.Simulation;
 
 public class AcceptListener extends MouseAdapter {
 
-	public static Simulation sim = new Simulation();
+	public static Simulation sim;
 	public static LoadingScreen loadingScreen = new LoadingScreen();
 	private Thread simt;
 
@@ -21,6 +21,7 @@ public class AcceptListener extends MouseAdapter {
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		sim = new Simulation();
 		simt = new Thread(sim);
 		FileManager.writeDescriptorFiles();
 		FileManager.writeParameterConfigFile(); // Should be called after writeDescriptorFiles()

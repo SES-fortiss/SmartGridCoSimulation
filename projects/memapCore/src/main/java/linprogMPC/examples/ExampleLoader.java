@@ -7,11 +7,17 @@ import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 
+import linprogMPC.ConfigurationMEMAP.MEMAPLogging;
+import linprogMPC.ConfigurationMEMAP.OptHierarchy;
+import linprogMPC.ConfigurationMEMAP.OptimizationCriteria;
+import linprogMPC.ConfigurationMEMAP.Optimizer;
+import linprogMPC.ConfigurationMEMAP.ToolUsage;
 import linprogMPC.components.CSVConsumer;
 import linprogMPC.components.CSVCoupler;
 import linprogMPC.components.CSVProducer;
 import linprogMPC.components.CSVStorage;
 import linprogMPC.components.CSVVolatileProducer;
+import linprogMPC.components.prototypes.Connection;
 import linprogMPC.components.prototypes.Consumer;
 import linprogMPC.components.prototypes.Coupler;
 import linprogMPC.components.prototypes.Producer;
@@ -25,7 +31,9 @@ import linprogMPC.messages.extension.NetworkType;
 
 public abstract class ExampleLoader {
 	public static TopologyController OpcUaExample() {
-		TopologyController topologyController = new TopologyController("MEMAP", true, 5, 96, 7, "ELECTRICITYPRICEEXAMPLE", "cost", 0, false, 4880);
+		TopologyController topologyController = new TopologyController(OptHierarchy.MEMAP, Optimizer.MILP,
+				OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.FILES, "MemapExample", 5, 96, 7,
+				"ELECTRICITYPRICEEXAMPLE", 0, 4880);
 
 		try {
 			BufferedReader endpoint1 = new BufferedReader(new InputStreamReader(ExampleLoader.class.getClassLoader()
@@ -73,11 +81,14 @@ public abstract class ExampleLoader {
 
 	public static TopologyController CsvExample() {
 		final int PORT_UNDEFINED = 0;
-		TopologyController topologyController = new TopologyController("MEMAP", true, 2, 96, 2, "ELECTRICITYPRICEEXAMPLE", "cost", 0, false, 4880);
+		TopologyController topologyController = new TopologyController(OptHierarchy.BUILDING, Optimizer.MILP,
+				OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.FILES, "MemapExample", 5, 96, 2,
+				"ELECTRICITYPRICEEXAMPLE", 0, 4880);
 
 		BuildingController building1 = new CSVBuildingController("Building1", false, 50);
 		Consumer consumer1 = new CSVConsumer("demand1", "EXAMPLE1", 0);
-		Producer producer1 = new CSVProducer("producer1", 20.0, 0.89, NetworkType.HEAT, 0.0591, 0.202, PORT_UNDEFINED);
+		Producer producer1 = new CSVProducer("producer1", 0, 20.0, 0.89, NetworkType.HEAT, 0.0591, 0.202,
+				PORT_UNDEFINED);
 		building1.attach(producer1);
 		building1.attach(consumer1);
 
@@ -85,18 +96,22 @@ public abstract class ExampleLoader {
 		Consumer consumer2 = new CSVConsumer("demand2", "EXAMPLE2", 0);
 		Storage battery2 = new CSVStorage("storage2", 30.0, 0.9, 0.9, 0.9, 0.95, 0.95, NetworkType.ELECTRICITY, 0.0001,
 				0.0001, 0);
-		Producer producer2 = new CSVProducer("producer2", 40.0, 0.89, NetworkType.HEAT, 0.0591, 0.202, PORT_UNDEFINED);
+		Producer producer2 = new CSVProducer("producer2", 0, 40.0, 0.89, NetworkType.HEAT, 0.0591, 0.202,
+				PORT_UNDEFINED);
 		building2.attach(producer2);
 		building2.attach(battery2);
 		building2.attach(consumer2);
+		// TODO: Test connections with more buildings
+		Connection connection = new Connection(building1.getName(), 100, 0.01, 1000);
+		building2.attach(connection);
 
 		BuildingController building3 = new CSVBuildingController("Building3", false, 50);
 		Consumer consumer3 = new CSVConsumer("demand3", "EXAMPLE3", 0);
-		Producer pv3 = new CSVVolatileProducer("pv3", "", 40.0, NetworkType.ELECTRICITY, 0.0001, 0, PORT_UNDEFINED);
-		Coupler heatpump3 = new CSVCoupler("heatpump3", 62.0, 2.5, -1, NetworkType.ELECTRICITY, NetworkType.HEAT,
+		Producer pv3 = new CSVVolatileProducer("pv3", "", 0, 40.0, NetworkType.ELECTRICITY, 0.0001, 0, PORT_UNDEFINED);
+		Coupler heatpump3 = new CSVCoupler("heatpump3", 0, 62.0, 2.5, -1, NetworkType.ELECTRICITY, NetworkType.HEAT,
 				0.0591, 0.202, PORT_UNDEFINED);
-		Storage thermalStorage3 = new CSVStorage("thermalStorage3", 300, 0.9, 180, 180, 0.9, 0.9, NetworkType.HEAT, 0.0001,
-				0.0001, PORT_UNDEFINED);
+		Storage thermalStorage3 = new CSVStorage("thermalStorage3", 300, 0.9, 180, 180, 0.9, 0.9, NetworkType.HEAT,
+				0.0001, 0.0001, PORT_UNDEFINED);
 		building3.attach(pv3);
 		building3.attach(heatpump3);
 		building3.attach(thermalStorage3);
@@ -104,16 +119,17 @@ public abstract class ExampleLoader {
 
 		BuildingController building4 = new CSVBuildingController("Building4", false, 50);
 		Consumer consumer4 = new CSVConsumer("demand4", "EXAMPLE4", 0);
-		Coupler chp4 = new CSVCoupler("chp4", 43, 0.61, 0.29, NetworkType.HEAT, NetworkType.ELECTRICITY, 0.0591, 0.202,
-				PORT_UNDEFINED);
+		Coupler chp4 = new CSVCoupler("chp4", 0, 43, 0.61, 0.29, NetworkType.HEAT, NetworkType.ELECTRICITY, 0.0591,
+				0.202, PORT_UNDEFINED);
 		building4.attach(chp4);
 		building4.attach(consumer4);
 
 		BuildingController building5 = new CSVBuildingController("Building5", false, 50);
 		Consumer consumer5 = new CSVConsumer("demand5", "EXAMPLE5", 0);
-		Coupler chp5 = new CSVCoupler("chp4", 43, 0.8, 0.4, NetworkType.HEAT, NetworkType.ELECTRICITY, 0.0591, 0.202,
+		Coupler chp5 = new CSVCoupler("chp5", 0, 43, 0.8, 0.4, NetworkType.HEAT, NetworkType.ELECTRICITY, 0.0591, 0.202,
 				PORT_UNDEFINED);
-		Producer solarThermic5 = new CSVVolatileProducer("solarThermic5", "", 40, NetworkType.HEAT, 0, 0, PORT_UNDEFINED);
+		Producer solarThermic5 = new CSVVolatileProducer("solarThermic5", "", 0, 40, NetworkType.HEAT, 0, 0,
+				PORT_UNDEFINED);
 		building5.attach(solarThermic5);
 		building5.attach(chp5);
 		building5.attach(consumer5);

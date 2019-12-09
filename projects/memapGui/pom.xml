@@ -70,7 +70,7 @@
 
 		<dependency>
 			<groupId>org.fortiss</groupId>
-			<artifactId>memapServer</artifactId>
+			<artifactId>memapCore</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 

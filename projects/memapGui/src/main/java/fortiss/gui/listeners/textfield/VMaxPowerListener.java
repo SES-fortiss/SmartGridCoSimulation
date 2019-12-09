@@ -9,12 +9,12 @@ import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import fortiss.components.Coupler;
+import fortiss.components.Volatile;
 import fortiss.gui.Designer;
 import fortiss.gui.listeners.helper.FocusManager;
 import fortiss.gui.listeners.helper.InsertionVerifier;
 
-public class CPowerListener extends KeyAdapter implements FocusListener {
+public class VMaxPowerListener extends KeyAdapter implements FocusListener {
 
 	private static int building;
 	private static int component;
@@ -23,7 +23,7 @@ public class CPowerListener extends KeyAdapter implements FocusListener {
 	private static JTextField source;
 	private static String input;
 	private static String message;
-	private static Coupler o;
+	private static Volatile o;
 	private static InsertionVerifier v;
 
 	/**
@@ -33,15 +33,14 @@ public class CPowerListener extends KeyAdapter implements FocusListener {
 	public void focusGained(FocusEvent e) {
 		building = Designer.currentBuilding;
 		component = Designer.currentComponent;
-		o = Designer.buildings.get(building).getCoupler().get(component);
+		o = Designer.buildings.get(building).getVolatile().get(component);
 		check = false;
 		valid = true;
 
 		source = (JTextField) e.getSource();
 		message = "An unidentified error has occurred.";
 		v = new InsertionVerifier();
-
-		FocusManager.focusCoupler(building, component);
+		FocusManager.focusVolatile(building, component);
 	}
 
 	/**
@@ -51,11 +50,11 @@ public class CPowerListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
-			String currentVal = Double.toString(o.getPower());
+			String currentVal = Double.toString(o.getMaximumPower());
 			JOptionPane.showMessageDialog(Designer.contentPane, message);
 			source.setText(currentVal);
 		}
-		FocusManager.focusLostCoupler(building, component);
+		FocusManager.focusLostVolatile(building, component);
 	}
 
 	/**
@@ -78,7 +77,7 @@ public class CPowerListener extends KeyAdapter implements FocusListener {
 				message = "Error. Invalid input or empty field.";
 			} else {
 				valid = true;
-				o.setPower(Double.parseDouble(input));
+				o.setMaximumPower(Double.parseDouble(input));
 			}
 		}
 	}

@@ -38,7 +38,8 @@ public class ClientVolatileProducer extends Producer {
 	/**
 	 * @param client
 	 * @param name                volatile producer name
-	 * @param installedPowerId    volatile power[kW]
+	 * @param minPower            volatile minimum power [kW]
+	 * @param maxPower            volatile maximum power [kW]
 	 * @param effId               efficiency [0-1]
 	 * @param currentProductionId current production
 	 * @param networkType
@@ -46,10 +47,11 @@ public class ClientVolatileProducer extends Producer {
 	 * @param costCO2Id           CO2 cost [kg CO2/kWh]
 	 * @param port
 	 */
-	public ClientVolatileProducer(BasicClient client, String name, NodeId installedPowerId, NodeId effId,
+	public ClientVolatileProducer(BasicClient client, String name, NodeId minPowerId, NodeId maxPowerId, NodeId effId,
 			NodeId currentProductionId, NetworkType networkType, NodeId opCostId, NodeId costCO2Id, int port)
 			throws InterruptedException, ExecutionException {
-		super(name, client.readFinalDoubleValue(installedPowerId), client.readFinalDoubleValue(effId), port);
+		super(name, client.readFinalDoubleValue(minPowerId), client.readFinalDoubleValue(maxPowerId),
+				client.readFinalDoubleValue(effId), port);
 
 		volatileProducerMessage = new VolatileProducerMessage();
 		this.networkType = networkType;
@@ -104,7 +106,8 @@ public class ClientVolatileProducer extends Producer {
 	public void makeDecision() {
 		volatileProducerMessage.id = fullActorPath;
 		volatileProducerMessage.name = actorName;
-		volatileProducerMessage.installedPower = installedPower;
+		volatileProducerMessage.minPower = minPower;
+		volatileProducerMessage.maxPower = maxPower;
 		volatileProducerMessage.operationalCostEUR = opCost;
 		volatileProducerMessage.operationalCostCO2 = costCO2;
 		volatileProducerMessage.efficiency = efficiency;

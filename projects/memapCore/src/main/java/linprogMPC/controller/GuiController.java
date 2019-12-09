@@ -14,6 +14,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
+import linprogMPC.ConfigurationMEMAP.MEMAPLogging;
+import linprogMPC.ConfigurationMEMAP.OptHierarchy;
+import linprogMPC.ConfigurationMEMAP.OptimizationCriteria;
+import linprogMPC.ConfigurationMEMAP.Optimizer;
+import linprogMPC.ConfigurationMEMAP.ToolUsage;
 import linprogMPC.components.CSVConsumer;
 import linprogMPC.components.CSVCoupler;
 import linprogMPC.components.CSVProducer;
@@ -57,22 +62,25 @@ public class GuiController {
 				throws JsonParseException {
 
 			JsonObject jObject = (JsonObject) jsonElement;
-			
+
+			OptHierarchy optHierarchy = (jObject.get("memapON").getAsBoolean() == true) ? OptHierarchy.MEMAP
+					: OptHierarchy.BUILDING;
+			Optimizer optimizer = (jObject.get("optimizer").getAsString().contentEquals("lp")) ? Optimizer.LP
+					: Optimizer.MILP;
+			OptimizationCriteria optimizationCriteria = (jObject.get("optCriteria").getAsString().contentEquals("cost"))
+					? OptimizationCriteria.EUR
+					: OptimizationCriteria.CO2;
+			MEMAPLogging loggingMode = (jObject.get("loggingMode").equals("resultLogs")) ? MEMAPLogging.RESULTS_ONLY : (jObject.get("loggingMode").equals("fileLogs")) ? MEMAPLogging.FILES : MEMAPLogging.ALL;
+
 			boolean fixedPrice = jObject.get("fixedPrice").getAsBoolean();
-			
+
 			// Creating topologyController
-			TopologyController top;
-			if(fixedPrice) {
-				double fixedMarketPrice = jObject.get("fixedMarketPrice").getAsDouble();
-				top = new TopologyController("Memap", jObject.get("memapON").getAsBoolean(),
-						jObject.get("steps").getAsInt(), jObject.get("length").getAsInt(), jObject.get("days").getAsInt(),
-						fixedMarketPrice, jObject.get("optCriteria").getAsString(), 0, false, 0);
-			} else {
-				String marketPriceFile = jObject.get("marketPriceFile").getAsString();
-				top = new TopologyController("Memap", jObject.get("memapON").getAsBoolean(),
-						jObject.get("steps").getAsInt(), jObject.get("length").getAsInt(), jObject.get("days").getAsInt(),
-						marketPriceFile, jObject.get("optCriteria").getAsString(), 0, false, 0);
-			}
+			TopologyController top = (fixedPrice) ? new TopologyController(optHierarchy, optimizer, optimizationCriteria, ToolUsage.PLANNING,
+					loggingMode, jObject.get("simulationName").getAsString(), jObject.get("steps").getAsInt(),
+					jObject.get("length").getAsInt(), jObject.get("days").getAsInt(), jObject.get("fixedMarketPrice").getAsDouble(), 0, 0)
+			: new TopologyController(optHierarchy, optimizer, optimizationCriteria, ToolUsage.PLANNING,
+					loggingMode, jObject.get("simulationName").getAsString(), jObject.get("steps").getAsInt(),
+					jObject.get("length").getAsInt(), jObject.get("days").getAsInt(), jObject.get("marketPriceFile").getAsString(), 0, 0);
 
 			// Attaching buildings
 			JsonArray buildingPathList = (JsonArray) jObject.get("descriptorFiles");
@@ -170,19 +178,14 @@ public class GuiController {
 			JsonObject jObject = (JsonObject) jsonElement;
 			String networkP = jObject.get("networkTypeP").getAsString();
 
-			// Assuming primary network type is electricity
-			NetworkType primaryNetworkType = NetworkType.ELECTRICITY;
-			NetworkType secondaryNetworkType = NetworkType.HEAT;
-			// If primary network type is heat
-			if (networkP.equals("Heat")) {
-				primaryNetworkType = NetworkType.HEAT;
-				secondaryNetworkType = NetworkType.ELECTRICITY;
-			}
+			NetworkType primaryNetworkType = (networkP.equals("Heat")) ? NetworkType.HEAT : NetworkType.ELECTRICITY;
+			NetworkType secondaryNetworkType = (primaryNetworkType.equals(NetworkType.HEAT)) ? NetworkType.ELECTRICITY
+					: NetworkType.HEAT;
 
-			return new CSVCoupler(jObject.get("name").getAsString(), jObject.get("power").getAsDouble(),
-					jObject.get("efficiencyPrimary").getAsDouble(), jObject.get("efficiencySecondary").getAsDouble(),
-					primaryNetworkType, secondaryNetworkType, jObject.get("cost").getAsDouble(),
-					jObject.get("coEmission").getAsDouble(), 0);
+			return new CSVCoupler(jObject.get("name").getAsString(), jObject.get("minimumPower").getAsDouble(),
+					jObject.get("maximumPower").getAsDouble(), jObject.get("efficiencyPrimary").getAsDouble(),
+					jObject.get("efficiencySecondary").getAsDouble(), primaryNetworkType, secondaryNetworkType,
+					jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
 		}
 	}
 
@@ -193,16 +196,12 @@ public class GuiController {
 			JsonObject jObject = (JsonObject) jsonElement;
 			String networkT = jObject.get("networkType").getAsString();
 
-			// Assuming network type is electricity
-			NetworkType networkType = NetworkType.ELECTRICITY;
-			// If primary network type is heat
-			if (networkT.equals("Heat")) {
-				networkType = NetworkType.HEAT;
-			}
+			NetworkType networkType = (networkT.equals("Heat")) ? networkType = NetworkType.HEAT
+					: NetworkType.ELECTRICITY;
 
-			return new CSVProducer(jObject.get("name").getAsString(), jObject.get("power").getAsDouble(),
-					jObject.get("efficiency").getAsDouble(), networkType, jObject.get("cost").getAsDouble(),
-					jObject.get("coEmission").getAsDouble(), 0);
+			return new CSVProducer(jObject.get("name").getAsString(), jObject.get("minimumPower").getAsDouble(),
+					jObject.get("maximumPower").getAsDouble(), jObject.get("efficiency").getAsDouble(), networkType,
+					jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
 		}
 	}
 
@@ -213,16 +212,12 @@ public class GuiController {
 			JsonObject jObject = (JsonObject) jsonElement;
 			String networkT = jObject.get("networkType").getAsString();
 
-			// Assuming network type is electricity
-			NetworkType networkType = NetworkType.ELECTRICITY;
-			// If primary network type is heat
-			if (networkT.equals("Heat")) {
-				networkType = NetworkType.HEAT;
-			}
+			NetworkType networkType = (networkT.equals("Heat")) ? networkType = NetworkType.HEAT
+					: NetworkType.ELECTRICITY;
 
 			return new CSVVolatileProducer(jObject.get("name").getAsString(), jObject.get("forecastFile").getAsString(),
-					jObject.get("power").getAsDouble(), networkType, jObject.get("cost").getAsDouble(),
-					jObject.get("coEmission").getAsDouble(), 0);
+					jObject.get("minimumPower").getAsDouble(), jObject.get("maximumPower").getAsDouble(), networkType,
+					jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
 		}
 	}
 
@@ -233,12 +228,8 @@ public class GuiController {
 			JsonObject jObject = (JsonObject) jsonElement;
 			String networkT = jObject.get("networkType").getAsString();
 
-			// Assuming network type is electricity
-			NetworkType networkType = NetworkType.ELECTRICITY;
-			// If primary network type is heat
-			if (networkT.equals("Heat")) {
-				networkType = NetworkType.HEAT;
-			}
+			NetworkType networkType = (networkT.equals("Heat")) ? networkType = NetworkType.HEAT
+					: NetworkType.ELECTRICITY;
 
 			return new CSVStorage(jObject.get("name").getAsString(), jObject.get("capacity").getAsDouble(),
 					jObject.get("soc").getAsDouble(), jObject.get("maxCharging").getAsDouble(),

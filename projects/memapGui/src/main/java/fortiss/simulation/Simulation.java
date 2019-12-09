@@ -9,7 +9,7 @@ import linprogMPC.controller.GuiController;
 import linprogMPC.helper.DirectoryConfiguration;
 
 public class Simulation implements Runnable {
-
+	
 	/** Controller for the GUI */
 	private GuiController gc;
 	/** an instance of Reporter window */

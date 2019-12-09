@@ -20,7 +20,7 @@ public class AddControllableListener extends MouseAdapter {
 
 		// Create contProduction
 		Designer.buildings.get(Designer.currentBuilding).addContProduction(
-				new Controllable("Controllable" + Designer.currentComponent, "Heat", 0.0, 1.0, 0.0, 0.0));
+				new Controllable("Controllable" + Designer.currentComponent, "Heat", 0.0, 0.0, 1.0, 0.0, 0.0));
 		Controllable cp = Designer.buildings.get(Designer.currentBuilding).getControllable()
 				.get(Designer.currentComponent);
 
@@ -30,7 +30,7 @@ public class AddControllableListener extends MouseAdapter {
 
 		// Show data
 		DataUpdater up = new DataUpdater();
-		up.updateContProductionData(cp.getName(), cp.getNetworkType(), cp.getPower(), cp.getEfficiency(), cp.getCost(),
-				cp.getCOEmission());
+		up.updateContProductionData(cp.getName(), cp.getNetworkType(), cp.getMinimumPower(), cp.getMaximumPower(),
+				cp.getEfficiency(), cp.getCost(), cp.getCOEmission());
 	}
 }

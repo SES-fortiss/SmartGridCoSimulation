@@ -22,7 +22,12 @@ public class EnergyPrices {
 	/**
 	 * Constructor with double value. Creates a array list with all its entries
 	 * equal to MarketPrice
+	 * 
 	 * @param MarketPrice a double value
+	 * 
+	 *                    The latter two parameters are necessary because their
+	 *                    global values are not available when this object is
+	 *                    created.
 	 */
 	public EnergyPrices(double MarketPrice) {
 		electricityPrices = new ArrayList<Double>();
@@ -32,7 +37,9 @@ public class EnergyPrices {
 	}
 
 	/**
-	 * Constructor with CSV. Creates a array list reading from the file path MarketPrice
+	 * Constructor with CSV. Creates a array list reading from the file path
+	 * MarketPrice
+	 * 
 	 * @param MarketPriceCSV a path to a CSV file
 	 */
 	public EnergyPrices(String MarketPriceCSV) {
@@ -41,8 +48,9 @@ public class EnergyPrices {
 
 	/**
 	 * Assign values to electricityPrices
+	 * 
 	 * @param csvFile
-	 */	
+	 */
 	private void setEnergyPrices(String csvFile) {
 		try {
 			if (csvFile.isEmpty()) {
@@ -58,24 +66,24 @@ public class EnergyPrices {
 	}
 
 	/**
-	 * Returns the gas price in cents per kWh at any given timestep. For now, it
+	 * Returns the gas price in cents per kWh at any given time step. For now, it
 	 * constantly returns .0017ct/kJ, which equals 6.12 ct/kWh, but here CSV-files
 	 * or web services or other mechanisms could be plugged in.
 	 * 
-	 * @param time the timestep for which to get the gas price
-	 * @return gas price in ct/kWh at specified timestep
+	 * @param time the time step for which to get the gas price
+	 * @return gas price in ct/kWh at specified time step
 	 */
 	public double getGasPriceInEuro(int timestep) {
 		return 0.0685d;
 	}
 
 	/**
-	 * Returns the heat price in Euro per kWh at any given timestep. For now, it
-	 * constantly returns 5,34 ct/kWh (Stadtwerke Würzburg), but here CSV-files or
+	 * Returns the heat price in Euro per kWh at any given time step. For now, it
+	 * constantly returns 5,34 ct/kWh (Stadtwerke Wuerzburg), but here CSV-files or
 	 * web services or other mechanisms could be plugged in.
 	 * 
-	 * @param time the timestep for which to get the gas price
-	 * @return gas price in ct/kWh at specified timestep
+	 * @param time the time step for which to get the gas price
+	 * @return gas price in ct/kWh at specified time step
 	 */
 	public double getHeatPriceInEuro(int timestep) {
 		double value = 0.0534d;
@@ -84,14 +92,14 @@ public class EnergyPrices {
 	}
 
 	/**
-	 * Returns the electricity price in cents per kWh at any given timestep in
+	 * Returns the electricity price in cents per kWh at any given time step in
 	 * ct/kJ, read from a CSV-file.
 	 * 
-	 * Prices vary between 25-50 ct/kWh within 7days Coverted to EUR/kWh The prices
+	 * Prices vary between 25-50 ct/kWh within 7days converted to EUR/kWh The prices
 	 * are set to be constant throughout one day
 	 * 
-	 * @param time the timestep for which to get the electricity price
-	 * @return electricity price in ct/kWh at specified timestep
+	 * @param time the time step for which to get the electricity price
+	 * @return electricity price in ct/kWh at specified time step
 	 */
 	public double getElectricityPriceInEuro(int timestep) {
 		return electricityPrices.get(timestep % electricityPrices.size()) / 100;

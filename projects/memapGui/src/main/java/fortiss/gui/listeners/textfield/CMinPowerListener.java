@@ -9,12 +9,12 @@ import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import fortiss.components.Controllable;
+import fortiss.components.Coupler;
 import fortiss.gui.Designer;
 import fortiss.gui.listeners.helper.FocusManager;
 import fortiss.gui.listeners.helper.InsertionVerifier;
 
-public class CPPowerListener extends KeyAdapter implements FocusListener {
+public class CMinPowerListener extends KeyAdapter implements FocusListener {
 
 	private static int building;
 	private static int component;
@@ -23,7 +23,7 @@ public class CPPowerListener extends KeyAdapter implements FocusListener {
 	private static JTextField source;
 	private static String input;
 	private static String message;
-	private static Controllable o;
+	private static Coupler o;
 	private static InsertionVerifier v;
 
 	/**
@@ -33,14 +33,15 @@ public class CPPowerListener extends KeyAdapter implements FocusListener {
 	public void focusGained(FocusEvent e) {
 		building = Designer.currentBuilding;
 		component = Designer.currentComponent;
-		o = Designer.buildings.get(building).getControllable().get(component);
+		o = Designer.buildings.get(building).getCoupler().get(component);
 		check = false;
 		valid = true;
 
 		source = (JTextField) e.getSource();
 		message = "An unidentified error has occurred.";
 		v = new InsertionVerifier();
-		FocusManager.focusControllable(building, component);
+
+		FocusManager.focusCoupler(building, component);
 	}
 
 	/**
@@ -50,11 +51,11 @@ public class CPPowerListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
-			String currentVal = Double.toString(o.getPower());
+			String currentVal = Double.toString(o.getMinimumPower());
 			JOptionPane.showMessageDialog(Designer.contentPane, message);
 			source.setText(currentVal);
 		}
-		FocusManager.focusLostControllable(building, component);
+		FocusManager.focusLostCoupler(building, component);
 	}
 
 	/**
@@ -77,7 +78,7 @@ public class CPPowerListener extends KeyAdapter implements FocusListener {
 				message = "Error. Invalid input or empty field.";
 			} else {
 				valid = true;
-				o.setPower(Double.parseDouble(input));
+				o.setMinimumPower(Double.parseDouble(input));
 			}
 		}
 	}

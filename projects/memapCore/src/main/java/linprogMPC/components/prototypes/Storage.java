@@ -21,17 +21,6 @@ public abstract class Storage extends Device {
 	public double[] linprogStorageInput = new double[nStepsMPC];
 	public double[] linprogStorageOutput = new double[nStepsMPC];
 
-	/**
-	 * Parameters: capacity, maxIN, maxOUT, effIN, effOUT, port;
-	 * 
-	 * 
-	 * @param capacity
-	 * @param max_charging
-	 * @param max_discharging
-	 * @param effIN
-	 * @param effOUT
-	 * @param port
-	 */
 	public Storage(String name, double capacity, double stateOfCharge, double max_charging, double max_discharging,
 			double effIN, double effOUT, int port) {
 		super(name, port);

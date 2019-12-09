@@ -9,6 +9,7 @@ import java.util.Locale;
 
 import helper.IoHelper;
 import linprogMPC.TopologyConfig;
+import linprogMPC.helper.lp.LPOptimizationProblem;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.planning.StorageMessage;
 
@@ -23,6 +24,7 @@ public class SolutionHandler {
 	 * @param data
 	 * @param filename
 	 */
+	// TODO: Not used. Remove?
 	public void exportVector(double[] data, String filename) {
 		BufferedWriter bw = null;
 		String source = "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.resultDir + "/" + filename;
@@ -153,6 +155,7 @@ public class SolutionHandler {
 	 * @param lambda
 	 * @param filename
 	 */
+	// TODO: Not used. Remove?
 	public double exportCostsFull(double[] sol, double[] lambda, String filename) {
 
 		// The Costs are evaluated only for the first time step of the MPC calculation
@@ -175,6 +178,7 @@ public class SolutionHandler {
 	 * @param sol
 	 * @param filename
 	 */
+	// TODO: Not used. Remove?
 	public void exportProduction(double[][] matrixA, double[] sol, String filename) {
 		try {
 			double[] result = matrixMultiplication(matrixA, sol);
@@ -185,6 +189,7 @@ public class SolutionHandler {
 		return;
 	}
 
+	// TODO: Not used. Remove?
 	public double[][] getCorrectedSolutionVector(double[][] matrix, double[] vec, int NumberOfStorages)
 			throws IOException {
 		if (matrix[0].length == vec.length) {
@@ -203,19 +208,23 @@ public class SolutionHandler {
 		return null;
 
 	}
+	
+	/**
+	 * @param optSolution optimization solution
+	 * @param lambda      
+	 * @return cost vector according to optimization criteria
+	 */
+	public double calculateTimeStepCosts(double[] optSolution, double[] lambda) {
+		double result = 0;
 
-	public double[] calculateTimeStepCosts(double[] sol, double[] lambda) {
-		// The Costs are evaluated only for the first timestep of the MPC calculation
-		double[] costVector = new double[nMPC];
-
-		for (int j = 0; j < nMPC; j++) {
-			for (int i = 0; i < lambda.length / nMPC; i++) {
-				costVector[j] += lambda[j + (i * nMPC)] * sol[j + (i * nMPC)];
-			}
+		for (int i = 0; i < lambda.length / nMPC; i++) {
+			result += lambda[(i * nMPC)] * optSolution[(i * nMPC)] * 0.25;
 		}
-		return costVector;
+
+		return result;
 	}
 
+	// TODO: Not used. Remove?
 	public double[] matrixMultiplication(double[][] matrix, double[] vec) throws IOException {
 		if (matrix[0].length == vec.length) {
 			double[] result = new double[matrix[0].length];
@@ -231,7 +240,15 @@ public class SolutionHandler {
 
 	}
 
-	public double calcAutarky(OptimizationProblem problem, double[] sol) {
+	/**
+	 * Calculates the autarky or economic independence or self-sufficiency.
+	 * 
+	 * @param problem     A linear programming problem
+	 * @param optSolution optimization solution
+	 * @return autarky
+	 */
+	// TODO: Not used. Remove?
+	public double calcAutarky(LPOptimizationProblem problem, double[] optSolution) {
 
 		double summeB_H = 0;
 		double summeB_el = 0;
@@ -240,13 +257,15 @@ public class SolutionHandler {
 			summeB_el += problem.b_eq[nMPC + j];
 		}
 
-		int x1 = (int) (sol.length - 4 * nMPC);
+		int x1 = (int) (optSolution.length - 4 * nMPC);
 		double purchase_el = 0;
 		double purchase_H = 0;
 
 		for (int i = x1; i < x1 + nMPC; i++) {
-			purchase_el += sol[nMPC + i] - sol[i]; // difference between purchased and sold electricity
-			purchase_H += sol[3 * nMPC + i] - sol[2 * nMPC + i]; // difference between purchased and sold heat
+			// difference between purchased and sold electricity
+			purchase_el += optSolution[nMPC + i] - optSolution[i];
+			// difference between purchased and sold heat
+			purchase_H += optSolution[3 * nMPC + i] - optSolution[2 * nMPC + i];
 		}
 
 		double purchasedEnergy = purchase_el + purchase_H;
@@ -258,7 +277,8 @@ public class SolutionHandler {
 
 	}
 
-	public void calcNewCosts(OptimizationProblem problem, double[] sol, ArrayList<BuildingMessage> buildingSpecs) {
+	// TODO: Not used. Remove?
+	public void calcNewCosts(LPOptimizationProblem problem, double[] sol, ArrayList<BuildingMessage> buildingSpecs) {
 
 		int nrOfStorages2 = 0;
 		int nrOfProducers2 = 0;
@@ -271,7 +291,7 @@ public class SolutionHandler {
 
 		for (BuildingMessage buildingSpec : buildingSpecs) {
 			double newBuildingCosts = 0;
-			nrOfProducers2 += buildingSpec.getNrOfProducers();
+			nrOfProducers2 += buildingSpec.getNrOfVolatileProducers() + buildingSpec.getNrOfControllableProducers();
 			nrOfStorages2 += buildingSpec.getNrOfStorages();
 			range2 = nMPC * (nrOfProducers2 + 2 * nrOfStorages2);
 			for (int j = range1; j < range2; j++) {
@@ -290,9 +310,9 @@ public class SolutionHandler {
 	}
 
 	/**
-	 * @param optSolution
+	 * @param optSolution optimization solution
 	 * @param nStepsMPC   the number of steps for MPC
-	 * @return an array with the solution
+	 * @return an array with the solution for the time step
 	 */
 	public double[] getSolutionForThisTimeStep(double[] optSolution, int nStepsMPC) {
 		double[] result = new double[optSolution.length / nStepsMPC];
@@ -303,32 +323,40 @@ public class SolutionHandler {
 	}
 
 	/**
-	 * @param problem   an optimization problem
+	 * @param demand    combined demand vector
 	 * @param nStepsMPC the number of steps for MPC
-	 * @return an array with the demand values
+	 * @return an array with the demand values for a given time step
 	 */
-	public double[] getDemandForThisTimestep(OptimizationProblem problem, int nStepsMPC) {
-		double[] result = new double[problem.b_eq.length / nStepsMPC];
+	public double[] getDemandForThisTimestep(double[] demand, int nStepsMPC) {
+		double[] result = new double[demand.length / nStepsMPC];
+
 		for (int i = 0; i < result.length; i++) {
-			result[i] = problem.b_eq[i * nStepsMPC];
+			result[i] = demand[i * nStepsMPC];
 		}
+
 		return result;
 	}
 
-	public double[] getEffSolutionForThisTimeStep(double[] optSolution, OptimizationProblem problem, int nStepsMPC) {
+	/**
+	 * @param optSolution optimization solution
+	 * @param etas        transformation vectors
+	 * @param nStepsMPC   the number of steps for MPC
+	 * @return an array with the demand values for a given time step
+	 */
+	public double[] getEffSolutionForThisTimeStep(double[] optSolution, double[] etas, int nStepsMPC) {
 		double[] result = new double[optSolution.length / nStepsMPC];
 		for (int i = 0; i < result.length; i++) {
-			result[i] = optSolution[i * nStepsMPC] * problem.etas[i * nStepsMPC];
+			result[i] = optSolution[i * nStepsMPC] * etas[i * nStepsMPC];
 		}
 		return result;
 	}
 
 	/**
-	 * @param problem   an optimization problem
+	 * @param problem   A linear programming problem
 	 * @param nStepsMPC the number of steps for MPC
 	 * @return an array with the positive demand values
 	 */
-	public double[] getPositiveDemandForThisTimestep(OptimizationProblem problem, int nStepsMPC) {
+	public double[] getPositiveDemandForThisTimestep(LPOptimizationProblem problem, int nStepsMPC) {
 		double[] result = new double[problem.b_eq.length / nStepsMPC + 1];
 
 		for (int i = 0; i < result.length - 2; i++) {
@@ -341,7 +369,8 @@ public class SolutionHandler {
 
 	/**
 	 * @param storageMessageList a list of storage messages
-	 * @return an array with the current state of charge of storage objects
+	 * @return an array with the current state of charge of the storage objects of a
+	 *         building
 	 */
 	public double[] getCurrentSOC(ArrayList<StorageMessage> storageMessageList) {
 		double[] result = new double[storageMessageList.size()];
@@ -353,7 +382,7 @@ public class SolutionHandler {
 
 	/**
 	 * @param buildingMessageList a list of building messages
-	 * @return an array with the current state of charge of storage objects
+	 * @return an array with the current state of charge of all storage objects
 	 */
 	public double[] getCurrentSOCs(ArrayList<BuildingMessage> buildingMessageList) {
 		ArrayList<StorageMessage> storeMessageList = new ArrayList<StorageMessage>();
@@ -366,8 +395,11 @@ public class SolutionHandler {
 	}
 
 	/**
+	 * @param buildingMessageList a list of building messages
+	 * @param nStepsMPC           the number of steps for MPC
 	 * @return an array with the demand names when Global MEMAP optimization is ON
 	 */
+	// TODO: Decide whether this function should be here or in a message handler
 	public String[] getNamesForDemand(ArrayList<BuildingMessage> buildingMessageList, int nStepsMPC) {
 		String[] result = new String[buildingMessageList.size() + 1];
 
@@ -381,6 +413,7 @@ public class SolutionHandler {
 	/**
 	 * @return an array with the demand type names
 	 */
+	// TODO: Decide whether this function should be here or in a message handler
 	public String[] getNamesForDemand() {
 		String[] result = { "Heat demand", "Electricity demand" };
 		return result;
@@ -400,27 +433,33 @@ public class SolutionHandler {
 		return result;
 	}
 
-	public String[] getEffNamesForThisTimeStep(OptimizationProblem problem, int nStepsMPC) {
-		String[] result = new String[problem.namesUB.length / nStepsMPC];
+	/**
+	 * @param names     an array with the names for every time steps
+	 * @param nStepsMPC the number of steps for MPC
+	 * @return an array with the efficiency names when Global MEMAP optimization is
+	 *         ON
+	 */
+	public String[] getEffNamesForThisTimeStep(String[] names, int nStepsMPC) {
+		String[] result = new String[names.length / nStepsMPC];
 		for (int i = 0; i < result.length; i++) {
-			result[i] = "(+) " + problem.namesUB[i * nStepsMPC];
+			result[i] = names[i * nStepsMPC];
 			if (result[i].contains(".")) {
 				String[] strSplit = result[i].split("\\.");
-				result[i] = "(+) " + strSplit[strSplit.length - 1];
+				result[i] = "(+) " + strSplit[strSplit.length - 1] + " times ETA";
 			}
 		}
 		return result;
 	}
 
 	/**
-	 * @param problem   an optimization problem
+	 * @param names     an array with the names for every time steps
 	 * @param nStepsMPC the number of steps for MPC
-	 * @return an array with the names of storage objects
+	 * @return an array with the names for this time step
 	 */
-	public String[] getNamesForThisTimeStep(OptimizationProblem problem, int nStepsMPC) {
-		String[] result = new String[problem.namesUB.length / nStepsMPC];
+	public String[] getNamesForThisTimeStep(String[] names, int nStepsMPC) {
+		String[] result = new String[names.length / nStepsMPC];
 		for (int i = 0; i < result.length; i++) {
-			result[i] = problem.namesUB[i * nStepsMPC];
+			result[i] = names[i * nStepsMPC];
 			if (result[i].contains(".")) {
 				String[] strSplit = result[i].split("\\.");
 				result[i] = strSplit[strSplit.length - 1];
@@ -439,8 +478,9 @@ public class SolutionHandler {
 			result[i] = storageMessageList.get(i).name;
 			if (result[i].contains(".")) {
 				String[] strSplit = result[i].split("\\.");
-				result[i] = strSplit[strSplit.length - 1] + " SOC";
+				result[i] = strSplit[strSplit.length - 1];
 			}
+			result[i] += " SOC";
 		}
 		return result;
 	}
@@ -449,7 +489,8 @@ public class SolutionHandler {
 	 * @param buildingMessageList a list of building messages
 	 * @return an array with the names of storage objects
 	 */
-	public String[] getNamesForSOCs(ArrayList<BuildingMessage> buildingMessageList) {
+	// TODO: Not used	
+public String[] getNamesForSOCs(ArrayList<BuildingMessage> buildingMessageList) {
 		ArrayList<StorageMessage> storeMessageList = new ArrayList<StorageMessage>();
 		for (BuildingMessage bm : buildingMessageList) {
 			storeMessageList.addAll(bm.storageList);

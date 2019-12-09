@@ -30,8 +30,9 @@ public class CouplerListener extends MouseAdapter implements FocusListener {
 		Coupler c = Designer.buildings.get(building).getCoupler().get(Designer.currentComponent);
 
 		DataUpdater up = new DataUpdater();
-		up.updateCouplerData(c.getName(), c.getNetworkTypeP(), c.getNetworkTypeS(), c.getPower(),
-				c.getEfficiencyPrimary(), c.getEfficiencySecondary(), c.getCost(), c.getCOEmission());
+		up.updateCouplerData(c.getName(), c.getNetworkTypeP(), c.getNetworkTypeS(), c.getMinimumPower(),
+				c.getMaximumPower(), c.getEfficiencyPrimary(), c.getEfficiencySecondary(), c.getCost(),
+				c.getCOEmission());
 	}
 
 	/**

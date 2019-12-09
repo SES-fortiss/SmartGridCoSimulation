@@ -20,7 +20,8 @@ import fortiss.gui.listeners.textfield.CPCOEmissionListener;
 import fortiss.gui.listeners.textfield.CPCostListener;
 import fortiss.gui.listeners.textfield.CPEfficiencyListener;
 import fortiss.gui.listeners.textfield.CPNameListener;
-import fortiss.gui.listeners.textfield.CPPowerListener;
+import fortiss.gui.listeners.textfield.CPMaxPowerListener;
+import fortiss.gui.listeners.textfield.CPMinPowerListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
@@ -32,8 +33,10 @@ public class ControllableInputPanel extends JPanel {
 
 	/** Controllable name */
 	public JTextField txtCPName;
-	/** Controllable power */
-	public JTextField txtCPPower;
+	/** Controllable minimum power */
+	public JTextField txtCPMinimumPower;
+	/** Controllable maximum power */
+	public JTextField txtCPMaximumPower;
 	/** Controllable efficiency */
 	public JTextField txtCPEfficiency;
 	/** Controllable cost */
@@ -48,8 +51,10 @@ public class ControllableInputPanel extends JPanel {
 	private JLabel lbCPName;
 	/** Controllable network type label */
 	private JLabel lbCPNetworkType;
-	/** Controllable power label */
-	private JLabel lbCPPower;
+	/** Controllable minimum power label */
+	private JLabel lbCPMinimumPower;
+	/** Controllable maximum power label */
+	private JLabel lbCPMaximumPower;
 	/** Controllable efficiency label */
 	private JLabel lbCPEfficiency;
 	/** Controllable cost label */
@@ -68,7 +73,7 @@ public class ControllableInputPanel extends JPanel {
 		lblControllableProduction.setForeground(Colors.title);
 		lbCPName.setForeground(Colors.normal);
 		lbCPNetworkType.setForeground(Colors.normal);
-		lbCPPower.setForeground(Colors.normal);
+		lbCPMaximumPower.setForeground(Colors.normal);
 		lbCPEfficiency.setForeground(Colors.normal);
 		lbCPCost.setForeground(Colors.normal);
 		lbCPCOEmission.setForeground(Colors.normal);
@@ -93,7 +98,9 @@ public class ControllableInputPanel extends JPanel {
 						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
 						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
+						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
+						FormSpecs.DEFAULT_ROWSPEC, }));
 
 		lblControllableProduction = new JLabel("CONTROLLABLE PRODUCTION");
 		lblControllableProduction.setFont(Fonts.getOswald());
@@ -119,40 +126,49 @@ public class ControllableInputPanel extends JPanel {
 		sCPNetworkType.addMouseListener(new CPNetworkTypeListener());
 		add(sCPNetworkType, "4, 10, fill, default");
 
-		lbCPPower = new JLabel("Installed power [kW]");
-		add(lbCPPower, "2, 12");
+		lbCPMinimumPower = new JLabel("Minimum power [kW]");
+		add(lbCPMinimumPower, "2, 12");
 
-		txtCPPower = new JTextField();
-		txtCPPower.addKeyListener(new CPPowerListener());
-		txtCPPower.addFocusListener(new CPPowerListener());
-		add(txtCPPower, "4, 12, fill, default");
-		txtCPPower.setColumns(10);
+		txtCPMinimumPower = new JTextField();
+		txtCPMinimumPower.addKeyListener(new CPMinPowerListener());
+		txtCPMinimumPower.addFocusListener(new CPMinPowerListener());
+		add(txtCPMinimumPower, "4, 12, fill, default");
+		txtCPMinimumPower.setColumns(10);
+
+		lbCPMaximumPower = new JLabel("Maximum power [kW]");
+		add(lbCPMaximumPower, "2, 14");
+
+		txtCPMaximumPower = new JTextField();
+		txtCPMaximumPower.addKeyListener(new CPMaxPowerListener());
+		txtCPMaximumPower.addFocusListener(new CPMaxPowerListener());
+		add(txtCPMaximumPower, "4, 14, fill, default");
+		txtCPMaximumPower.setColumns(10);
 
 		lbCPEfficiency = new JLabel("Efficiency [0-1]");
-		add(lbCPEfficiency, "2, 14");
+		add(lbCPEfficiency, "2, 16");
 
 		txtCPEfficiency = new JTextField();
 		txtCPEfficiency.addKeyListener(new CPEfficiencyListener());
 		txtCPEfficiency.addFocusListener(new CPEfficiencyListener());
-		add(txtCPEfficiency, "4, 14, fill, default");
+		add(txtCPEfficiency, "4, 16, fill, default");
 		txtCPEfficiency.setColumns(10);
 
 		lbCPCost = new JLabel("Cost [cent EUR/kWh]");
-		add(lbCPCost, "2, 16");
+		add(lbCPCost, "2, 18");
 
 		txtCPCost = new JTextField();
 		txtCPCost.addKeyListener(new CPCostListener());
 		txtCPCost.addFocusListener(new CPCostListener());
-		add(txtCPCost, "4, 16, fill, default");
+		add(txtCPCost, "4, 18, fill, default");
 		txtCPCost.setColumns(10);
 
 		lbCPCOEmission = new JLabel("CO2 Emissions [kg/kWh]");
-		add(lbCPCOEmission, "2, 18");
+		add(lbCPCOEmission, "2, 20");
 
 		txtCPCOEmission = new JTextField();
 		txtCPCOEmission.addKeyListener(new CPCOEmissionListener());
 		txtCPCOEmission.addFocusListener(new CPCOEmissionListener());
-		add(txtCPCOEmission, "4, 18, fill, default");
+		add(txtCPCOEmission, "4, 20, fill, default");
 		txtCPCOEmission.setColumns(10);
 	}
 }

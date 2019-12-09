@@ -3,6 +3,9 @@ package linprogMPC.messages.planning;
 import akka.basicMessages.AnswerContent;
 import linprogMPC.messages.extension.NetworkType;
 
+/*
+ * Integrated
+ */
 public class CouplerMessage implements AnswerContent {
 	
 	public String name;

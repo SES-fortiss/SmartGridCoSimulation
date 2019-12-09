@@ -4,7 +4,7 @@ import java.util.List;
 
 import akka.basicMessages.AnswerContent;
 import akka.systemActors.GlobalTime;
-import linprogMPC.TopologyConfig;
+import linprogMPC.ConfigurationMEMAP;
 import linprogMPC.messages.extension.NetworkType;
 import linprogMPC.messages.planning.DemandMessage;
 
@@ -21,7 +21,7 @@ import linprogMPC.messages.planning.DemandMessage;
 public abstract class Consumer extends Device {
 
 	/**
-	 * @param name                consumer name
+	 * @param name
 	 * @param port
 	 */
 	public Consumer(String name, int port) {
@@ -51,9 +51,9 @@ public abstract class Consumer extends Device {
 		consumptionMessage.id = fullActorPath;
 		consumptionMessage.setDemandVector(demandVectorB);
 		consumptionMessage.forecastType = "Profile";
-		consumptionMessage.optimizationCriteria = TopologyConfig.OPTIMIZATION_CRITERIA;
+		consumptionMessage.optimizationCriteria = ConfigurationMEMAP.chosenCriteria;
 		consumptionMessage.networkType = NetworkType.DEMANDWITHBOTH;
-		
+
 		super.updateDisplay(consumptionMessage);
 	}
 

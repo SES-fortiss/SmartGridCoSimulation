@@ -34,6 +34,11 @@ abstract public class Icon {
 	private static String offMemapPath = "/resources/offMemap.png";
 	private static String optCostPath = "/resources/optCost.png";
 	private static String optCO2Path = "/resources/optCO2.png";
+	private static String lpPath = "/resources/lp.png";
+	private static String milpPath = "/resources/milp.png";
+	private static String allLogsPath = "/resources/allLogs.png";
+	private static String fileLogsPath = "/resources/fileLogs.png";
+	private static String resultLogsPath = "/resources/resultLogs.png";
 	private static String variableMarketPath = "/resources/variableMarket.png";
 	private static String fixedMarketPath = "/resources/fixedMarket.png";
 	private static String visualizePath = "/resources/visualize.png";
@@ -110,11 +115,39 @@ abstract public class Icon {
 			.getImage().getScaledInstance(80, 30, Image.SCALE_SMOOTH));
 	public static ImageIcon fixedMarket = new ImageIcon(new ImageIcon(Icon.class.getResource(fixedMarketPath))
 			.getImage().getScaledInstance(80, 30, Image.SCALE_SMOOTH));
+	public static ImageIcon lp = new ImageIcon(
+			new ImageIcon(Icon.class.getResource(lpPath)).getImage().getScaledInstance(80, 30, Image.SCALE_SMOOTH));
+	public static ImageIcon milp = new ImageIcon(
+			new ImageIcon(Icon.class.getResource(milpPath)).getImage().getScaledInstance(80, 30, Image.SCALE_SMOOTH));
+	public static ImageIcon resultLogs = new ImageIcon(new ImageIcon(Icon.class.getResource(resultLogsPath)).getImage()
+			.getScaledInstance(80, 30, Image.SCALE_SMOOTH));
+	public static ImageIcon fileLogs = new ImageIcon(new ImageIcon(Icon.class.getResource(fileLogsPath)).getImage()
+			.getScaledInstance(80, 30, Image.SCALE_SMOOTH));
+	public static ImageIcon allLogs = new ImageIcon(new ImageIcon(Icon.class.getResource(allLogsPath)).getImage()
+			.getScaledInstance(80, 30, Image.SCALE_SMOOTH));
+
 	@SuppressWarnings("serial")
 	public static ArrayList<ImageIcon> optCriteria = new ArrayList<ImageIcon>() {
 		{
 			add(optCost);
 			add(optCO2);
+		}
+	};
+
+	@SuppressWarnings("serial")
+	public static ArrayList<ImageIcon> optimizer = new ArrayList<ImageIcon>() {
+		{
+			add(lp);
+			add(milp);
+		}
+	};
+
+	@SuppressWarnings("serial")
+	public static ArrayList<ImageIcon> loggingMode = new ArrayList<ImageIcon>() {
+		{
+			add(resultLogs);
+			add(fileLogs);
+			add(allLogs);
 		}
 	};
 }

@@ -18,8 +18,8 @@ public class AddCouplerListener extends MouseAdapter {
 		Designer.currentComponent = Designer.couplerIcons.get(Designer.currentBuilding).size();
 
 		// Create coupler
-		Designer.buildings.get(Designer.currentBuilding).addCoupler(
-				new Coupler("Coupler" + Designer.currentComponent, "Heat", "Electricity", 0.0, 1.0, 1.0, 0.0, 0.0));
+		Designer.buildings.get(Designer.currentBuilding).addCoupler(new Coupler("Coupler" + Designer.currentComponent,
+				"Heat", "Electricity", 0.0, 0.0, 1.0, 1.0, 0.0, 0.0));
 		Coupler c = Designer.buildings.get(Designer.currentBuilding).getCoupler().get(Designer.currentComponent);
 
 		// Create label
@@ -28,7 +28,8 @@ public class AddCouplerListener extends MouseAdapter {
 
 		// Show data
 		DataUpdater up = new DataUpdater();
-		up.updateCouplerData(c.getName(), c.getNetworkTypeP(), c.getNetworkTypeS(), c.getPower(),
-				c.getEfficiencyPrimary(), c.getEfficiencySecondary(), c.getCost(), c.getCOEmission());
+		up.updateCouplerData(c.getName(), c.getNetworkTypeP(), c.getNetworkTypeS(), c.getMinimumPower(),
+				c.getMaximumPower(), c.getEfficiencyPrimary(), c.getEfficiencySecondary(), c.getCost(),
+				c.getCOEmission());
 	}
 }

@@ -17,7 +17,8 @@ public class ClientCoupler extends Coupler {
 	/**
 	 * @param client
 	 * @param name             coupler name
-	 * @param installedPowerId coupler power [kW]
+	 * @param minPower         coupler minimum power [kW]
+	 * @param maxPower         coupler maximum power [kW]
 	 * @param effHeatId        heat efficiency [-1, 10]
 	 * @param effElecId        electricity efficiency [-1, 10]
 	 * @param primaryNetwork
@@ -26,10 +27,12 @@ public class ClientCoupler extends Coupler {
 	 * @param costCO2Id        CO2 cost [kg CO2/kWh]
 	 * @param port
 	 */
-	public ClientCoupler(BasicClient client, String name, NodeId installedPowerId, NodeId effHeatId, NodeId effElecId,
+	public ClientCoupler(BasicClient client, String name, NodeId minPowerId, NodeId maxPowerId, NodeId effHeatId, NodeId effElecId,
 			NetworkType primaryNetwork, NetworkType secondaryNetwork, NodeId opCostId, NodeId costCO2Id, int port) throws InterruptedException, ExecutionException {
-		super(name, client.readFinalDoubleValue(installedPowerId), client.readFinalDoubleValue(effHeatId),
+		
+		super(name, client.readFinalDoubleValue(minPowerId), client.readFinalDoubleValue(maxPowerId), client.readFinalDoubleValue(effHeatId),
 				client.readFinalDoubleValue(effElecId), port);
+		
 		this.primaryNetwork = primaryNetwork;
 		this.secondaryNetwork = secondaryNetwork;
 		this.opCost = client.readFinalDoubleValue(opCostId);
@@ -47,7 +50,8 @@ public class ClientCoupler extends Coupler {
 		couplerMessage.operationalCostCO2 = costCO2;
 		couplerMessage.efficiencyElec = efficiencyElec;
 		couplerMessage.efficiencyHeat = efficiencyHeat;
-		couplerMessage.installedPower = installedPower;
+		couplerMessage.minPower = minPower;
+		couplerMessage.maxPower = maxPower;
 
 		super.updateDisplay(couplerMessage);
 	}

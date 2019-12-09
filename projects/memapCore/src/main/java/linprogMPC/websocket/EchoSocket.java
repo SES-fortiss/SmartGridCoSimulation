@@ -126,14 +126,14 @@ public class EchoSocket extends WebSocketAdapter {
 				getRemote().sendStringByFuture("    Coupler");
 				String output = "        Efficiency Elec: " + coupler.efficiencyElec
 					+ " Efficiency Heat: " + coupler.efficiencyHeat + " Installed Power: "
-					+ coupler.installedPower;
+					+ coupler.maxPower;
 				getRemote().sendStringByFuture(output);
 			    }
 			    if (device instanceof ClientProducer) {
 				ClientProducer producer = (ClientProducer) device;
 				getRemote().sendStringByFuture("    Producer");
 				String output = "        Costs: " + producer.opCost + " Efficiency: "
-					+ producer.efficiency + " Installed Power: " + producer.installedPower;
+					+ producer.efficiency + " Installed Power: " + producer.maxPower;
 				getRemote().sendStringByFuture(output);
 			    }
 			    if (device instanceof ClientStorage) {
@@ -147,7 +147,7 @@ public class EchoSocket extends WebSocketAdapter {
 				ClientVolatileProducer volatileProducer = (ClientVolatileProducer) device;
 				getRemote().sendStringByFuture("VolatileProducer");
 				String output = "        Efficiency: " + volatileProducer.efficiency
-					+ " Installed Power: " + volatileProducer.installedPower;
+					+ " Installed Power: " + volatileProducer.maxPower;
 				getRemote().sendStringByFuture(output);
 			    }
 			}

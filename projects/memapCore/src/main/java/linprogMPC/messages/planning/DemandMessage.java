@@ -1,17 +1,18 @@
 package linprogMPC.messages.planning;
 
+import com.google.gson.Gson;
+
 import akka.basicMessages.AnswerContent;
-import linprogMPC.TopologyConfig;
-import linprogMPC.messages.BuildingMessage;
+import linprogMPC.ConfigurationMEMAP.OptimizationCriteria;
 import linprogMPC.messages.extension.NetworkType;
 
 public class DemandMessage implements AnswerContent {
 
 	public String id;
 	public String name;
-	private double[] demandForecast; // that certainly includes both
+	private double[] demandForecast; // that certainly includes both heat and electricity
 	public String forecastType;
-	public String optimizationCriteria;
+	public OptimizationCriteria optimizationCriteria;
 	public NetworkType networkType;
 
 	public DemandMessage() {
@@ -40,23 +41,11 @@ public class DemandMessage implements AnswerContent {
 	public double[] getDemandVector() {
 		return demandForecast;
 	}
-
-	/**
-	 * This function calculates the heat losses in dependence of the individual heat
-	 * transport lengths, that are defined in the building topology and increases
-	 * the heat demand accordingly
-	 * 
-	 * TODO: This function should move to another part of the code. Messages should
-	 * have no functions!
-	 */
-	public double[] calcHeatLosses(BuildingMessage buildingSpec) {
-		double[] consumptionVector = buildingSpec.getCombinedDemandVector();
-		// 1.5 % Verlust auf 100 Metern Leitung
-		double losses = Math.pow(TopologyConfig.HEAT_LOSSES, buildingSpec.heatTransportLength / 100);
-		for (int j = 0; j < consumptionVector.length / 2; j++) {
-			consumptionVector[j] = losses * consumptionVector[j];
-		}
-
-		return consumptionVector;
+	
+	public String toString() {
+		Gson gson = new Gson();
+		String result = "Demandmessage: " + gson.toJson(this);
+		return result;
 	}
+	
 }

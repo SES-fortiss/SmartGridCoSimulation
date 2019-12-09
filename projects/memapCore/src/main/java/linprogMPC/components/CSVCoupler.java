@@ -11,7 +11,8 @@ public class CSVCoupler extends Coupler {
 
 	/**
 	 * @param name             coupler name
-	 * @param installedPower   coupler power [kW]
+	 * @param minPower         coupler minimum power [kW]
+	 * @param maxPower         coupler maximum power [kW]
 	 * @param efficiencyHeat   heat efficiency [-1, 10]
 	 * @param efficiencyElec   electricity efficiency [-1, 10]
 	 * @param primaryNetwork
@@ -20,9 +21,9 @@ public class CSVCoupler extends Coupler {
 	 * @param costCO2          CO2 cost [kg CO2/kWh]
 	 * @param port
 	 */
-	public CSVCoupler(String name, double installedPower, double efficiencyHeat, double efficiencyElec,
+	public CSVCoupler(String name, double minPower, double maxPower, double efficiencyHeat, double efficiencyElec,
 			NetworkType primaryNetwork, NetworkType secondaryNetwork, double opCost, double costCO2, int port) {
-		super(name, installedPower, efficiencyHeat, efficiencyElec, port);
+		super(name, minPower, maxPower, efficiencyHeat, efficiencyElec, port);
 		this.primaryNetwork = primaryNetwork;
 		this.secondaryNetwork = secondaryNetwork;
 		this.opCost = opCost;
@@ -39,7 +40,8 @@ public class CSVCoupler extends Coupler {
 		couplerMessage.operationalCostCO2 = costCO2;
 		couplerMessage.efficiencyElec = efficiencyElec;
 		couplerMessage.efficiencyHeat = efficiencyHeat;
-		couplerMessage.installedPower = installedPower;
+		couplerMessage.minPower = minPower;
+		couplerMessage.maxPower = maxPower;
 
 		// super.updateDisplay(couplerMessage);
 	}

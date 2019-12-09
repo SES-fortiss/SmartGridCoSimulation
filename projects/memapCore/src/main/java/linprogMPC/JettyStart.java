@@ -9,6 +9,11 @@ import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 
+import linprogMPC.ConfigurationMEMAP.MEMAPLogging;
+import linprogMPC.ConfigurationMEMAP.OptHierarchy;
+import linprogMPC.ConfigurationMEMAP.OptimizationCriteria;
+import linprogMPC.ConfigurationMEMAP.Optimizer;
+import linprogMPC.ConfigurationMEMAP.ToolUsage;
 import linprogMPC.controller.BuildingController;
 import linprogMPC.controller.OpcUaBuildingController;
 import linprogMPC.controller.TopologyController;
@@ -54,8 +59,10 @@ public class JettyStart {
 	 */
 
 	public void run(JsonArray endpointValues) {
-		topologyMemapOn = new TopologyController("MemapOn", true, 1, 96, 7, "ELECTRICITYPRICEEXAMPLE", "cost", 0, false, 9999);
-		topologyMemapOff = new TopologyController("MemapOff", false, 5, 96, 7, "ELECTRICITYPRICEEXAMPLE", "cost", 0, false, 9999);
+		topologyMemapOn = new TopologyController(OptHierarchy.MEMAP, Optimizer.MILP, OptimizationCriteria.EUR,
+				ToolUsage.SERVER, MEMAPLogging.FILES, "MemapOn", 5, 96, 7, "ELECTRICITYPRICEEXAMPLE", 0, 9999);
+		topologyMemapOff = new TopologyController(OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
+				ToolUsage.SERVER, MEMAPLogging.FILES, "MemapOn", 5, 96, 7, "ELECTRICITYPRICEEXAMPLE", 0, 9999);
 		errorCode = new JsonObject();
 
 		/*

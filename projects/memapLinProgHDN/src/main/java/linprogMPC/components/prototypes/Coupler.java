@@ -4,6 +4,9 @@ import akka.basicMessages.AnswerContent;
 import linprogMPC.messages.OptimizationResultMessage;
 import linprogMPC.messages.planning.CouplerMessage;
 
+/*
+ * Done
+ */
 public abstract class Coupler extends Device {
 
 	public double installedPower;

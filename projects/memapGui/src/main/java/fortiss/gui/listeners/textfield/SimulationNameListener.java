@@ -4,43 +4,33 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import fortiss.components.Volatile;
 import fortiss.gui.Designer;
-import fortiss.gui.listeners.helper.FocusManager;
 import fortiss.gui.listeners.helper.InsertionVerifier;
+import fortiss.simulation.Parameters;
 
-public class VPowerListener extends KeyAdapter implements FocusListener {
+public class SimulationNameListener extends KeyAdapter implements FocusListener {
 
-	private static int building;
-	private static int component;
 	private static boolean check;
 	private static boolean valid;
 	private static JTextField source;
 	private static String input;
 	private static String message;
-	private static Volatile o;
-	private static InsertionVerifier v;
+	private static Parameters o;
 
 	/**
 	 * Initialize variables when the text field gets the focus.
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = Designer.currentBuilding;
-		component = Designer.currentComponent;
-		o = Designer.buildings.get(building).getVolatile().get(component);
 		check = false;
 		valid = true;
-
+		o = Designer.parameterPanel.pars;
 		source = (JTextField) e.getSource();
 		message = "An unidentified error has occurred.";
-		v = new InsertionVerifier();
-		FocusManager.focusVolatile(building, component);
 	}
 
 	/**
@@ -50,11 +40,10 @@ public class VPowerListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
-			String currentVal = Double.toString(o.getPower());
+			String currentVal = o.getSimulationName();
 			JOptionPane.showMessageDialog(Designer.contentPane, message);
 			source.setText(currentVal);
 		}
-		FocusManager.focusLostVolatile(building, component);
 	}
 
 	/**
@@ -66,18 +55,13 @@ public class VPowerListener extends KeyAdapter implements FocusListener {
 	public void keyReleased(KeyEvent e) {
 		input = source.getText();
 
-		if (!input.contains(".")) {
-			v.validKeys.add('.');
-		}
-
 		if (check) {
-			boolean containsNumber = Pattern.compile("[0-9]").matcher(input).find();
-			if (!containsNumber) {
+			if (input.isEmpty()) {
 				valid = false;
-				message = "Error. Invalid input or empty field.";
+				message = "Error. This field can not be empty.";
 			} else {
 				valid = true;
-				o.setPower(Double.parseDouble(input));
+				o.setSimulationName(input);
 			}
 		}
 	}
@@ -89,7 +73,8 @@ public class VPowerListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void keyTyped(KeyEvent e) {
 		char c = e.getKeyChar();
-		if (v.isNumber(c, source.getText().length())) {
+		InsertionVerifier v = new InsertionVerifier();
+		if (v.isTextWithoutSpaces(c)) {
 			check = true;
 		} else {
 			check = false;
