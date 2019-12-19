@@ -6,7 +6,7 @@ import fortiss.components.Building;
 import fortiss.datastructures.Data;
 import fortiss.gui.Designer;
 import fortiss.simulation.Parameters;
-import linprogMPC.helper.DirectoryConfiguration;
+import memap.helper.DirectoryConfiguration;
 
 /**
  * Output represents a simulation complete set of results.

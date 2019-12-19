@@ -10,8 +10,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import fortiss.gui.Designer;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
-import linprogMPC.ConfigurationMEMAP;
-import linprogMPC.ConfigurationMEMAP.OptHierarchy;
+import memap.main.ConfigurationMEMAP;
+import memap.main.ConfigurationMEMAP.OptHierarchy;
 
 /**
  * Shows the available results
