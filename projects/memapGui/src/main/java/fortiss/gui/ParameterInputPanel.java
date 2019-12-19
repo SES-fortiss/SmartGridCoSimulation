@@ -289,7 +289,7 @@ public class ParameterInputPanel extends JPanel {
 		lbLoggingMode2 = new JLabel("");
 		lbLoggingMode2.setIcon(Icon.resultLogs);
 		lbLoggingMode2.addMouseListener(new LoggingModeListener());
-		add(lbLoggingMode2, "6, 25, 3, 1");
+		add(lbLoggingMode2, "6, 25, 3, 1, right, default");
 
 		add(btAccept, "1, 29, 7, 1, center, center");
 
