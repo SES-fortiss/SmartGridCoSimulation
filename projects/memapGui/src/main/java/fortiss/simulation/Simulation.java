@@ -5,11 +5,11 @@ import java.io.FileNotFoundException;
 import fortiss.gui.listeners.button.AcceptListener;
 import fortiss.results.Reporter;
 import fortiss.simulation.listeners.helper.ProgressManager;
-import linprogMPC.controller.GuiController;
-import linprogMPC.helper.DirectoryConfiguration;
+import memap.controller.GuiController;
+import memap.helper.DirectoryConfiguration;
 
 public class Simulation implements Runnable {
-
+	
 	/** Controller for the GUI */
 	private GuiController gc;
 	/** an instance of Reporter window */

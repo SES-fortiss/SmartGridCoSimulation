@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import fortiss.components.Building;
 import fortiss.datastructures.Data;
 import fortiss.gui.Designer;
-import linprogMPC.TopologyConfig;
-import linprogMPC.helper.DirectoryConfiguration;
+import fortiss.simulation.Parameters;
+import memap.helper.DirectoryConfiguration;
 
 /**
  * Output represents a simulation complete set of results.
  */
 public class Output {
+	private Parameters pars = Designer.parameterPanel.pars;
 	private ArrayList<Data> output = new ArrayList<>();
 	public ArrayList<String> buildingNames = new ArrayList<>();
 
@@ -21,18 +22,23 @@ public class Output {
 	 */
 	public Output() {
 		String location = System.getProperty("user.dir");
-		String source = "/" + DirectoryConfiguration.mainDir + "/results/" + TopologyConfig.simulationName + "MPC"
-				+ TopologyConfig.N_STEPS_MPC + "/";
-		if (TopologyConfig.MEMAP_ON == true) {
+		String source = "/" + DirectoryConfiguration.mainDir + "/results/" + pars.getSimulationName() + "MPC"
+				+ pars.getSteps() + "/";
+		
+		String optimizerQualifier = "MPC";
+		if(pars.getOptimizer().equals("milp")) 
+			optimizerQualifier += "_MILP";
+		
+		if (pars.isMemapON()) {
 			for (Building building : Designer.buildings) {
-				String filename = TopologyConfig.simulationName + "MPC" + TopologyConfig.N_STEPS_MPC + ".csv";
+				String filename = pars.getSimulationName() + optimizerQualifier + pars.getSteps() + "Solutions.csv";
 				buildingNames.add(building.getName());
 				filename = location + source + filename;
 				output.add(new Data(filename, true));
 			}
 		} else {
 			for (Building building : Designer.buildings) {
-				String filename = building.getName() + "MPC" + TopologyConfig.N_STEPS_MPC + "Solutions.csv";
+				String filename = building.getName() + optimizerQualifier + pars.getSteps() + "Solutions.csv";
 				buildingNames.add(building.getName());
 				filename = location + source + filename;
 				output.add(new Data(filename, true));

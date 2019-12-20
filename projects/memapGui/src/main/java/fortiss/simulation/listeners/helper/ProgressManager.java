@@ -3,12 +3,15 @@ package fortiss.simulation.listeners.helper;
 import javax.swing.SwingUtilities;
 
 import akka.systemActors.GlobalTime;
+import fortiss.gui.Designer;
 import fortiss.gui.listeners.button.AcceptListener;
+import fortiss.simulation.Parameters;
 import fortiss.simulation.Simulation;
-import linprogMPC.TopologyConfig;
 
 public class ProgressManager implements Runnable {
 
+	private Parameters pars = Designer.parameterPanel.pars;
+	
 	/**
 	 * Calculates the progress in the simulation according with the number of steps executed.
 	 * Updates the message in LoadingScreen. 
@@ -26,7 +29,7 @@ public class ProgressManager implements Runnable {
 		}
 
 		// Start progress computation
-		int max = TopologyConfig.NR_OF_ITERATIONS - 1;
+		int max = (pars.getDays() * pars.getLength() ) - 1;
 		while (AcceptListener.loadingScreen.progressBar.getValue() < AcceptListener.loadingScreen.progressBar
 				.getMaximum()) {
 			Runnable pb = new Runnable() {

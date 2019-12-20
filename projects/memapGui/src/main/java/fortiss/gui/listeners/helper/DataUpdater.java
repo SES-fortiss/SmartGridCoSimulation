@@ -50,11 +50,12 @@ public class DataUpdater {
 	/**
 	 * Updates and shows the data of the selected volatile.
 	 */
-	public void updateVolProductionData(String producer, String networktype, double power, String forcastFile,
+	public void updateVolProductionData(String producer, String networktype, double minimumPower, double maximumPower, String forcastFile,
 			double cost, double coEmission) {
 		Designer.volatilePanel.txtVName.setText(producer);
 		Designer.volatilePanel.sVNetworkType.setSelectedItem(networktype);
-		Designer.volatilePanel.txtVPower.setText(Double.toString(power));
+		Designer.volatilePanel.txtVMinimumPower.setText(Double.toString(minimumPower));
+		Designer.volatilePanel.txtVMaximumPower.setText(Double.toString(maximumPower));
 		Designer.volatilePanel.txtVForecastFile.setText(forcastFile);
 		Designer.volatilePanel.txtVCost.setText(Double.toString(cost));
 		Designer.volatilePanel.txtVCOEmission.setText(Double.toString(coEmission));
@@ -65,11 +66,12 @@ public class DataUpdater {
 	/**
 	 * Updates and shows the data of the selected controllable.
 	 */
-	public void updateContProductionData(String producer, String networkType, double power, double efficiency,
+	public void updateContProductionData(String producer, String networkType, double minimumPower, double maximumPower, double efficiency,
 			double cost, double coEmission) {
 		Designer.controllablePanel.txtCPName.setText(producer);
 		Designer.controllablePanel.sCPNetworkType.setSelectedItem(networkType);
-		Designer.controllablePanel.txtCPPower.setText(Double.toString(power));
+		Designer.controllablePanel.txtCPMinimumPower.setText(Double.toString(minimumPower));
+		Designer.controllablePanel.txtCPMaximumPower.setText(Double.toString(maximumPower));
 		Designer.controllablePanel.txtCPEfficiency.setText(Double.toString(efficiency));
 		Designer.controllablePanel.txtCPCost.setText(Double.toString(cost));
 		Designer.controllablePanel.txtCPCOEmission.setText(Double.toString(coEmission));
@@ -81,12 +83,13 @@ public class DataUpdater {
 	 * Updates and shows the data of the selected coupler.
 	 */
 	public void updateCouplerData(String name, String primaryNetworkType, String secondaryNetworkType,
-			double installedPower, double primaryNetworkEfficiency, double secondaryNetworkEfficiency, double cost,
-			double coEmission) {
+			double minimumPower, double maximumPower, double primaryNetworkEfficiency,
+			double secondaryNetworkEfficiency, double cost, double coEmission) {
 		Designer.couplerPanel.txtCName.setText(name);
 		Designer.couplerPanel.sCPrimaryNetworkType.setSelectedItem(primaryNetworkType);
 		Designer.couplerPanel.txtCSecondaryNetworkType.setText(secondaryNetworkType);
-		Designer.couplerPanel.txtCPower.setText(Double.toString(installedPower));
+		Designer.couplerPanel.txtCMinimumPower.setText(Double.toString(minimumPower));
+		Designer.couplerPanel.txtCMaximumPower.setText(Double.toString(maximumPower));
 		Designer.couplerPanel.txtCEfficiencyPrimary.setText(Double.toString(primaryNetworkEfficiency));
 		Designer.couplerPanel.txtCEfficiencySecondary.setText(Double.toString(secondaryNetworkEfficiency));
 		Designer.couplerPanel.txtCCost.setText(Double.toString(cost));

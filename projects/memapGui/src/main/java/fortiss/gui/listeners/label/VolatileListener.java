@@ -30,8 +30,8 @@ public class VolatileListener extends MouseAdapter implements FocusListener {
 		Volatile v = Designer.buildings.get(building).getVolatile().get(Designer.currentComponent);
 
 		DataUpdater up = new DataUpdater();
-		up.updateVolProductionData(v.getName(), v.getNetworkType(), v.getPower(), v.getForecastFile(), v.getCost(),
-				v.getCOEmission());
+		up.updateVolProductionData(v.getName(), v.getNetworkType(), v.getMinimumPower(), v.getMaximumPower(),
+				v.getForecastFile(), v.getCost(), v.getCOEmission());
 	}
 
 	/**

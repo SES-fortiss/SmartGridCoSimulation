@@ -90,7 +90,7 @@ public class Designer extends JFrame {
 	public Designer() {
 		setSize(new Dimension(1200, 810));
 		setLocationRelativeTo(null);
-		setTitle("MEMAP - Interactive Designer");
+		setTitle("MEMAP - Interactive Designer");			
 		setIconImage(Icon.smallMemapLogo.getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		contentPane = new JPanel();

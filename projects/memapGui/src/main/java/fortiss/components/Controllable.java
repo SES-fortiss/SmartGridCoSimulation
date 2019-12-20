@@ -7,7 +7,8 @@ package fortiss.components;
 public class Controllable {
 	private String name;
 	private String networkType; // Values: Heat or Electricity
-	private double power;
+	private double minimumPower;
+	private double maximumPower;
 	private double efficiency;
 	private double cost;
 	private double coEmission;
@@ -17,16 +18,18 @@ public class Controllable {
 	 * 
 	 * @param name        an alphanumeric string
 	 * @param networkType a string: Heat or Electricity
-	 * @param power       a positive double
+	 * @param minimumPower        a positive double [kW]
+	 * @param maximumPower        a positive double [kW]
 	 * @param efficiency  a positive double
-	 * @param cost        a positive double
+	 * @param cost        a positive double [EUR]
 	 * @param coEmission  CO2 Emissions measured in [g/kWh]
 	 */
-	public Controllable(String name, String networkType, double power, double efficiency, double cost,
+	public Controllable(String name, String networkType, double minimumPower, double maximumPower, double efficiency, double cost,
 			double coEmission) {
 		this.setName(name);
 		this.setNetworkType(networkType);
-		this.setPower(power);
+		this.setMinimumPower(minimumPower);
+		this.setMaximumPower(maximumPower);
 		this.setEfficiency(efficiency);
 		this.setCost(cost);
 		this.setCOEmission(coEmission);
@@ -48,12 +51,20 @@ public class Controllable {
 		this.networkType = networkType;
 	}
 
-	public double getPower() {
-		return power;
+	public double getMinimumPower() {
+		return minimumPower;
 	}
 
-	public void setPower(double power) {
-		this.power = power;
+	public void setMinimumPower(double minimumPower) {
+		this.minimumPower = minimumPower;
+	}
+	
+	public double getMaximumPower() {
+		return maximumPower;
+	}
+
+	public void setMaximumPower(double maximumPower) {
+		this.maximumPower = maximumPower;
 	}
 
 	public double getEfficiency() {
