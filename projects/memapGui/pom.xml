@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fortiss</groupId>
 	<artifactId>memapGui</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<packaging>jar</packaging>
 
-	<name>gui</name>
-	<url>http://maven.apache.org</url>
+	<name>memapGui</name>
+	<url>https://github.com/SES-fortiss/SmartGridCoSimulation</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,7 +18,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.7.0</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -71,7 +71,7 @@
 		<dependency>
 			<groupId>org.fortiss</groupId>
 			<artifactId>memapCore</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.1</version>
 		</dependency>
 
 		<dependency>

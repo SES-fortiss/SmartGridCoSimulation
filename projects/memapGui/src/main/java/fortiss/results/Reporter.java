@@ -20,6 +20,7 @@ import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
 import fortiss.gui.PlotPanel;
+import fortiss.gui.listeners.window.ExitWindowListner;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
@@ -74,10 +75,13 @@ public class Reporter extends JFrame {
 	 * Create the application.
 	 */
 	public Reporter() {
+		
 		// Read results
 		output = new Output();
 		StyleGenerator.setupStyle();
 		initialize();
+		
+		addWindowListener(new ExitWindowListner());
 	}
 
 	/**

@@ -64,16 +64,19 @@ public class Parameters {
 	private String optimizer;
 	/** loggingMode a String. loggingMode: {allLogs, fileLogs, resultLogs} */
 	private String loggingMode;
+	/** lastSavedFile remembers the last save of a file this allows to reset the session during next startup */
+	private String lastSavedFile;
 
 	/**
 	 * Constructor for class Parameters
 	 */
 	public Parameters() {
 		setSimulationName("InteractiveMEMAP");
-		setLength(96);
-		setSteps(24);
+		setLength(24);
+		setSteps(2);
 		setDays(1);
 		setFixedPrice(true);
+		setFixedMarketPrice(27.5);
 		setMarketPriceFile("");
 		setOptimizer(optimizerOptions.get(0));
 		setMemapON(false);
@@ -211,5 +214,13 @@ public class Parameters {
 			setLoggingMode(loggingOptions.get(index + 1));
 			Designer.parameterPanel.lbLoggingMode2.setIcon(Icon.loggingMode.get(index + 1));
 		}
+	}
+
+	public String getLastSavedFile() {
+		return lastSavedFile;
+	}
+
+	public void setLastSavedFile(String lastSavedFile) {
+		this.lastSavedFile = lastSavedFile;
 	}
 }
