@@ -62,7 +62,7 @@ public class GuiController {
 				throws JsonParseException {
 
 			JsonObject jObject = (JsonObject) jsonElement;
-
+			
 			OptHierarchy optHierarchy = (jObject.get("memapON").getAsBoolean() == true) ? OptHierarchy.MEMAP
 					: OptHierarchy.BUILDING;
 			Optimizer optimizer = (jObject.get("optimizer").getAsString().contentEquals("lp")) ? Optimizer.LP
@@ -73,7 +73,7 @@ public class GuiController {
 			MEMAPLogging loggingMode = (jObject.get("loggingMode").equals("resultLogs")) ? MEMAPLogging.RESULTS_ONLY : (jObject.get("loggingMode").equals("fileLogs")) ? MEMAPLogging.FILES : MEMAPLogging.ALL;
 
 			boolean fixedPrice = jObject.get("fixedPrice").getAsBoolean();
-
+			
 			// Creating topologyController
 			TopologyController top = (fixedPrice) ? new TopologyController(optHierarchy, optimizer, optimizationCriteria, ToolUsage.PLANNING,
 					loggingMode, jObject.get("simulationName").getAsString(), jObject.get("steps").getAsInt(),
@@ -185,8 +185,7 @@ public class GuiController {
 			return new CSVCoupler(jObject.get("name").getAsString(), jObject.get("minimumPower").getAsDouble(),
 					jObject.get("maximumPower").getAsDouble(), jObject.get("efficiencyPrimary").getAsDouble(),
 					jObject.get("efficiencySecondary").getAsDouble(), primaryNetworkType, secondaryNetworkType,
-					jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
-		}
+					jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);		}
 	}
 
 	class CSVProducerDeserializer implements JsonDeserializer<CSVProducer> {

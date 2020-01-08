@@ -18,8 +18,7 @@ public class ClientCoupler extends Coupler {
 	 * @param client
 	 * @param name             coupler name
 	 * @param minPower         coupler minimum power [kW]
-	 * @param maxPower         coupler maximum power [kW]
-	 * @param effHeatId        heat efficiency [-1, 10]
+	 * @param maxPower         coupler maximum power [kW]	 * @param effHeatId        heat efficiency [-1, 10]
 	 * @param effElecId        electricity efficiency [-1, 10]
 	 * @param primaryNetwork
 	 * @param secondaryNetwork
@@ -29,7 +28,6 @@ public class ClientCoupler extends Coupler {
 	 */
 	public ClientCoupler(BasicClient client, String name, NodeId minPowerId, NodeId maxPowerId, NodeId effHeatId, NodeId effElecId,
 			NetworkType primaryNetwork, NetworkType secondaryNetwork, NodeId opCostId, NodeId costCO2Id, int port) throws InterruptedException, ExecutionException {
-		
 		super(name, client.readFinalDoubleValue(minPowerId), client.readFinalDoubleValue(maxPowerId), client.readFinalDoubleValue(effHeatId),
 				client.readFinalDoubleValue(effElecId), port);
 		

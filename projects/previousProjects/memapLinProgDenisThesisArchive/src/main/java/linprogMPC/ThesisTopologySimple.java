@@ -36,21 +36,22 @@ public class ThesisTopologySimple {
 	
 	public static ActorTopology createTopology(int mpcInput,boolean memapActive){
 		N_STEPS_MPC = mpcInput;
-		MEMAP_ON = memapActive;		
+		MEMAP_ON = memapActive;	
+		int port = 8080;
 		
 		ActorTopology top = new ActorTopology(simulationName);
 		top.addActor(simulationName, ActorFactory.createLinProgBehavior());
-		ConsumptionProfiles consumptionProfiles = new ConsumptionProfiles(NR_OF_CONSUMERS);		
+		ConsumptionProfiles consumptionProfiles = new ConsumptionProfiles(NR_OF_CONSUMERS);
 
 		String building1Name = "Building1";
 		ActorTopology building1 = new ActorTopology(building1Name);
-		building1.addActor(building1Name, ActorFactory.createBuilding(9999, false, 50));
+		building1.addActor(building1Name, ActorFactory.createBuilding(port++, false, 50));
 		building1.addActorAsChild(building1Name + "/Consumption", ActorFactory.createConsumer(consumptionProfiles, 0, PORT_UNDEFINED));
 		//building1.addActorAsChild(building1Name + "/GasBoiler1", ActorFactory.createGasBoiler(20, 0.95, 0.0685, PORT_UNDEFINED));		
 		
 		String building2Name = "Building2";
 		ActorTopology building2 = new ActorTopology(building2Name);
-		building2.addActor(building2Name, ActorFactory.createBuilding(PORT_UNDEFINED, false, 50));
+		building2.addActor(building2Name, ActorFactory.createBuilding(port++, false, 50));
 		building2.addActorAsChild(building2Name + "/Consumption", ActorFactory.createConsumer(consumptionProfiles, 1, PORT_UNDEFINED));
 		//building2.addActorAsChild(building2Name + "/GasBoiler2", ActorFactory.createGasBoiler(20, 0.99, 0.0591, PORT_UNDEFINED));
 		//building2.addActorAsChild(building2Name + "/PV2", ActorFactory.createPV(5, PORT_UNDEFINED));
@@ -58,7 +59,7 @@ public class ThesisTopologySimple {
 		
 		String building3Name = "Building3";
 		ActorTopology building3 = new ActorTopology(building3Name);
-		building3.addActor(building3Name, ActorFactory.createBuilding(PORT_UNDEFINED, false, 50));
+		building3.addActor(building3Name, ActorFactory.createBuilding(port++, false, 50));
 		building3.addActorAsChild(building3Name + "/Consumption", ActorFactory.createConsumer(consumptionProfiles, 2, PORT_UNDEFINED));
 		//building3.addActorAsChild(building3Name + "/PV3", ActorFactory.createPV(12.0, PORT_UNDEFINED));
 		building3.addActorAsChild(building3Name + "/PV3", ActorFactory.createPV(40.0+5.0, PORT_UNDEFINED));

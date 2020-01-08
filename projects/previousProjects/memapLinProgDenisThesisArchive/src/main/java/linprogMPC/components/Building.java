@@ -275,6 +275,9 @@ public class Building extends BehaviorModel {
 			if (port != 0) {
 				this.mServer = new MemapOpcServerStarter(false, gson.toJson(buildingMessage), port);
 				try {
+					
+					System.out.println("Starting server");
+					
 					this.mServer.start();
 				} catch (Exception e) {
 					e.printStackTrace();

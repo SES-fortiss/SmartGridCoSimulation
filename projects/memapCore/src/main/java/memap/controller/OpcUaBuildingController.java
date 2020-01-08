@@ -295,8 +295,7 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId opCostId = NodeId.parse((String) heatpump.get("opCostId"));
 							NodeId costCO2Id = NodeId.parse((String) heatpump.get("costCO2Id"));
 							attach(new ClientCoupler(client, "heatpump" + i, minPowerId, maxPowerId, effHeatId,
-									effElecId, NetworkType.HEAT, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0));
-							System.out.println("Added heatpump to " + name);
+									effElecId, NetworkType.HEAT, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0));							System.out.println("Added heatpump to " + name);
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add heatpump " + i + " to building " + name
 									+ ".\nPlease check " + heatpumps.toString());
