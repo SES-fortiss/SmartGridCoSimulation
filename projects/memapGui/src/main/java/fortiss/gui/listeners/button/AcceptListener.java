@@ -20,7 +20,7 @@ public class AcceptListener extends MouseAdapter {
 	 * simulator window.
 	 */
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mouseClicked(MouseEvent e) {		
 		sim = new Simulation();
 		simt = new Thread(sim);
 		FileManager.writeDescriptorFiles();

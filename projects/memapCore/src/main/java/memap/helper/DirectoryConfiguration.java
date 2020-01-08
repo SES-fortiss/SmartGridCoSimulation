@@ -9,7 +9,8 @@ public abstract class DirectoryConfiguration {
 	public static String resultDir = "results";
 
 	/** Configuration directory path */
-	public static String configDir = "config";
+	//public static String configDir = "resources/config";
+	public static String configDir = "resources";
 	
 	/** Examples directory path */
 	public static String exampleDir = "examples";

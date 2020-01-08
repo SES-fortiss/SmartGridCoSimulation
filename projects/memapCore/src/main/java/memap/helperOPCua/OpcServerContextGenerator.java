@@ -20,6 +20,7 @@ public class OpcServerContextGenerator {
 		writeFile(actorName, result);
 	}
 
+	// TODO adapt the output folder
 	private static void writeFile(String filename, String result) {
 		String source = "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.configDir + "/" + filename
 				+ ".json";
@@ -41,15 +42,5 @@ public class OpcServerContextGenerator {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-}
-
-class Test {
-	String name;
-	AnswerContent content;
-
-	Test(String str, AnswerContent con) {
-		name = str;
-		content = con;
 	}
 }

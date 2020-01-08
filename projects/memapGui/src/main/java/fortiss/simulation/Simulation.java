@@ -26,6 +26,8 @@ public class Simulation implements Runnable {
 		System.out.println(">> Interactive simulator: Setting up the topology.");
 		AcceptListener.loadingScreen.lbMessage.setText("Setting up the topology");
 
+		// TODO repair 
+		// String location = DirectoryConfiguration.configDir + "/parameterConfig.json";
 		String location = System.getProperty("user.dir") + "/" + DirectoryConfiguration.mainDir + "/"
 				+ DirectoryConfiguration.configDir + "/parameterConfig.json";
 		gc = new GuiController(location);

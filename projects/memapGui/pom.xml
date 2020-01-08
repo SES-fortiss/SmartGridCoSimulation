@@ -26,18 +26,27 @@
 			</plugin>
 			<plugin>
 				<!-- Build an executable JAR -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.1.0</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>src/</classpathPrefix>
-							<mainClass>fortiss.gui.Designer</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
+				<artifactId>maven-assembly-plugin</artifactId>
+		        <configuration>
+		          <descriptorRefs>
+		            <descriptorRef>jar-with-dependencies</descriptorRef>
+		          </descriptorRefs>
+		          <archive>
+		            <manifest>
+	            		<addClasspath>true</addClasspath>
+						<classpathPrefix>src/</classpathPrefix>
+						<mainClass>fortiss.gui.Designer</mainClass>
+		            </manifest>
+		          </archive>
+		        </configuration>
+		        <executions>
+		          <execution>
+		            <phase>package</phase>
+		            <goals>
+		              <goal>attached</goal>
+		            </goals>
+		          </execution>
+		        </executions>
 			</plugin>
 		</plugins>
 	</build>

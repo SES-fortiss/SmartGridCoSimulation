@@ -82,6 +82,7 @@ public class Parameters {
 		setMemapON(false);
 		setOptCriteria(criteriaOptions.get(0));
 		setLoggingMode(loggingOptions.get(0));
+		setLastSavedFile("");
 	}
 
 	public String getSimulationName() {

@@ -21,9 +21,12 @@ public class LoadListener extends MouseAdapter {
 		
 		int rVal = chooser.showOpenDialog(chooser);
 		if (rVal == JFileChooser.APPROVE_OPTION) {
-			File file = chooser.getSelectedFile();			
-			Designer.setWorkingFile(file.getAbsolutePath());
+			File file = chooser.getSelectedFile();
+			
+			Designer.parameterPanel.pars.setLastSavedFile(file.getAbsolutePath());			
+			Designer.frame.setTitle("MEMAP - "+ Designer.parameterPanel.pars.getLastSavedFile() +" - Interactive Designer");
 			ModelInitHelper.loadFromFile(file);
+			System.out.println("File loaded: " + Designer.parameterPanel.pars.getLastSavedFile());
 		}
 	}
 }

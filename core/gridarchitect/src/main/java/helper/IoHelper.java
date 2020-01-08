@@ -25,7 +25,7 @@ import java.nio.file.Paths;
 /**
  * Helper class to streamline the used I/O operations.
  */
-public class IoHelper {
+public abstract class IoHelper {
 
     public static void saveFileRelativePath(String filePath, String content) {
         saveFile(GlobalOptions.rootFolderPath + filePath, content);

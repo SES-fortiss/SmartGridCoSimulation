@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import helper.IoHelper;
 import memap.helper.lp.LPOptimizationProblem;
 import memap.main.TopologyConfig;
 import memap.messages.BuildingMessage;
@@ -37,8 +36,16 @@ public class SolutionHandler {
 
 		// Specify the file name and path here
 		System.out.println("Try file location: " + location);
-		IoHelper.createParentFolders(location);
-		File file = new File(location);
+		//IoHelper.createParentFolders(location);
+		
+		
+	    File destination = new File(location);
+	    destination.getParentFile().mkdirs();
+	    destination.setWritable(true);
+	    destination.setReadable(true);
+        
+		
+		File file = destination;
 
 		try {
 			/*
@@ -92,8 +99,15 @@ public class SolutionHandler {
 		 */
 		location = location + source;
 		System.out.println("Try file location: " + location);
-		IoHelper.createParentFolders(location);
-		File file = new File(location);
+		
+	    File destination = new File(location);
+	    destination.getParentFile().mkdirs();
+	    destination.setWritable(true);
+	    destination.setReadable(true);
+        
+		
+		File file = destination;
+
 		try {
 			/*
 			 * This logic will make sure that the file gets created if it is not present at

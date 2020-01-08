@@ -12,6 +12,7 @@ abstract public class Icon {
 
 	private static String fortissLogoPath = "/resources/fortissLogo.png";
 	private static String memapLogoPath = "/resources/memap.png";
+		
 	private static String openPath = "/resources/open.png";
 	private static String resetPath = "/resources/reset.png";
 	private static String saveAsPath = "/resources/saveAs.png";
@@ -44,13 +45,15 @@ abstract public class Icon {
 	private static String visualizePath = "/resources/visualize.png";
 	private static String vsvFormatPath = "/resources/csvFormat.png";
 
-	public static ImageIcon fortissLogo = new ImageIcon(new ImageIcon(Icon.class.getResource(fortissLogoPath))
-			.getImage().getScaledInstance(180, 60, Image.SCALE_SMOOTH));
-	public static ImageIcon memapLogo = new ImageIcon(new ImageIcon(Icon.class.getResource(memapLogoPath)).getImage()
-			.getScaledInstance(250, 250, Image.SCALE_SMOOTH));
-	public static ImageIcon smallMemapLogo = new ImageIcon(new ImageIcon(Icon.class.getResource(memapLogoPath))
-			.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH));
-
+	public static ImageIcon fortissLogo = new ImageIcon(
+			new ImageIcon(Icon.class.getResource(fortissLogoPath)).getImage().getScaledInstance(180, 60, Image.SCALE_SMOOTH));
+	
+	public static ImageIcon memapLogo = new ImageIcon(
+			new ImageIcon(Icon.class.getResource(memapLogoPath)).getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH));
+	
+	public static ImageIcon smallMemapLogo = new ImageIcon(
+			new ImageIcon(Icon.class.getResource(memapLogoPath)).getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH));
+	
 	public static ImageIcon open = new ImageIcon(
 			new ImageIcon(Icon.class.getResource(openPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 	public static ImageIcon reset = new ImageIcon(

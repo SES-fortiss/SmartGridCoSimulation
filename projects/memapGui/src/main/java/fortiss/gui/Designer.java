@@ -29,7 +29,6 @@ import fortiss.simulation.Parameters;
 public class Designer extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static String workingFile = "";
 	
 	// Object arrays
 	public static ArrayList<Building> buildings = new ArrayList<Building>();
@@ -97,7 +96,6 @@ public class Designer extends JFrame {
 	public Designer() {
 		setSize(new Dimension(1200, 810));
 		setLocationRelativeTo(null);
-		setTitle("MEMAP - Interactive Designer");
 		setIconImage(Icon.smallMemapLogo.getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		contentPane = new JPanel();
@@ -179,28 +177,19 @@ public class Designer extends JFrame {
 		lblFortissMemap.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(lblFortissMemap, BorderLayout.SOUTH);		
 		
-		initLastSession();		
-		addWindowListener( new ExitWindowListner() );		
-		
+		initLastSession();
+		addWindowListener( new ExitWindowListner() );
 	}
 
 	private void initLastSession() {
 		Gson gson = new Gson();
-		workingFile =  gson.fromJson(FileManager.readConfig(), Parameters.class).getLastSavedFile();
+		String workingFile =  gson.fromJson(FileManager.readConfig(), Parameters.class).getLastSavedFile();
 		
 		if (workingFile != null && !workingFile.equals("")) {
 			ModelInitHelper.loadFromFile(new File(workingFile));
+			setTitle("MEMAP - "+ workingFile +" - Interactive Designer");
 		} else {
-			System.out.println("lastWorkingFile: " + workingFile);
+			System.out.println("lastWorkingFile: " + workingFile + " has not been loaded");
 		}
-	}
-
-	public static void setWorkingFile(String workingFile) {
-		Designer.workingFile = workingFile;
-	}
-	
-	public static String getWorkingFile() {
-		return workingFile;
-	}
-	
+	}	
 }
