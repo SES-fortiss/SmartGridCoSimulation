@@ -44,6 +44,7 @@ public class Output {
 				output.add(new Data(filename, true));
 			}
 		}
+
 	}
 
 	/**
@@ -60,15 +61,6 @@ public class Output {
 	 */
 	public String getDataLabel(int building, int seriesIndex) {
 		return output.get(building).getLabel(seriesIndex);
-	}
-
-	/**
-	 * @param building    index of the building data set
-	 * @param seriesIndex the index of a series in a data set
-	 * @return a series in data object
-	 */
-	public ArrayList<Double> getDataSeries(int building, int seriesIndex) {
-		return output.get(building).getSeries(seriesIndex);
 	}
 
 	/**

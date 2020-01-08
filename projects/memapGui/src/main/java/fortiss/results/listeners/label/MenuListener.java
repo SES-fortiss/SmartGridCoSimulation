@@ -34,7 +34,7 @@ public class MenuListener implements TreeSelectionListener {
 			if (h.getSelectionCount() == 1) {
 				Reporter.plotPanel.clearSeries();
 			}
-			Reporter.plotPanel.addSeries(getSeriesName(), Reporter.output.getDataSeries(index, sel.toString()));
+			Reporter.plotPanel.addSeries(getSeriesName(), Reporter.output.getDataSeries(index, sel.toString()));			
 			Reporter.plotPanel.paintSeries();
 		} else {
 			Reporter.plotPanel.removeSeries(getSeriesName(), Reporter.output.getDataSeries(index, sel.toString()));

@@ -238,6 +238,7 @@ public class ParameterInputPanel extends JPanel {
 		add(lbMarketPrice, "6, 16, 3, 1, right, default");
 
 		txtFixedValue = new JTextField("");
+		txtFixedValue.setText(Double.toString(pars.getFixedMarketPrice()));
 		txtFixedValue.addKeyListener(new FixedValueListener());
 		txtFixedValue.addFocusListener(new FixedValueListener());
 		add(txtFixedValue, "3, 16, 3, 1, fill, default");
@@ -296,15 +297,17 @@ public class ParameterInputPanel extends JPanel {
 	}
 
 	public void updateMarketPriceOptions() {
+		
 		if (pars.isFixedPrice()) {
+			txtFixedValue.setVisible(true);			
 			btBrowse.setVisible(false);
 			lbMarketPriceInstruction.setVisible(false);
 			txtMarketPriceFile.setVisible(false);
 			pars.setMarketPriceFile("");
-			txtFixedValue.setVisible(true);
+
 		} else {
 			txtFixedValue.setVisible(false);
-			pars.setFixedMarketPrice(0);
+			//pars.setFixedMarketPrice(0);
 			btBrowse.setVisible(true);
 			lbMarketPriceInstruction.setVisible(true);
 			txtMarketPriceFile.setVisible(true);

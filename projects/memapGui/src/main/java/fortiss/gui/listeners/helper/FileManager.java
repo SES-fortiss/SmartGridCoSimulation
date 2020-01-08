@@ -61,6 +61,30 @@ abstract public class FileManager {
 		return br;
 	}
 	
+	
+	/**
+	 * Reads a file from location specified.
+	 * 
+	 * @param location the absolute path to the file to be read
+	 * @return a buffer with the data in the file read
+	 */
+	public static BufferedReader readConfig() {
+		BufferedReader br = null;
+		
+		String source = System.getProperty("user.dir") + "/" + mainDir + "/" + configDir + "/parameterConfig.json";
+		
+		try {			
+			InputStream is = new FileInputStream(source);
+			br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+			
+		} catch (FileNotFoundException e) {
+			System.err.println("FileManager file not found. " + source);
+			e.printStackTrace();
+		}
+		return br;
+	}
+	
+	
 	/**
 	 * Writes a file.
 	 * 
@@ -94,7 +118,7 @@ abstract public class FileManager {
 	 * registered in {@link fortiss.simulation.Parameters}.
 	 */
 	public static void writeParameterConfigFile() {
-		String source = "/" + mainDir + "/" + configDir + "/parameterConfig.json";
+		String source = "\\" + mainDir + "\\" + configDir + "\\parameterConfig.json";
 		String location = System.getProperty("user.dir");
 		location = location + source;
 

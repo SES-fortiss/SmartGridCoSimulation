@@ -34,7 +34,7 @@ public class Data {
 	 */
 	public void readData(String location, boolean hasHeader) {
 
-		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
+		NumberFormat nf = NumberFormat.getInstance(Locale.ENGLISH);
 
 		System.out.println(">> Reading from: " + location.toString());
 
@@ -59,6 +59,9 @@ public class Data {
 				List<String> br_values = Arrays.asList(line.split(";"));
 				for (int i = 0; i < br_values.size(); i++) {
 					getSeriesList().get(i).add(nf.parse(br_values.get(i)).doubleValue());
+					
+					// System.out.println("Data: " + br_values.get(i)); looks good, the doubles are ok.
+				
 				}
 			}
 		} catch (IOException e) {
@@ -81,6 +84,8 @@ public class Data {
 	 * @return a series in data object
 	 */
 	public ArrayList<Double> getSeries(int index) {
+		System.out.println("Data getSeries(int index): " + seriesList.get(index));
+		
 		return seriesList.get(index);
 	}
 

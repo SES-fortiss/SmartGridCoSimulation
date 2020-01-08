@@ -9,7 +9,7 @@ public abstract class DirectoryConfiguration {
 	public static String resultDir = "results";
 
 	/** Configuration directory path */
-	public static String configDir = "opcconfig";
+	public static String configDir = "config";
 	
 	/** Examples directory path */
 	public static String exampleDir = "examples";

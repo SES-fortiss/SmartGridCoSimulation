@@ -2,6 +2,7 @@ package fortiss.gui;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import javax.swing.JPanel;
 
@@ -34,7 +35,8 @@ public class PlotPanel extends JPanel {
 		setFocusable(false);
 		chart = new XYChart(getWidth(), getHeight());
 		chart.getStyler().setChartBackgroundColor(Colors.background);
-
+		chart.getStyler().setYAxisDecimalPattern("#0.00");
+		chart.getStyler().setLocale(Locale.ENGLISH);
 	}
 
 	/**
@@ -43,14 +45,20 @@ public class PlotPanel extends JPanel {
 	 * @param series     a data series.
 	 * @param seriesName a name for the data series.
 	 */
-	public void addSeries(String seriesName, ArrayList<Double> series) {
+	public void addSeries(String seriesName, ArrayList<Double> series) {		
 		if (!chart.getSeriesMap().containsKey(seriesName)) {
-			XYSeries seriesx = chart.addSeries(seriesName, series);
+			
+			double [] xvalues = new double[series.size()];
+			double [] yvalues = new double[series.size()];
+			for (int i = 0; i < xvalues.length; i++) {
+				xvalues[i] = i;
+				yvalues[i] = series.get(i);
+			}
+			
+			XYSeries seriesx = chart.addSeries(seriesName, xvalues, yvalues);
 			seriesx.setMarker(SeriesMarkers.NONE);
 		}
-	}
-
-	
+	}	
 
 	/**
 	 * Remove a series from the list of data series to be plotted (series).
