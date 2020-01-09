@@ -26,13 +26,13 @@ abstract public class FileManager {
 
 	/** Main output directory path */
 	private static String mainDir = DirectoryConfiguration.mainDir;
-	
+
 	/** Configuration directory path */
-	private static String configDir = DirectoryConfiguration.configDir;	
+	private static String configDir = DirectoryConfiguration.configDir;
 
 	/**
 	 * Reads a file from the resource container of the project
-	 * 
+	 *
 	 * @param filename the name of the file to be read
 	 * @return a buffer with the data in the input file
 	 */
@@ -46,18 +46,18 @@ abstract public class FileManager {
 		}
 		return br;
 	}
-	
+
 	/**
 	 * Writes a file to the resource container of the project
-	 * 
+	 *
 	 * @param filename the name of the file to be read
 	 * @return a buffer with the data in the input file
 	 */
 	public static void writeToResources(String filename, String data) {
-						
+
 		String source = "resources/parameterConfig.json";
 		File file = new File(source);
-				
+
 		FileOutputStream fl = null;
 		try {
 			System.out.println(file.toPath());
@@ -75,17 +75,17 @@ abstract public class FileManager {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		//if(file.exists()) {
-			
+
 			 try {
 
 				PrintWriter writer2 = new PrintWriter(new File(FileManager.class.getResource("parameterConfig.json").getPath()));
-				
-				
+
+
 				PrintWriter writer = new PrintWriter(file);
-				
-				
+
+
 				//writer.write(data);
 				writer2.write(data);
 				//System.out.println("Writing to " + writer);
@@ -97,12 +97,12 @@ abstract public class FileManager {
 		//}
 		return;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Reads a file from location specified.
-	 * 
+	 *
 	 * @param location the absolute path to the file to be read
 	 * @return a buffer with the data in the file read
 	 */
@@ -117,37 +117,36 @@ abstract public class FileManager {
 		}
 		return br;
 	}
-	
-	
+
+
 	/**
-	 * Reads a file from location specified.
-	 * 
+ * Reads a file from location specified.
+	 *
 	 * @param location the absolute path to the file to be read
 	 * @return a buffer with the data in the file read
 	 */
 	public static BufferedReader readConfig() {
 		BufferedReader br = null;
-		
-		// The first commented out string is used, when we run the tests in Eclipse
-		//String source = System.getProperty("user.dir") + "/" + mainDir + "/" + configDir + "/parameterConfig.json";			
-		
-		String source = "resources/parameterConfig.json";
-		
-		InputStream is = Designer.class.getClassLoader().getResourceAsStream(source);
-							
-		if (is == null) {
-			is = Designer.class.getResourceAsStream("/resources/parameterConfig.json");
+
+		String source = System.getProperty("user.dir") + "/" + mainDir + "/" + configDir + "/parameterConfig.json";
+
+		try {
+			InputStream is = new FileInputStream(source);
+			br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+
+		} catch (FileNotFoundException e) {
+			System.err.println("FileManager file not found. " + source);
+			e.printStackTrace();
 		}
-		
-		br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-		
 		return br;
 	}
-	
-	
+
+
 	/**
+
+
 	 * Writes a file.
-	 * 
+	 *
 	 * @param str  text to be written in file
 	 * @param file File to be written
 	 */
@@ -178,12 +177,7 @@ abstract public class FileManager {
 	 * registered in {@link fortiss.simulation.Parameters}.
 	 */
 	public static void writeParameterConfigFile() {
-		
-		writeToResources(configDir + "\\parameterConfig.json", "Test");
-		
-		/*
-		String source = "\\" + mainDir + "\\" + configDir + "\\parameterConfig.json";
-		String location = System.getProperty("user.dir");
+		String source = "\\" + mainDir + "\\" + configDir + "\\parameterConfig.json";		String location = System.getProperty("user.dir");
 		location = location + source;
 
 		System.out.println(">> Writing parameter configuration file in " + location);
@@ -194,13 +188,12 @@ abstract public class FileManager {
 		Gson gson = new Gson();
 		String str = gson.toJson(Designer.parameterPanel.pars);
 		writeFile(str, file);
-		*/
 	}
 
 	/**
 	 * Writes one descriptor file that includes the configuration of all the
 	 * buildings created.
-	 * 
+	 *
 	 * @param file path to file
 	 */
 	public static void writeDescriptorFile(File file) {

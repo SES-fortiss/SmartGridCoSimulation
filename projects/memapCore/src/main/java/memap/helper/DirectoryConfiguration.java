@@ -2,7 +2,7 @@ package memap.helper;
 
 public abstract class DirectoryConfiguration {
 
-	/** Main output directory path */
+	/** Main output directory path */	
 	public static String mainDir = "memapToolFiles";
 
 	/** Configuration directory path */
@@ -12,6 +12,5 @@ public abstract class DirectoryConfiguration {
 	public static String resultDir = "results";
 	
 	/** Examples directory path */
-	public static String exampleDir = "examples";
-	
+	public static String exampleDir = "examples";	
 }
