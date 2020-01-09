@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import com.google.gson.Gson;
@@ -27,9 +26,9 @@ abstract public class FileManager {
 
 	/** Main output directory path */
 	private static String mainDir = DirectoryConfiguration.mainDir;
+	
 	/** Configuration directory path */
-	private static String configDir = DirectoryConfiguration.configDir;
-	private static File file;
+	private static String configDir = DirectoryConfiguration.configDir;	
 
 	/**
 	 * Reads a file from the resource container of the project
@@ -57,7 +56,7 @@ abstract public class FileManager {
 	public static void writeToResources(String filename, String data) {
 						
 		String source = "resources/parameterConfig.json";
-		file = new File(source);
+		File file = new File(source);
 				
 		FileOutputStream fl = null;
 		try {

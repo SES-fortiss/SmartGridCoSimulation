@@ -74,7 +74,7 @@ public abstract class ExampleLoader {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} // Wait so that we get initial values for all devices
+		}
 
 		return topologyController;
 	}
