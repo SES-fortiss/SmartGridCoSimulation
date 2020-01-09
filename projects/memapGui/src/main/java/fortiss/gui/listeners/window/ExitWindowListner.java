@@ -9,12 +9,11 @@ import fortiss.gui.listeners.helper.FileManager;
 public class ExitWindowListner extends WindowAdapter {
 	
 	@Override
-    public void windowClosing(WindowEvent e) {				
-    	if(!Designer.getWorkingFile().equals("")) {
-    		System.out.println("Saving for: " + Designer.getWorkingFile());
-        	Designer.parameterPanel.pars.setLastSavedFile(Designer.getWorkingFile());
+    public void windowClosing(WindowEvent e) {
+		
+		String lastFile = Designer.parameterPanel.pars.getLastSavedFile();
+    	if(!lastFile.equals("")) {
         	FileManager.writeParameterConfigFile();
-    	}            	
+    	}
     }
-
 }

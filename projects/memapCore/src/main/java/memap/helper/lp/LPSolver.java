@@ -118,6 +118,7 @@ public class LPSolver {
 			for (int i = 1; i < vectorResultStr.length; i++) {
 				vectorResultStr[i] = df.format(vectorResult[i]);
 			}
+			vectorResultStr[0] = ((Integer) actualTimeStep).toString();
 
 			System.out.println("LP: " + this.actorName + " Names: " + Arrays.toString(namesResult));
 			System.out.println("LP: " + this.actorName + " Result: " + Arrays.toString(vectorResultStr));
@@ -125,8 +126,8 @@ public class LPSolver {
 			// Save
 			buildingsSolutionPerTimeStep[actualTimeStep] = vectorResult;
 
-			String saveString = TopologyConfig.simulationName + "MPC" + TopologyConfig.N_STEPS_MPC + "/";
-			saveString += actorName + "MPC" + nStepsMPC + "Solutions.csv";
+			String saveString = TopologyConfig.simulationName + "/MPC" + TopologyConfig.N_STEPS_MPC + "_LP/";
+			saveString += actorName + "_MPC" + nStepsMPC + "_LP_Solutions.csv";
 			if (GlobalTime.getCurrentTimeStep() == (TopologyConfig.NR_OF_ITERATIONS - 1)) {
 				solHandler.exportMatrix(buildingsSolutionPerTimeStep, saveString, namesResult);
 			}

@@ -128,7 +128,7 @@ public class ParameterInputPanel extends JPanel {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	public void initialize() {
 		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Parameter input", TitledBorder.RIGHT,
 				TitledBorder.TOP, null, Colors.accent2));
 		setLayout(new FormLayout(new ColumnSpec[] {
@@ -312,6 +312,27 @@ public class ParameterInputPanel extends JPanel {
 			lbMarketPriceInstruction.setVisible(true);
 			txtMarketPriceFile.setVisible(true);
 		}
+
+	}
+
+	public void update() {
+		txtSteps.setText(Integer.toString(pars.getSteps()));
+		txtLength.setText(Integer.toString(pars.getLength()));
+		txtSimulationName.setText(pars.getSimulationName());
+		txtFixedValue.setText(Double.toString(pars.getFixedMarketPrice()));
+		
+		if (pars.getOptCriteria().equals("co2")) lbOptCriteria2.setIcon(Icon.optCO2);
+		if (pars.getOptCriteria().equals("cost")) lbOptCriteria2.setIcon(Icon.optCost);
+		
+		if (pars.getLoggingMode().equals("resultLogs")) lbLoggingMode2.setIcon(Icon.resultLogs); 
+		if (pars.getLoggingMode().equals("fileLogs")) lbLoggingMode2.setIcon(Icon.fileLogs);
+		if (pars.getLoggingMode().equals("allLogs")) lbLoggingMode2.setIcon(Icon.allLogs);
+		
+		if (pars.getOptimizer().equals("lp")) lbOptimizer2.setIcon(Icon.lp);
+		if (pars.getOptimizer().equals("milp")) lbOptimizer2.setIcon(Icon.milp);
+		
+		if (! pars.isMemapON() ) lbMemap2.setIcon(Icon.offMemap);
+		if (pars.isMemapON() ) lbMemap2.setIcon(Icon.onMemap);
 
 	}
 

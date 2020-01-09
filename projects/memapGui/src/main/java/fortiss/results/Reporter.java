@@ -19,6 +19,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
+import fortiss.gui.Designer;
 import fortiss.gui.PlotPanel;
 import fortiss.gui.listeners.window.ExitWindowListner;
 import fortiss.gui.style.Colors;
@@ -99,7 +100,7 @@ public class Reporter extends JFrame {
 		setSize(new Dimension(1120, 810));
 		setBackground(Colors.background);
 		setLocationRelativeTo(null);
-		setTitle("MEMAP - Results");
+		setTitle("MEMAP - "+ Designer.parameterPanel.pars.getLastSavedFile() +" - Results");
 		setIconImage(Icon.smallMemapLogo.getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));

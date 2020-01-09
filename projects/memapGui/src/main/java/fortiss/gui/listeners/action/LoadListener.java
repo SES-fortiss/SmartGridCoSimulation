@@ -6,7 +6,6 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import fortiss.gui.Designer;
 import fortiss.gui.listeners.helper.ModelInitHelper;
 
 public class LoadListener extends MouseAdapter {
@@ -22,7 +21,7 @@ public class LoadListener extends MouseAdapter {
 		int rVal = chooser.showOpenDialog(chooser);
 		if (rVal == JFileChooser.APPROVE_OPTION) {
 			File file = chooser.getSelectedFile();
-			Designer.setWorkingFile(file.getAbsolutePath());
-			ModelInitHelper.loadFromFile(file);		}
+			ModelInitHelper.loadFromFile(file);
+		}
 	}
 }

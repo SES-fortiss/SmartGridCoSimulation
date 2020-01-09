@@ -4,14 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.gson.Gson;
 
@@ -31,82 +30,12 @@ abstract public class FileManager {
 	private static String configDir = DirectoryConfiguration.configDir;
 
 	/**
-	 * Reads a file from the resource container of the project
-	 *
-	 * @param filename the name of the file to be read
-	 * @return a buffer with the data in the input file
-	 */
-	public static BufferedReader readFromResources(String filename) {
-		BufferedReader br = null;
-		String source = "resources/" + filename;
-		File file = new File(source);
-		if(file.exists()) {
-			InputStream is = FileManager.class.getClassLoader().getResourceAsStream(source);
-			br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-		}
-		return br;
-	}
-
-	/**
-	 * Writes a file to the resource container of the project
-	 *
-	 * @param filename the name of the file to be read
-	 * @return a buffer with the data in the input file
-	 */
-	public static void writeToResources(String filename, String data) {
-
-		String source = "resources/parameterConfig.json";
-		File file = new File(source);
-
-		FileOutputStream fl = null;
-		try {
-			System.out.println(file.toPath());
-			fl = new FileOutputStream(file);
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		try (OutputStream out = fl){
-			out.write(1);
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		//if(file.exists()) {
-
-			 try {
-
-				PrintWriter writer2 = new PrintWriter(new File(FileManager.class.getResource("parameterConfig.json").getPath()));
-
-
-				PrintWriter writer = new PrintWriter(file);
-
-
-				//writer.write(data);
-				writer2.write(data);
-				//System.out.println("Writing to " + writer);
-				System.out.println("Writing to " + writer2);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		//}
-		return;
-	}
-
-
-
-	/**
 	 * Reads a file from location specified.
 	 *
 	 * @param location the absolute path to the file to be read
 	 * @return a buffer with the data in the file read
 	 */
-	public static BufferedReader readFromSource(String location) {
+	public static BufferedReader readDataFromSource(String location) {
 		BufferedReader br = null;
 		try {
 			InputStream is = new FileInputStream(location);
@@ -125,7 +54,7 @@ abstract public class FileManager {
 	 * @param location the absolute path to the file to be read
 	 * @return a buffer with the data in the file read
 	 */
-	public static BufferedReader readConfig() {
+	public static BufferedReader readParameterConfigFile() {
 		BufferedReader br = null;
 
 		String source = System.getProperty("user.dir") + "/" + mainDir + "/" + configDir + "/parameterConfig.json";
@@ -135,16 +64,14 @@ abstract public class FileManager {
 			br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 
 		} catch (FileNotFoundException e) {
-			System.err.println("FileManager file not found. " + source);
-			e.printStackTrace();
+			System.out.println("<INFO> - FileManager file not found: " + source);
+			return null;
 		}
 		return br;
 	}
 
 
 	/**
-
-
 	 * Writes a file.
 	 *
 	 * @param str  text to be written in file
@@ -177,9 +104,7 @@ abstract public class FileManager {
 	 * registered in {@link fortiss.simulation.Parameters}.
 	 */
 	public static void writeParameterConfigFile() {
-		String source = "\\" + mainDir + "\\" + configDir + "\\parameterConfig.json";		String location = System.getProperty("user.dir");
-		location = location + source;
-
+		String location = System.getProperty("user.dir") + "\\" + mainDir + "\\" + configDir + "\\parameterConfig.json";				
 		System.out.println(">> Writing parameter configuration file in " + location);
 
 		File file = new File(location);
@@ -191,39 +116,37 @@ abstract public class FileManager {
 	}
 
 	/**
-	 * Writes one descriptor file that includes the configuration of all the
-	 * buildings created.
+	 * Writes the model that includes the configuration of all the buildings created.
 	 *
 	 * @param file path to file
 	 */
-	public static void writeDescriptorFile(File file) {
+	public static void writeBuildingDescriptorFile(File file) {
 
 		// Create JSON string
 		Gson gson = new Gson();
-		String str = gson.toJson(Designer.buildings);
+		
+		Set<Building> mySet = new HashSet<Building>();
+		
+		for (Building building : Designer.buildings) {
+			mySet.add(building);
+		}
+		
+		String str = gson.toJson(mySet);
 		writeFile(str, file);
 	}
 
-	/**
-	 * Writes one descriptor file per building with its configuration.
-	 */
-	public static void writeDescriptorFiles() {
+	/** Writes one descriptor file per building with its configuration.*/
+	public static void writeBuildingDescriptorFiles() {
 
-		String location = System.getProperty("user.dir");
-		/*
-		 * Note: location is the project directory from which the simulation was started
-		 * or or the directory from which the .jar was executed.
-		 */
-		String source = "/" + mainDir + "/" + configDir + "/";
+		/** Note: location is the project directory from which the simulation was started. */
+		String location = System.getProperty("user.dir") + "/" + mainDir + "/" + configDir + "/";
 
 		for (Building building : Designer.buildings) {
-			String filename = location + source + building.getName() + ".json";
-
 			System.out.println(">> Writing descriptor " + building.getName() + " in " + location);
-
+			
+			String filename = location + building.getName() + ".json";
 			File file = new File(filename);
 
-			// Create JSON string
 			Gson gson = new Gson();
 			String str = gson.toJson(building);
 			Designer.parameterPanel.pars.addDescriptorFile(file);

@@ -8,6 +8,7 @@ import java.util.Locale;
 import akka.systemActors.GlobalTime;
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
+import memap.helper.DirectoryConfiguration;
 import memap.helper.HelperConcat;
 import memap.helper.SolutionHandler;
 import memap.main.ConfigurationMEMAP;
@@ -116,19 +117,21 @@ public class MILPSolverNoConnections {
 			System.out.println(
 					"Demand:  " + Arrays.toString(demand) + "    List size: " + buildingMessage.demandList.size());
 		}
+		
+		String addOnPath = DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.resultDir + "/";
 
 		if (logging == ConfigurationMEMAP.MEMAPLogging.ALL || logging == ConfigurationMEMAP.MEMAPLogging.FILES)
-			problem.writeLp("MILP_MEMAP_DEMAND.lp");
+			problem.writeLp(addOnPath + "MILP_MEMAP_DEMAND.lp");
 
 		// 3) add the inequality constraints (component boundaries)
 		problem = mp.createComponentBoundaries(problem, buildingMessage);
 		if (logging == ConfigurationMEMAP.MEMAPLogging.ALL || logging == ConfigurationMEMAP.MEMAPLogging.FILES)
-			problem.writeLp("MILP_MEMAP_Boundaries.lp");
+			problem.writeLp(addOnPath + "MILP_MEMAP_Boundaries.lp");
 
 		// 4) SOC inequality constraints.
 		problem = mp.createSOCBoundaries(problem, buildingMessage);
 		if (logging == ConfigurationMEMAP.MEMAPLogging.ALL || logging == ConfigurationMEMAP.MEMAPLogging.FILES)
-			problem.writeLp("MILP_MEMAP_SOC_Boundaries.lp");
+			problem.writeLp(addOnPath + "MILP_MEMAP_SOC_Boundaries.lp");
 
 		problem.setAddRowmode(false); /* row-mode should be turned off again when done building the model */
 
@@ -136,7 +139,7 @@ public class MILPSolverNoConnections {
 		problem = mp.createObjectiveFunction(problem, buildingMessage);
 
 		if (logging == ConfigurationMEMAP.MEMAPLogging.ALL || logging == ConfigurationMEMAP.MEMAPLogging.FILES) {
-			problem.writeLp("MILP_MEMAP_FINAL.lp");
+			problem.writeLp(addOnPath + "MILP_MEMAP_FINAL.lp");
 			System.out.println("MILP_MEMAP_FINAL.lp written");
 		}
 
@@ -173,9 +176,7 @@ public class MILPSolverNoConnections {
 				for (int j = 0; j < nCols; j++) {
 					System.out.println(names[j] + ": " + optSolution[j]);
 				}
-				;
 			}
-			// we are done now
 		}
 
 		// Determination of costs
@@ -190,6 +191,16 @@ public class MILPSolverNoConnections {
 		buildingStepCostsMILP[timeStepIndex] = buildingCostPerTimestep;
 		buildingStepCO2MILP[GlobalTime.getCurrentTimeStep()] = buildingCO2PerTimestep;
 
+		
+		// to calculate the total costs
+		double costTotal = 0;
+		double CO2Total = 0;
+		
+		for (int i = 0; i < buildingStepCostsMILP.length; i++) {
+			costTotal += buildingStepCostsMILP[i];
+			CO2Total += buildingStepCO2MILP[i];
+		}
+		
 		// Creation of the result vector
 
 		double[] currentStep = { timeStepIndex };
@@ -197,22 +208,25 @@ public class MILPSolverNoConnections {
 				nStepsMPC);
 		double[] currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
 		double[] currentSOC = milpSolHandler.getCurrentSOC(buildingMessage.storageList);
-		double[] currentFinantialLoss = { buildingCostPerTimestep };
-		double[] currentCO2Loss = { buildingCO2PerTimestep };
 		double[] currentEnergyPrice = { TopologyConfig.energyPrices.getElectricityPriceInEuro(timeStepIndex) };
+		
+		double[] totalCostsEUR = { costTotal };
+		double[] totalCO2emissions = { CO2Total };
 
 		String[] timeStep = { "Time step" };
 		String[] currentDemandNames = milpSolHandler.getNamesForDemand();
 		String[] currentOptVectorNames = milpSolHandler.getNamesForThisTimeStep(names, nStepsMPC);
 		String[] currentSOCNames = milpSolHandler.getNamesForSOC(buildingMessage.storageList);
-		String[] finantialLoss = { "Finantial loss [EUR]" };
-		String[] co2Loss = { "CO2 loss [kg CO2/kWh]" };
+		
 		String[] energyPrice = { "Energy price [EUR]" };
+		
+		String[] totalCosts = { "Total costs [EUR]" };
+		String[] co2emissions = { "CO2 emissions [kg CO2/kWh]"};
 
-		String[] namesResult = HelperConcat.concatAllObjects(timeStep, currentDemandNames, currentOptVectorNames, currentSOCNames,
-				finantialLoss, co2Loss, energyPrice);
-		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC,
-				currentFinantialLoss, currentCO2Loss, currentEnergyPrice);
+		String[] namesResult = HelperConcat.concatAllObjects(timeStep, currentDemandNames, currentOptVectorNames, currentSOCNames, energyPrice,
+				totalCosts, co2emissions);
+		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentEnergyPrice,
+				totalCostsEUR, totalCO2emissions);
 
 		// Format results vector for printing
 		String[] vectorResultStr = new String[vectorResult.length];
@@ -228,8 +242,8 @@ public class MILPSolverNoConnections {
 		buildingsSolutionPerTimeStepMILP[timeStepIndex] = vectorResult;
 
 		if (true) {
-			String saveString = TopologyConfig.simulationName + "MPC" + TopologyConfig.N_STEPS_MPC + "/";
-			saveString += actorName + "MPC_MILP" + nStepsMPC + "Solutions.csv";
+			String saveString = TopologyConfig.simulationName + "/MPC" + TopologyConfig.N_STEPS_MPC + "_MILP/";
+			saveString += actorName + "_MPC" + nStepsMPC + "_MILP_Solutions.csv";
 			if (GlobalTime.getCurrentTimeStep() == (TopologyConfig.NR_OF_ITERATIONS - 1)) {
 				milpSolHandler.exportMatrix(buildingsSolutionPerTimeStepMILP, saveString, namesResult);
 			}

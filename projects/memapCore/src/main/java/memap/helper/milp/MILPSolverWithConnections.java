@@ -248,8 +248,8 @@ public class MILPSolverWithConnections {
 		// Save
 		buildingsSolutionPerTimeStepMILP[timeStepIndex] = vectorResult;
 
-		String saveString = TopologyConfig.simulationName + "MPC" + TopologyConfig.N_STEPS_MPC + "/";
-		saveString += actorName + "MPC_MILP" + nStepsMPC + "Solutions.csv";
+		String saveString = TopologyConfig.simulationName + "/MPC" + TopologyConfig.N_STEPS_MPC + "_MILP/";
+		saveString += actorName + "_MPC" + nStepsMPC + "_MILP_Solutions.csv";
 		if (GlobalTime.getCurrentTimeStep() == (TopologyConfig.NR_OF_ITERATIONS - 1)) {
 			milpSolHandler.exportMatrix(buildingsSolutionPerTimeStepMILP, saveString, namesResult);
 		}

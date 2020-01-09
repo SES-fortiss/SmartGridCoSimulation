@@ -1,12 +1,21 @@
 package fortiss.gui.listeners.helper;
 
 import fortiss.gui.Designer;
+import fortiss.simulation.Parameters;
 
 /**
  * Updates the displayed data according to user selection.
  */
 public class DataUpdater {
 
+	/**
+	 * Updates and shows the data of the selected building.
+	 */
+	public void updateParameterData(Parameters par) {
+		Designer.parameterPanel.pars = par;
+		Designer.parameterPanel.update();
+	}
+	
 	/**
 	 * Updates and shows the data of the selected building.
 	 */

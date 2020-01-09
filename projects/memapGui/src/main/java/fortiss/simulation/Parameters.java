@@ -2,6 +2,8 @@ package fortiss.simulation;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import fortiss.gui.Designer;
 import fortiss.media.Icon;
@@ -41,7 +43,7 @@ public class Parameters {
 	};
 
 	/** paths to descriptor files */
-	private ArrayList<File> descriptorFiles = new ArrayList<File>();
+	private Set<File> descriptorFiles = new HashSet<File>();
 	/** Simulation name */
 	private String simulationName;
 	/** length MemapSimulation steps. An integer */
@@ -83,6 +85,7 @@ public class Parameters {
 		setOptCriteria(criteriaOptions.get(0));
 		setLoggingMode(loggingOptions.get(0));
 		setLastSavedFile("");
+		descriptorFiles.clear();
 	}
 
 	public String getSimulationName() {
@@ -173,7 +176,7 @@ public class Parameters {
 		}
 	}
 
-	public ArrayList<File> getDescriptorFiles() {
+	public Set<File> getDescriptorFiles() {
 		return descriptorFiles;
 	}
 

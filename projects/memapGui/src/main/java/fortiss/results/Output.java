@@ -22,23 +22,29 @@ public class Output {
 	 */
 	public Output() {
 		String location = System.getProperty("user.dir");
-		String source = "/" + DirectoryConfiguration.mainDir + "/results/" + pars.getSimulationName() + "MPC"
-				+ pars.getSteps() + "/";
+		String source = "/" + DirectoryConfiguration.mainDir + "/results/" + pars.getSimulationName() + "/MPC" + pars.getSteps();
 		
-		String optimizerQualifier = "MPC";
-		if(pars.getOptimizer().equals("milp")) 
-			optimizerQualifier += "_MILP";
+		String optimizerQualifier = "_MPC" + pars.getSteps();
+		if(pars.getOptimizer().equals("milp")) {
+			source += "_MILP/";
+			optimizerQualifier += "_MILP_Solutions.csv";
+		}
+			
+		if(pars.getOptimizer().equals("lp")) {
+			source += "_LP/";
+			optimizerQualifier += "_LP_Solutions.csv";
+		}			
 		
 		if (pars.isMemapON()) {
 			for (Building building : Designer.buildings) {
-				String filename = pars.getSimulationName() + optimizerQualifier + pars.getSteps() + "Solutions.csv";
+				String filename = pars.getSimulationName() + optimizerQualifier;
 				buildingNames.add(building.getName());
 				filename = location + source + filename;
 				output.add(new Data(filename, true));
 			}
 		} else {
 			for (Building building : Designer.buildings) {
-				String filename = building.getName() + optimizerQualifier + pars.getSteps() + "Solutions.csv";
+				String filename = building.getName() + optimizerQualifier;
 				buildingNames.add(building.getName());
 				filename = location + source + filename;
 				output.add(new Data(filename, true));

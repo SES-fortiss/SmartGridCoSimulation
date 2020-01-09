@@ -38,7 +38,7 @@ public class Data {
 
 		System.out.println(">> Reading from: " + location.toString());
 
-		try (BufferedReader br = FileManager.readFromSource(location)) {
+		try (BufferedReader br = FileManager.readDataFromSource(location)) {
 			String[] br_names = br.readLine().split(";");
 			int nresult = br_names.length;
 

@@ -12,14 +12,17 @@ import com.google.gson.stream.JsonReader;
 import fortiss.components.Building;
 import fortiss.gui.Designer;
 import fortiss.gui.listeners.action.ResetListener;
+import fortiss.simulation.Parameters;
 
 public class ModelInitHelper {
 
 	public static void loadFromFile(File file) {
 		
-		if (file != null) {
-		
+		if (file != null) {		
 			try {
+				
+				Designer.parameterPanel.pars.getDescriptorFiles().clear();
+				
 				// ResetListener simulation
 				ResetListener r = new ResetListener();
 				r.mouseClicked(null);
@@ -36,7 +39,11 @@ public class ModelInitHelper {
 				Designer.currentBuilding = 0;
 				DataUpdater up = new DataUpdater();
 				up.updateEmsData(Designer.buildings.get(Designer.currentBuilding).getName(),
-						Integer.toString(Designer.buildings.get(Designer.currentBuilding).getPort()));
+						Integer.toString(Designer.buildings.get(Designer.currentBuilding).getPort()));								
+				
+				Designer.frame.setTitle("MEMAP - " + file.getAbsolutePath() + " - PlanningTool");
+				Designer.parameterPanel.pars.setLastSavedFile(file.getAbsolutePath());
+				System.out.println(">> Loaded file: " + file.getAbsolutePath());
 	
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
@@ -53,6 +60,11 @@ public class ModelInitHelper {
 			ComponentIcons components = new ComponentIcons();
 			components.createIcons(i);
 		}
+	}
+
+	public static void initParameters(Parameters par) {
+		DataUpdater up = new DataUpdater();
+		up.updateParameterData(par);		
 	}
 
 }

@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.datatransfer.DataFlavor;
+import java.io.BufferedReader;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -29,7 +30,6 @@ import fortiss.simulation.Parameters;
 public class Designer extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static String workingFile = "";
 	
 	// Object arrays
 	public static ArrayList<Building> buildings = new ArrayList<Building>();
@@ -78,7 +78,9 @@ public class Designer extends JFrame {
 			public void run() {
 				StyleGenerator.setupStyle();
 				frame = new Designer();
-				frame.setVisible(true);
+				frame.setVisible(true);				
+				frame.initLastSession();		
+				frame.addWindowListener( new ExitWindowListner() );
 			}
 		});
 	}
@@ -176,32 +178,29 @@ public class Designer extends JFrame {
 		lblFortissMemap = new JLabel(
 				"© 2019 FORTISS GMBH - AN INSTITUTE AFFILIATED TO THE TECHNICAL UNIVERSITY OF MUNICH");
 		lblFortissMemap.setHorizontalAlignment(SwingConstants.CENTER);
-		contentPane.add(lblFortissMemap, BorderLayout.SOUTH);		
-		
-		initLastSession();		
-		addWindowListener( new ExitWindowListner() );	
-	
+		contentPane.add(lblFortissMemap, BorderLayout.SOUTH);					
 	}
 
 	private void initLastSession() {
 		Gson gson = new Gson();
-		workingFile =  gson.fromJson(FileManager.readConfig(), Parameters.class).getLastSavedFile();
 		
-		if (workingFile != null && !workingFile.equals("")) {
+		BufferedReader br = FileManager.readParameterConfigFile();
+		
+		String workingFile = "";
+		Parameters par = null;
+		
+		if (br != null) {
+			par = gson.fromJson(br, Parameters.class);
+			workingFile = par.getLastSavedFile();
+			
+			System.out.println(gson.toJson(par));
+		}
+		
+		if (!workingFile.equals("")) {
 			ModelInitHelper.loadFromFile(new File(workingFile));
+			ModelInitHelper.initParameters(par);
 		} else {
 			System.out.println("lastWorkingFile: " + workingFile);
-
-		}
-
-	}
-
-	public static void setWorkingFile(String workingFile) {
-		Designer.workingFile = workingFile;
-	}
-	
-	public static String getWorkingFile() {
-		return workingFile;
-	}
-	
+		}		
+	}	
 } 
