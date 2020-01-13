@@ -31,9 +31,13 @@ public class SaveListener extends MouseAdapter {
 			}
 			
 			Designer.parameterPanel.pars.setLastSavedFile(file.getAbsolutePath());
-			FileManager.writeBuildingDescriptorFile(file);
+			FileManager.writeMemapModel(file);
 			System.out.println(">> Save file: " + file.getAbsolutePath());
 			Designer.frame.setTitle("MEMAP - " + file.getAbsolutePath() + " - PlanningTool");			
 		}
+	}
+	
+	public void saveFile() {
+		
 	}
 }

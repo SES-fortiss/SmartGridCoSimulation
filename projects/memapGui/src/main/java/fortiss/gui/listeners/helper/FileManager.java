@@ -34,16 +34,11 @@ abstract public class FileManager {
 	 *
 	 * @param location the absolute path to the file to be read
 	 * @return a buffer with the data in the file read
+	 * @throws FileNotFoundException 
 	 */
-	public static BufferedReader readDataFromSource(String location) {
-		BufferedReader br = null;
-		try {
-			InputStream is = new FileInputStream(location);
-			br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-		} catch (FileNotFoundException e) {
-			System.err.println("File not found. " + location);
-			e.printStackTrace();
-		}
+	public static BufferedReader readDataFromSource(String location) throws FileNotFoundException {
+		InputStream is = new FileInputStream(location);
+		BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));		
 		return br;
 	}
 
@@ -57,7 +52,7 @@ abstract public class FileManager {
 	public static BufferedReader readParameterConfigFile() {
 		BufferedReader br = null;
 
-		String source = System.getProperty("user.dir") + "/" + mainDir + "/" + configDir + "/parameterConfig.json";
+		String source = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir + File.separator + "parameterConfig.json";
 
 		try {
 			InputStream is = new FileInputStream(source);
@@ -104,7 +99,7 @@ abstract public class FileManager {
 	 * registered in {@link fortiss.simulation.Parameters}.
 	 */
 	public static void writeParameterConfigFile() {
-		String location = System.getProperty("user.dir") + "\\" + mainDir + "\\" + configDir + "\\parameterConfig.json";				
+		String location = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir + File.separator + "parameterConfig.json";				
 		System.out.println(">> Writing parameter configuration file in " + location);
 
 		File file = new File(location);
@@ -120,7 +115,7 @@ abstract public class FileManager {
 	 *
 	 * @param file path to file
 	 */
-	public static void writeBuildingDescriptorFile(File file) {
+	public static void writeMemapModel(File file) {
 
 		// Create JSON string
 		Gson gson = new Gson();
@@ -152,5 +147,11 @@ abstract public class FileManager {
 			Designer.parameterPanel.pars.addDescriptorFile(file);
 			writeFile(str, file);
 		}
+	}
+
+
+	public static void writeMemapModel() {
+		File file = new File(Designer.parameterPanel.pars.getLastSavedFile());
+		writeMemapModel(file);
 	}
 }

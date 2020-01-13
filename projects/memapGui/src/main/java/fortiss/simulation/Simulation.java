@@ -1,5 +1,6 @@
 package fortiss.simulation;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import fortiss.gui.listeners.button.AcceptListener;
@@ -26,10 +27,8 @@ public class Simulation implements Runnable {
 		System.out.println(">> Interactive simulator: Setting up the topology.");
 		AcceptListener.loadingScreen.lbMessage.setText("Setting up the topology");
 
-		// TODO repair 
-		// String location = DirectoryConfiguration.configDir + "/parameterConfig.json";
-		String location = System.getProperty("user.dir") + "/" + DirectoryConfiguration.mainDir + "/"
-				+ DirectoryConfiguration.configDir + "/parameterConfig.json";
+		String location = System.getProperty("user.dir") + File.separator + DirectoryConfiguration.mainDir + File.separator
+				+ DirectoryConfiguration.configDir + File.separator + "parameterConfig.json";
 		gc = new GuiController(location);
 
 		System.out.println(">> Interactive simulator: Starting simulation.");

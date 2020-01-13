@@ -1,7 +1,10 @@
 package fortiss.datastructures;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -21,53 +24,71 @@ public class Data {
 
 	/**
 	 * Constructor for the class Data. Initializes the seriesList lists.
+	 * @throws ParseException 
+	 * @throws IOException 
 	 */
-	public Data(String location, boolean hasHeader) {
+	public Data(String location, boolean hasHeader) throws IOException, ParseException {
 		setLabelList(new ArrayList<>());
 		setSeriesList(new ArrayList<ArrayList<Double>>());
 		readData(location, hasHeader);
 	}
 
+	public Data() {
+		
+		setLabelList(new ArrayList<>());
+		setSeriesList(new ArrayList<ArrayList<Double>>());
+		
+		String pathToInternal = "resources/" + "consumptionExample1.csv";				
+		ClassLoader classLoader = getClass().getClassLoader();
+		URL resource = classLoader.getResource(pathToInternal);
+		File file = new File(resource.getFile());
+		BufferedReader br = null;
+		
+        try {
+        	FileReader reader = new FileReader(file);
+        	br = new BufferedReader(reader);        	
+            createSeries(br, false);
+        } catch (IOException | ParseException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
-	 * Reads the seriesList from a CSV file and stores it in the corresponding
-	 * lists.
+	 * Reads the seriesList from a CSV file and stores it in the corresponding lists.
+	 * @throws ParseException 
+	 * @throws IOException 
 	 */
-	public void readData(String location, boolean hasHeader) {
-
-		NumberFormat nf = NumberFormat.getInstance(Locale.ENGLISH);
-
+	public void readData(String location, boolean hasHeader) throws IOException, ParseException {
 		System.out.println(">> Reading from: " + location.toString());
+		BufferedReader br = FileManager.readDataFromSource(location);		
+		createSeries(br, hasHeader);		
+	}
 
-		try (BufferedReader br = FileManager.readDataFromSource(location)) {
-			String[] br_names = br.readLine().split(";");
-			int nresult = br_names.length;
+	private void createSeries(BufferedReader br, boolean hasHeader)
+			throws IOException, ParseException {
+		
+		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
+		String[] br_names = br.readLine().split(";");
+		int nresult = br_names.length;
 
-			if (!hasHeader) {
-				for (int i = 0; i < nresult; i++) {
-					getLabelList().add("Series" + (i + 1));
-					getSeriesList().add(new ArrayList<Double>());
-				}
-			} else {
-				for (int i = 0; i < nresult; i++) {
-					getLabelList().add(br_names[i]);
-					getSeriesList().add(new ArrayList<Double>());
-				}
+		if (!hasHeader) {
+			for (int i = 0; i < nresult; i++) {
+				getLabelList().add("Series" + (i + 1));
+				getSeriesList().add(new ArrayList<Double>());
 			}
-
-			String line;
-			while ((line = br.readLine()) != null) {
-				List<String> br_values = Arrays.asList(line.split(";"));
-				for (int i = 0; i < br_values.size(); i++) {
-					getSeriesList().get(i).add(nf.parse(br_values.get(i)).doubleValue());
-					
-					// System.out.println("Data: " + br_values.get(i)); looks good, the doubles are ok.
-				
-				}
+		} else {
+			for (int i = 0; i < nresult; i++) {
+				getLabelList().add(br_names[i]);
+				getSeriesList().add(new ArrayList<Double>());
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
+		}
+
+		String line;
+		while ((line = br.readLine()) != null) {
+			List<String> br_values = Arrays.asList(line.split(";"));
+			for (int i = 0; i < br_values.size(); i++) {
+				getSeriesList().get(i).add(nf.parse(br_values.get(i)).doubleValue());
+			}
 		}
 	}
 

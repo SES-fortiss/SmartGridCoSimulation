@@ -1,5 +1,7 @@
 package fortiss.results;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import fortiss.components.Building;
@@ -40,14 +42,22 @@ public class Output {
 				String filename = pars.getSimulationName() + optimizerQualifier;
 				buildingNames.add(building.getName());
 				filename = location + source + filename;
-				output.add(new Data(filename, true));
+				try {
+					output.add(new Data(filename, true));
+				} catch (IOException | ParseException e) {
+					e.printStackTrace();
+				}
 			}
 		} else {
 			for (Building building : Designer.buildings) {
 				String filename = building.getName() + optimizerQualifier;
 				buildingNames.add(building.getName());
 				filename = location + source + filename;
-				output.add(new Data(filename, true));
+				try {
+					output.add(new Data(filename, true));
+				} catch (IOException | ParseException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 

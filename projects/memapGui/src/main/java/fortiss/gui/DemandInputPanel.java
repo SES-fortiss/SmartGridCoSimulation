@@ -2,6 +2,8 @@ package fortiss.gui;
 
 import java.awt.Cursor;
 import java.awt.Graphics;
+import java.io.IOException;
+import java.text.ParseException;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -189,17 +191,17 @@ public class DemandInputPanel extends JPanel {
 	 * and set plotter to <code>false</code>
 	 */
 	public void setData(String location) {
-		this.data = new Data(location, false);
+		try {
+			this.data = new Data(location, false);
+		} catch (IOException | ParseException e) {
+			this.data = new Data();
+			txtDConsumption.setText("");
+			System.out.println("<INFO> - Data for demand at " + location + " could not be read. Using zeros only.");			
+		}
+
 		plotPanel.clearSeries();
 		plotPanel.addSeries("Heat", data.getSeries(0));
 		plotPanel.addSeries("Electricity", data.getSeries(1));
 		plotPanel.setPlotted(false);
-	}
-
-	/**
-	 * @return data
-	 */
-	public Data getData() {
-		return data;
 	}
 }

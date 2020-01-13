@@ -1,5 +1,6 @@
 package memap.helper.milp;
 
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
@@ -12,8 +13,8 @@ import memap.helper.DirectoryConfiguration;
 import memap.helper.HelperConcat;
 import memap.helper.SolutionHandler;
 import memap.main.ConfigurationMEMAP;
-import memap.main.TopologyConfig;
 import memap.main.ConfigurationMEMAP.MEMAPLogging;
+import memap.main.TopologyConfig;
 import memap.messages.BuildingMessage;
 import memap.messages.OptimizationResultMessage;
 
@@ -60,6 +61,56 @@ public class MILPSolverNoConnections {
 		this.milpSolHandler = milpSolHandler;
 		this.actorName = actorName;
 		this.optResult = optResult;
+		
+		
+		
+		/** NOTE this is a reflection hack to set the right path for executing the optimizer */
+		/** Found online https://stackoverflow.com/questions/32638404/add-java-library-path-to-java-manifest */
+		/** AND here: https://stackoverflow.com/questions/15961483/setting-djava-library-path-programmatically-or-alternatives */
+		/** AND here: http://stackoverflow.com/a/24988095 */
+		
+		/** NOTE we deactivated this, since the *.dll are now directly shipped with the tool.
+		 * Maybe we need this later, but for now this is ok as it is.
+		String location = System.getProperty("user.dir") + File.separator + "tmp";
+		System.out.println("Setting java libraries to: " + location);	
+		
+		try {
+			Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
+		    usrPathsField.setAccessible(true);
+	
+		    String[] paths = (String[]) usrPathsField.get(null);
+		    
+		  	for (String path : paths)
+		        if (path.equals(location))
+		            return;
+	
+		    String[] newPaths = new String[paths.length + 1];
+		    newPaths[0] = location;
+		    for (int i = 1; i < newPaths.length; i++) {
+				newPaths[i] = paths[i-1];
+			}
+		    
+		    usrPathsField.set(null, newPaths);
+		    paths = (String[]) usrPathsField.get(null);
+		    
+		    String tmp = "";
+		    for (String string : paths) {
+				tmp += string + ";\n";
+			}
+		    System.out.println("current paths " + tmp);
+		    System.out.println("other way: " + System.getProperty("java.library.path"));
+		    
+		    System.setProperty( "java.library.path", location );
+		    Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
+		    fieldSysPath.setAccessible( true );
+		    fieldSysPath.set( null, null );
+		    
+		    System.out.println("other way after adaptation: " + System.getProperty("java.library.path"));
+		    
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		*/
 	}
 
 	/**
@@ -230,7 +281,7 @@ public class MILPSolverNoConnections {
 
 		// Format results vector for printing
 		String[] vectorResultStr = new String[vectorResult.length];
-		DecimalFormat df = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.ENGLISH));
+		DecimalFormat df = new DecimalFormat("0,00", new DecimalFormatSymbols(Locale.GERMAN));
 		for (int i = 1; i < vectorResultStr.length; i++) {
 			vectorResultStr[i] = df.format(vectorResult[i]);
 		}

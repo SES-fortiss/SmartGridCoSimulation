@@ -40,8 +40,8 @@ public abstract class Consumer extends Device {
 		// Creating demand vector
 		for (int i = 0; i < nStepsMPC; i++) {
 			try {
-				demandVectorB[i] = -currentHeatProfile.get(0 + i) / 60;
-				demandVectorB[nStepsMPC + i] = -currentElectricityProfile.get(0 + i) / 60;
+				demandVectorB[i] = -currentHeatProfile.get(0 + i);
+				demandVectorB[nStepsMPC + i] = -currentElectricityProfile.get(0 + i);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

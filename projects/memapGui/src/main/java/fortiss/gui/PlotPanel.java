@@ -36,7 +36,7 @@ public class PlotPanel extends JPanel {
 		chart = new XYChart(getWidth(), getHeight());
 		chart.getStyler().setChartBackgroundColor(Colors.background);
 		chart.getStyler().setYAxisDecimalPattern("#0.00");
-		chart.getStyler().setLocale(Locale.ENGLISH);
+		chart.getStyler().setLocale(Locale.GERMAN);
 	}
 
 	/**

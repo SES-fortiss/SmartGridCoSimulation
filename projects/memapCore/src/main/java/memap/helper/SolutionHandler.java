@@ -91,7 +91,7 @@ public class SolutionHandler {
 	 */
 	public void exportMatrix(double[][] data, String filename, String[] header) {
 		BufferedWriter bw = null;
-		String source = "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.resultDir + "/" + filename;
+		String source = File.separator + DirectoryConfiguration.mainDir + File.separator + DirectoryConfiguration.resultDir + File.separator + filename;
 		String location = System.getProperty("user.dir");
 		/*
 		 * Note: location is the project directory from which the simulation was started
@@ -107,7 +107,6 @@ public class SolutionHandler {
         
 		
 		File file = destination;
-
 		try {
 			/*
 			 * This logic will make sure that the file gets created if it is not present at
@@ -133,17 +132,17 @@ public class SolutionHandler {
 				if (index == data.length - 1) {
 					for (int j = 0; j < data[0].length; j++) {
 						if (j == data[0].length - 1) {
-							bw.write(String.format(Locale.US, "%1$,.2f", data[index][j]));
+							bw.write(String.format(Locale.GERMAN, "%1$,.2f", data[index][j]));
 						} else {
-							bw.write(String.format(Locale.US, "%1$,.2f", data[index][j]) + ";");
+							bw.write(String.format(Locale.GERMAN, "%1$,.2f", data[index][j]) + ";");
 						}
 					}
 				} else {
 					for (int j = 0; j < data[0].length; j++) {
 						if (j == data[0].length - 1) {
-							bw.write(String.format(Locale.US, "%.2f", data[index][j]));
+							bw.write(String.format(Locale.GERMAN, "%.2f", data[index][j]));
 						} else {
-							bw.write(String.format(Locale.US, "%.2f", data[index][j]) + ";");
+							bw.write(String.format(Locale.GERMAN, "%.2f", data[index][j]) + ";");
 						}
 					}
 					bw.newLine();
