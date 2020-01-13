@@ -223,7 +223,7 @@ public class MILPSolverWithConnections {
 
 		String[] timeStep = { "Time step" };
 		String[] currentDemandNames = milpSolHandler.getNamesForDemand(buildingMessages, nStepsMPC);
-		String[] currentOptVectorNames = milpSolHandler.getNamesForThisTimeStep(names, nStepsMPC);
+		String[] currentOptVectorNames = milpSolHandler.getVectorNamesForThisTimeStep(names, nStepsMPC);
 		String[] currentSOCNames = milpSolHandler.getNamesForSOCs(buildingMessages);
 		String[] finantialLoss = { "Finantial loss [EUR]" };
 		String[] co2Loss = { "CO2 loss [kg CO2/kWh]" };

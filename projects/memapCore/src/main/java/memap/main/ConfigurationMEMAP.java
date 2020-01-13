@@ -12,7 +12,7 @@ public class ConfigurationMEMAP {
 	public static OptimizationCriteria chosenCriteria = OptimizationCriteria.EUR;
 	public static OptHierarchy chosenOptimizationHierarchy = OptHierarchy.BUILDING;
 	public static ToolUsage chosenToolUsage = ToolUsage.PLANNING;
-	public static MEMAPLogging chosenMEMAPLogging =  MEMAPLogging.FILES;
+	public static MEMAPLogging chosenMEMAPLogging =  MEMAPLogging.RESULTS_ONLY;
 	
 	public enum OptHierarchy {
         BUILDING, MEMAP;

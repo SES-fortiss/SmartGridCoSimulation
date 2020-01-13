@@ -71,6 +71,8 @@ public class MILPSolverNoConnections {
 		
 		/** NOTE we deactivated this, since the *.dll are now directly shipped with the tool.
 		 * Maybe we need this later, but for now this is ok as it is.
+		 * 
+		
 		String location = System.getProperty("user.dir") + File.separator + "tmp";
 		System.out.println("Setting java libraries to: " + location);	
 		
@@ -110,7 +112,9 @@ public class MILPSolverNoConnections {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		*/
+		
 	}
 
 	/**
@@ -206,7 +210,7 @@ public class MILPSolverNoConnections {
 		result = problem.solve();
 
 		if (result == LpSolve.OPTIMAL) {
-			result = 0;
+			result = 0;			
 		} else {
 			result = 5;
 			System.err.println("No solution found. Resuming execution");
@@ -266,7 +270,7 @@ public class MILPSolverNoConnections {
 
 		String[] timeStep = { "Time step" };
 		String[] currentDemandNames = milpSolHandler.getNamesForDemand();
-		String[] currentOptVectorNames = milpSolHandler.getNamesForThisTimeStep(names, nStepsMPC);
+		String[] currentOptVectorNames = milpSolHandler.getVectorNamesForThisTimeStep(names, nStepsMPC);
 		String[] currentSOCNames = milpSolHandler.getNamesForSOC(buildingMessage.storageList);
 		
 		String[] energyPrice = { "Energy price [EUR]" };
@@ -317,8 +321,7 @@ public class MILPSolverNoConnections {
 		}
 
 		// Clean up such that all used memory by lp-solve is freed
-		if (problem.getLp() != 0)
-			problem.deleteLp();
+		if (problem.getLp() != 0) problem.deleteLp();
 
 		return result;
 	}

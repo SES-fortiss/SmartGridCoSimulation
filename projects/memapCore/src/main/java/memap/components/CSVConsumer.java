@@ -27,6 +27,7 @@ public class CSVConsumer extends Consumer {
 	 * @param port
 	 */
 	public CSVConsumer(String name, String csvFile, int port) {
+			
 		super(name, port);
 		setProfiles(csvFile);
 	}
@@ -51,18 +52,19 @@ public class CSVConsumer extends Consumer {
 	/**
 	 * Assign values to heatProfile and electricityProfile
 	 */
-	private void setProfiles(String csvFile) {
+	private void setProfiles(String csvFile) {	
 		try {
 			if (csvFile.isEmpty()) {
 				interpolate(getBuffer("EXAMPLE1"));
 			} else {
-				interpolate(getBuffer(csvFile));
+				BufferedReader br = getBuffer(csvFile);				
+				interpolate(br);				
 			}
 		} catch (IOException | ParseException e) {
 			System.err.println("Error reading or parsing CSV data from " + csvFile);
 			SimulationStarter.stopSimulation();
 			e.printStackTrace();
-		}
+		}		
 
 	}
 
@@ -90,8 +92,7 @@ public class CSVConsumer extends Consumer {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void interpolate(BufferedReader br) throws IOException, ParseException {
-
+	private void interpolate(BufferedReader br) throws IOException, ParseException {	
 		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
 		//NumberFormat nf = NumberFormat.getInstance(Locale.ENGLISH);
 
@@ -130,7 +131,7 @@ public class CSVConsumer extends Consumer {
 				System.out.println("Heat Avg. Consumption: " + consumptionBuffer[0]);
 				System.out.println("Elec Avg. Consumption: " + consumptionBuffer[1]);
 				*/
-				
+
 				for (int j = 0; j < buffer.length; j++) {
 					/**
 					// Necessary if the time step is not exactly one minute.
@@ -145,7 +146,7 @@ public class CSVConsumer extends Consumer {
 				k++;
 			}
 		}
-
+		
 		br.close();
 
 		// Calculate the consumption for one day longer than necessary because of MPC horizon		
@@ -160,14 +161,6 @@ public class CSVConsumer extends Consumer {
 		}
 		
 		System.out.println("Profiles available. Heat: " + profiles.get(0).size() + " : " + gson.toJson(profiles.get(0)));
-		System.out.println("Profiles available. Elec: " + profiles.get(1).size() + " : " + gson.toJson(profiles.get(1)));
-		
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		System.out.println("Profiles available. Elec: " + profiles.get(1).size() + " : " + gson.toJson(profiles.get(1)));	
 	}
 }

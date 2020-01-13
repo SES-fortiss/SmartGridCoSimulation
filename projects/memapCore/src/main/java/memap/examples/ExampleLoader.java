@@ -32,7 +32,7 @@ import memap.messages.extension.NetworkType;
 public abstract class ExampleLoader {
 	public static TopologyController OpcUaExample() {
 		TopologyController topologyController = new TopologyController(OptHierarchy.MEMAP, Optimizer.MILP,
-				OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.FILES, "MemapExample", 5, 96, 7,
+				OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.RESULTS_ONLY, "MemapExample", 5, 96, 7,
 				"ELECTRICITYPRICEEXAMPLE", 0, 4880);
 
 		try {

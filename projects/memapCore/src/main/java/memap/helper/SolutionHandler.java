@@ -469,15 +469,19 @@ public class SolutionHandler {
 	 * @param nStepsMPC the number of steps for MPC
 	 * @return an array with the names for this time step
 	 */
-	public String[] getNamesForThisTimeStep(String[] names, int nStepsMPC) {
+	public String[] getVectorNamesForThisTimeStep(String[] names, int nStepsMPC) {
 		String[] result = new String[names.length / nStepsMPC];
+		
 		for (int i = 0; i < result.length; i++) {
 			result[i] = names[i * nStepsMPC];
 			if (result[i].contains(".")) {
 				String[] strSplit = result[i].split("\\.");
 				result[i] = strSplit[strSplit.length - 1];
 			}
+			
+			result[i] = result[i].replace("_T0", "");
 		}
+		
 		return result;
 	}
 

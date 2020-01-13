@@ -96,7 +96,7 @@ public class LPSolver {
 
 			String[] timeStep = { "Time step" };
 			String[] currentDemandNames = solHandler.getNamesForDemand();
-			String[] currentOptVectorNames = solHandler.getNamesForThisTimeStep(problem.namesUB, nStepsMPC);
+			String[] currentOptVectorNames = solHandler.getVectorNamesForThisTimeStep(problem.namesUB, nStepsMPC);
 			String[] currentSOCNames = solHandler.getNamesForSOC(buildingMessage.storageList);
 			String[] energyPrice = { "Energy price [EUR]" };
 			
