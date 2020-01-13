@@ -5,10 +5,13 @@ import java.awt.event.MouseEvent;
 
 import fortiss.gui.LoadingScreen;
 import fortiss.gui.listeners.helper.FileManager;
+import fortiss.results.Reporter;
 import fortiss.simulation.Simulation;
 
 public class AcceptListener extends MouseAdapter {
 
+	/** an instance of Reporter window */
+	public static Reporter result;
 	public static Simulation sim;
 	public static LoadingScreen loadingScreen = new LoadingScreen();
 	private Thread simt;
@@ -19,7 +22,7 @@ public class AcceptListener extends MouseAdapter {
 	 * simulator window.
 	 */
 	@Override
-	public void mouseClicked(MouseEvent e) {		
+	public void mouseClicked(MouseEvent e) {	
 		FileManager fm = new FileManager();
 		fm.writeMemapModel();
 		fm.writeBuildingDescriptorFiles();
@@ -28,5 +31,6 @@ public class AcceptListener extends MouseAdapter {
 		sim = new Simulation();
 		simt = new Thread(sim);
 		simt.start();
+		result = new Reporter();
 	}
 }

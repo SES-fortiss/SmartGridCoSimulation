@@ -38,6 +38,7 @@ public class Reporter extends JFrame {
 	public static JPanel plPlot;
 	public static PlotPanel plotPanel;
 	public static Output output;
+	private Menu treeResults;
 	private JPanel plSelection;
 	private JLabel lbInstructions;
 	private JLabel lbInstructions2;
@@ -133,7 +134,7 @@ public class Reporter extends JFrame {
 		plSelection.add(scrollPane, "1, 4, fill, fill");
 
 		// Adds tree for result list
-		Menu treeResults = new Menu();
+		treeResults = new Menu(output);
 		treeResults.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		treeResults.setBorder(null);
 		scrollPane.setViewportView(treeResults);
@@ -144,5 +145,10 @@ public class Reporter extends JFrame {
 		// Adds panel for plots
 		plotPanel = new PlotPanel();
 		getContentPane().add(plotPanel);
+	}
+	
+	public void loadResults() {
+		output.loadResults();
+		treeResults.populateMenu(output);
 	}
 }

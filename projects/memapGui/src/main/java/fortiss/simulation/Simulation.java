@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import fortiss.gui.listeners.button.AcceptListener;
-import fortiss.results.Reporter;
 import fortiss.simulation.listeners.helper.ProgressManager;
 import memap.controller.GuiController;
 import memap.helper.DirectoryConfiguration;
@@ -13,8 +12,7 @@ public class Simulation implements Runnable {
 
 	/** Controller for the GUI */
 	private GuiController gc;
-	/** an instance of Reporter window */
-	public static Reporter result;
+	
 	/** an instance of progress manager */
 	private ProgressManager pm = new ProgressManager();
 	/** a thread for progress manager */
@@ -60,7 +58,7 @@ public class Simulation implements Runnable {
 		createAndRun();
 
 		AcceptListener.loadingScreen.dispose();
-		result = new Reporter();
-		result.setVisible(true);
+		AcceptListener.result.loadResults();
+		AcceptListener.result.setVisible(true);
 	}
 }

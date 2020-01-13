@@ -28,7 +28,7 @@ import fortiss.media.Icon;
 import fortiss.simulation.Parameters;
 
 public class Designer extends JFrame {
-
+	
 	private static final long serialVersionUID = 1L;
 	
 	// Object arrays
