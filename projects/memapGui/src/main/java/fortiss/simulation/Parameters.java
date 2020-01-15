@@ -85,7 +85,7 @@ public class Parameters {
 		setOptCriteria(criteriaOptions.get(0));
 		setLoggingMode(loggingOptions.get(0));
 		setLastSavedFile("");
-		descriptorFiles.clear();
+		clearDescriptorFile();
 	}
 
 	public String getSimulationName() {
@@ -182,6 +182,10 @@ public class Parameters {
 
 	public void addDescriptorFile(File descriptorFile) {
 		descriptorFiles.add(descriptorFile);
+	}
+	
+	public void clearDescriptorFile() {
+		descriptorFiles.clear();
 	}
 
 	public String getMarketPriceFile() {

@@ -182,7 +182,7 @@ public class Designer extends JFrame {
 	}
 
 	private void initLastSession() {
-		Gson gson = new Gson();
+		Gson gson = new Gson();		
 		
 		BufferedReader br = FileManager.readParameterConfigFile();
 		
@@ -191,6 +191,7 @@ public class Designer extends JFrame {
 		
 		if (br != null) {
 			par = gson.fromJson(br, Parameters.class);
+			par.clearDescriptorFile();
 			workingFile = par.getLastSavedFile();
 			
 			System.out.println(gson.toJson(par));

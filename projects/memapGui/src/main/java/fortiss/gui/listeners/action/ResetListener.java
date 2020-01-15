@@ -33,6 +33,11 @@ public class ResetListener extends MouseAdapter {
 
 		// Hide component box
 		Designer.pl_object.hideComponentBox();
+		Designer.frame.setTitle("");
+		
+		// Clean lastSavedFile and descriptorFile paths
+		Designer.parameterPanel.pars.setLastSavedFile("");
+		Designer.parameterPanel.pars.clearDescriptorFile();
 
 	}
 }
