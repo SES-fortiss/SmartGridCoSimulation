@@ -22,12 +22,14 @@ import com.jgoodies.forms.layout.RowSpec;
 import fortiss.datastructures.Data;
 import fortiss.gui.listeners.button.DBrowseListener;
 import fortiss.gui.listeners.button.DPlotListener;
+import fortiss.gui.listeners.helper.FileManager;
 import fortiss.gui.listeners.textfield.DConsumptionListener;
 import fortiss.gui.listeners.textfield.DNameListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
+import memap.examples.ExampleFiles;
 
 /**
  * Input panel for demand parameters.
@@ -173,13 +175,22 @@ public class DemandInputPanel extends JPanel {
 	 * and set plotter to <code>false</code>
 	 */
 	public void setData(String location) {
+		FileManager fm = new FileManager();
 		try {
-			this.data = new Data(location, false);
+			this.data = new Data(fm.readFromSource(location), false);
 		} catch (IOException | ParseException e) {
-			this.data = null;
-			System.err.println("Data for demand at " + location + " could not be read. Using zeros only.");
+			ExampleFiles ef = new ExampleFiles();
+			System.out.println("<INFO> Data for demand at " + location + " could not be read. Using zeros only.");
+			try {
+				this.data = new Data(fm.readFromResources(ef.getFile("EXAMPLE0")), false);
+			} catch (IOException | ParseException e1) {
+				data = null;
+				System.err.println("Resources error. Default consumption file not found.");
+				e1.printStackTrace();
+			}
 			txtDConsumption.setText("");
-			Designer.buildings.get(Designer.currentBuilding).getDemand().get(Designer.currentComponent).setConsumptionProfile("");
+			Designer.buildings.get(Designer.currentBuilding).getDemand().get(Designer.currentComponent)
+					.setConsumptionProfile("");
 		}
 
 		if (!data.equals(null)) {

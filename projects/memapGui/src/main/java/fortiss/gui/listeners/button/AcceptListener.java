@@ -21,10 +21,10 @@ public class AcceptListener extends MouseAdapter {
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {		
-		
-		FileManager.writeMemapModel();
-		FileManager.writeBuildingDescriptorFiles();
-		FileManager.writeParameterConfigFile(); // Should be called after writeDescriptorFiles()
+		FileManager fm = new FileManager();
+		fm.writeMemapModel();
+		fm.writeBuildingDescriptorFiles();
+		fm.writeParameterConfigFile(); // Should be called after writeDescriptorFiles()
 		
 		sim = new Simulation();
 		simt = new Thread(sim);

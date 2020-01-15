@@ -9,8 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import fortiss.gui.listeners.helper.FileManager;
-
 
 /**
  * Data represents a set of data
@@ -22,13 +20,14 @@ public class Data {
 
 	/**
 	 * Constructor for the class Data. Initializes the seriesList lists.
+	 * @param br a BufferedReader
 	 * @throws ParseException 
 	 * @throws IOException 
 	 */
-	public Data(String location, boolean hasHeader) throws IOException, ParseException {
+	public Data(BufferedReader br, boolean hasHeader) throws IOException, ParseException {
 		setLabelList(new ArrayList<>());
 		setSeriesList(new ArrayList<ArrayList<Double>>());
-		readData(location, hasHeader);
+		createSeries(br, hasHeader);
 	}
 
 	/**
@@ -36,12 +35,6 @@ public class Data {
 	 * @throws ParseException 
 	 * @throws IOException 
 	 */
-	public void readData(String location, boolean hasHeader) throws IOException, ParseException {
-		System.out.println(">> Reading from: " + location.toString());
-		BufferedReader br = FileManager.readDataFromSource(location);		
-		createSeries(br, hasHeader);		
-	}
-
 	private void createSeries(BufferedReader br, boolean hasHeader)
 			throws IOException, ParseException {
 		

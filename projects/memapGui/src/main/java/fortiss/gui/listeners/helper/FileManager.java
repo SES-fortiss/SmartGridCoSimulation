@@ -17,18 +17,39 @@ import com.google.gson.Gson;
 import fortiss.components.Building;
 import fortiss.gui.Designer;
 import memap.helper.DirectoryConfiguration;
+import simulation.SimulationStarter;
 
 /**
  * Manages all the files read and produced by the GUI interface
  */
-abstract public class FileManager {
+public class FileManager {
 
 	/** Main output directory path */
-	private static String mainDir = DirectoryConfiguration.mainDir;
+	private String mainDir = DirectoryConfiguration.mainDir;
 
 	/** Configuration directory path */
-	private static String configDir = DirectoryConfiguration.configDir;
+	private String configDir = DirectoryConfiguration.configDir;
 
+	/**
+	 * Reads a file from the resource container of the project
+	 * 
+	 * @param filename the name of the file in resources
+	 * @return a buffer with the data in the input file
+	 */
+	public BufferedReader readFromResources(String filename) {
+		BufferedReader br = null;
+		String source = "/resources/" + filename;
+		try {
+			InputStream is = this.getClass().getResourceAsStream(source);
+			br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+		} catch (IOException e1) {
+			System.err.println("Error reading " + filename + " from resources");
+			e1.printStackTrace();
+			SimulationStarter.stopSimulation();
+		}
+		return br;
+	}
+	
 	/**
 	 * Reads a file from location specified.
 	 *
@@ -36,12 +57,11 @@ abstract public class FileManager {
 	 * @return a buffer with the data in the file read
 	 * @throws FileNotFoundException 
 	 */
-	public static BufferedReader readDataFromSource(String location) throws FileNotFoundException {
+	public BufferedReader readFromSource(String location) throws FileNotFoundException {
 		InputStream is = new FileInputStream(location);
 		BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));		
 		return br;
 	}
-
 
 	/**
  * Reads a file from location specified.
@@ -49,7 +69,7 @@ abstract public class FileManager {
 	 * @param location the absolute path to the file to be read
 	 * @return a buffer with the data in the file read
 	 */
-	public static BufferedReader readParameterConfigFile() {
+	public BufferedReader readParameterConfigFile() {
 		BufferedReader br = null;
 
 		String source = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir + File.separator + "parameterConfig.json";
@@ -72,7 +92,7 @@ abstract public class FileManager {
 	 * @param str  text to be written in file
 	 * @param file File to be written
 	 */
-	public static void writeFile(String str, File file) {
+	public void writeFile(String str, File file) {
 
 		if (!file.exists()) {
 			try {
@@ -98,7 +118,7 @@ abstract public class FileManager {
 	 * Writes one parameter configuration file that includes the parameters
 	 * registered in {@link fortiss.simulation.Parameters}.
 	 */
-	public static void writeParameterConfigFile() {
+	public void writeParameterConfigFile() {
 		String location = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir + File.separator + "parameterConfig.json";				
 		System.out.println(">> Writing parameter configuration file in " + location);
 
@@ -115,7 +135,7 @@ abstract public class FileManager {
 	 *
 	 * @param file path to file
 	 */
-	public static void writeMemapModel(File file) {
+	public void writeMemapModel(File file) {
 
 		// Create JSON string
 		Gson gson = new Gson();
@@ -131,7 +151,7 @@ abstract public class FileManager {
 	}
 
 	/** Writes one descriptor file per building with its configuration.*/
-	public static void writeBuildingDescriptorFiles() {
+	public void writeBuildingDescriptorFiles() {
 
 		/** Note: location is the project directory from which the simulation was started. */
 		String location = System.getProperty("user.dir") + "/" + mainDir + "/" + configDir + "/";
@@ -150,7 +170,7 @@ abstract public class FileManager {
 	}
 
 
-	public static void writeMemapModel() {
+	public void writeMemapModel() {
 		File file = new File(Designer.parameterPanel.pars.getLastSavedFile());
 		writeMemapModel(file);
 	}

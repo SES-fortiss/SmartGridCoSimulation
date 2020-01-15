@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import fortiss.components.Building;
 import fortiss.datastructures.Data;
 import fortiss.gui.Designer;
+import fortiss.gui.listeners.helper.FileManager;
 import fortiss.simulation.Parameters;
 import memap.helper.DirectoryConfiguration;
 
@@ -24,6 +25,7 @@ public class Output {
 	 * the class Data.
 	 */
 	public Output() {
+		FileManager fm = new FileManager();
 		String location = System.getProperty("user.dir");
 		String fs = File.separator;
 		String source = fs + DirectoryConfiguration.mainDir + fs + "results" + fs + pars.getSimulationName() + fs +"MPC" + pars.getSteps();
@@ -45,7 +47,7 @@ public class Output {
 				buildingNames.add(building.getName());
 				filename = location + source + filename;
 				try {
-					output.add(new Data(filename, true));
+					output.add(new Data(fm.readFromSource(filename), true));
 				} catch (IOException | ParseException e) {
 					e.printStackTrace();
 				}
@@ -56,7 +58,7 @@ public class Output {
 				buildingNames.add(building.getName());
 				filename = location + source + filename;
 				try {
-					output.add(new Data(filename, true));
+					output.add(new Data(fm.readFromSource(filename), true));
 				} catch (IOException | ParseException e) {
 					e.printStackTrace();
 				}

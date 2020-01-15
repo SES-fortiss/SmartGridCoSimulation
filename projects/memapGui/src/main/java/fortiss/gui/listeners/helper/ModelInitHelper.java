@@ -44,7 +44,7 @@ public class ModelInitHelper {
 							demand.setConsumptionProfile(consumptionFilePath);
 						} else {
 							demand.setConsumptionProfile("");
-							System.err.println("File " + consumptionFilePath + " does not exist. Using default demand: 0");
+							System.err.println("File " + consumptionFilePath + " does not exist. Using zeros only.");
 						}
 					}
 				}

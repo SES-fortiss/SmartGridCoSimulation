@@ -13,7 +13,8 @@ public class ExitWindowListner extends WindowAdapter {
 		
 		String lastFile = Designer.parameterPanel.pars.getLastSavedFile();
     	if(!lastFile.equals("")) {
-        	FileManager.writeParameterConfigFile();
+    		FileManager fm = new FileManager();
+        	fm.writeParameterConfigFile();
     	}
     }
 }

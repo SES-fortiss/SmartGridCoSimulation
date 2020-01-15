@@ -6,6 +6,8 @@ public class ExampleFiles {
 	private HashMap<String, String> exampleFiles = new HashMap<String, String>();
 
 	public ExampleFiles() {
+		// EXAMPLE0: Zero consumption
+		exampleFiles.put("EXAMPLE0", "consumptionExample0.csv");
 		exampleFiles.put("EXAMPLE1", "consumptionExample1.csv");
 		exampleFiles.put("EXAMPLE2", "consumptionExample2.csv");
 		exampleFiles.put("EXAMPLE3", "consumptionExample3.csv");

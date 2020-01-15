@@ -25,7 +25,7 @@ public class DBrowseListener extends MouseAdapter {
 		}
 
 		// null check necessary to account for a cancelled attempt to change path
-		if (!d.getConsumptionProfile().isEmpty() && path != null) {
+		if (path != null) {
 			Designer.demandPanel.setData(path);
 		}
 	}

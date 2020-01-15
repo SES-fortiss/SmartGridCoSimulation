@@ -15,7 +15,7 @@ public class DataUpdater {
 		Designer.parameterPanel.pars = par;
 		Designer.parameterPanel.update();
 	}
-	
+
 	/**
 	 * Updates and shows the data of the selected building.
 	 */
@@ -33,9 +33,7 @@ public class DataUpdater {
 		Designer.demandPanel.txtDName.setText(name);
 		Designer.demandPanel.txtDConsumption.setText(consumption);
 		Designer.demandPanel.plotPanel.clearSeries();
-		if (!consumption.isEmpty()) {
-			Designer.demandPanel.setData(consumption);
-		}
+		Designer.demandPanel.setData(consumption);
 		Designer.cl.show(Designer.pl_comp_detail, "demand");
 	}
 
@@ -59,8 +57,8 @@ public class DataUpdater {
 	/**
 	 * Updates and shows the data of the selected volatile.
 	 */
-	public void updateVolProductionData(String producer, String networktype, double minimumPower, double maximumPower, String forcastFile,
-			double cost, double coEmission) {
+	public void updateVolProductionData(String producer, String networktype, double minimumPower, double maximumPower,
+			String forcastFile, double cost, double coEmission) {
 		Designer.volatilePanel.txtVName.setText(producer);
 		Designer.volatilePanel.sVNetworkType.setSelectedItem(networktype);
 		Designer.volatilePanel.txtVMinimumPower.setText(Double.toString(minimumPower));
@@ -75,8 +73,8 @@ public class DataUpdater {
 	/**
 	 * Updates and shows the data of the selected controllable.
 	 */
-	public void updateContProductionData(String producer, String networkType, double minimumPower, double maximumPower, double efficiency,
-			double cost, double coEmission) {
+	public void updateContProductionData(String producer, String networkType, double minimumPower, double maximumPower,
+			double efficiency, double cost, double coEmission) {
 		Designer.controllablePanel.txtCPName.setText(producer);
 		Designer.controllablePanel.sCPNetworkType.setSelectedItem(networkType);
 		Designer.controllablePanel.txtCPMinimumPower.setText(Double.toString(minimumPower));

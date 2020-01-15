@@ -183,8 +183,8 @@ public class Designer extends JFrame {
 
 	private void initLastSession() {
 		Gson gson = new Gson();		
-		
-		BufferedReader br = FileManager.readParameterConfigFile();
+		FileManager fm = new FileManager();
+		BufferedReader br = fm.readParameterConfigFile();
 		
 		String workingFile = "";
 		Parameters par = null;

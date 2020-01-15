@@ -55,7 +55,7 @@ public class CSVConsumer extends Consumer {
 	private void setProfiles(String csvFile) {	
 		try {
 			if (csvFile.isEmpty()) {
-				interpolate(getBuffer("EXAMPLE1"));
+				interpolate(getBuffer("EXAMPLE0"));
 			} else {
 				BufferedReader br = getBuffer(csvFile);				
 				interpolate(br);				
