@@ -1,10 +1,7 @@
 package fortiss.datastructures;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -13,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 
 import fortiss.gui.listeners.helper.FileManager;
+
 
 /**
  * Data represents a set of data
@@ -31,26 +29,6 @@ public class Data {
 		setLabelList(new ArrayList<>());
 		setSeriesList(new ArrayList<ArrayList<Double>>());
 		readData(location, hasHeader);
-	}
-
-	public Data() {
-		
-		setLabelList(new ArrayList<>());
-		setSeriesList(new ArrayList<ArrayList<Double>>());
-		
-		String pathToInternal = "resources/" + "consumptionExample1.csv";				
-		ClassLoader classLoader = getClass().getClassLoader();
-		URL resource = classLoader.getResource(pathToInternal);
-		File file = new File(resource.getFile());
-		BufferedReader br = null;
-		
-        try {
-        	FileReader reader = new FileReader(file);
-        	br = new BufferedReader(reader);        	
-            createSeries(br, false);
-        } catch (IOException | ParseException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -105,8 +83,6 @@ public class Data {
 	 * @return a series in data object
 	 */
 	public ArrayList<Double> getSeries(int index) {
-		System.out.println("Data getSeries(int index): " + seriesList.get(index));
-		
 		return seriesList.get(index);
 	}
 

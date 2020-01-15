@@ -101,36 +101,16 @@ public class DemandInputPanel extends JPanel {
 
 		panel = new JPanel();
 		add(panel, "1, 2, fill, fill");
-		panel.setLayout(new FormLayout(new ColumnSpec[] {
-				ColumnSpec.decode("15dlu"),
-				ColumnSpec.decode("85dlu:grow"),
-				ColumnSpec.decode("15dlu"),
-				ColumnSpec.decode("93dlu:grow"),
-				FormSpecs.RELATED_GAP_COLSPEC,
-				FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC,
-				FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("15dlu"),
-				FormSpecs.RELATED_GAP_COLSPEC,},
-			new RowSpec[] {
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("15dlu"),
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,}));
+		panel.setLayout(new FormLayout(new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("85dlu:grow"),
+				ColumnSpec.decode("15dlu"), ColumnSpec.decode("93dlu:grow"), FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("15dlu"), FormSpecs.RELATED_GAP_COLSPEC, },
+				new RowSpec[] { FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
+						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("15dlu"), FormSpecs.RELATED_GAP_ROWSPEC,
+						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
 
 		lblDemand = new JLabel("DEMAND");
 		panel.add(lblDemand, "2, 3, 7, 1, center, center");
@@ -167,15 +147,17 @@ public class DemandInputPanel extends JPanel {
 		btDPlot.setIcon(Icon.visualize);
 		btDPlot.setBorder(new EmptyBorder(3, 3, 3, 3));
 		btDPlot.setContentAreaFilled(false);
-		
-		lblCsvInstructions = new JLabel("<html> <b> Consumption file format </b> <br/> <br/> CSV file with no headers <br/> Column 1: Heat &emsp; Column 2: Electricity <br/> Decimal separator: , <br/> Column separator: ;</html>");
+
+		lblCsvInstructions = new JLabel(
+				"<html> <b> Consumption file format </b> <br/> <br/> CSV file with no headers <br/> Column 1: Heat &emsp; Column 2: Electricity <br/> Decimal separator: , <br/> Column separator: ;</html>");
 		panel.add(lblCsvInstructions, "2, 13, 2, 1, left, default");
 
 		lblCsvformat = new JLabel("");
 		lblCsvformat.setIcon(Icon.csvFormat);
 		panel.add(lblCsvformat, "4, 13, 6, 1, right, center");
-		
-		lblCsvWarning = new JLabel("<html><font face=\"verdana\" color=\"red\">&#9888;</font> Note: If no consumption file is selected the default is zero</html>");
+
+		lblCsvWarning = new JLabel(
+				"<html><font face=\"verdana\" color=\"red\">&#9888;</font> Note: If no consumption file is selected the default is zero</html>");
 		panel.add(lblCsvWarning, "2, 15, 8, 1");
 		btDPlot.addMouseListener(new DPlotListener());
 
@@ -194,14 +176,17 @@ public class DemandInputPanel extends JPanel {
 		try {
 			this.data = new Data(location, false);
 		} catch (IOException | ParseException e) {
-			this.data = new Data();
+			this.data = null;
+			System.err.println("Data for demand at " + location + " could not be read. Using zeros only.");
 			txtDConsumption.setText("");
-			System.out.println("<INFO> - Data for demand at " + location + " could not be read. Using zeros only.");			
+			Designer.buildings.get(Designer.currentBuilding).getDemand().get(Designer.currentComponent).setConsumptionProfile("");
 		}
 
-		plotPanel.clearSeries();
-		plotPanel.addSeries("Heat", data.getSeries(0));
-		plotPanel.addSeries("Electricity", data.getSeries(1));
-		plotPanel.setPlotted(false);
+		if (!data.equals(null)) {
+			plotPanel.clearSeries();
+			plotPanel.addSeries("Heat", data.getSeries(0));
+			plotPanel.addSeries("Electricity", data.getSeries(1));
+			plotPanel.setPlotted(false);
+		}
 	}
 }
