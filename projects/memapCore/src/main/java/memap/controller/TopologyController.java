@@ -43,7 +43,6 @@ public class TopologyController extends TopologyConfig {
 	public List<BuildingController> managedBuildings = new ArrayList<BuildingController>();
 
 	public ActorTopology top;
-
 	
 	public TopologyController(OptHierarchy optHierarchy, Optimizer optimizer, OptimizationCriteria optimizationCriteria,
 			ToolUsage toolUsage, MEMAPLogging memapLogging, String name, int nrStepsMPC, int timeStepsPerDay,

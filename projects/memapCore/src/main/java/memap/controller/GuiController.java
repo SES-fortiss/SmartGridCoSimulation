@@ -68,7 +68,8 @@ public class GuiController {
 					: OptHierarchy.BUILDING;
 			Optimizer optimizer = (jObject.get("optimizer").getAsString().contentEquals("lp")) ? Optimizer.LP
 					: Optimizer.MILP;
-			OptimizationCriteria optimizationCriteria = (jObject.get("optCriteria").getAsString().contentEquals("cost"))
+			OptimizationCriteria optimizationCriteria = 
+					(jObject.get("optCriteria").getAsString().contentEquals("cost"))
 					? OptimizationCriteria.EUR
 					: OptimizationCriteria.CO2;
 			
@@ -81,13 +82,19 @@ public class GuiController {
 			boolean fixedPrice = jObject.get("fixedPrice").getAsBoolean();
 			
 			// Creating topologyController
-			TopologyController top = (fixedPrice)
+			// TODO simplify
+			// a suggestion: using FactoryPattern (without calling explicit constructors) - for instance		
+			// top = TopologyController.createTopology("fixedMarketPrice").setToolUsage(...).setLoggingMode(...).etc
+			// the constructor inside TopologyController would be private
+			TopologyController top = 
+					(fixedPrice)
 					? new TopologyController(optHierarchy, optimizer, optimizationCriteria, ToolUsage.PLANNING,loggingMode, 
 					jObject.get("simulationName").getAsString(), jObject.get("steps").getAsInt(),
 					jObject.get("length").getAsInt(), jObject.get("days").getAsInt(), jObject.get("fixedMarketPrice").getAsDouble(), 0, 0)					
 					: new TopologyController(optHierarchy, optimizer, optimizationCriteria, ToolUsage.PLANNING,
 					loggingMode, jObject.get("simulationName").getAsString(), jObject.get("steps").getAsInt(),
 					jObject.get("length").getAsInt(), jObject.get("days").getAsInt(), jObject.get("marketPriceFile").getAsString(), 0, 0);
+
 			
 			// Attaching buildings
 			JsonArray buildingPathList = (JsonArray) jObject.get("descriptorFiles");
@@ -110,7 +117,7 @@ public class GuiController {
 
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
-				}			
+				}
 			}
 
 			return top;
