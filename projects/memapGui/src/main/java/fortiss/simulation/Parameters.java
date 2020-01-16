@@ -78,7 +78,7 @@ public class Parameters {
 		setSteps(2);
 		setDays(1);
 		setFixedPrice(true);
-		setFixedMarketPrice(27.5);
+		setFixedMarketPrice(0.275);
 		setMarketPriceFile("");
 		setOptimizer(optimizerOptions.get(0));
 		setMemapON(false);

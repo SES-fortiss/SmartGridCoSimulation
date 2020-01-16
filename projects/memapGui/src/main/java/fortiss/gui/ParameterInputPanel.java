@@ -200,7 +200,7 @@ public class ParameterInputPanel extends JPanel {
 		sDays.addItemListener(new DaysListener());
 		add(sDays, "7, 14, 2, 1, fill, default");
 
-		lbPrice = new JLabel("Market price");
+		lbPrice = new JLabel("Market price [EUR]");
 		add(lbPrice, "2, 16");
 
 		JButton btAccept = new JButton("Start simulation");

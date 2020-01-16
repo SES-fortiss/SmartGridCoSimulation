@@ -55,6 +55,7 @@ public class EnergyPrices {
 		try {
 			if (csvFile.isEmpty()) {
 				readElectricityPrices(getBuffer("ELECTRICITYPRICEEXAMPLE"));
+				System.err.println("Variable market price selected but not input file was provided. Using example file");
 			} else {
 				readElectricityPrices(getBuffer(csvFile));
 			}
@@ -102,7 +103,7 @@ public class EnergyPrices {
 	 * @return electricity price in ct/kWh at specified time step
 	 */
 	public double getElectricityPriceInEuro(int timestep) {
-		return electricityPrices.get(timestep % electricityPrices.size()) / 100;
+		return electricityPrices.get(timestep % electricityPrices.size());
 	}
 
 	/**
