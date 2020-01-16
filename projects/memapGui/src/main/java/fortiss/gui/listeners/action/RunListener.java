@@ -13,7 +13,6 @@ public class RunListener extends MouseAdapter {
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		Designer.parameterPanel.update();
 		Designer.cl.show(Designer.pl_comp_detail, "parameter");		
 	}
 }

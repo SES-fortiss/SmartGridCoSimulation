@@ -131,48 +131,26 @@ public class ParameterInputPanel extends JPanel {
 	public void initialize() {
 		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Parameter input", TitledBorder.RIGHT,
 				TitledBorder.TOP, null, Colors.accent2));
-		setLayout(new FormLayout(new ColumnSpec[] {
-				ColumnSpec.decode("15dlu"),
-				ColumnSpec.decode("max(75dlu;default)"),
-				FormSpecs.DEFAULT_COLSPEC,
-				ColumnSpec.decode("50dlu:grow"),
-				FormSpecs.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("20dlu"),
-				ColumnSpec.decode("10dlu"),
-				ColumnSpec.decode("20dlu"),
-				FormSpecs.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("20dlu"),},
-			new RowSpec[] {
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				new RowSpec(RowSpec.CENTER, Sizes.bounded(Sizes.DEFAULT, Sizes.constant("2dlu", false), Sizes.constant("15dlu", false)), 0),
-				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("20dlu"),
-				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				RowSpec.decode("20dlu"),
-				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("50dlu"),
-				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				RowSpec.decode("default:grow"),}));
+		setLayout(new FormLayout(
+				new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("max(75dlu;default)"),
+						FormSpecs.DEFAULT_COLSPEC, ColumnSpec.decode("50dlu:grow"), FormSpecs.RELATED_GAP_COLSPEC,
+						ColumnSpec.decode("20dlu"), ColumnSpec.decode("10dlu"), ColumnSpec.decode("20dlu"),
+						FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("20dlu"), },
+				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
+						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
+						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.UNRELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.UNRELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.UNRELATED_GAP_ROWSPEC,
+						FormSpecs.DEFAULT_ROWSPEC,
+						new RowSpec(RowSpec.CENTER,
+								Sizes.bounded(Sizes.DEFAULT, Sizes.constant("2dlu", false),
+										Sizes.constant("15dlu", false)),
+								0),
+						FormSpecs.UNRELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
+						RowSpec.decode("20dlu"), FormSpecs.UNRELATED_GAP_ROWSPEC, RowSpec.decode("20dlu"),
+						FormSpecs.UNRELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
+						RowSpec.decode("50dlu"), FormSpecs.UNRELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						RowSpec.decode("default:grow"), }));
 
 		lbTitle = new JLabel("SIMULATION PARAMETERS");
 		lbTitle.setFont(Fonts.getOswald());
@@ -233,7 +211,6 @@ public class ParameterInputPanel extends JPanel {
 		btAccept.addMouseListener(new AcceptListener());
 
 		lbMarketPrice = new JLabel("");
-		lbMarketPrice.setIcon(Icon.fixedMarket);
 		lbMarketPrice.addMouseListener(new MarketPriceListener());
 		add(lbMarketPrice, "6, 16, 3, 1, right, default");
 
@@ -283,10 +260,10 @@ public class ParameterInputPanel extends JPanel {
 		lbOptCriteria2.setIcon(Icon.optCost);
 		lbOptCriteria2.addMouseListener(new OptimizationCriteriaListener());
 		add(lbOptCriteria2, "6, 23, 3, 1, right, default");
-		
+
 		lbLoggingMode = new JLabel("Logging mode");
 		add(lbLoggingMode, "2, 25");
-		
+
 		lbLoggingMode2 = new JLabel("");
 		lbLoggingMode2.setIcon(Icon.resultLogs);
 		lbLoggingMode2.addMouseListener(new LoggingModeListener());
@@ -296,18 +273,24 @@ public class ParameterInputPanel extends JPanel {
 
 	}
 
+	/**
+	 * Updates the market price options show to the user according to their
+	 * selection
+	 */
 	public void updateMarketPriceOptions() {
-		
+
 		if (pars.isFixedPrice()) {
-			txtFixedValue.setVisible(true);			
+			lbMarketPrice.setIcon(Icon.fixedMarket);
+			txtFixedValue.setText(Double.toString(pars.getFixedMarketPrice()));
+			txtFixedValue.setVisible(true);
 			btBrowse.setVisible(false);
 			lbMarketPriceInstruction.setVisible(false);
 			txtMarketPriceFile.setVisible(false);
-			pars.setMarketPriceFile("");
 
 		} else {
+			lbMarketPrice.setIcon(Icon.variableMarket);
+			txtMarketPriceFile.setText(pars.getMarketPriceFile());
 			txtFixedValue.setVisible(false);
-			//pars.setFixedMarketPrice(0);
 			btBrowse.setVisible(true);
 			lbMarketPriceInstruction.setVisible(true);
 			txtMarketPriceFile.setVisible(true);
@@ -315,25 +298,37 @@ public class ParameterInputPanel extends JPanel {
 
 	}
 
+	/**
+	 * Updates all the fields of the panel according to the parameters
+	 */
 	public void update() {
 		txtSteps.setText(Integer.toString(pars.getSteps()));
 		txtLength.setText(Integer.toString(pars.getLength()));
 		txtSimulationName.setText(pars.getSimulationName());
-		txtFixedValue.setText(Double.toString(pars.getFixedMarketPrice()));
-		
-		if (pars.getOptCriteria().equals("co2")) lbOptCriteria2.setIcon(Icon.optCO2);
-		if (pars.getOptCriteria().equals("cost")) lbOptCriteria2.setIcon(Icon.optCost);
-		
-		if (pars.getLoggingMode().equals("resultLogs")) lbLoggingMode2.setIcon(Icon.resultLogs); 
-		if (pars.getLoggingMode().equals("fileLogs")) lbLoggingMode2.setIcon(Icon.fileLogs);
-		if (pars.getLoggingMode().equals("allLogs")) lbLoggingMode2.setIcon(Icon.allLogs);
-		
-		if (pars.getOptimizer().equals("lp")) lbOptimizer2.setIcon(Icon.lp);
-		if (pars.getOptimizer().equals("milp")) lbOptimizer2.setIcon(Icon.milp);
-		
-		if (! pars.isMemapON() ) lbMemap2.setIcon(Icon.offMemap);
-		if (pars.isMemapON() ) lbMemap2.setIcon(Icon.onMemap);
 
+		updateMarketPriceOptions();
+
+		if (pars.getOptCriteria().equals("co2"))
+			lbOptCriteria2.setIcon(Icon.optCO2);
+		if (pars.getOptCriteria().equals("cost"))
+			lbOptCriteria2.setIcon(Icon.optCost);
+
+		if (pars.getLoggingMode().equals("resultLogs"))
+			lbLoggingMode2.setIcon(Icon.resultLogs);
+		if (pars.getLoggingMode().equals("fileLogs"))
+			lbLoggingMode2.setIcon(Icon.fileLogs);
+		if (pars.getLoggingMode().equals("allLogs"))
+			lbLoggingMode2.setIcon(Icon.allLogs);
+
+		if (pars.getOptimizer().equals("lp"))
+			lbOptimizer2.setIcon(Icon.lp);
+		if (pars.getOptimizer().equals("milp"))
+			lbOptimizer2.setIcon(Icon.milp);
+
+		if (!pars.isMemapON())
+			lbMemap2.setIcon(Icon.offMemap);
+		if (pars.isMemapON())
+			lbMemap2.setIcon(Icon.onMemap);
 	}
 
 }

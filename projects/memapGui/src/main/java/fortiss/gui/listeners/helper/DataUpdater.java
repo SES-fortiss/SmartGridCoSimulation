@@ -1,6 +1,7 @@
 package fortiss.gui.listeners.helper;
 
 import fortiss.gui.Designer;
+import fortiss.gui.ParameterInputPanel;
 import fortiss.simulation.Parameters;
 
 /**
@@ -9,7 +10,7 @@ import fortiss.simulation.Parameters;
 public class DataUpdater {
 
 	/**
-	 * Updates and shows the data of the selected building.
+	 * Updates the simulation parameters and calls {@link ParameterInputPanel#update()}
 	 */
 	public void updateParameterData(Parameters par) {
 		Designer.parameterPanel.pars = par;
