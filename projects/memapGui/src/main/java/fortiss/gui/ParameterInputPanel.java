@@ -167,7 +167,7 @@ public class ParameterInputPanel extends JPanel {
 		txtSimulationName.addFocusListener(new SimulationNameListener());
 		txtSimulationName.setColumns(10);
 
-		lbLength = new JLabel("Simulation steps");
+		lbLength = new JLabel("Steps per day");
 		add(lbLength, "2, 10");
 
 		txtLength = new JTextField();
