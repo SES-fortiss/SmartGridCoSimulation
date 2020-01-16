@@ -49,22 +49,22 @@ public class FileManager {
 		}
 		return br;
 	}
-	
+
 	/**
 	 * Reads a file from location specified.
 	 *
 	 * @param location the absolute path to the file to be read
 	 * @return a buffer with the data in the file read
-	 * @throws FileNotFoundException 
+	 * @throws FileNotFoundException
 	 */
 	public BufferedReader readFromSource(String location) throws FileNotFoundException {
 		InputStream is = new FileInputStream(location);
-		BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));		
+		BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 		return br;
 	}
 
 	/**
- * Reads a file from location specified.
+	 * Reads a file from location specified.
 	 *
 	 * @param location the absolute path to the file to be read
 	 * @return a buffer with the data in the file read
@@ -72,7 +72,8 @@ public class FileManager {
 	public BufferedReader readParameterConfigFile() {
 		BufferedReader br = null;
 
-		String source = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir + File.separator + "parameterConfig.json";
+		String source = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir
+				+ File.separator + "parameterConfig.json";
 
 		try {
 			InputStream is = new FileInputStream(source);
@@ -84,7 +85,6 @@ public class FileManager {
 		}
 		return br;
 	}
-
 
 	/**
 	 * Writes a file.
@@ -119,7 +119,8 @@ public class FileManager {
 	 * registered in {@link fortiss.simulation.Parameters}.
 	 */
 	public void writeParameterConfigFile() {
-		String location = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir + File.separator + "parameterConfig.json";				
+		String location = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir
+				+ File.separator + "parameterConfig.json";
 		System.out.println(">> Writing parameter configuration file in " + location);
 
 		File file = new File(location);
@@ -131,7 +132,8 @@ public class FileManager {
 	}
 
 	/**
-	 * Writes the model that includes the configuration of all the buildings created.
+	 * Writes the model that includes the configuration of all the buildings
+	 * created.
 	 *
 	 * @param file path to file
 	 */
@@ -139,26 +141,31 @@ public class FileManager {
 
 		// Create JSON string
 		Gson gson = new Gson();
-		
+
 		Set<Building> mySet = new HashSet<Building>();
-		
+
 		for (Building building : Designer.buildings) {
 			mySet.add(building);
 		}
-		
+
 		String str = gson.toJson(mySet);
 		writeFile(str, file);
+		System.out.println(">> Writing memap model file in " + str);
 	}
 
-	/** Writes one descriptor file per building with its configuration.*/
+	/** Writes one descriptor file per building with its configuration. */
 	public void writeBuildingDescriptorFiles() {
 
-		/** Note: location is the project directory from which the simulation was started. */
-		String location = System.getProperty("user.dir") + "/" + mainDir + "/" + configDir + "/";
+		/**
+		 * Note: location is the project directory from which the simulation was
+		 * started.
+		 */
+		String location = System.getProperty("user.dir") + File.separator + 
+				mainDir + File.separator + configDir + File.separator;
 
 		for (Building building : Designer.buildings) {
 			System.out.println(">> Writing descriptor " + building.getName() + " in " + location);
-			
+
 			String filename = location + building.getName() + ".json";
 			File file = new File(filename);
 
@@ -168,7 +175,6 @@ public class FileManager {
 			writeFile(str, file);
 		}
 	}
-
 
 	public void writeMemapModel() {
 		File file = new File(Designer.parameterPanel.pars.getLastSavedFile());

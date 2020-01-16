@@ -10,7 +10,7 @@ import memap.controller.GuiController;
 import memap.helper.DirectoryConfiguration;
 
 public class Simulation implements Runnable {
-	
+
 	/** Controller for the GUI */
 	private GuiController gc;
 	/** an instance of Reporter window */
@@ -22,15 +22,15 @@ public class Simulation implements Runnable {
 	/** a flag for class ProgressManager */
 	public static boolean ready = false;
 
-	private void execute() throws InterruptedException, FileNotFoundException {		
+	private void execute() throws InterruptedException, FileNotFoundException {
 		String fs = File.separator;
-		
+
 		System.out.println(">> Interactive simulator: Setting up the topology.");
 		AcceptListener.loadingScreen.lbMessage.setText("Setting up the topology");
-		
+
 		String location = System.getProperty("user.dir") + fs + DirectoryConfiguration.mainDir + fs
 				+ DirectoryConfiguration.configDir + fs + "parameterConfig.json";
-		
+
 		gc = new GuiController(location);
 
 		System.out.println(">> Interactive simulator: Starting simulation.");
@@ -43,7 +43,7 @@ public class Simulation implements Runnable {
 
 			Simulation sim = new Simulation();
 			sim.execute();
-			
+
 		} catch (FileNotFoundException | InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -51,14 +51,12 @@ public class Simulation implements Runnable {
 
 	@Override
 	public void run() {
-		
-		
-		
+
 		AcceptListener.loadingScreen.setVisible(true);
 		AcceptListener.loadingScreen.lbMessage.setText("Simulator is initializing");
 		pmt = new Thread(pm);
-		pmt.start();			
-		
+		pmt.start();
+
 		createAndRun();
 
 		AcceptListener.loadingScreen.dispose();

@@ -21,7 +21,7 @@ import com.jgoodies.forms.layout.RowSpec;
 
 import fortiss.gui.Designer;
 import fortiss.gui.PlotPanel;
-import fortiss.gui.listeners.window.ExitWindowListner;
+import fortiss.gui.listeners.window.ExitWindowListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
@@ -82,7 +82,7 @@ public class Reporter extends JFrame {
 		StyleGenerator.setupStyle();
 		initialize();
 		
-		addWindowListener(new ExitWindowListner());
+		addWindowListener(new ExitWindowListener());
 	}
 
 	/**

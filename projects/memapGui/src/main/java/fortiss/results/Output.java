@@ -28,19 +28,20 @@ public class Output {
 		FileManager fm = new FileManager();
 		String location = System.getProperty("user.dir");
 		String fs = File.separator;
-		String source = fs + DirectoryConfiguration.mainDir + fs + "results" + fs + pars.getSimulationName() + fs +"MPC" + pars.getSteps();
-		
+		String source = fs + DirectoryConfiguration.mainDir + fs + "results" + fs + pars.getSimulationName() + fs
+				+ "MPC" + pars.getSteps();
+
 		String optimizerQualifier = "_MPC" + pars.getSteps();
-		if(pars.getOptimizer().equals("milp")) {
+		if (pars.getOptimizer().equals("milp")) {
 			source += "_MILP" + fs;
 			optimizerQualifier += "_MILP_Solutions.csv";
 		}
-			
-		if(pars.getOptimizer().equals("lp")) {
+
+		if (pars.getOptimizer().equals("lp")) {
 			source += "_LP" + fs;
 			optimizerQualifier += "_LP_Solutions.csv";
-		}			
-		
+		}
+
 		if (pars.isMemapON()) {
 			for (Building building : Designer.buildings) {
 				String filename = pars.getSimulationName() + optimizerQualifier;

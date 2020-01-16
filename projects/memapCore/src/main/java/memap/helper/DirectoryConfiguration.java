@@ -12,5 +12,5 @@ public abstract class DirectoryConfiguration {
 	public static String resultDir = "results";
 	
 	/** Examples directory path */
-	public static String exampleDir = "examples";	
+	public static String exampleDir = "examples";
 }

@@ -149,6 +149,7 @@ public class DemandInputPanel extends JPanel {
 		btDPlot.setIcon(Icon.visualize);
 		btDPlot.setBorder(new EmptyBorder(3, 3, 3, 3));
 		btDPlot.setContentAreaFilled(false);
+		btDPlot.addMouseListener(new DPlotListener());
 
 		lblCsvInstructions = new JLabel(
 				"<html> <b> Consumption file format </b> <br/> <br/> CSV file with no headers <br/> Column 1: Heat &emsp; Column 2: Electricity <br/> Decimal separator: , <br/> Column separator: ;</html>");
@@ -161,7 +162,6 @@ public class DemandInputPanel extends JPanel {
 		lblCsvWarning = new JLabel(
 				"<html><font face=\"verdana\" color=\"red\">&#9888;</font> Note: If no consumption file is selected the default is zero</html>");
 		panel.add(lblCsvWarning, "2, 15, 8, 1");
-		btDPlot.addMouseListener(new DPlotListener());
 
 		plotPanel = new PlotPanel();
 		plotPanel.setFocusable(false);
@@ -175,22 +175,16 @@ public class DemandInputPanel extends JPanel {
 	 * and set plotter to <code>false</code>
 	 */
 	public void setData(String location) {
-		FileManager fm = new FileManager();
-		try {
-			this.data = new Data(fm.readFromSource(location), false);
-		} catch (IOException | ParseException e) {
-			ExampleFiles ef = new ExampleFiles();
-			System.out.println("<INFO> Data for demand at " + location + " could not be read. Using zeros only.");
+		if (location != null && location.isEmpty()) {
+			loadEmptyData();
+		} else {
 			try {
-				this.data = new Data(fm.readFromResources(ef.getFile("EXAMPLE0")), false);
-			} catch (IOException | ParseException e1) {
-				data = null;
-				System.err.println("Resources error. Default consumption file not found.");
-				e1.printStackTrace();
+				FileManager fm = new FileManager();
+				this.data = new Data(fm.readFromSource(location), false);
+			} catch (IOException | ParseException e) {
+				System.out.println("<INFO> Data for demand at " + location + " could not be read. Using zeros only.");
+				loadEmptyData();
 			}
-			txtDConsumption.setText("");
-			Designer.buildings.get(Designer.currentBuilding).getDemand().get(Designer.currentComponent)
-					.setConsumptionProfile("");
 		}
 
 		if (!data.equals(null)) {
@@ -199,5 +193,21 @@ public class DemandInputPanel extends JPanel {
 			plotPanel.addSeries("Electricity", data.getSeries(1));
 			plotPanel.setPlotted(false);
 		}
+	}
+
+	private void loadEmptyData() {
+		FileManager fm = new FileManager();
+		ExampleFiles ef = new ExampleFiles();
+
+		try {
+			this.data = new Data(fm.readFromResources(ef.getFile("EXAMPLE0")), false);
+		} catch (IOException | ParseException e1) {
+			data = null;
+			System.err.println("Resources error. Default consumption file not found.");
+			e1.printStackTrace();
+		}
+		txtDConsumption.setText("");
+		Designer.buildings.get(Designer.currentBuilding).getDemand().get(Designer.currentComponent)
+				.setConsumptionProfile("");
 	}
 }

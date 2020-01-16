@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 import fortiss.components.Building;
 import fortiss.gui.listeners.helper.FileManager;
 import fortiss.gui.listeners.helper.ModelInitHelper;
-import fortiss.gui.listeners.window.ExitWindowListner;
+import fortiss.gui.listeners.window.ExitWindowListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
@@ -80,7 +80,7 @@ public class Designer extends JFrame {
 				frame = new Designer();
 				frame.setVisible(true);				
 				frame.initLastSession();		
-				frame.addWindowListener( new ExitWindowListner() );
+				frame.addWindowListener(new ExitWindowListener());
 			}
 		});
 	}

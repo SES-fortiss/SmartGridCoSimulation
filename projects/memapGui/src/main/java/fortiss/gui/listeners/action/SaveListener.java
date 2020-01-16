@@ -29,7 +29,7 @@ public class SaveListener extends MouseAdapter {
 				// append .json to file name
 				file = new File(file.toString() + ".json");
 			}
-			
+
 			Designer.parameterPanel.pars.setLastSavedFile(file.getAbsolutePath());
 			FileManager fm = new FileManager();
 			fm.writeMemapModel(file);
@@ -37,7 +37,7 @@ public class SaveListener extends MouseAdapter {
 			Designer.frame.setTitle("MEMAP - " + file.getAbsolutePath() + " - PlanningTool");			
 		}
 	}
-	
+
 	public void saveFile() {
 		
 	}
