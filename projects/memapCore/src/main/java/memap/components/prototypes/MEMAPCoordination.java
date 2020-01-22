@@ -70,16 +70,16 @@ public class MEMAPCoordination extends BehaviorModel {
 		
 		if (chosenOptimizationHierarchy == OptHierarchy.MEMAP) {
 			if(chosenOptimizer == Optimizer.MILP){				
-				solveMilpNoConnections();
+				useMilpNoConnections();
 			}
 			
 			if(chosenOptimizer == Optimizer.MILPwithConnections) {				
-				solveMilpWithConnections();
+				useMilpWithConnections();
 			}
 			
 			if(chosenOptimizer == Optimizer.LP) {
 				buildingMessage.connectionList.clear();
-				solveLP();
+				useLP();
 			}
 			
 			if(chosenOptimizer == Optimizer.LPwithConnections) {			
@@ -91,7 +91,7 @@ public class MEMAPCoordination extends BehaviorModel {
 						buildingMessageList.add(bm);
 					}
 				}
-				solveLP(buildingMessageList);
+				useLP(buildingMessageList);
 			}
 			
 			double costTotal = 0;
@@ -106,7 +106,7 @@ public class MEMAPCoordination extends BehaviorModel {
 		}
 	}
 
-	private void solveLP(ArrayList<BuildingMessage> buildingMessageList) {
+	private void useLP(ArrayList<BuildingMessage> buildingMessageList) {
 		LPSolver lpsolver = new LPSolver(
 				buildingMessage, nStepsMPC, lpSolHandler, 
 				totalEURVector, totalCO2Vector, 
@@ -116,7 +116,7 @@ public class MEMAPCoordination extends BehaviorModel {
 		lpsolver.solveLPOptProblem();
 	}
 
-	private void solveLP() {
+	private void useLP() {
 		LPSolver lpsolver = new LPSolver(
 					buildingMessage, nStepsMPC, lpSolHandler, 
 					totalEURVector, totalCO2Vector, 
@@ -125,7 +125,7 @@ public class MEMAPCoordination extends BehaviorModel {
 		lpsolver.solveLPOptProblem();		
 	}
 
-	private void solveMilpNoConnections() {
+	private void useMilpNoConnections() {
 		MILPSolverNoConnections milpSolver = new MILPSolverNoConnections(
 				buildingMessage, nStepsMPC, milpSolHandler,
 				totalEURVector, totalCO2Vector, 
@@ -139,14 +139,14 @@ public class MEMAPCoordination extends BehaviorModel {
 		}		
 	}
 	
-	private void solveMilpWithConnections() {
+	private void useMilpWithConnections() {
 		MILPSolverWithConnections milpWithConnections = new MILPSolverWithConnections(
 				answerListReceived, nStepsMPC, milpSolHandler, 
 				totalEURVector, totalCO2Vector, 
 				getActualTimeStep(), solutionPerTimeStep, 
 				actorName, optResult);				
 		try {
-			milpWithConnections.createModel();
+			milpWithConnections.createModelWithConnections();
 			milpWithConnections.solveMILP();
 		} catch (LpSolveException e) {			
 			e.printStackTrace();

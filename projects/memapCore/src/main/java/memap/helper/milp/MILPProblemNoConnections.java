@@ -3,139 +3,61 @@ package memap.helper.milp;
 import akka.systemActors.GlobalTime;
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
-import memap.main.ConfigurationMEMAP;
 import memap.main.TopologyConfig;
 import memap.messages.BuildingMessage;
 import memap.messages.extension.NetworkType;
-import memap.messages.planning.ConnectionMessage;
 import memap.messages.planning.CouplerMessage;
 import memap.messages.planning.ProducerMessage;
 import memap.messages.planning.StorageMessage;
 import memap.messages.planning.VolatileProducerMessage;
 
-public class MILPProblemNoConnections {
-			
-	int nStepsMPC;
-	int nCols;
+/**
+ * This class is responsible to modify the problem of the MILP solver.
+ * It is very similar to MILPProblemWithConnections.
+ * It would be good to merge these 2 classes, but this is left for later.
+ * Be carefull, when modifying those two classes. 
+ */
+public class MILPProblemNoConnections extends MILPProblem {		
 	
 	public MILPProblemNoConnections(int nStepsMPC, int nCols) {
-		this.nStepsMPC = nStepsMPC;
-		this.nCols = nCols;
+		super(nStepsMPC, nCols);		
+		System.out.println("Works until here");
 	}
 	
-	// TODO, original form without connections...
-	public LpSolve createNames(LpSolve problem, BuildingMessage buildingMessage) throws LpSolveException {		
+	public LpSolve createNames(LpSolve problem, BuildingMessage buildingMessage) throws LpSolveException {
 		
-        int controllableHandled = 0;
-        int volatileHandled = 0;
-        int couplerHandled = 0;
-        int storageHandled = 0;
-        int connectionHandled = 0;
+        MILPIndexHelper mihelper = new MILPIndexHelper(nStepsMPC);
         
 		for(ProducerMessage producerMessage : buildingMessage.controllableProducerList) {
-			addControllableToProblem(producerMessage, problem, controllableHandled);
-			controllableHandled++;
+			MILPHelper.addControllableToProblem(producerMessage, problem, mihelper);
+			mihelper.controllableHandled++;
 		}
 		
 		for(ProducerMessage producerMessage : buildingMessage.volatileProducerList) {
-			addVolatileToProblem(producerMessage, problem, controllableHandled, volatileHandled);
-			volatileHandled++;
+			MILPHelper.addVolatileToProblem(producerMessage, problem, mihelper);
+			mihelper.volatileHandled++;
 		}
 		
 		for(CouplerMessage couplerMessage : buildingMessage.couplerList) {
-			addCouplerToProblem(couplerMessage, problem, controllableHandled, volatileHandled, couplerHandled);
-			couplerHandled++;
+			MILPHelper.addCouplerToProblem(couplerMessage, problem, mihelper);
+			mihelper.couplerHandled++;
 		}
 		
 		for(StorageMessage storageMessage : buildingMessage.storageList) {
-			addStorageToProblem(storageMessage, problem, controllableHandled, volatileHandled, couplerHandled, storageHandled);
-			storageHandled++;
-		}
-				
-		if (ConfigurationMEMAP.chosenOptimizationHierarchy == ConfigurationMEMAP.OptHierarchy.MEMAP && 
-				ConfigurationMEMAP.chosenOptimizer == ConfigurationMEMAP.Optimizer.MILPwithConnections) {
-			
-			for(ConnectionMessage connectionMessage : buildingMessage.connectionList) {
-				addConnectionToProblem(connectionMessage, problem, controllableHandled, volatileHandled, couplerHandled, storageHandled, connectionHandled);
-				connectionHandled++;
-			}
+			MILPHelper.addStorageToProblem(storageMessage, problem, mihelper);
+			mihelper.storageHandled++;
 		}
         
-		addMarkets(problem, controllableHandled, volatileHandled, couplerHandled, storageHandled, connectionHandled);
+		MILPHelper.addMarkets(problem, mihelper);
+		
+		updateLambdaEURbuilding(buildingMessage, 0);
+        updateLambdaEURMarket();
+		
+		updateLambdaCO2building(buildingMessage, 0);
+        updateLambdaCO2Market();
                 
 		return problem;
-	}	
-
-	private void addControllableToProblem(ProducerMessage producerMessage,LpSolve optProblem,int controllableHandled) throws LpSolveException {		
-		for (int i = 0; i < nStepsMPC; i++) {			
-			int index = i + 1 + nStepsMPC * (controllableHandled * 2);
-			String string1 = producerMessage.name + "_T" + i;
-			String string2 = producerMessage.name + "_OFF_T" + i;
-			optProblem.setColName(index, string1);
-			optProblem.setColName(index + nStepsMPC, string2);
-			optProblem.setBinary(index + nStepsMPC, true);
-		}
 	}
-		
-	private void addVolatileToProblem(ProducerMessage producerMessage, LpSolve problem, 
-			int controllableHandled,int volatileHandled) throws LpSolveException {
-		
-		for (int i = 0; i < nStepsMPC; i++) {			
-			int index = i + 1 + nStepsMPC * ( (controllableHandled * 2) + volatileHandled);
-			String string1 = producerMessage.name + "_T" + i;
-			problem.setColName(index, string1);
-		}		
-	}	
-	
-	private void addCouplerToProblem(CouplerMessage couplerMessage, LpSolve problem, int controllableHandled, int volatileHandled, int couplerHandled) throws LpSolveException {
-		
-		for (int i = 0; i < nStepsMPC; i++) {			
-			int index = i + 1 + nStepsMPC * ( (controllableHandled * 2) + volatileHandled + (couplerHandled *2));
-			String string1 = couplerMessage.name + "_T" + i;
-			String string2 = couplerMessage.name + "OFF_T" + i;
-			// TODO: Implement check for duplicated names
-			problem.setColName(index, string1);
-			problem.setColName(index + nStepsMPC, string2);
-			problem.setBinary(index + nStepsMPC, true);
-		}
-		
-	}
-	
-	private void addStorageToProblem(StorageMessage storageMessage, LpSolve problem, int controllableHandled,
-			int volatileHandled, int couplerHandled, int storageHandled) throws LpSolveException {
-				
-		for (int i = 0; i < nStepsMPC; i++) {			
-			int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
-			String string1 = storageMessage.name+"Discharge_T" + i;
-			String string2 = storageMessage.name+"Charge_T" + i;
-			problem.setColName(index, string1);
-			problem.setColName(index + nStepsMPC, string2);
-		}
-	}
-	
-	private void addConnectionToProblem(ConnectionMessage connectionMessage, LpSolve problem, int controllableHandled,
-			int volatileHandled, int couplerHandled, int storageHandled, int connectionHandled) throws LpSolveException {
-		
-			for (int i = 0; i < nStepsMPC; i++) {			
-				int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2) + (connectionHandled * 2)  );
-				String string1 = connectionMessage.name+"_From"+connectionMessage.connectedBuildingFrom+"_To" + connectionMessage.connectedBuildingTo + "_T" + i;
-				String string2 = connectionMessage.name+"_Back_From"+connectionMessage.connectedBuildingFrom+"_To" + connectionMessage.connectedBuildingTo + "_T" + i;
-				problem.setColName(index, string1);
-				problem.setColName(index + nStepsMPC, string2);
-			}		
-	}
-	
-	private void addMarkets(LpSolve problem, int controllableHandled, int volatileHandled, int couplerHandled,
-			int storageHandled, int connectionHandled) throws LpSolveException {
-				
-		for (int i = 0; i < nStepsMPC; i++) {			
-			int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2) + (connectionHandled * 2) );
-			String string1 = "ElecBuy_T" + i;
-			String string2 = "ElecSell_T" + i;
-			problem.setColName(index, string1);
-			problem.setColName(index + nStepsMPC, string2);
-		}	
-	}	
 
 	public LpSolve createDemandConstraints(LpSolve problem, BuildingMessage buildingMessage) throws LpSolveException {		
         double [] demand = buildingMessage.getCombinedDemandVector();
@@ -179,7 +101,6 @@ public class MILPProblemNoConnections {
 			}
         	
         	problem.addConstraint(rowHEAT, LpSolve.EQ, demand[i]);
-        	//System.out.println("Adding HEAT demand constraint with components --> rowHEAT: " + Arrays.toString(rowHEAT) + " EQ: " + demand[i]);
 		}
         
 	 	/* second ELEC componentes */ 
@@ -237,16 +158,13 @@ public class MILPProblemNoConnections {
 	}
 
 	public LpSolve createComponentBoundaries(LpSolve problem, BuildingMessage buildingMessage) throws LpSolveException {
-	     for (int i = 0; i < nStepsMPC; i++) {
-	        	
-            int controllableHandled = 0;
-            int volatileHandled = 0;
-            int couplerHandled = 0;        
-            int storageHandled = 0;
+		
+		for (int i = 0; i < nStepsMPC; i++) {       	
+            MILPIndexHelper ih = new MILPIndexHelper(nStepsMPC);
 
-        	for (ProducerMessage pm : buildingMessage.controllableProducerList) {
-        		
-        		int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );
+        	for (ProducerMessage pm : buildingMessage.controllableProducerList) {        		
+        		int addon = nStepsMPC * ((ih.controllableHandled * 2)  + ih.volatileHandled + (ih.couplerHandled*2)+ (ih.storageHandled*2));        		
+        		int index = i + 1 + addon;
         		
             	// MAX Constraints, for both el. and heat
             	double[] row = new double[nCols+1];
@@ -261,12 +179,12 @@ public class MILPProblemNoConnections {
         		row2[index + nStepsMPC] = -pm.minPower;        		
         		problem.addConstraint(row2, LpSolve.LE, -pm.minPower);
             	//System.out.println("Adding min constraint CP --> row2: " + Arrays.toString(row2) + " <= -" + pm.minPower);
-            	
-            	controllableHandled++;
+        		
+            	ih.controllableHandled++;
 			}
         	
         	for (ProducerMessage pm : buildingMessage.volatileProducerList) {        		
-        		int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );
+        		int index = i + 1 + nStepsMPC * ((ih.controllableHandled * 2)  + ih.volatileHandled + (ih.couplerHandled*2)+ (ih.storageHandled*2)  );
         		
         		VolatileProducerMessage vpm = (VolatileProducerMessage) pm;
         		
@@ -276,12 +194,12 @@ public class MILPProblemNoConnections {
         		problem.addConstraint(row, LpSolve.LE, vpm.forecast[i]);
             	//System.out.println("Adding max constraint VP --> row: " + Arrays.toString(row) + " <= " + vpm.forecast[i]);
 
-            	volatileHandled++;
+            	ih.volatileHandled++;
 			}
         	
         	
         	for (CouplerMessage cm : buildingMessage.couplerList) {        		
-        		int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );
+        		int index = i + 1 + nStepsMPC * ((ih.controllableHandled * 2)  + ih.volatileHandled + (ih.couplerHandled*2)+ (ih.storageHandled*2)  );
         		
             	// MAX Constraints for heat
             	double[] row = new double[nCols+1];
@@ -297,11 +215,11 @@ public class MILPProblemNoConnections {
         		problem.addConstraint(row2, LpSolve.LE, -cm.minPower);
             	//System.out.println("Adding min constraint coupler --> row3: " + Arrays.toString(row2) + " <= -" + cm.minPower);
             	
-            	couplerHandled++;
+            	ih.couplerHandled++;
 			}
         	
         	for (StorageMessage sm : buildingMessage.storageList) {
-        		int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );        		
+        		int index = i + 1 + nStepsMPC * ((ih.controllableHandled * 2)  + ih.volatileHandled + (ih.couplerHandled*2)+ (ih.storageHandled*2));        		
         		
             	// MAX Constraints, for both el. and heat
             	double[] row = new double[nCols+1];
@@ -315,14 +233,16 @@ public class MILPProblemNoConnections {
         		problem.addConstraint(row2, LpSolve.LE, sm.maxLoad);
             	//System.out.println("Adding max charging --> row2: " + Arrays.toString(row2) + " <= " + sm.maxLoad);
         		        		
-         		storageHandled++;
+         		ih.storageHandled++;
  			}
         	
 		}
 		return problem;
+		
 	}
 
-	public LpSolve createSOCBoundaries(LpSolve problem, BuildingMessage buildingMessage) throws LpSolveException {		
+	public LpSolve createSOCBoundaries(LpSolve problem, BuildingMessage buildingMessage) throws LpSolveException {
+		
         int controllableHandled = buildingMessage.getNrOfControllableProducers();
         int volatileHandled = buildingMessage.getNrOfVolatileProducers();
         int couplerHandled = buildingMessage.getNrOfCouplers();        
@@ -362,7 +282,7 @@ public class MILPProblemNoConnections {
 	        	problem.addConstraint(rowDISCHARGE, LpSolve.LE, maxDischargeCapacity);
 	        	problem.addConstraint(rowCHARGE, LpSolve.LE, maxChargeCapacity);
 	        	
-	        	//System.out.println("Adding SOC chargeing constraints --> rowCHARGE: " + Arrays.toString(rowCHARGE) + " <= " + maxChargeCapacity);
+	        	//System.out.println("Adding SOC charging constraints --> rowCHARGE: " + Arrays.toString(rowCHARGE) + " <= " + maxChargeCapacity);
 			}
 	        storageHandled++;
         }
@@ -374,9 +294,7 @@ public class MILPProblemNoConnections {
         double[] row = new double[nCols];
         
 		int cts = GlobalTime.getCurrentTimeStep();
-        
-        
-        int counter = 0;
+		int counter = 0;
         
         for (int i = 0; i < nStepsMPC; i++) {
         	        	
@@ -433,117 +351,6 @@ public class MILPProblemNoConnections {
         /* set the object direction to minimize */
         problem.setMinim(); 
 		return problem;
-	}
+	}	
 	
-	/**
-	 * return the cost vector lambda in EUR, vector is according to names
-	 * @param buildingMessage
-	 * @return
-	 */
-	public double[] getLambdaEUR(BuildingMessage buildingMessage) {
-		double[] result = new double[nCols];
-		
-        int controllableHandled = 0;
-        int volatileHandled = 0;
-        int couplerHandled = 0;        
-        int storageHandled = 0;
-        
-		for(ProducerMessage producerMessage : buildingMessage.controllableProducerList) {					
-			for (int i = 0; i < nStepsMPC; i++) {		
-				int index = i + nStepsMPC * (controllableHandled * 2);
-				result[index] = producerMessage.operationalCostEUR;
-				result[index + nStepsMPC] = 0;
-			}
-			controllableHandled++;
-		}
-		
-		for(ProducerMessage producerMessage : buildingMessage.volatileProducerList) {
-			for (int i = 0; i < nStepsMPC; i++) {			
-				int index = i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled);
-				result[index] = producerMessage.operationalCostEUR;
-			}
-			volatileHandled++;
-		}
-		
-		for(CouplerMessage couplerMessage : buildingMessage.couplerList) {
-			for (int i = 0; i < nStepsMPC; i++) {			
-				int index = i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled + (couplerHandled *2));
-				result[index] = couplerMessage.operationalCostEUR;
-				result[index + nStepsMPC] = 0;
-			}
-			couplerHandled++;
-		}
-		
-		for(StorageMessage storageMessage : buildingMessage.storageList) {
-			for (int i = 0; i < nStepsMPC; i++) {			
-				int index = i + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
-				result[index] = storageMessage.operationalCostEUR;
-				result[index+ nStepsMPC] = storageMessage.operationalCostEUR;
-			}
-			storageHandled++;
-		}
-        
-		/* Markets */
-		int cts = GlobalTime.getCurrentTimeStep();		
-		for (int i = 0; i < nStepsMPC; i++) {			
-			int index = i + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
-			result[index] = TopologyConfig.energyPrices.getElectricityPriceInEuro(cts+i);
-			result[index+ nStepsMPC] = -TopologyConfig.energyPrices.getElectricityPriceInEuro(cts+i)*0.5;
-		}		
-		return result;
-	}
-
-	public double[] getLambdaCO2(BuildingMessage buildingMessage) {
-		double[] result = new double[nCols];
-		
-        int controllableHandled = 0;
-        int volatileHandled = 0;
-        int couplerHandled = 0;        
-        int storageHandled = 0;
-        
-		for(ProducerMessage producerMessage : buildingMessage.controllableProducerList) {					
-			for (int i = 0; i < nStepsMPC; i++) {		
-				int index = i + nStepsMPC * (controllableHandled * 2);
-				result[index] = producerMessage.operationalCostCO2;
-				result[index + nStepsMPC] = 0;
-			}
-			controllableHandled++;
-		}
-		
-		for(ProducerMessage producerMessage : buildingMessage.volatileProducerList) {
-			for (int i = 0; i < nStepsMPC; i++) {			
-				int index = i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled);
-				result[index] = producerMessage.operationalCostCO2;
-			}
-			volatileHandled++;
-		}
-		
-		for(CouplerMessage couplerMessage : buildingMessage.couplerList) {
-			for (int i = 0; i < nStepsMPC; i++) {			
-				int index = i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled + (couplerHandled *2));
-				result[index] = couplerMessage.operationalCostCO2;
-				result[index + nStepsMPC] = 0;
-			}
-			couplerHandled++;
-		}
-		
-		for(StorageMessage storageMessage : buildingMessage.storageList) {
-			for (int i = 0; i < nStepsMPC; i++) {			
-				int index = i + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
-				result[index] = storageMessage.operationalCostCO2;
-				result[index+ nStepsMPC] = storageMessage.operationalCostCO2;
-			}
-			storageHandled++;
-		}
-        
-		/* Markets */	
-		for (int i = 0; i < nStepsMPC; i++) {			
-			int index = i + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
-			result[index] = 0.474; // buying --> TODO improve maybe later
-			result[index+ nStepsMPC] = 0; // selling (same as for LP)
-		}		
-		return result;
-	}
-
 }
-

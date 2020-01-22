@@ -2,6 +2,8 @@ package fortiss.simulation;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import fortiss.gui.Designer;
 import fortiss.media.Icon;
@@ -41,7 +43,7 @@ public class Parameters {
 	};
 
 	/** paths to descriptor files */
-	private ArrayList<File> descriptorFiles = new ArrayList<File>();
+	private Set<File> descriptorFiles = new HashSet<File>();
 	/** Simulation name */
 	private String simulationName;
 	/** length MemapSimulation steps. An integer */
@@ -64,21 +66,26 @@ public class Parameters {
 	private String optimizer;
 	/** loggingMode a String. loggingMode: {allLogs, fileLogs, resultLogs} */
 	private String loggingMode;
+	/** lastSavedFile remembers the last save of a file this allows to reset the session during next startup */
+	private String lastSavedFile;
 
 	/**
 	 * Constructor for class Parameters
 	 */
 	public Parameters() {
 		setSimulationName("InteractiveMEMAP");
-		setLength(96);
-		setSteps(24);
+		setLength(24);
+		setSteps(2);
 		setDays(1);
 		setFixedPrice(true);
+		setFixedMarketPrice(0.275);
 		setMarketPriceFile("");
 		setOptimizer(optimizerOptions.get(0));
 		setMemapON(false);
 		setOptCriteria(criteriaOptions.get(0));
 		setLoggingMode(loggingOptions.get(0));
+		setLastSavedFile("");
+		clearDescriptorFile();
 	}
 
 	public String getSimulationName() {
@@ -169,12 +176,16 @@ public class Parameters {
 		}
 	}
 
-	public ArrayList<File> getDescriptorFiles() {
+	public Set<File> getDescriptorFiles() {
 		return descriptorFiles;
 	}
 
 	public void addDescriptorFile(File descriptorFile) {
 		descriptorFiles.add(descriptorFile);
+	}
+	
+	public void clearDescriptorFile() {
+		descriptorFiles.clear();
 	}
 
 	public String getMarketPriceFile() {
@@ -211,5 +222,13 @@ public class Parameters {
 			setLoggingMode(loggingOptions.get(index + 1));
 			Designer.parameterPanel.lbLoggingMode2.setIcon(Icon.loggingMode.get(index + 1));
 		}
+	}
+
+	public String getLastSavedFile() {
+		return lastSavedFile;
+	}
+
+	public void setLastSavedFile(String lastSavedFile) {
+		this.lastSavedFile = lastSavedFile;
 	}
 }

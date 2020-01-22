@@ -16,8 +16,8 @@ public class Demand {
 	 * @param networkType        a string: Heat or Electricity
 	 */
 	public Demand(String name, String consumptionProfile) {
-		this.setName(name);
-		this.setConsumptionProfile(consumptionProfile);
+		setName(name);
+		setConsumptionProfile(consumptionProfile);
 	}
 
 	public String getName() {

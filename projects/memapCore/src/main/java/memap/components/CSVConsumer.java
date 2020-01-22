@@ -27,6 +27,7 @@ public class CSVConsumer extends Consumer {
 	 * @param port
 	 */
 	public CSVConsumer(String name, String csvFile, int port) {
+			
 		super(name, port);
 		setProfiles(csvFile);
 	}
@@ -51,18 +52,19 @@ public class CSVConsumer extends Consumer {
 	/**
 	 * Assign values to heatProfile and electricityProfile
 	 */
-	private void setProfiles(String csvFile) {
+	private void setProfiles(String csvFile) {	
 		try {
 			if (csvFile.isEmpty()) {
-				interpolate(getBuffer("EXAMPLE1"));
+				interpolate(getBuffer("EXAMPLE0"));
 			} else {
-				interpolate(getBuffer(csvFile));
+				BufferedReader br = getBuffer(csvFile);				
+				interpolate(br);				
 			}
 		} catch (IOException | ParseException e) {
 			System.err.println("Error reading or parsing CSV data from " + csvFile);
 			SimulationStarter.stopSimulation();
 			e.printStackTrace();
-		}
+		}		
 
 	}
 
@@ -74,24 +76,25 @@ public class CSVConsumer extends Consumer {
 		FileManager mgr = new FileManager();
 		ExampleFiles examples = new ExampleFiles();
 		if (examples.isExample(csvFile)) {
-			System.out.println(">> Reading from resources: " + csvFile);
+			System.out.println(">> Consumer construction - reading from resources: " + csvFile);
 			return mgr.readFromResources(examples.getFile(csvFile));
 		} else {
-			System.out.println(">> Reading from source: " + csvFile);
+			System.out.println(">> Consumer construction - reading from source: " + csvFile);
 			return mgr.readFromSource(csvFile);
 		}
 	}
 
 	/**
-	 * Interpolates the consumption profiles
+	 * Interpolates the consumption profiles.
+	 * The method is called by the constructor.
 	 * 
 	 * @param br a buffer reader with the data to be interpolated
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void interpolate(BufferedReader br) throws IOException, ParseException {
-
+	private void interpolate(BufferedReader br) throws IOException, ParseException {	
 		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
+		//NumberFormat nf = NumberFormat.getInstance(Locale.ENGLISH);
 
 		HashMap<Integer, ArrayList<Double>> profiles = new HashMap<Integer, ArrayList<Double>>();
 		HashMap<Integer, ArrayList<Double>> dailyProfiles = new HashMap<Integer, ArrayList<Double>>();
@@ -104,42 +107,51 @@ public class CSVConsumer extends Consumer {
 
 		String row;
 		String[] buffer;
-		double[] consumptionBuffer = new double[2];
+		double[] consumptionBuffer = new double[2]; // Heat[0] + Electricity[1]
 
 		int rowIndex = 0;
 		int k = 0;
 
-		// Read-in of consumption values in kJ for every minute
+		// Read-in of consumption values for every minute (in the example files) // TODO make this more flexible, i.e. the time resolution in the file might not be always the one minute resolution.
 		while ((row = br.readLine()) != null) {
 			// get values
 			buffer = row.split(";");
-			consumptionBuffer[0] += nf.parse(buffer[0]).doubleValue();
-			consumptionBuffer[1] += nf.parse(buffer[1]).doubleValue();
-			rowIndex++;
+			consumptionBuffer[0] += nf.parse(buffer[0]).doubleValue() / MyTimeUnit.stepLength(TimeUnit.MINUTES);
+			consumptionBuffer[1] += nf.parse(buffer[1]).doubleValue() / MyTimeUnit.stepLength(TimeUnit.MINUTES);
+			rowIndex++;			
 
 			// Sum up consumption over the number of minutes per time step
 			if ((rowIndex >= (k + 1) * MyTimeUnit.stepLength(TimeUnit.MINUTES)) && (buffer.length != 0)) {
+				
+				/*
+				System.out.println("I'm here");
+				System.out.println("MyTimeUnit.stepLength(TimeUnit.MINUTES): " + MyTimeUnit.stepLength(TimeUnit.MINUTES));
+				System.out.println("File exist + rowIndex = " + rowIndex);
+
+				System.out.println("Heat Avg. Consumption: " + consumptionBuffer[0]);
+				System.out.println("Elec Avg. Consumption: " + consumptionBuffer[1]);
+				*/
 
 				for (int j = 0; j < buffer.length; j++) {
+					/**
 					// Necessary if the time step is not exactly one minute.
 					double deltaOverMinute = rowIndex - (k + 1) * MyTimeUnit.stepLength(TimeUnit.MINUTES);
 					double deduction = nf.parse(buffer[j]).doubleValue() * deltaOverMinute;
 					consumptionBuffer[j] = consumptionBuffer[j] - deduction;
+					* We ignore this for now
+					*/
 					dailyProfiles.get(j).add(consumptionBuffer[j]);
 					consumptionBuffer[j] = 0;
 				}
 				k++;
 			}
 		}
-
+		
 		br.close();
 
-		// Calculate the consumption for one day longer than necessary because of MPC
-		// horizon
-		int daysToConsider = (int) Math.round(TopologyConfig.N_STEPS / k + 0.5);
-		System.out.println("Days to Consider because of MPC: " + daysToConsider);
-
+		// Calculate the consumption for one day longer than necessary because of MPC horizon		
 		// the heat profile of one day is copied for n_days; ( k = N_STEPS/N_Days )
+		int daysToConsider = (int) Math.round(TopologyConfig.N_STEPS / k + 0.5);
 		for (int m = 0; m < daysToConsider; m++) {
 			for (int j = 0; j < 2; j++) {
 				for (int i = 0; i < dailyProfiles.get(1).size(); i++) {
@@ -147,5 +159,8 @@ public class CSVConsumer extends Consumer {
 				}
 			}
 		}
+		
+		System.out.println("Profiles available. Heat: " + profiles.get(0).size() + " : " + gson.toJson(profiles.get(0)));
+		System.out.println("Profiles available. Elec: " + profiles.get(1).size() + " : " + gson.toJson(profiles.get(1)));	
 	}
 }

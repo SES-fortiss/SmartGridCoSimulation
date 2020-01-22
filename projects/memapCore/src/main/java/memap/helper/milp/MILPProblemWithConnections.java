@@ -10,7 +10,6 @@ import akka.systemActors.GlobalTime;
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
 import memap.helper.CO2profiles;
-import memap.main.ConfigurationMEMAP;
 import memap.main.TopologyConfig;
 import memap.messages.BuildingMessage;
 import memap.messages.extension.NetworkType;
@@ -20,134 +19,69 @@ import memap.messages.planning.ProducerMessage;
 import memap.messages.planning.StorageMessage;
 import memap.messages.planning.VolatileProducerMessage;
 
-public class MILPProblemWithConnections {
-			
-	int nStepsMPC;
-	int nCols;
+/**
+ * This class is responsible to modify the problem of the MILP solver.
+ * It is very similar to MILPProblemNoConnections.
+ * It would be good to merge these 2 classes, but this is left for later.
+ * Be carefull, when modifying those two classes. 
+ */
+public class MILPProblemWithConnections extends MILPProblem {
 	
 	HashMap<BuildingMessage, Integer> mapBuildingMessageToIndex = new HashMap<>();
 	HashMap<ConnectionMessage, Integer> mapConnectionToIndex = new HashMap<>();
 	
 	public MILPProblemWithConnections(int nStepsMPC, int nCols) {
-		this.nStepsMPC = nStepsMPC;
-		this.nCols = nCols;
+		super(nStepsMPC, nCols);
 	}
 	
 	public LpSolve createNames(LpSolve problem, ArrayList<BuildingMessage> buildingMessages) throws LpSolveException {		
 		
-        int controllableHandled = 0;
-        int volatileHandled = 0;
-        int couplerHandled = 0;
-        int storageHandled = 0;
-        int connectionHandled = 0;
-        
+		MILPIndexHelper mihelper = new MILPIndexHelper(nStepsMPC);        
         ArrayList<ConnectionMessage> connections = new ArrayList<>();
         
         for (BuildingMessage bm : buildingMessages) {
         	for(ProducerMessage producerMessage : bm.controllableProducerList) {
-    			addControllableToProblem(producerMessage, problem, controllableHandled, volatileHandled, couplerHandled, storageHandled, connectionHandled);
-    			controllableHandled++;
+        		MILPHelper.addControllableToProblem(producerMessage, problem, mihelper);
+    			mihelper.controllableHandled++;
     		}
     		
     		for(ProducerMessage producerMessage : bm.volatileProducerList) {
-    			addVolatileToProblem(producerMessage, problem, controllableHandled, volatileHandled, couplerHandled, storageHandled, connectionHandled);
-    			volatileHandled++;
+    			MILPHelper.addVolatileToProblem(producerMessage, problem, mihelper);
+    			mihelper.volatileHandled++;
     		}
     		
     		for(CouplerMessage couplerMessage : bm.couplerList) {
-    			addCouplerToProblem(couplerMessage, problem, controllableHandled, volatileHandled, couplerHandled, storageHandled, connectionHandled);
-    			couplerHandled++;
+    			MILPHelper.addCouplerToProblem(couplerMessage, problem, mihelper);
+    			mihelper.couplerHandled++;
     		}
     		
     		for(StorageMessage storageMessage : bm.storageList) {
-    			addStorageToProblem(storageMessage, problem, controllableHandled, volatileHandled, couplerHandled, storageHandled, connectionHandled);
-    			storageHandled++;
+    			MILPHelper.addStorageToProblem(storageMessage, problem, mihelper);
+    			mihelper.storageHandled++;
     		}
     		
     		for (ConnectionMessage c : bm.connectionList) {
     			connections.add(c);
     		}
-		}        
+		}
         
         for(ConnectionMessage connectionMessage : connections) {
-			addConnectionToProblem(connectionMessage, problem, controllableHandled, volatileHandled, couplerHandled, storageHandled, connectionHandled);
-			connectionHandled++;
+        	MILPHelper.addConnectionToProblem(connectionMessage, problem, mihelper);
+        	mihelper.connectionHandled++;
 		}
         
-		addMarkets(problem, controllableHandled, volatileHandled, couplerHandled, storageHandled, connectionHandled);                
+        MILPHelper.addMarkets(problem, mihelper);
+        
+        for (BuildingMessage bm : buildingMessages) {			
+			int indexBuilding = mapBuildingMessageToIndex.get(bm)-1;
+			updateLambdaEURbuilding(bm, indexBuilding);
+			updateLambdaCO2building(bm, indexBuilding);			
+		}        
+        updateLambdaEURMarket();
+		updateLambdaCO2Market();
+        
 		return problem;
 	}	
-
-	private void addControllableToProblem(ProducerMessage producerMessage,LpSolve optProblem,int controllableHandled, int volatileHandled, int couplerHandled, int storageHandled, int connectionHandled) throws LpSolveException {		
-		for (int i = 0; i < nStepsMPC; i++) {			
-			int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2) + (connectionHandled * 2)  );
-			String string1 = producerMessage.name + "_T" + i;
-			String string2 = producerMessage.name + "_OFF_T" + i;
-			optProblem.setColName(index, string1);
-			optProblem.setColName(index + nStepsMPC, string2);
-			optProblem.setBinary(index + nStepsMPC, true);
-		}
-	}
-		
-	private void addVolatileToProblem(ProducerMessage producerMessage, LpSolve problem, 
-			int controllableHandled,int volatileHandled, int couplerHandled, int storageHandled, int connectionHandled) throws LpSolveException {
-		
-		for (int i = 0; i < nStepsMPC; i++) {			
-			int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2) + (connectionHandled * 2)  );
-			String string1 = producerMessage.name + "_T" + i;
-			problem.setColName(index, string1);
-		}		
-	}	
-	
-	private void addCouplerToProblem(CouplerMessage couplerMessage, LpSolve problem, int controllableHandled, int volatileHandled, int couplerHandled, int storageHandled, int connectionHandled) throws LpSolveException {
-		
-		for (int i = 0; i < nStepsMPC; i++) {			
-			int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2) + (connectionHandled * 2)  );
-			String string1 = couplerMessage.name + "_T" + i;
-			String string2 = couplerMessage.name + "_OFF_T" + i;
-			problem.setColName(index, string1);
-			problem.setColName(index + nStepsMPC, string2);
-			problem.setBinary(index + nStepsMPC, true);
-		}
-		
-	}
-	
-	private void addStorageToProblem(StorageMessage storageMessage, LpSolve problem, int controllableHandled,
-			int volatileHandled, int couplerHandled, int storageHandled, int connectionHandled) throws LpSolveException {
-				
-		for (int i = 0; i < nStepsMPC; i++) {			
-			int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2) + (connectionHandled * 2)  );
-			String string1 = storageMessage.name+"Discharge_T" + i;
-			String string2 = storageMessage.name+"Charge_T" + i;
-			problem.setColName(index, string1);
-			problem.setColName(index + nStepsMPC, string2);
-		}
-	}
-	
-	private void addConnectionToProblem(ConnectionMessage connectionMessage, LpSolve problem, int controllableHandled,
-			int volatileHandled, int couplerHandled, int storageHandled, int connectionHandled) throws LpSolveException {
-		
-			for (int i = 0; i < nStepsMPC; i++) {			
-				int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2) + (connectionHandled * 2)  );
-				String string1 = connectionMessage.name+"_From"+connectionMessage.connectedBuildingFrom+"_To" + connectionMessage.connectedBuildingTo + "_T" + i;
-				String string2 = connectionMessage.name+"_From"+connectionMessage.connectedBuildingTo+"_To" + connectionMessage.connectedBuildingFrom + "_T" + i;
-				problem.setColName(index, string1);
-				problem.setColName(index + nStepsMPC, string2);
-			}		
-	}
-	
-	private void addMarkets(LpSolve problem, int controllableHandled, int volatileHandled, int couplerHandled,
-			int storageHandled, int connectionHandled) throws LpSolveException {
-				
-		for (int i = 0; i < nStepsMPC; i++) {			
-			int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2) + (connectionHandled * 2) );
-			String string1 = "ElecBuy_T" + i;
-			String string2 = "ElecSell_T" + i;
-			problem.setColName(index, string1);
-			problem.setColName(index + nStepsMPC, string2);
-		}	
-	}	
-
 	
 	public LpSolve createDemandConstraints(LpSolve problem, ArrayList<BuildingMessage> buildingMessages) throws LpSolveException {		
 		int numberOfBuildings = buildingMessages.size();
@@ -183,7 +117,7 @@ public class MILPProblemWithConnections {
 			totalStorage += bm.getNrOfStorages();
 		}
 		
-        if (ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {        	
+        if (chosenMEMAPLogging == MEMAPLogging.ALL) {        	
         	for (BuildingMessage bm : buildingMessages) {
         		double [] demand = bm.getCombinedDemandVector();
             	System.out.println("Demand of " + bm.name + ":  " + Arrays.toString(demand) + "    List size: " + bm.demandList.size());
@@ -273,7 +207,7 @@ public class MILPProblemWithConnections {
             	
             	problem.addConstraint(rowHEAT, LpSolve.EQ, demandHEAT[i + b_counter*nStepsMPC]);
             	
-            	if (ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {            	
+            	if (chosenMEMAPLogging == MEMAPLogging.ALL) {            	
             		System.out.println("Adding HEAT --> rowHEAT: " + Arrays.toString(rowHEAT) + " EQ: " + demandHEAT[i+b_counter*nStepsMPC]);
             	}
             	
@@ -330,7 +264,7 @@ public class MILPProblemWithConnections {
         	
         	problem.addConstraint(rowELEC, LpSolve.EQ, demandELEC[i]);
         	
-        	if (ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
+        	if (chosenMEMAPLogging == MEMAPLogging.ALL) {
         		System.out.println("Adding markets --> rowELEC: " + Arrays.toString(rowELEC) + " EQ: " + demandELEC[i]);
 			}       	     	        	
 		}
@@ -427,8 +361,6 @@ public class MILPProblemWithConnections {
 	}
 
 	public LpSolve createSOCBoundaries(LpSolve problem, ArrayList<BuildingMessage> buildingMessages) throws LpSolveException {
-		
-		
 		for (BuildingMessage bm : buildingMessages) {
 			
 			int controllableHandled = bm.getNrOfControllableProducers();
@@ -472,7 +404,7 @@ public class MILPProblemWithConnections {
 		        	problem.addConstraint(rowDISCHARGE, LpSolve.LE, maxDischargeCapacity);
 		        	problem.addConstraint(rowCHARGE, LpSolve.LE, maxChargeCapacity);
 		        	
-		        	//System.out.println("Adding SOC chargeing constraints --> rowCHARGE: " + Arrays.toString(rowCHARGE) + " <= " + maxChargeCapacity);
+		        	//System.out.println("Adding SOC charging constraints --> rowCHARGE: " + Arrays.toString(rowCHARGE) + " <= " + maxChargeCapacity);
 				}
 		        storageHandled++;
 	        }
@@ -563,10 +495,7 @@ public class MILPProblemWithConnections {
 	            	row[counter++] = price;
 	            	storageHandled++;
 	    		}	        	
-        	}
-        	
-        	// buy
-        	//int index = i + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );
+        	}        	
         	
         	int index = nCols + 1 - 2*nStepsMPC + i;
         	
@@ -599,123 +528,4 @@ public class MILPProblemWithConnections {
 		return problem;
 	}
 	
-	/**
-	 * return the cost vector lambda in EUR, vector is according to names
-	 * @param buildingMessage
-	 * @return
-	 */
-	public double[] getLambdaEUR(ArrayList<BuildingMessage> buildingMessages) {
-		double[] result = new double[nCols];
-		
-		for (BuildingMessage bm : buildingMessages) {
-			int controllableHandled = 0;
-			int volatileHandled = 0;
-			int couplerHandled = 0;        
-			int storageHandled = 0;
-			
-			int indexBuilding = mapBuildingMessageToIndex.get(bm)-1;
-        
-			for(ProducerMessage producerMessage : bm.controllableProducerList) {					
-				for (int i = 0; i < nStepsMPC; i++) {		
-					int index = indexBuilding + i + nStepsMPC * (controllableHandled * 2);
-					result[index] = producerMessage.operationalCostEUR;
-					result[index + nStepsMPC] = 0;
-				}
-				controllableHandled++;
-			}
-			
-			for(ProducerMessage producerMessage : bm.volatileProducerList) {
-				for (int i = 0; i < nStepsMPC; i++) {			
-					int index = indexBuilding+i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled);
-					result[index] = producerMessage.operationalCostEUR;
-				}
-				volatileHandled++;
-			}
-			
-			for(CouplerMessage couplerMessage : bm.couplerList) {
-				for (int i = 0; i < nStepsMPC; i++) {			
-					int index = indexBuilding+i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled + (couplerHandled *2));
-					result[index] = couplerMessage.operationalCostEUR;
-					result[index + nStepsMPC] = 0;
-				}
-				couplerHandled++;
-			}
-			
-			for(StorageMessage storageMessage : bm.storageList) {
-				for (int i = 0; i < nStepsMPC; i++) {			
-					int index = indexBuilding+i + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
-					result[index] = storageMessage.operationalCostEUR;
-					result[index+ nStepsMPC] = storageMessage.operationalCostEUR;
-				}
-				storageHandled++;
-			}
-		}
-        
-		/* Markets */
-		int cts = GlobalTime.getCurrentTimeStep();		
-		for (int i = 0; i < nStepsMPC; i++) {
-			int index = nCols - 2*nStepsMPC + i;
-			result[index] = TopologyConfig.energyPrices.getElectricityPriceInEuro(cts+i);
-			result[index + nStepsMPC] = -TopologyConfig.energyPrices.getElectricityPriceInEuro(cts+i)*0.5;
-		}		
-		return result;
-	}
-
-	public double[] getLambdaCO2(ArrayList<BuildingMessage> buildingMessages) {
-		double[] result = new double[nCols];
-		
-		for (BuildingMessage bm : buildingMessages) {
-			int controllableHandled = 0;
-			int volatileHandled = 0;
-			int couplerHandled = 0;        
-			int storageHandled = 0;
-			
-			int indexBuilding = mapBuildingMessageToIndex.get(bm)-1;
-        
-			for(ProducerMessage producerMessage : bm.controllableProducerList) {					
-				for (int i = 0; i < nStepsMPC; i++) {		
-					int index = indexBuilding + i + nStepsMPC * (controllableHandled * 2);
-					result[index] = producerMessage.operationalCostCO2;
-					result[index + nStepsMPC] = 0;
-				}
-				controllableHandled++;
-			}
-			
-			for(ProducerMessage producerMessage : bm.volatileProducerList) {
-				for (int i = 0; i < nStepsMPC; i++) {			
-					int index = indexBuilding+i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled);
-					result[index] = producerMessage.operationalCostCO2;
-				}
-				volatileHandled++;
-			}
-			
-			for(CouplerMessage couplerMessage : bm.couplerList) {
-				for (int i = 0; i < nStepsMPC; i++) {			
-					int index = indexBuilding+i + nStepsMPC * ( (controllableHandled * 2) + volatileHandled + (couplerHandled *2));
-					result[index] = couplerMessage.operationalCostCO2;
-					result[index + nStepsMPC] = 0;
-				}
-				couplerHandled++;
-			}
-			
-			for(StorageMessage storageMessage : bm.storageList) {
-				for (int i = 0; i < nStepsMPC; i++) {			
-					int index = indexBuilding+i + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
-					result[index] = storageMessage.operationalCostCO2;
-					result[index+ nStepsMPC] = storageMessage.operationalCostEUR;
-				}
-				storageHandled++;
-			}
-		}
-        
-		/* Markets */	
-		for (int i = 0; i < nStepsMPC; i++) {			
-			int index = nCols - 2*nStepsMPC + i;
-			result[index] = 0.474; // buying --> TODO improve maybe later
-			result[index+ nStepsMPC] = 0; // selling (same as for LP)
-		}		
-		return result;
-	}
-
 }
-

@@ -32,7 +32,7 @@ import memap.messages.extension.NetworkType;
 public abstract class ExampleLoader {
 	public static TopologyController OpcUaExample() {
 		TopologyController topologyController = new TopologyController(OptHierarchy.MEMAP, Optimizer.MILP,
-				OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.FILES, "MemapExample", 5, 96, 7,
+				OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.RESULTS_ONLY, "MemapExample", 5, 96, 7,
 				"ELECTRICITYPRICEEXAMPLE", 0, 4880);
 
 		try {
@@ -74,7 +74,7 @@ public abstract class ExampleLoader {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} // Wait so that we get initial values for all devices
+		}
 
 		return topologyController;
 	}

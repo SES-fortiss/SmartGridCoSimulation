@@ -2,11 +2,14 @@ package fortiss.gui;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Locale;
 
 import javax.swing.JPanel;
 
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYSeries;
+import org.knowm.xchart.style.Styler.YAxisPosition;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
 import fortiss.gui.style.Colors;
@@ -34,7 +37,11 @@ public class PlotPanel extends JPanel {
 		setFocusable(false);
 		chart = new XYChart(getWidth(), getHeight());
 		chart.getStyler().setChartBackgroundColor(Colors.background);
-
+		chart.getStyler().setYAxisDecimalPattern("#0.00");
+		chart.getStyler().setLocale(Locale.GERMAN);
+		chart.getStyler().setYAxisGroupPosition(0, YAxisPosition.Left);
+		chart.getStyler().setYAxisGroupPosition(1, YAxisPosition.Right);
+		chart.getStyler().setYAxisTitleVisible(false);
 	}
 
 	/**
@@ -45,12 +52,29 @@ public class PlotPanel extends JPanel {
 	 */
 	public void addSeries(String seriesName, ArrayList<Double> series) {
 		if (!chart.getSeriesMap().containsKey(seriesName)) {
-			XYSeries seriesx = chart.addSeries(seriesName, series);
-			seriesx.setMarker(SeriesMarkers.NONE);
+
+			double[] xvalues = new double[series.size()];
+			double[] yvalues = new double[series.size()];
+			for (int i = 0; i < xvalues.length; i++) {
+				xvalues[i] = i;
+				yvalues[i] = series.get(i);
+			}
+			// Series wit maximum value smaller than 1 in absolute value are plotted in a separate axis
+			if (Collections.max(series) < 1 && Collections.min(series) > -1) {
+				XYSeries seriesx = chart.addSeries(seriesName + "(right)", xvalues, yvalues);
+				seriesx.setMarker(SeriesMarkers.NONE);
+				seriesx.setYAxisGroup(1);
+				chart.getStyler().setYAxisMax(1, 0.5);
+				chart.getStyler().setYAxisMin(1, -0.5);
+				seriesx.getXYSeriesRenderStyle();
+				System.out.println(seriesx.getXYSeriesRenderStyle().name());
+			} else {
+				XYSeries seriesx = chart.addSeries(seriesName + "(left)", xvalues, yvalues);
+				seriesx.setMarker(SeriesMarkers.NONE);
+				seriesx.setYAxisGroup(0);
+			}
 		}
 	}
-
-	
 
 	/**
 	 * Remove a series from the list of data series to be plotted (series).

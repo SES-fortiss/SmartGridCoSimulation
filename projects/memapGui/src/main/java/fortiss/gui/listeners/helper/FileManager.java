@@ -9,65 +9,90 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.gson.Gson;
 
 import fortiss.components.Building;
 import fortiss.gui.Designer;
 import memap.helper.DirectoryConfiguration;
+import simulation.SimulationStarter;
 
 /**
  * Manages all the files read and produced by the GUI interface
  */
-abstract public class FileManager {
+public class FileManager {
 
 	/** Main output directory path */
-	private static String mainDir = DirectoryConfiguration.mainDir;
+	private String mainDir = DirectoryConfiguration.mainDir;
+
 	/** Configuration directory path */
-	private static String configDir = DirectoryConfiguration.configDir;
+	private String configDir = DirectoryConfiguration.configDir;
 
 	/**
 	 * Reads a file from the resource container of the project
 	 * 
-	 * @param filename the name of the file to be read
+	 * @param filename the name of the file in resources
 	 * @return a buffer with the data in the input file
 	 */
-	public static BufferedReader readFromResources(String filename) {
+	public BufferedReader readFromResources(String filename) {
 		BufferedReader br = null;
-		String source = "resources/" + filename;
-		File file = new File(source);
-		if(file.exists()) {
-			InputStream is = FileManager.class.getClassLoader().getResourceAsStream(source);
-			br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+		String source = "/resources/" + filename;
+		try {
+			InputStream is = this.getClass().getResourceAsStream(source);
+			br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+		} catch (IOException e1) {
+			System.err.println("Error reading " + filename + " from resources");
+			e1.printStackTrace();
+			SimulationStarter.stopSimulation();
 		}
 		return br;
 	}
-	
+
 	/**
 	 * Reads a file from location specified.
-	 * 
+	 *
+	 * @param location the absolute path to the file to be read
+	 * @return a buffer with the data in the file read
+	 * @throws FileNotFoundException
+	 */
+	public BufferedReader readFromSource(String location) throws FileNotFoundException {
+		InputStream is = new FileInputStream(location);
+		BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+		return br;
+	}
+
+	/**
+	 * Reads a file from location specified.
+	 *
 	 * @param location the absolute path to the file to be read
 	 * @return a buffer with the data in the file read
 	 */
-	public static BufferedReader readFromSource(String location) {
+	public BufferedReader readParameterConfigFile() {
 		BufferedReader br = null;
+
+		String source = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir
+				+ File.separator + "parameterConfig.json";
+
 		try {
-			InputStream is = new FileInputStream(location);
+			InputStream is = new FileInputStream(source);
 			br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+
 		} catch (FileNotFoundException e) {
-			System.err.println("File not found. " + location);
-			e.printStackTrace();
+			System.out.println("<INFO> - FileManager file not found: " + source);
+			return null;
 		}
 		return br;
 	}
-	
+
 	/**
 	 * Writes a file.
-	 * 
+	 *
 	 * @param str  text to be written in file
 	 * @param file File to be written
 	 */
-	public static void writeFile(String str, File file) {
+	public void writeFile(String str, File file) {
 
 		if (!file.exists()) {
 			try {
@@ -93,11 +118,9 @@ abstract public class FileManager {
 	 * Writes one parameter configuration file that includes the parameters
 	 * registered in {@link fortiss.simulation.Parameters}.
 	 */
-	public static void writeParameterConfigFile() {
-		String source = "/" + mainDir + "/" + configDir + "/parameterConfig.json";
-		String location = System.getProperty("user.dir");
-		location = location + source;
-
+	public void writeParameterConfigFile() {
+		String location = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir
+				+ File.separator + "parameterConfig.json";
 		System.out.println(">> Writing parameter configuration file in " + location);
 
 		File file = new File(location);
@@ -109,43 +132,52 @@ abstract public class FileManager {
 	}
 
 	/**
-	 * Writes one descriptor file that includes the configuration of all the
-	 * buildings created.
-	 * 
+	 * Writes the model that includes the configuration of all the buildings
+	 * created.
+	 *
 	 * @param file path to file
 	 */
-	public static void writeDescriptorFile(File file) {
+	public void writeMemapModel(File file) {
 
 		// Create JSON string
 		Gson gson = new Gson();
-		String str = gson.toJson(Designer.buildings);
-		writeFile(str, file);
-	}
 
-	/**
-	 * Writes one descriptor file per building with its configuration.
-	 */
-	public static void writeDescriptorFiles() {
-
-		String location = System.getProperty("user.dir");
-		/*
-		 * Note: location is the project directory from which the simulation was started
-		 * or or the directory from which the .jar was executed.
-		 */
-		String source = "/" + mainDir + "/" + configDir + "/";
+		Set<Building> mySet = new HashSet<Building>();
 
 		for (Building building : Designer.buildings) {
-			String filename = location + source + building.getName() + ".json";
+			mySet.add(building);
+		}
 
+		String str = gson.toJson(mySet);
+		writeFile(str, file);
+		System.out.println(">> Writing memap model file in " + str);
+	}
+
+	/** Writes one descriptor file per building with its configuration. */
+	public void writeBuildingDescriptorFiles() {
+
+		/**
+		 * Note: location is the project directory from which the simulation was
+		 * started.
+		 */
+		String location = System.getProperty("user.dir") + File.separator + 
+				mainDir + File.separator + configDir + File.separator;
+
+		for (Building building : Designer.buildings) {
 			System.out.println(">> Writing descriptor " + building.getName() + " in " + location);
 
+			String filename = location + building.getName() + ".json";
 			File file = new File(filename);
 
-			// Create JSON string
 			Gson gson = new Gson();
 			String str = gson.toJson(building);
 			Designer.parameterPanel.pars.addDescriptorFile(file);
 			writeFile(str, file);
 		}
+	}
+
+	public void writeMemapModel() {
+		File file = new File(Designer.parameterPanel.pars.getLastSavedFile());
+		writeMemapModel(file);
 	}
 }
