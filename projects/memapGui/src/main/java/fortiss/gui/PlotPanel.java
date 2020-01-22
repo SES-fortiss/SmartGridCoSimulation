@@ -51,6 +51,7 @@ public class PlotPanel extends JPanel {
 	 * @param seriesName a name for the data series.
 	 */
 	public void addSeries(String seriesName, ArrayList<Double> series) {
+		
 		if (!chart.getSeriesMap().containsKey(seriesName)) {
 
 			double[] xvalues = new double[series.size()];
@@ -58,21 +59,29 @@ public class PlotPanel extends JPanel {
 			for (int i = 0; i < xvalues.length; i++) {
 				xvalues[i] = i;
 				yvalues[i] = series.get(i);
-			}
+			}			
+			
 			// Series wit maximum value smaller than 1 in absolute value are plotted in a separate axis
-			if (Collections.max(series) < 1 && Collections.min(series) > -1) {
+			if (Collections.max(series) < 0.5 && Collections.min(series) > -0.5 && chart.getSeriesMap().size() > 0) {
 				XYSeries seriesx = chart.addSeries(seriesName + "(right)", xvalues, yvalues);
 				seriesx.setMarker(SeriesMarkers.NONE);
 				seriesx.setYAxisGroup(1);
 				chart.getStyler().setYAxisMax(1, 0.5);
 				chart.getStyler().setYAxisMin(1, -0.5);
-				seriesx.getXYSeriesRenderStyle();
-				System.out.println(seriesx.getXYSeriesRenderStyle().name());
+				//seriesx.getXYSeriesRenderStyle();
+				//System.out.println(seriesx.getXYSeriesRenderStyle().name());
 			} else {
 				XYSeries seriesx = chart.addSeries(seriesName + "(left)", xvalues, yvalues);
 				seriesx.setMarker(SeriesMarkers.NONE);
 				seriesx.setYAxisGroup(0);
-			}
+				if (Collections.max(series) < 0.5 && Collections.min(series) > -0.5) {
+					chart.getStyler().setYAxisMax(0, 0.5);
+					chart.getStyler().setYAxisMin(0, -0.5);
+				} else {
+					chart.getStyler().setYAxisMax(0, null);
+					chart.getStyler().setYAxisMin(0, null);
+				}
+			}						
 		}
 	}
 

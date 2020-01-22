@@ -188,7 +188,7 @@ public class DemandInputPanel extends JPanel {
 		}
 
 		if (!data.equals(null)) {
-			plotPanel.clearSeries();
+			plotPanel.clearSeries();		
 			plotPanel.addSeries("Heat", data.getSeries(0));
 			plotPanel.addSeries("Electricity", data.getSeries(1));
 			plotPanel.setPlotted(false);
