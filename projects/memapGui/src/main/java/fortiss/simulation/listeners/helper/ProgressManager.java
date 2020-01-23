@@ -2,7 +2,7 @@ package fortiss.simulation.listeners.helper;
 
 import javax.swing.SwingUtilities;
 
-import akka.systemActors.GlobalTime;
+import akka.timeManagement.GlobalTime;
 import fortiss.gui.Designer;
 import fortiss.gui.listeners.button.AcceptListener;
 import fortiss.simulation.Parameters;
@@ -35,11 +35,12 @@ public class ProgressManager implements Runnable {
 			Runnable pb = new Runnable() {
 				@Override
 				public void run() {
-					if (GlobalTime.getCurrentTimeStep() == 1) {
+					// TODO Fix
+					/*if (GlobalTime.getCurrentTimeStep() == 1) {
 						AcceptListener.loadingScreen.lbMessage.setText("Optimization in progress");
 						AcceptListener.loadingScreen.progressBar.setIndeterminate(false);
 					}
-					AcceptListener.loadingScreen.progressBar.setValue(GlobalTime.getCurrentTimeStep() * 100 / max);
+					AcceptListener.loadingScreen.progressBar.setValue(GlobalTime.getCurrentTimeStep() * 100 / max);*/
 				}
 			};
 			SwingUtilities.invokeLater(pb);

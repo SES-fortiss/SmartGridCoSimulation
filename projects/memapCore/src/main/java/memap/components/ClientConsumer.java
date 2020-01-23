@@ -21,14 +21,22 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateReq
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
+import akka.timeManagement.CurrentTimeStepSubscriber;
 import memap.components.prototypes.Consumer;
+import memap.controller.TopologyController;
 import memap.helperOPCua.BasicClient;
+import memap.messages.extension.NetworkType;
 
-public class ClientConsumer extends Consumer {
+public class ClientConsumer extends Consumer implements CurrentTimeStepSubscriber {
+	
+	/** Current time step */
+	private int currentTimeStep;
 	public BasicClient client;
 	public NodeId nodeId;
-	public Double heatProfile[] = new Double[nStepsMPC];
-	public Double electricityProfile[] = new Double[nStepsMPC];
+	/** Heat profile values */
+	public Double heatProfile[];
+	/** Electricity profile values */
+	public Double electricityProfile[];
 	public List<UaMonitoredItem> itemsHeat;
 	public List<UaMonitoredItem> itemsElectricity;
 
@@ -44,6 +52,10 @@ public class ClientConsumer extends Consumer {
 		this.client = client;
 		Arrays.fill(heatProfile, 0.0);
 		Arrays.fill(electricityProfile, 0.0);
+		
+		// Initialization delayed until after topologyConfig initialization
+		heatProfile = new Double[topologyConfig.getNrStepsMPC()];
+		electricityProfile = new Double[topologyConfig.getNrStepsMPC()];
 
 		// subscribe to the Value attribute of the server's CurrentTime node
 		ReadValueId readValueIdHeat = new ReadValueId(nodeIdHeat, AttributeId.Value.uid(), null,
@@ -109,6 +121,33 @@ public class ClientConsumer extends Consumer {
 	}
 
 	@Override
+	public void makeDecision() {
+		int nStepsMPC = topologyConfig.getNrStepsMPC();
+		double[] demandVectorB = new double[2 * nStepsMPC];
+		int cts = currentTimeStep;
+		// Getting the HeatProfiles at the current time step with predictions
+		List<Double> currentHeatProfile = getHeatProfile(cts, nStepsMPC);
+		List<Double> currentElectricityProfile = getElectricityProfile(cts, nStepsMPC);
+		// Creating demand vector
+		for (int i = 0; i < nStepsMPC; i++) {
+			try {
+				demandVectorB[i] = -currentHeatProfile.get(0 + i);
+				demandVectorB[nStepsMPC + i] = -currentElectricityProfile.get(0 + i);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		consumptionMessage.name = actorName;
+		consumptionMessage.id = fullActorPath;
+		consumptionMessage.setDemandVector(demandVectorB);
+		consumptionMessage.forecastType = "Profile";
+		consumptionMessage.networkType = NetworkType.DEMANDWITHBOTH;
+
+		super.updateDisplay(consumptionMessage);
+	}
+	
+	@Override
 	public List<Double> getHeatProfile(int timeStep, int mpcHorizon) {
 		return new ArrayList<Double>(Arrays.asList(heatProfile));
 	}
@@ -116,6 +155,18 @@ public class ClientConsumer extends Consumer {
 	@Override
 	public List<Double> getElectricityProfile(int timeStep, int mpcHorizon) {
 		return new ArrayList<Double>(Arrays.asList(electricityProfile));
+	}
+	
+	/** Passes a reference of an object of class {@link TopologyController} to the parent class */
+	@Override
+	public void setTopologyController(TopologyController topologyController) {
+		super.setTopologyController(topologyController);
+		topologyController.subscribeToCurrentTimeStep(this);
+	}
+
+	@Override
+	public void update(int currentTimeStep) {
+		this.currentTimeStep = currentTimeStep;
 	}
 
 }

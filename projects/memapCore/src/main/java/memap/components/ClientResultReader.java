@@ -23,12 +23,17 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import akka.basicMessages.AnswerContent;
 import memap.components.prototypes.Device;
 import memap.helperOPCua.BasicClient;
-import memap.main.TopologyConfig;
 
+/**
+ * @deprecated Apparently, this class is not instantiated anywhere. A reference
+ *             to the instance of TopologyConfig was added to a parent ensure
+ *             the access to nrStepsMPC in the event this class is used again.
+ */
 public class ClientResultReader extends Device {
+
 	BasicClient client;
-	public Double setpointsHeat[] = new Double[TopologyConfig.N_STEPS_MPC];
-	public Double setpointsElectricity[] = new Double[TopologyConfig.N_STEPS_MPC];
+	public Double setpointsHeat[];
+	public Double setpointsElectricity[];
 	public List<UaMonitoredItem> itemsHeat;
 	public List<UaMonitoredItem> itemsElectricity;
 
@@ -36,6 +41,10 @@ public class ClientResultReader extends Device {
 		super(name, port);
 		Arrays.fill(setpointsHeat, 0.0);
 		Arrays.fill(setpointsElectricity, 0.0);
+		
+		// Initialization delayed until after topologyConfig initialization
+		setpointsHeat = new Double[topologyConfig.getNrStepsMPC()];
+		setpointsElectricity = new Double[topologyConfig.getNrStepsMPC()];
 
 		// subscribe to the Value attribute of the server's CurrentTime node
 		ReadValueId readValueIdHeat = new ReadValueId(nodeIdHeat, AttributeId.Value.uid(), null,

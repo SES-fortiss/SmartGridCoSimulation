@@ -6,47 +6,53 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import memap.examples.ExampleFiles;
+import memap.main.TopologyConfig;
 import simulation.SimulationStarter;
 
 /**
- * Helper class to return the gas price.
+ * Helper class to return the energy prices.
  */
 public class EnergyPrices {
+
+	private static EnergyPrices instance = new EnergyPrices();
+
 	/** Electricity price per KWp */
 	private ArrayList<Double> electricityPrices;
-	/** mpcSteps MPC horizon */
-	private int mpcSteps;
 
 	/**
-	 * Constructor with double value. Creates a array list with all its entries
-	 * equal to MarketPrice
+	 * Set values to the parameters of {@link EnergyPrices} using a double value.
+	 * Creates a array list with all its entries equal to MarketPrice
+	 * 
+	 * Note: {@link TopologyConfig} values must be set before calling this method.
 	 * 
 	 * @param MarketPrice a double value
 	 * 
-	 *                    The latter two parameters are necessary because their
-	 *                    global values are not available when this object is
-	 *                    created.
 	 */
-	public EnergyPrices(double MarketPrice, int mpcSteps) {
-		this.mpcSteps = mpcSteps;
+	public void init(double MarketPrice) {
 		electricityPrices = new ArrayList<Double>();
-		for (int i = 0; i < mpcSteps * 2; i++) {
+		for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC() * 2; i++) {
 			electricityPrices.add(MarketPrice);
 		}
 	}
 
 	/**
-	 * Constructor with CSV. Creates a array list reading from the file path
-	 * MarketPrice
+	 * Set values to the parameters of {@link EnergyPrices} using a CSV. Creates a
+	 * array list reading from the file path MarketPriceCSV
+	 * 
+	 * Note: {@link TopologyConfig} values must be set before calling this method.
 	 * 
 	 * @param MarketPriceCSV a path to a CSV file
+	 * 
 	 */
-	public EnergyPrices(String MarketPriceCSV, int mpcSteps) {
-		this.mpcSteps = mpcSteps;
+	public void init(String MarketPriceCSV) {
 		setEnergyPrices(MarketPriceCSV);
+	}
+
+	/** @return the instance of {@link EnergyPrices} */
+	public static EnergyPrices getInstance() {
+		return instance;
 	}
 
 	/**
@@ -133,6 +139,8 @@ public class EnergyPrices {
 	 */
 	private void readElectricityPrices(BufferedReader br) throws IOException, ParseException {
 		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
+		int mpcSteps = TopologyConfig.getInstance().getNrStepsMPC();
+		double stepLenghtInHours = TopologyConfig.getInstance().getStepLengthInHours();
 		ArrayList<Double> originalValues = new ArrayList<Double>();
 		electricityPrices = new ArrayList<Double>();
 		String row;
@@ -150,7 +158,7 @@ public class EnergyPrices {
 
 		double[] xi = new double[mpcSteps];
 		for (int j = 0; j < mpcSteps; j++) {
-			xi[j] = j * MyTimeUnit.stepLength(TimeUnit.HOURS);
+			xi[j] = j * stepLenghtInHours;
 		}
 
 		double[] yi = Interpolation.interpLinear(x, y, xi);

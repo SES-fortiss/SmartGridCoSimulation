@@ -2,12 +2,18 @@ package memap.helper;
 
 import java.util.concurrent.TimeUnit;
 
-import memap.main.TopologyConfig;
-
+@Deprecated
 public class MyTimeUnit {
+	
+	private int timeStepsPerDay;
+	
+	public MyTimeUnit(int timeStepsPerDay){
+		this.timeStepsPerDay = timeStepsPerDay;
+	}
 
-	public static double stepLength(TimeUnit timeUnit) {
-		double stepLengthInSeconds = 24 * 3600 / TopologyConfig.TIMESTEPS_PER_DAY;
+	public double stepLength(TimeUnit timeUnit) {
+		// This value is automatically cast to integer by the compiler
+		double stepLengthInSeconds = 24 * 3600 / timeStepsPerDay;
 		switch (timeUnit) {
 		case SECONDS:
 			return stepLengthInSeconds;

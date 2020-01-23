@@ -1,8 +1,5 @@
 package memap.components.prototypes;
 
-import static memap.main.ConfigurationMEMAP.chosenOptimizationHierarchy;
-import static memap.main.ConfigurationMEMAP.chosenOptimizer;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -10,15 +7,17 @@ import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
+import akka.timeManagement.CurrentTimeStepSubscriber;
 import behavior.BehaviorModel;
 import lpsolve.LpSolveException;
+import memap.controller.TopologyController;
 import memap.helper.SolutionHandler;
+import memap.helper.configurationOptions.OptHierarchy;
+import memap.helper.configurationOptions.Optimizer;
 import memap.helper.lp.LPSolver;
 import memap.helper.milp.MILPSolverNoConnections;
 import memap.helper.milp.MILPSolverWithConnections;
 import memap.main.TopologyConfig;
-import memap.main.ConfigurationMEMAP.OptHierarchy;
-import memap.main.ConfigurationMEMAP.Optimizer;
 import memap.messages.BuildingMessage;
 import memap.messages.BuildingMessageHandler;
 import memap.messages.OptimizationResultMessage;
@@ -26,133 +25,141 @@ import memap.messages.extension.ChildSpecification;
 
 /**
  * This model optimizes over several buildings for the planning tool.
+ * 
  * @author bytschkow
  */
-public class MEMAPCoordination extends BehaviorModel {
-	
+public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepSubscriber {
+
+	// Reference to topologyController ancestor
+	private TopologyController topologyController;
+	/** Reference to topology configuration */
+	TopologyConfig topologyConfig = TopologyConfig.getInstance();
+	private int currentTimeStep;
+
 	// some long term values
-	double[] totalEURVector = new double[TopologyConfig.NR_OF_ITERATIONS];
-	double[] totalCO2Vector = new double[TopologyConfig.NR_OF_ITERATIONS];
-	double[][] solutionPerTimeStep = new double[TopologyConfig.NR_OF_ITERATIONS][];
-	
-	public int nStepsMPC = TopologyConfig.N_STEPS_MPC;
-	
-	SolutionHandler lpSolHandler = new SolutionHandler();
-	SolutionHandler milpSolHandler = new SolutionHandler();
+	double[] totalEURVector;
+	double[] totalCO2Vector;
+	double[][] solutionPerTimeStep;
+	public int nStepsMPC;
+
+	SolutionHandler lpSolHandler;
+	SolutionHandler milpSolHandler;
 
 	public OptimizationResultMessage optResult = new OptimizationResultMessage(); // optResult = selbst berechnet
-	
-	//public SolutionHandler solHandler = new SolutionHandler();
+
 	public BuildingMessage buildingMessage = new BuildingMessage();
 	private BuildingMessageHandler buildingMessageHandler = new BuildingMessageHandler();
-	
-	public MEMAPCoordination() {}
+
+	public MEMAPCoordination(TopologyController topologyController) {
+		this.topologyController = topologyController;
+		topologyController.subscribeToCurrentTimeStep(this);
+		// Initialization delayed until after topologyConfig initialization
+		totalEURVector = new double[topologyConfig.getNrOfIterations()];
+		totalCO2Vector = new double[topologyConfig.getNrOfIterations()];
+		solutionPerTimeStep = new double[topologyConfig.getNrOfIterations()][];
+		nStepsMPC = topologyConfig.getNrStepsMPC();
+		lpSolHandler = new SolutionHandler(nStepsMPC);
+		milpSolHandler = new SolutionHandler(nStepsMPC);
+	}
 
 	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
+	public void handleError(LinkedList<ErrorAnswerContent> errors) {
+	}
 
 	@Override
-	public void handleRequest() {}	
+	public void handleRequest() {
+	}
 
 	@Override
 	public void makeDecision() {
-		
-		//	=======================  RECEIVING =======================				
+
+		// ======================= RECEIVING =======================
 		buildingMessage = new BuildingMessage();
 		buildingMessage.id = this.fullActorPath;
 		buildingMessage.name = this.actorName;
-		
-		this.actor.getContext().getChildren().forEach(child ->
-			buildingMessage.childrenList.add(new ChildSpecification(this.fullActorPath + "/" + child.path().name())));				
+
+		this.actor.getContext().getChildren().forEach(child -> buildingMessage.childrenList
+				.add(new ChildSpecification(this.fullActorPath + "/" + child.path().name())));
 
 		buildingMessage = buildingMessageHandler.aggregateBuildingMessages(buildingMessage, answerListReceived);
 		buildingMessage = buildingMessageHandler.refactorDemandList(buildingMessage);
-		
-		if (chosenOptimizationHierarchy == OptHierarchy.MEMAP) {
-			if(chosenOptimizer == Optimizer.MILP){				
+
+		if (topologyController.getOptimizationHierarchy() == OptHierarchy.MEMAP) {
+			if (topologyController.getOptimizer() == Optimizer.MILP) {
 				useMilpNoConnections();
 			}
-			
-			if(chosenOptimizer == Optimizer.MILPwithConnections) {				
+
+			if (topologyController.getOptimizer() == Optimizer.MILPwithConnections) {
 				useMilpWithConnections();
 			}
-			
-			if(chosenOptimizer == Optimizer.LP) {
+
+			if (topologyController.getOptimizer() == Optimizer.LP) {
 				buildingMessage.connectionList.clear();
 				useLP();
 			}
-			
-			if(chosenOptimizer == Optimizer.LPwithConnections) {			
-				ArrayList<BuildingMessage> buildingMessageList = new ArrayList<BuildingMessage>();				
-				for(BasicAnswer basicAnswer : answerListReceived) {					
+
+			if (topologyController.getOptimizer() == Optimizer.LPwithConnections) {
+				ArrayList<BuildingMessage> buildingMessageList = new ArrayList<BuildingMessage>();
+				for (BasicAnswer basicAnswer : answerListReceived) {
 					AnswerContent answerContent = basicAnswer.answerContent;
-					if(answerContent instanceof BuildingMessage) {
-						BuildingMessage bm  = (BuildingMessage) answerContent;
+					if (answerContent instanceof BuildingMessage) {
+						BuildingMessage bm = (BuildingMessage) answerContent;
 						buildingMessageList.add(bm);
 					}
 				}
 				useLP(buildingMessageList);
 			}
-			
+
 			double costTotal = 0;
 			double CO2Total = 0;
-			
+
 			for (int i = 0; i < totalEURVector.length; i++) {
 				costTotal += totalEURVector[i];
 				CO2Total += totalCO2Vector[i];
 			}
-			
-			System.out.println(chosenOptimizer+": " + this.actorName+" cost = " + String.format("%.03f", costTotal) + " EUR ; CO2: " + String.format("%.03f", CO2Total) + " kg");			
+
+			System.out.println(topologyController.getOptimizer() + ": " + this.actorName + " cost = "
+					+ String.format("%.03f", costTotal) + " EUR ; CO2: " + String.format("%.03f", CO2Total) + " kg");
 		}
 	}
 
 	private void useLP(ArrayList<BuildingMessage> buildingMessageList) {
-		LPSolver lpsolver = new LPSolver(
-				buildingMessage, nStepsMPC, lpSolHandler, 
-				totalEURVector, totalCO2Vector, 
-				getActualTimeStep(), solutionPerTimeStep,
-				this.actorName, optResult);		
-		lpsolver.setBuildingMessageList(buildingMessageList);		
+		LPSolver lpsolver = new LPSolver(topologyController, buildingMessage, lpSolHandler, totalEURVector,
+				totalCO2Vector, currentTimeStep, solutionPerTimeStep, this.actorName, optResult);
+		lpsolver.setBuildingMessageList(buildingMessageList);
 		lpsolver.solveLPOptProblem();
 	}
 
 	private void useLP() {
-		LPSolver lpsolver = new LPSolver(
-					buildingMessage, nStepsMPC, lpSolHandler, 
-					totalEURVector, totalCO2Vector, 
-					getActualTimeStep(), solutionPerTimeStep,
-					this.actorName, optResult);
-		lpsolver.solveLPOptProblem();		
+		LPSolver lpsolver = new LPSolver(topologyController, buildingMessage, lpSolHandler, totalEURVector,
+				totalCO2Vector, currentTimeStep, solutionPerTimeStep, this.actorName, optResult);
+		lpsolver.solveLPOptProblem();
 	}
 
 	private void useMilpNoConnections() {
-		MILPSolverNoConnections milpSolver = new MILPSolverNoConnections(
-				buildingMessage, nStepsMPC, milpSolHandler,
-				totalEURVector, totalCO2Vector, 
-				getActualTimeStep(), solutionPerTimeStep,
+		MILPSolverNoConnections milpSolver = new MILPSolverNoConnections(topologyController, currentTimeStep,
+				buildingMessage, milpSolHandler, totalEURVector, totalCO2Vector, solutionPerTimeStep,
 				this.actorName, optResult);
 		try {
-			milpSolver.createModel();				
-			milpSolver.solveMILP(); // and work through results			
-		} catch (LpSolveException e) {			
+			milpSolver.createModel();
+			milpSolver.solveMILP(); // and work through results
+		} catch (LpSolveException e) {
 			e.printStackTrace();
-		}		
+		}
 	}
-	
+
 	private void useMilpWithConnections() {
-		MILPSolverWithConnections milpWithConnections = new MILPSolverWithConnections(
-				answerListReceived, nStepsMPC, milpSolHandler, 
-				totalEURVector, totalCO2Vector, 
-				getActualTimeStep(), solutionPerTimeStep, 
-				actorName, optResult);				
+		MILPSolverWithConnections milpWithConnections = new MILPSolverWithConnections(topologyController,
+				currentTimeStep, answerListReceived, milpSolHandler, totalEURVector, totalCO2Vector,
+				solutionPerTimeStep, actorName, optResult);
 		try {
 			milpWithConnections.createModelWithConnections();
 			milpWithConnections.solveMILP();
-		} catch (LpSolveException e) {			
+		} catch (LpSolveException e) {
 			e.printStackTrace();
 		}
-	}		
-	
+	}
+
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
 		return buildingMessage;
@@ -162,7 +169,7 @@ public class MEMAPCoordination extends BehaviorModel {
 	public RequestContent returnRequestContentToSend() {
 		return optResult;
 	}
-	
+
 	@Override
 	public void stop() {
 		try {
@@ -172,5 +179,9 @@ public class MEMAPCoordination extends BehaviorModel {
 		super.stop();
 	}
 
-}
+	@Override
+	public void update(int currentTimeStep) {
+		this.currentTimeStep = currentTimeStep;
+	}
 
+}

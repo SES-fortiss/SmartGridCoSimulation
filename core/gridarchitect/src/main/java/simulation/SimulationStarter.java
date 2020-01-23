@@ -9,26 +9,26 @@
 
 package simulation;
 
-import helper.GlobalOptions;
-import helper.HTMLHelper;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
-import resultLogger.ConstantLogger;
-import resultLogger.utils.AnswerContent_LoggerInterface;
-import resultLogger.utils.ConstantResultLogger;
-import scala.concurrent.duration.Duration;
-import topology.ActorTopology;
-import visualization.GridD3Json;
 import akka.actor.ActorSystem;
 import akka.actor.Inbox;
 import akka.basicActors.LoggingMode;
 import akka.systemActors.ActorMonitor;
 import akka.systemActors.ActorSupervisor;
 import akka.systemMessages.StartMessage;
+import akka.timeManagement.GlobalTime;
 import configuration.GridArchitectConfiguration;
+import helper.GlobalOptions;
+import helper.HTMLHelper;
+import resultLogger.ConstantLogger;
+import resultLogger.utils.AnswerContent_LoggerInterface;
+import resultLogger.utils.ConstantResultLogger;
+import scala.concurrent.duration.Duration;
+import topology.ActorTopology;
+import visualization.GridD3Json;
 
 /**
  * 
@@ -38,12 +38,18 @@ import configuration.GridArchitectConfiguration;
  * 
  */
 
-public abstract class SimulationStarter {
+public class SimulationStarter {
 	
+	/** Reference to GlobalTime object */
+	private GlobalTime globalTime;
 	public static ActorSystem actorSystemRef;
 
+	public SimulationStarter(GlobalTime globalTime) {
+		this.globalTime = globalTime;
+	}
+	
 	@SuppressWarnings("deprecation")
-	public static ActorSystem initialiseActorSystem(final ActorTopology topology) {
+	public ActorSystem initialiseActorSystem(final ActorTopology topology) {
 		
 		ConstantLogger.logNumberOfActors(topology);
 		
@@ -57,15 +63,15 @@ public abstract class SimulationStarter {
 		actorSystemRef = actorSystem;
 		actorSystem.actorOf(ActorMonitor.create(LoggingMode.MINIMAL), "ActorMonitor");
 		actorSystem.actorOf(ActorSupervisor.create(topology.simulationName, LoggingMode.MINIMAL, topology), "ActorSupervisor");
-
-		/*
-		 * Hier passiert folgendes:
-		 * 
-		 * Monitor bekommt die Inbox Adresse Supervisor bekommt eine Init Nachricht zum Aufbau der Systems Inbox wartet auf den Aufbau des Grids (mit
-		 * deadline)
-		 * 
-		 * Sobald das Grid aufgebaut ist, wird eine Nachricht an die Inbox zurueckgegeben
-		 */
+		
+		/**
+		* Here's what happens:
+		*
+		* Monitor receives the inbox address Supervisor receives an init message to set up the systems Inbox is waiting for the grid to be set up (with
+		* deadline)
+		*
+		* As soon as the grid is set up, a message is returned to the inbox
+		*/
 		if (GridArchitectConfiguration.unitTestingEnable)
 		{
 			try
@@ -80,6 +86,8 @@ public abstract class SimulationStarter {
         
         Inbox inbox = Inbox.create(actorSystem);
         
+        inbox.send(actorSystem.actorFor("/user/ActorSupervisor"), globalTime);
+        inbox.send(actorSystem.actorFor("/user/ActorMonitor"), globalTime);
         inbox.send(actorSystem.actorFor("/user/ActorMonitor"), "Inbox intitialize");
         inbox.receive(Duration.create(deadline, TimeUnit.SECONDS));
 
@@ -114,7 +122,7 @@ public abstract class SimulationStarter {
 	 * @param startTimeStep
 	 * @param maxTimeStep
 	 */
-	public static void startSimulation(ActorSystem actorSystem, int startTimeStep, int maxTimeStep) {
+	public void startSimulation(ActorSystem actorSystem, int startTimeStep, int maxTimeStep) {
 		StartMessage message = new StartMessage(startTimeStep, maxTimeStep);
 		startNow(actorSystem, message);
 	}
@@ -128,7 +136,7 @@ public abstract class SimulationStarter {
 	 * @param endTime
 	 * @param timeInterval
 	 */
-	public static void startSimulation(ActorSystem actorSystem, LocalDateTime startTime, LocalDateTime endTime, java.time.Duration timeInterval) {
+	public void startSimulation(ActorSystem actorSystem, LocalDateTime startTime, LocalDateTime endTime, java.time.Duration timeInterval) {
 		StartMessage message = new StartMessage(startTime, endTime, timeInterval);
 		startNow(actorSystem, message);
 	}
@@ -142,7 +150,7 @@ public abstract class SimulationStarter {
 	 * @param endTime
 	 * @param timeInterval
 	 */
-	public static void startSimulation(ActorSystem actorSystem, LocalDate localDate, java.time.Duration timeInterval) {
+	public void startSimulation(ActorSystem actorSystem, LocalDate localDate, java.time.Duration timeInterval) {
     	StartMessage message = new StartMessage(localDate, timeInterval);
     	startNow(actorSystem, message);
     }
@@ -151,7 +159,7 @@ public abstract class SimulationStarter {
 	 * @param message
 	 */
 	@SuppressWarnings("deprecation")
-	private static void startNow(ActorSystem actorSystem, StartMessage message) {
+	private void startNow(ActorSystem actorSystem, StartMessage message) {
     	// Maximal time to wait until simulation ends in TimeUnis.* (see below)
     	int deadline = 100000; 
     	

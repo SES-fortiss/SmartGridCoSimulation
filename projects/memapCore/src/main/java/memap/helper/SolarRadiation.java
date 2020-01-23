@@ -9,15 +9,18 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import memap.examples.ExampleFiles;
-import memap.main.TopologyConfig;
 import simulation.SimulationStarter;
 
 public class SolarRadiation {
 
 	/** Solar production per KWp */
 	private ArrayList<Double> solarProductionPerKWp;
-
-	public SolarRadiation(String csvFile) {
+	private int timeStepsPerDay;
+	private int stepLength;
+	
+	public SolarRadiation(String csvFile, int timeStepsPerDay) {
+		this.timeStepsPerDay = timeStepsPerDay;
+		stepLength = (int) (TimeUnit.DAYS.toMinutes(1)/timeStepsPerDay);
 		setSolarProductionPerKWp(csvFile);
 	}
 
@@ -96,10 +99,10 @@ public class SolarRadiation {
 			y[i] = originalValues.get(i);
 		}
 
-		int timestepsPerDay = TopologyConfig.TIMESTEPS_PER_DAY;
-		double[] xi = new double[timestepsPerDay];
-		for (int j1 = 0; j1 < timestepsPerDay; j1++) {
-			xi[j1] = j1 * MyTimeUnit.stepLength(TimeUnit.MINUTES);
+		double[] xi = new double[timeStepsPerDay];
+		for (int j1 = 0; j1 < timeStepsPerDay; j1++) {
+			//xi[j1] = j1 * MyTimeUnit.stepLength(TimeUnit.MINUTES);
+			xi[j1] = j1 * stepLength;
 		}
 
 		double[] yi = Interpolation.interpLinear(x, y, xi);

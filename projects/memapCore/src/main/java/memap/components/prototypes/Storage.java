@@ -1,14 +1,14 @@
 package memap.components.prototypes;
 
-import java.util.concurrent.TimeUnit;
-
 import akka.basicMessages.AnswerContent;
-import memap.helper.MyTimeUnit;
+import memap.controller.TopologyController;
 import memap.messages.OptimizationResultMessage;
 import memap.messages.planning.StorageMessage;
 
 public abstract class Storage extends Device {
 
+	/** Reference to the topology */
+	protected TopologyController topologyController;
 	public double capacity;
 	public double max_charging;
 	public double max_discharging;
@@ -18,8 +18,8 @@ public abstract class Storage extends Device {
 
 	public StorageMessage storageMessage = new StorageMessage();
 
-	public double[] linprogStorageInput = new double[nStepsMPC];
-	public double[] linprogStorageOutput = new double[nStepsMPC];
+	public double[] linprogStorageInput;
+	public double[] linprogStorageOutput;
 
 	public Storage(String name, double capacity, double stateOfCharge, double max_charging, double max_discharging,
 			double effIN, double effOUT, int port) {
@@ -30,6 +30,9 @@ public abstract class Storage extends Device {
 		this.max_discharging = max_discharging;
 		this.effIN = effIN;
 		this.effOUT = effOUT;
+		// Initialization delayed until after topologyConfig initialization
+		linprogStorageInput = new double[topologyConfig.getNrStepsMPC()];
+		linprogStorageOutput = new double[topologyConfig.getNrStepsMPC()];
 	}
 
 	@Override
@@ -43,6 +46,7 @@ public abstract class Storage extends Device {
 	@Override
 	public void handleRequest() {
 		if (requestContentReceived instanceof OptimizationResultMessage) {
+			double stepLengthInHours = topologyConfig.getStepLengthInHours();
 			OptimizationResultMessage linprogResult = ((OptimizationResultMessage) requestContentReceived);
 
 			String dataKey = actorName + "Discharge";
@@ -61,7 +65,12 @@ public abstract class Storage extends Device {
 
 			double soc_alt = stateOfCharge;
 			double leistung = linprogStorageInput[0] * effIN - linprogStorageOutput[0] * 1 / effOUT;
-			stateOfCharge = soc_alt + leistung * MyTimeUnit.stepLength(TimeUnit.MINUTES) / 60;
+			stateOfCharge = soc_alt + leistung * stepLengthInHours;
 		}
+	}
+	
+	@Override
+	public void setTopologyController(TopologyController topologyController) {
+		this.topologyController = topologyController;
 	}
 }

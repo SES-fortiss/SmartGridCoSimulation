@@ -3,7 +3,6 @@ package memap.messages.planning;
 import com.google.gson.Gson;
 
 import akka.basicMessages.AnswerContent;
-import memap.main.ConfigurationMEMAP.OptimizationCriteria;
 import memap.messages.extension.NetworkType;
 
 public class DemandMessage implements AnswerContent {
@@ -12,7 +11,6 @@ public class DemandMessage implements AnswerContent {
 	public String name;
 	private double[] demandForecast; // that certainly includes both heat and electricity
 	public String forecastType;
-	public OptimizationCriteria optimizationCriteria;
 	public NetworkType networkType;
 
 	public DemandMessage() {

@@ -19,38 +19,51 @@ import memap.components.CSVCoupler;
 import memap.components.CSVProducer;
 import memap.components.CSVStorage;
 import memap.components.CSVVolatileProducer;
-import memap.main.ConfigurationMEMAP.MEMAPLogging;
-import memap.main.ConfigurationMEMAP.OptHierarchy;
-import memap.main.ConfigurationMEMAP.OptimizationCriteria;
-import memap.main.ConfigurationMEMAP.Optimizer;
-import memap.main.ConfigurationMEMAP.ToolUsage;
+import memap.helper.EnergyPrices;
+import memap.helper.MEMAPLogging;
+import memap.helper.configurationOptions.OptHierarchy;
+import memap.helper.configurationOptions.OptimizationCriteria;
+import memap.helper.configurationOptions.Optimizer;
+import memap.helper.configurationOptions.ToolUsage;
+import memap.main.TopologyConfig;
 import memap.messages.extension.NetworkType;
 
 public class GuiController {
 
-	private TopologyController top;
+	private TopologyController topMemapOn;
+	private TopologyController topMemapOff;
 
 	public GuiController(String pathToConfigJson) throws FileNotFoundException {
 
 		FileReader reader = new FileReader(pathToConfigJson);
 		JsonParser jsonParser = new JsonParser();
 		JsonObject configJson = (JsonObject) jsonParser.parse(reader);
-
-		this.top = createTopology(configJson);
+		
+		topMemapOn = createTopology(configJson);
+		topMemapOn.setOptimizationHierarchy(OptHierarchy.MEMAP);
+		
+		topMemapOff = createTopology(configJson);
+		topMemapOff.setOptimizationHierarchy(OptHierarchy.BUILDING);
+		System.out.print("");
 	}
 
 	public void startSimulation() {
 		System.out.println("====== START GUI SIMULATON =====");
-		top.startSimulation();
+
+		Thread helperThread = new Thread(topMemapOff);
+		helperThread.start();
+
+		//topMemapOff.run();
+		topMemapOn.run();
 	}
 
-	private TopologyController createTopology(JsonObject topologyConfig) {
+	private TopologyController createTopology(JsonObject json) {
 
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(TopologyController.class, new TopologyControllerDeserializer());
 		Gson gson = gsonBuilder.create();
 
-		TopologyController top = gson.fromJson(topologyConfig, TopologyController.class);
+		TopologyController top = gson.fromJson(json, TopologyController.class);
 
 		return top;
 
@@ -63,6 +76,35 @@ public class GuiController {
 				throws JsonParseException {
 
 			JsonObject jObject = (JsonObject) jsonElement;
+			
+			// Configure simulation parameters
+			TopologyConfig topologyConfig = TopologyConfig.getInstance();
+					
+			boolean isFixedPrice = jObject.get("fixedPrice").getAsBoolean();
+			double fixedPrice = jObject.get("fixedMarketPrice").getAsDouble();
+			int nrStepsMPC = jObject.get("steps").getAsInt();
+			int timeStepsPerDay = jObject.get("length").getAsInt();
+			int nrDays = jObject.get("days").getAsInt();
+			String variablePriceFile = jObject.get("marketPriceFile").getAsString();
+			
+			/* jObject.get("steps").getAsInt(), jObject.get("length").getAsInt(), jObject.get("days").getAsInt(),
+			jObject.get("fixedPrice").getAsBoolean(), jObject.get("fixedMarketPrice").getAsDouble(),
+			jObject.get("marketPriceFile").getAsString(), 0, 0
+			 * 
+			 */
+			topologyConfig.init(nrStepsMPC, timeStepsPerDay, nrDays, 0, 0);
+
+			// Configure topology
+			EnergyPrices energyPrices = EnergyPrices.getInstance();
+			if (isFixedPrice) {
+				energyPrices.init(fixedPrice);
+			} else {
+				energyPrices.init(variablePriceFile);
+			}
+
+
+			
+			// Configure tool parameters
 
 			OptHierarchy optHierarchy = (jObject.get("memapON").getAsBoolean() == true) ? OptHierarchy.MEMAP
 					: OptHierarchy.BUILDING;
@@ -80,11 +122,8 @@ public class GuiController {
 			if (loggingST.equals("resultLogs"))
 				loggingMode = MEMAPLogging.RESULTS_ONLY;
 
-			TopologyController top = new TopologyController(optHierarchy, optimizer, optimizationCriteria,
-					ToolUsage.PLANNING, loggingMode, jObject.get("simulationName").getAsString(),
-					jObject.get("steps").getAsInt(), jObject.get("length").getAsInt(), jObject.get("days").getAsInt(),
-					jObject.get("fixedPrice").getAsBoolean(), jObject.get("fixedMarketPrice").getAsDouble(),
-					jObject.get("marketPriceFile").getAsString(), 0, 0);
+			TopologyController top = new TopologyController(jObject.get("simulationName").getAsString(), optHierarchy, optimizer, optimizationCriteria,
+					ToolUsage.PLANNING, loggingMode);
 
 			// Attaching buildings
 			JsonArray buildingPathList = (JsonArray) jObject.get("descriptorFiles");
@@ -123,8 +162,7 @@ public class GuiController {
 			JsonObject jObject = (JsonObject) jsonElement;
 
 			// Creating the building
-			BuildingController building = new CSVBuildingController(jObject.get("name").getAsString(),
-					jObject.get("ldHeating").getAsBoolean(), jObject.get("heatTransportLength").getAsInt());
+			BuildingController building = new CSVBuildingController(jObject.get("name").getAsString());
 
 			// Attaching devices
 			JsonArray couplers = (JsonArray) jObject.get("coupler_list");

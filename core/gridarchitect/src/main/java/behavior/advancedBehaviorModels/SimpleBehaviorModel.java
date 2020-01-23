@@ -13,13 +13,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import faultStrategy.backEnd.BasicFaultStrategy;
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.advancedMessages.SingleReceiverRequestContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
+import faultStrategy.backEnd.BasicFaultStrategy;
 
 public abstract class SimpleBehaviorModel {
 	
@@ -117,13 +116,6 @@ public abstract class SimpleBehaviorModel {
 		}
 		
 		return res;
-	}
-	/**
-	 * Get the current Time Step
-	 * @return the current Time Step
-	 */
-	public int getActualTimeStep() {
-		return GlobalTime.currentTimeStep;
 	}
 	
 	/**

@@ -10,12 +10,12 @@ package behavior;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
+
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicActors.BasicActor;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import faultStrategy.backEnd.BasicFaultStrategy;
 
 /**
@@ -51,10 +51,6 @@ public abstract class BehaviorModel {
 			return tmp.fullActorPath.equals(fullActorPath);
 		} else
 			return false;
-	}
-
-	public int getActualTimeStep() {
-		return GlobalTime.currentTimeStep;
 	}
 
 	public BehaviorType getBehaviorType() {

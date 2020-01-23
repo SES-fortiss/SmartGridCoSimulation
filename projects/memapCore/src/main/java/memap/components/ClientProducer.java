@@ -5,10 +5,12 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 import memap.components.prototypes.Producer;
+import memap.controller.TopologyController;
 import memap.helperOPCua.BasicClient;
 import memap.messages.extension.NetworkType;
 
 public class ClientProducer extends Producer {
+	
 	public final NetworkType networkType;
 	public double opCost;
 	public double costCO2;
@@ -43,6 +45,11 @@ public class ClientProducer extends Producer {
 		producerMessage.operationalCostCO2 = costCO2;
 		producerMessage.efficiency = efficiency;
 		producerMessage.networkType = networkType;
+	}
+	
+	/** Passes a reference of an object of class {@link TopologyController} to the parent class */
+	public void setTopologyController(TopologyController topologyController) {
+		super.setTopologyController(topologyController);
 	}
 
 }

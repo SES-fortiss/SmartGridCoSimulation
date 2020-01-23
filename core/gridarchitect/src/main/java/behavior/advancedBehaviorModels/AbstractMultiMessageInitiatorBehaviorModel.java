@@ -35,7 +35,6 @@ import faultStrategy.requests.GetLastHistoryRequestContent;
 public class AbstractMultiMessageInitiatorBehaviorModel extends BehaviorModel {
 
 	public MultiRequestContainer multiRequest;
-
 	protected AnswerContent answerContentToSend;
 	protected boolean debugging = false;
 
@@ -180,7 +179,7 @@ public class AbstractMultiMessageInitiatorBehaviorModel extends BehaviorModel {
 					if (resultingAnswer != null)
 					{
 						// needs to be added to history otherwise there might be no answer in history
-						this.actor.messageHistory.addHistoryEntry(this.getActualTimeStep(), resultingAnswer);
+						this.actor.messageHistory.addHistoryEntry(actor.getCurrentTimeStep(), resultingAnswer);
 					}
 
 					setChildFinished(error.getSender());
@@ -208,7 +207,7 @@ public class AbstractMultiMessageInitiatorBehaviorModel extends BehaviorModel {
 						if (resultingAnswer != null)
 						{
 							// needs to be added to history otherwise there might be no answer in history
-							this.actor.messageHistory.addHistoryEntry(this.getActualTimeStep(), resultingAnswer);
+							this.actor.messageHistory.addHistoryEntry(actor.getCurrentTimeStep(), resultingAnswer);
 						}
 
 						setChildFinished(error.getSender());
@@ -395,9 +394,9 @@ public class AbstractMultiMessageInitiatorBehaviorModel extends BehaviorModel {
 		}
 
 		if (myInitiatorBehaviorModel == null)
-			myBehaviorModel.handleRequest(multiRequest.getCurrentRequestContent(), getActualTimeStep());
+			myBehaviorModel.handleRequest(multiRequest.getCurrentRequestContent(), this.actor.getCurrentTimeStep());
 		else
-			myInitiatorBehaviorModel.handleRequest(multiRequest.getCurrentRequestContent(), getActualTimeStep());
+			myInitiatorBehaviorModel.handleRequest(multiRequest.getCurrentRequestContent(), this.actor.getCurrentTimeStep());
 
 	}
 
@@ -484,7 +483,7 @@ public class AbstractMultiMessageInitiatorBehaviorModel extends BehaviorModel {
 					answerContentToSend = myInitiatorBehaviorModel.returnAnswerContentToSend();
 					ConstantLogger.logFinalAnswer(answerContentToSend);
 
-					ConstantLogger.writeResultToFile();
+					ConstantLogger.writeResultToFile(actor.getCurrentTimeStep());
 
 					myInitiatorBehaviorModel.clearForNextTimeStep();
 

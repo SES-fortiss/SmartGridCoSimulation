@@ -9,8 +9,6 @@
 
 package resultLogger;
 
-import resultLogger.utils.ConstantResultLogger;
-import topology.ActorTopology;
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.advancedMessages.ForwardActorFailureAnswerContent;
 import akka.advancedMessages.ForwardActorFailureRequestContent;
@@ -18,19 +16,24 @@ import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.BasicRequest;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import configuration.GridArchitectConfiguration;
 import faultStrategy.requests.HistoryRequestContent;
+import resultLogger.utils.ConstantResultLogger;
+import topology.ActorTopology;
 
 public class ConstantLogger {
 	private static ConstantResultLogger myResultLogger;
+	
+	public ConstantLogger() {
+		
+	}
 
-	public synchronized static void writeResultToFile() {
+	public synchronized static void writeResultToFile(int currentTimeStep) {
 		if (GridArchitectConfiguration.logResults && myResultLogger != null)
 		{
 			myResultLogger.writeResult(myResultLogger.timeStep_MessageCounter, myResultLogger.timeStep_ErrorAnswerContents,
 					myResultLogger.timeStep_FinalAnswerContents, myResultLogger.timeStep_HistoryRequests, myResultLogger.timeStep_HistoryLookupMessages,
-					GlobalTime.currentTimeStep, myResultLogger.timeStep_StrategyUsages);
+					currentTimeStep, myResultLogger.timeStep_StrategyUsages);
 
 			while (myResultLogger.finishedWriting == false)
 			{

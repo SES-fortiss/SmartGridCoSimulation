@@ -22,12 +22,14 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
 import akka.basicMessages.AnswerContent;
 import memap.components.prototypes.Producer;
+import memap.controller.TopologyController;
 import memap.helperOPCua.BasicClient;
 import memap.messages.extension.NetworkType;
 import memap.messages.planning.VolatileProducerMessage;
 
 public class ClientVolatileProducer extends Producer {
-	public double productionProfile[] = new double[nStepsMPC];
+	
+	public double productionProfile[];
 	public List<UaMonitoredItem> itemsProduction;
 	public NetworkType networkType;
 	double opCost;
@@ -57,6 +59,9 @@ public class ClientVolatileProducer extends Producer {
 		this.networkType = networkType;
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
+		
+		// Initialization delayed until after topologyConfig initialization
+		productionProfile = new double[topologyConfig.getNrStepsMPC()];
 
 		// subscribe to the Value attribute of the server's CurrentTime node
 		ReadValueId readProductionId = new ReadValueId(currentProductionId, AttributeId.Value.uid(), null,
@@ -118,5 +123,11 @@ public class ClientVolatileProducer extends Producer {
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
 		return volatileProducerMessage;
+	}
+	
+	/** Passes a reference of an object of class {@link TopologyController} to the parent class */
+	@Override
+	public void setTopologyController(TopologyController topologyController) {
+		super.setTopologyController(topologyController);
 	}
 }

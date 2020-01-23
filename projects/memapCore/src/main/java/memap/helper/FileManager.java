@@ -1,6 +1,7 @@
 package memap.helper;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -48,4 +49,34 @@ public class FileManager {
 		return br;
 	}
 
+	/**
+	 * Ensures the necessary directory hierarchy of file exists
+	 * 
+	 * @param file an object of class {@linkplain File}
+	 */
+	public static synchronized void setUpDirectoryHierarchy(File file) {
+
+		File parent = file.getParentFile();
+
+		if (!parent.exists()) {
+			if (!parent.mkdirs()) {
+				throw new IllegalStateException("Set up of " + file + " directory hierarchy failed");
+			} else {
+				file.setWritable(true);
+				file.setReadable(true);
+			}
+		}
+
+	}
+
+	/**
+	 * Ensures the necessary directory hierarchy of the file that represents
+	 * filename exists
+	 * 
+	 * @param filename the absolute path to a file
+	 */
+	public static synchronized void setUpDirectoryHierarchy(String filename) {
+		File file = new File(filename);
+		setUpDirectoryHierarchy(file);
+	}
 }

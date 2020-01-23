@@ -12,11 +12,11 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 import memap.controller.BuildingController;
 import memap.controller.OpcUaBuildingController;
 import memap.controller.TopologyController;
-import memap.main.ConfigurationMEMAP.MEMAPLogging;
-import memap.main.ConfigurationMEMAP.OptHierarchy;
-import memap.main.ConfigurationMEMAP.OptimizationCriteria;
-import memap.main.ConfigurationMEMAP.Optimizer;
-import memap.main.ConfigurationMEMAP.ToolUsage;
+import memap.helper.MEMAPLogging;
+import memap.helper.configurationOptions.OptHierarchy;
+import memap.helper.configurationOptions.OptimizationCriteria;
+import memap.helper.configurationOptions.Optimizer;
+import memap.helper.configurationOptions.ToolUsage;
 
 /**
  * 
@@ -59,10 +59,10 @@ public class JettyStart {
 	 */
 
 	public void run(JsonArray endpointValues) {
-		topologyMemapOn = new TopologyController(OptHierarchy.MEMAP, Optimizer.MILP, OptimizationCriteria.EUR,
-				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY, "MemapOn", 5, 96, 7, false , 0, "ELECTRICITYPRICEEXAMPLE", 0, 9999);
-		topologyMemapOff = new TopologyController(OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
-				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY, "MemapOn", 5, 96, 7, false, 0, "ELECTRICITYPRICEEXAMPLE", 0, 9999);
+		topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILP, OptimizationCriteria.EUR,
+				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
+		topologyMemapOff = new TopologyController("MemapOn", OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
+				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
 		errorCode = new JsonObject();
 
 		/*
@@ -70,7 +70,7 @@ public class JettyStart {
 		 * generates a building controller for every jsonEndpoint,jsonNodes tuple
 		 * Buildings get attached to the topology
 		 */
-		System.out.println("Anzahl Gebäude: " + endpointValues.size());
+		System.out.println("Number of buildings: " + endpointValues.size());
 		for (int i = 0; i < endpointValues.size(); i++) {
 			JsonObject jsonEndpoint = (JsonObject) endpointValues.get(i);
 			try {
@@ -82,12 +82,13 @@ public class JettyStart {
 					System.err.println("Topology could not be deserialized");
 					e.printStackTrace();
 				}
-				System.out.println("Gebäude " + i + " wird hinzugefügt....");
-				BuildingController sampleBuilding = new OpcUaBuildingController(jsonEndpoint, jsonNodes);
+				System.out.println("Buiding " + i + " will be added...");
+				BuildingController sampleBuilding = new OpcUaBuildingController(topologyMemapOn, jsonEndpoint, jsonNodes);
+				BuildingController sampleBuilding2 = new OpcUaBuildingController(topologyMemapOff, jsonEndpoint, jsonNodes);
 				topologyMemapOn.attach(sampleBuilding);
-				topologyMemapOff.attach(sampleBuilding);
+				topologyMemapOff.attach(sampleBuilding2);
 				errorCode.put((String) jsonEndpoint.get("name"), 0);
-				System.out.println("Gebäude " + i + " wurde hinzugefügt....");
+				System.out.println("Building " + i + " was added...");
 
 			} catch (IllegalStateException e2) {
 				System.err.println("WARNING: Failed to create Client. Building has not been initialised");
