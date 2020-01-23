@@ -60,9 +60,9 @@ public class JettyStart {
 
 	public void run(JsonArray endpointValues) {
 		topologyMemapOn = new TopologyController(OptHierarchy.MEMAP, Optimizer.MILP, OptimizationCriteria.EUR,
-				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY, "MemapOn", 5, 96, 7, "ELECTRICITYPRICEEXAMPLE", 0, 9999);
+				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY, "MemapOn", 5, 96, 7, false , 0, "ELECTRICITYPRICEEXAMPLE", 0, 9999);
 		topologyMemapOff = new TopologyController(OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
-				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY, "MemapOn", 5, 96, 7, "ELECTRICITYPRICEEXAMPLE", 0, 9999);
+				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY, "MemapOn", 5, 96, 7, false, 0, "ELECTRICITYPRICEEXAMPLE", 0, 9999);
 		errorCode = new JsonObject();
 
 		/*

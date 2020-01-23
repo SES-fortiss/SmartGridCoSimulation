@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import memap.examples.ExampleFiles;
-import memap.main.TopologyConfig;
 import simulation.SimulationStarter;
 
 /**
@@ -18,6 +17,8 @@ import simulation.SimulationStarter;
 public class EnergyPrices {
 	/** Electricity price per KWp */
 	private ArrayList<Double> electricityPrices;
+	/** mpcSteps MPC horizon */
+	private int mpcSteps;
 
 	/**
 	 * Constructor with double value. Creates a array list with all its entries
@@ -29,9 +30,10 @@ public class EnergyPrices {
 	 *                    global values are not available when this object is
 	 *                    created.
 	 */
-	public EnergyPrices(double MarketPrice) {
+	public EnergyPrices(double MarketPrice, int mpcSteps) {
+		this.mpcSteps = mpcSteps;
 		electricityPrices = new ArrayList<Double>();
-		for (int i = 0; i < TopologyConfig.N_STEPS * 2; i++) {
+		for (int i = 0; i < mpcSteps * 2; i++) {
 			electricityPrices.add(MarketPrice);
 		}
 	}
@@ -42,7 +44,8 @@ public class EnergyPrices {
 	 * 
 	 * @param MarketPriceCSV a path to a CSV file
 	 */
-	public EnergyPrices(String MarketPriceCSV) {
+	public EnergyPrices(String MarketPriceCSV, int mpcSteps) {
+		this.mpcSteps = mpcSteps;
 		setEnergyPrices(MarketPriceCSV);
 	}
 
@@ -55,7 +58,8 @@ public class EnergyPrices {
 		try {
 			if (csvFile.isEmpty()) {
 				readElectricityPrices(getBuffer("ELECTRICITYPRICEEXAMPLE"));
-				System.err.println("Variable market price selected but not input file was provided. Using example file");
+				System.err
+						.println("Variable market price selected but not input file was provided. Using example file");
 			} else {
 				readElectricityPrices(getBuffer(csvFile));
 			}
@@ -144,8 +148,8 @@ public class EnergyPrices {
 			y[i] = originalValues.get(i);
 		}
 
-		double[] xi = new double[TopologyConfig.N_STEPS];
-		for (int j = 0; j < TopologyConfig.N_STEPS; j++) {
+		double[] xi = new double[mpcSteps];
+		for (int j = 0; j < mpcSteps; j++) {
 			xi[j] = j * MyTimeUnit.stepLength(TimeUnit.HOURS);
 		}
 

@@ -43,35 +43,11 @@ public class TopologyController extends TopologyConfig {
 	public List<BuildingController> managedBuildings = new ArrayList<BuildingController>();
 
 	public ActorTopology top;
-	
-	public TopologyController(OptHierarchy optHierarchy, Optimizer optimizer, OptimizationCriteria optimizationCriteria,
-			ToolUsage toolUsage, MEMAPLogging memapLogging, String name, int nrStepsMPC, int timeStepsPerDay,
-			int nrDays, String energyPriceFile, int portUndefined, int predUncertainty) {
-		
-		configureGlobalParameters(optHierarchy, optimizer, optimizationCriteria, toolUsage, memapLogging, name,
-				nrStepsMPC, timeStepsPerDay, nrDays, portUndefined, predUncertainty);
-		
-		TopologyConfig.energyPrices = new EnergyPrices(energyPriceFile);
-		
-	}
-	
 
-	
 	public TopologyController(OptHierarchy optHierarchy, Optimizer optimizer, OptimizationCriteria optimizationCriteria,
 			ToolUsage toolUsage, MEMAPLogging memapLogging, String name, int nrStepsMPC, int timeStepsPerDay,
-			int nrDays, double energyPriceValue, int portUndefined, int predUncertainty) {
-		
-		configureGlobalParameters(optHierarchy, optimizer, optimizationCriteria, toolUsage, memapLogging, name,
-				nrStepsMPC, timeStepsPerDay, nrDays, portUndefined, predUncertainty);
-		
-		TopologyConfig.energyPrices = new EnergyPrices(energyPriceValue);
-		
-	}
-	
-	
-	private void configureGlobalParameters(OptHierarchy optHierarchy, Optimizer optimizer,
-			OptimizationCriteria optimizationCriteria, ToolUsage toolUsage, MEMAPLogging memapLogging, String name,
-			int nrStepsMPC, int timeStepsPerDay, int nrDays, int portUndefined, int predUncertainty) {
+			int nrDays, boolean isFixedPrice, double fixedPrice, String variablePriceFile, int portUndefined,
+			int predUncertainty) {
 
 		// Configure MEMAP
 		chosenOptimizer = optimizer;
@@ -89,6 +65,13 @@ public class TopologyController extends TopologyConfig {
 		calcNrSteps();
 		PORT_UNDEFINED = portUndefined;
 		PREDICTION_UNCERTAINTY = predUncertainty;
+
+		if (isFixedPrice) {
+			TopologyConfig.energyPrices = new EnergyPrices(fixedPrice, nrStepsMPC);
+		} else {
+			TopologyConfig.energyPrices = new EnergyPrices(variablePriceFile, nrStepsMPC);
+			;
+		}
 	}
 
 	public void attach(BuildingController buildingController) {

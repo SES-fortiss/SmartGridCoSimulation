@@ -32,8 +32,8 @@ public class GuiController {
 
 	public GuiController(String pathToConfigJson) throws FileNotFoundException {
 
-		FileReader reader = new FileReader(pathToConfigJson);		
-		JsonParser jsonParser = new JsonParser();	
+		FileReader reader = new FileReader(pathToConfigJson);
+		JsonParser jsonParser = new JsonParser();
 		JsonObject configJson = (JsonObject) jsonParser.parse(reader);
 
 		this.top = createTopology(configJson);
@@ -45,9 +45,9 @@ public class GuiController {
 	}
 
 	private TopologyController createTopology(JsonObject topologyConfig) {
-		
-		GsonBuilder gsonBuilder = new GsonBuilder();		
-		gsonBuilder.registerTypeAdapter(TopologyController.class, new TopologyControllerDeserializer());	
+
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(TopologyController.class, new TopologyControllerDeserializer());
 		Gson gson = gsonBuilder.create();
 
 		TopologyController top = gson.fromJson(topologyConfig, TopologyController.class);
@@ -61,41 +61,31 @@ public class GuiController {
 		@Override
 		public TopologyController deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context)
 				throws JsonParseException {
-			
+
 			JsonObject jObject = (JsonObject) jsonElement;
 
 			OptHierarchy optHierarchy = (jObject.get("memapON").getAsBoolean() == true) ? OptHierarchy.MEMAP
 					: OptHierarchy.BUILDING;
 			Optimizer optimizer = (jObject.get("optimizer").getAsString().contentEquals("lp")) ? Optimizer.LP
 					: Optimizer.MILP;
-			OptimizationCriteria optimizationCriteria = 
-					(jObject.get("optCriteria").getAsString().contentEquals("cost"))
+			OptimizationCriteria optimizationCriteria = (jObject.get("optCriteria").getAsString().contentEquals("cost"))
 					? OptimizationCriteria.EUR
 					: OptimizationCriteria.CO2;
-			
-			String loggingST = jObject.get("loggingMode").getAsString();
-			
-			MEMAPLogging loggingMode = MEMAPLogging.ALL;
-			if (loggingST.equals("fileLogs")) loggingMode = MEMAPLogging.FILES;
-			if (loggingST.equals("resultLogs")) loggingMode = MEMAPLogging.RESULTS_ONLY;
-			
-			boolean fixedPrice = jObject.get("fixedPrice").getAsBoolean();
-			
-			// Creating topologyController
-			// TODO simplify
-			// a suggestion: using FactoryPattern (without calling explicit constructors) - for instance		
-			// top = TopologyController.createTopology("fixedMarketPrice").setToolUsage(...).setLoggingMode(...).etc
-			// the constructor inside TopologyController would be private
-			TopologyController top = 
-					(fixedPrice)
-					? new TopologyController(optHierarchy, optimizer, optimizationCriteria, ToolUsage.PLANNING,loggingMode, 
-					jObject.get("simulationName").getAsString(), jObject.get("steps").getAsInt(),
-					jObject.get("length").getAsInt(), jObject.get("days").getAsInt(), jObject.get("fixedMarketPrice").getAsDouble(), 0, 0)					
-					: new TopologyController(optHierarchy, optimizer, optimizationCriteria, ToolUsage.PLANNING,
-					loggingMode, jObject.get("simulationName").getAsString(), jObject.get("steps").getAsInt(),
-					jObject.get("length").getAsInt(), jObject.get("days").getAsInt(), jObject.get("marketPriceFile").getAsString(), 0, 0);
 
-			
+			String loggingST = jObject.get("loggingMode").getAsString();
+
+			MEMAPLogging loggingMode = MEMAPLogging.ALL;
+			if (loggingST.equals("fileLogs"))
+				loggingMode = MEMAPLogging.FILES;
+			if (loggingST.equals("resultLogs"))
+				loggingMode = MEMAPLogging.RESULTS_ONLY;
+
+			TopologyController top = new TopologyController(optHierarchy, optimizer, optimizationCriteria,
+					ToolUsage.PLANNING, loggingMode, jObject.get("simulationName").getAsString(),
+					jObject.get("steps").getAsInt(), jObject.get("length").getAsInt(), jObject.get("days").getAsInt(),
+					jObject.get("fixedPrice").getAsBoolean(), jObject.get("fixedMarketPrice").getAsDouble(),
+					jObject.get("marketPriceFile").getAsString(), 0, 0);
+
 			// Attaching buildings
 			JsonArray buildingPathList = (JsonArray) jObject.get("descriptorFiles");
 
@@ -107,7 +97,7 @@ public class GuiController {
 					FileReader reader = new FileReader(path);
 					JsonParser jsonParser = new JsonParser();
 					JsonObject buildingConfig = (JsonObject) jsonParser.parse(reader);
-					
+
 					GsonBuilder gsonBuilder = new GsonBuilder();
 					gsonBuilder.registerTypeAdapter(BuildingController.class, new BuildingControllerDeserializer());
 					Gson gson = gsonBuilder.create();
@@ -129,7 +119,7 @@ public class GuiController {
 		@Override
 		public BuildingController deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context)
 				throws JsonParseException {
-			
+
 			JsonObject jObject = (JsonObject) jsonElement;
 
 			// Creating the building
@@ -150,30 +140,30 @@ public class GuiController {
 			gsonBuilder.registerTypeAdapter(CSVStorage.class, new CSVStorageDeserializer());
 			gsonBuilder.registerTypeAdapter(CSVConsumer.class, new CSVConsumerDeserializer());
 			Gson gson = gsonBuilder.create();
-			
+
 			for (JsonElement couplerEl : couplers) {
 				JsonObject couplerConfig = (JsonObject) couplerEl;
 				CSVCoupler coupler = gson.fromJson(couplerConfig, CSVCoupler.class);
 				building.attach(coupler);
 			}
-			
+
 			for (JsonElement producersEl : producers) {
 				JsonObject producerConfig = (JsonObject) producersEl;
 				CSVProducer producer = gson.fromJson(producerConfig, CSVProducer.class);
 				building.attach(producer);
 			}
-			
+
 			for (JsonElement volatileProducersEl : volatileProducers) {
 				JsonObject volatileProducerConfig = (JsonObject) volatileProducersEl;
 				CSVVolatileProducer volatileProducer = gson.fromJson(volatileProducerConfig, CSVVolatileProducer.class);
 				building.attach(volatileProducer);
-			}		
+			}
 
 			for (JsonElement storageEl : storages) {
 				JsonObject storageConfig = (JsonObject) storageEl;
 				CSVStorage storage = gson.fromJson(storageConfig, CSVStorage.class);
 				building.attach(storage);
-			}			
+			}
 
 			for (JsonElement consumerEl : consumers) {
 				JsonObject consumerConfig = (JsonObject) consumerEl;
@@ -199,7 +189,8 @@ public class GuiController {
 			return new CSVCoupler(jObject.get("name").getAsString(), jObject.get("minimumPower").getAsDouble(),
 					jObject.get("maximumPower").getAsDouble(), jObject.get("efficiencyPrimary").getAsDouble(),
 					jObject.get("efficiencySecondary").getAsDouble(), primaryNetworkType, secondaryNetworkType,
-					jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);		}
+					jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
+		}
 	}
 
 	class CSVProducerDeserializer implements JsonDeserializer<CSVProducer> {
