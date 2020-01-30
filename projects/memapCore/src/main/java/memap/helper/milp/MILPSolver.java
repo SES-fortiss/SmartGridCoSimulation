@@ -2,6 +2,8 @@ package memap.helper.milp;
 
 import static memap.main.ConfigurationMEMAP.chosenMEMAPLogging;
 
+import java.io.File;
+import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -223,7 +225,8 @@ public class MILPSolver {
 		 * Maybe we need this later, but for now this is ok as it is.
 		 * 
 		
-		String location = System.getProperty("user.dir") + File.separator + "tmp";
+		
+		String location = System.getProperty("user.dir") + File.separator + "res";
 		System.out.println("Setting java libraries to: " + location);	
 		
 		try {
@@ -243,7 +246,7 @@ public class MILPSolver {
 			}
 		    
 		    usrPathsField.set(null, newPaths);
-		    paths = (String[]) usrPathsField.get(null);
+		    paths = (String[]) usrPathsField.get(null);		    		    
 		    
 		    String tmp = "";
 		    for (String string : paths) {
@@ -252,6 +255,8 @@ public class MILPSolver {
 		    System.out.println("current paths " + tmp);
 		    System.out.println("other way: " + System.getProperty("java.library.path"));
 		    
+		    
+		 // second way
 		    System.setProperty( "java.library.path", location );
 		    Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
 		    fieldSysPath.setAccessible( true );
@@ -259,10 +264,13 @@ public class MILPSolver {
 		    
 		    System.out.println("other way after adaptation: " + System.getProperty("java.library.path"));
 		    
+		    System.load("/usr/lib/liblpsolve55.so");
+		    
+		    
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		*/	
+			*/
 	}
 }

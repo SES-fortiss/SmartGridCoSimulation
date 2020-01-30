@@ -1,17 +1,21 @@
 {
-  "battery": [
-  ],
+  "battery": [],
   "chp": [    
   	{ 
-      "installedPowerId": "ns=2;i=35",
+	  "minPowerId": "ns=2;i=34",
+      "maxPowerId": "ns=2;i=35",
       "effHeatId": "ns=2;i=32",
-      "effElecId": "ns=2;i=33"
+      "effElecId": "ns=2;i=33",
+	  "opCostId": "ns=2;i=61",
+	  "costCO2Id": "ns=2;i=62"
     }
     ],
   "consumer": [
     {
       "heatConsumptionId": "ns=2;i=10",
-      "powerConsumptionId": "ns=2;i=14"
+      "heatForecast": "ns=2;i=56",
+	  "powerConsumptionId": "ns=2;i=14",
+      "powerForecast": "ns=2;i=58"
     }
   ],
   "gasboiler": [],
@@ -19,18 +23,24 @@
   "pv": [],
   "solarthermic": [
       { 
-      "installedPowerId" : "ns=2;i=25",
+  	  "minPowerId" : "ns=2;i=65",
+      "maxPowerId" : "ns=2;i=25",
       "effId": "ns=2;i=23",
       "productionId": "ns=2;i=27"
+	  "opCostId": "ns=2;i=63",
+	  "costCO2Id": "ns=2;i=64"
     }
     ],
   "thermalstorage": [    
   	{ 
-      "capacityId" : "ns=2;i=43",
-      "maxChargingId": "ns=2;i=45",
-      "maxDischargingId": "ns=2;i=46",
-      "effInId": "ns=2;i=42",
-      "effOutId": "ns=2;i=42"
+      "capacityId" : "ns=2;i=44",
+	  "stateOfChargeId": "ns=2;i=51",
+      "maxChargingId": "ns=2;i=46",
+      "maxDischargingId": "ns=2;i=47",
+      "effInId": "ns=2;i=43",
+      "effOutId": "ns=2;i=43",
+ 	  "opCostId": "ns=2;i=59",
+	  "costCO2Id": "ns=2;i=60"
     }
     ]
 }

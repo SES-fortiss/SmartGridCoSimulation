@@ -212,8 +212,8 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId maxDischargingId = NodeId.parse((String) battery.get("maxDischargingId"));
 							NodeId effInId = NodeId.parse((String) battery.get("effInId"));
 							NodeId effOutId = NodeId.parse((String) battery.get("effOutId"));
-							NodeId opCostId = NodeId.parse(String.valueOf(0.0001));
-							NodeId costCO2Id = NodeId.parse(String.valueOf(0.0001));
+							NodeId opCostId = NodeId.parse((String) battery.get("opCostId"));
+							NodeId costCO2Id = NodeId.parse((String) battery.get("costCO2Id"));
 							attach(new ClientStorage(client, "battery" + i, capacityId, stateOfChargeId, maxChargingId,
 									maxDischargingId, effInId, effOutId, NetworkType.ELECTRICITY, opCostId, costCO2Id,
 									0));
@@ -295,7 +295,9 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId opCostId = NodeId.parse((String) heatpump.get("opCostId"));
 							NodeId costCO2Id = NodeId.parse((String) heatpump.get("costCO2Id"));
 							attach(new ClientCoupler(client, "heatpump" + i, minPowerId, maxPowerId, effHeatId,
-									effElecId, NetworkType.HEAT, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0));							System.out.println("Added heatpump to " + name);
+									effElecId, NetworkType.HEAT, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0));							
+							System.out.println("Added heatpump to " + name);
+							
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add heatpump " + i + " to building " + name
 									+ ".\nPlease check " + heatpumps.toString());
@@ -356,8 +358,8 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId maxDischargingId = NodeId.parse((String) thermalStorage.get("maxDischargingId"));
 							NodeId effInId = NodeId.parse((String) thermalStorage.get("effInId"));
 							NodeId effOutId = NodeId.parse((String) thermalStorage.get("effOutId"));
-							NodeId opCostId = NodeId.parse(String.valueOf(0.0001));
-							NodeId costCO2Id = NodeId.parse(String.valueOf(0.0001));
+							NodeId opCostId = NodeId.parse((String) thermalStorage.get("opCostId"));
+							NodeId costCO2Id = NodeId.parse((String) thermalStorage.get("costCO2Id"));
 							attach(new ClientStorage(client, "thermalstorage" + 1, capacityId, stateOfChargeId,
 									maxChargingId, maxDischargingId, effInId, effOutId, NetworkType.HEAT, opCostId,
 									costCO2Id, 0));

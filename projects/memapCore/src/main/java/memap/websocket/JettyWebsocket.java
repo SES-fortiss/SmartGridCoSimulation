@@ -34,7 +34,10 @@ public abstract class JettyWebsocket
         context.addServlet(wsHolder,"/echo");
         
         // Add default servlet (to serve the html/css/js)
-        URL urlStatics = Thread.currentThread().getContextClassLoader().getResource("webpage/index.html");
+        
+        System.out.println(Thread.currentThread().getContextClassLoader().getResource("."));
+        
+        URL urlStatics = Thread.currentThread().getContextClassLoader().getResource("resources/webpage/index.html");
         Objects.requireNonNull(urlStatics,"Unable to find index.html in classpath");
         String urlBase = urlStatics.toExternalForm().replaceFirst("/[^/]*$","/");
         ServletHolder defHolder = new ServletHolder("default",new DefaultServlet());

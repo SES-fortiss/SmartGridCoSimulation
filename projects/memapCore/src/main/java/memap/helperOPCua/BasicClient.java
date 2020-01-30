@@ -38,6 +38,8 @@ public class BasicClient {
 			return value;
 		} else {
 			System.out.println("This is not a number!");
+			System.out.println(obj.toString());
+			System.out.println(nodeId.toString());
 		}
 		return null;
 	}
