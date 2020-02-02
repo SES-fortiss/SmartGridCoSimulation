@@ -95,7 +95,7 @@ public class SauterReader implements MemapClient{
 	
 	
 	
-	//Displayname of data points with additional device efficiiencies
+	//Display name of data points with additional device efficiencies
     
 	
 	
