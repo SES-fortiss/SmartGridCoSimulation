@@ -10,5 +10,7 @@ Use the following command to clone this repository:
 ``
 git clone https://github.com/SES-fortiss/SmartGridCoSimulation.git
 ``
+
 To get recent information about the project visit:
+
 https://memap-projekt.de/
