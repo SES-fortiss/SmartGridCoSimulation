@@ -1,7 +1,7 @@
 package linprogMPC.components;
 
 import java.util.LinkedList;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+
 import com.google.gson.Gson;
 
 import akka.advancedMessages.ErrorAnswerContent;
@@ -9,7 +9,6 @@ import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
-import linprogMPC.OPCUA.ReadClient;
 import linprogMPC.messages.BuildingSpec;
 import linprogMPC.messages.Consumption;
 import linprogMPC.messages.OptimizationResult;

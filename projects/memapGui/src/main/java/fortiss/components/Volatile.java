@@ -6,9 +6,9 @@ package fortiss.components;
  */
 public class Volatile {
 	private String name;
-	private int index;
 	private String networkType; // Values: Heat or Electricity
-	private double power;
+	private double minimumPower;
+	private double maximumPower;
 	private String forecastFile;
 	private double cost;
 	private double coEmission;
@@ -17,18 +17,19 @@ public class Volatile {
 	 * Constructor for class Volatile
 	 * 
 	 * @param name         an alphanumeric string
-	 * @param index        a positive integer
 	 * @param networkType  a string: Heat or Electricity
-	 * @param power        a positive double
+	 * @param minimumPower        a positive double [kW]
+	 * @param maximumPower        a positive double [kW]
 	 * @param forecastFile a path to an existing file
-	 * @param cost         a positive double
-	 * @param coEmission          CO2 Emissions measured in [g/kWh]
+	 * @param cost         a positive double [EUR]
+	 * @param coEmission   CO2 Emissions measured in [g/kWh]
 	 */
-	public Volatile(String name, int index, String networkType, double power, String forecastFile, double cost, double coEmission) {
+	public Volatile(String name, String networkType, double minimumPower, double maximumPower, String forecastFile, double cost,
+			double coEmission) {
 		this.setName(name);
-		this.setIndex(index);
 		this.setNetworkType(networkType);
-		this.setPower(power);
+		this.setMinimumPower(minimumPower);
+		this.setMaximumPower(maximumPower);
 		this.setForecastFile(forecastFile);
 		this.setCost(cost);
 		this.setCOEmission(coEmission);
@@ -50,12 +51,20 @@ public class Volatile {
 		this.networkType = networkType;
 	}
 
-	public double getPower() {
-		return power;
+	public double getMinimumPower() {
+		return minimumPower;
 	}
 
-	public void setPower(double power) {
-		this.power = power;
+	public void setMinimumPower(double minimumPower) {
+		this.minimumPower = minimumPower;
+	}
+	
+	public double getMaximumPower() {
+		return maximumPower;
+	}
+
+	public void setMaximumPower(double maximumPower) {
+		this.maximumPower = maximumPower;
 	}
 
 	public String getForecastFile() {
@@ -74,14 +83,6 @@ public class Volatile {
 		this.cost = cost;
 	}
 
-	public int getIndex() {
-		return index;
-	}
-
-	public void setIndex(int index) {
-		this.index = index;
-	}
-	
 	public double getCOEmission() {
 		return coEmission;
 	}

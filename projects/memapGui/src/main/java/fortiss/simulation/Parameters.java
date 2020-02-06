@@ -2,6 +2,8 @@ package fortiss.simulation;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import fortiss.gui.Designer;
 import fortiss.media.Icon;
@@ -20,50 +22,80 @@ public class Parameters {
 			add("co2");
 		}
 	};
+	
+	/** optimizerOptions List of optimizers available */
+	@SuppressWarnings("serial")
+	private transient ArrayList<String> optimizerOptions = new ArrayList<String>() {
+		{
+			add("lp");
+			add("milp");
+		}
+	};
+	
+	/** loggingOptions List of logging modes available */
+	@SuppressWarnings("serial")
+	private transient ArrayList<String> loggingOptions = new ArrayList<String>() {
+		{
+			add("resultLogs");
+			add("fileLogs");
+			add("allLogs");
+		}
+	};
 
 	/** paths to descriptor files */
-	private ArrayList<File> descriptorFiles = new  ArrayList<File>();
+	private Set<File> descriptorFiles = new HashSet<File>();
+	/** Simulation name */
+	private String simulationName;
 	/** length MemapSimulation steps. An integer */
 	private int length;
 	/** steps MPC horizon. An integer */
 	private int steps;
 	/** days Number of days to be simulated */
 	private int days;
-	/** weather a boolean. Good weather (true)/ bad weather(false) */
-	private boolean weather;
-	/** price a boolean. Fixed (true)/ volatile (false) */
-	private boolean price;
+	/** fixedPrice a boolean. Fixed (true)/ variable (false) */
+	private boolean fixedPrice;
+	/** path to a file that describe variability in market prices */
+	private String marketPriceFile;
+	/** A fixed value for market price */
+	private double fixedMarketPrice = 0;
 	/** memapON a boolean. On(true)/ off (false) */
 	private boolean memapON;
 	/** optCriteria a String. Optimization criteria: {cost, co2} */
 	private String optCriteria;
-	/**
-	 * runInServer a boolean. Simulation is run in the server if <code>true</code>
-	 */
-	private boolean runInServer;
+	/** optimizer a String. Optimizer: {LP, MILP} */
+	private String optimizer;
+	/** loggingMode a String. loggingMode: {allLogs, fileLogs, resultLogs} */
+	private String loggingMode;
+	/** lastSavedFile remembers the last save of a file this allows to reset the session during next startup */
+	private String lastSavedFile;
 
 	/**
 	 * Constructor for class Parameters
 	 */
 	public Parameters() {
-		setLength(96);
-		setSteps(24);
+		setSimulationName("InteractiveMEMAP");
+		setLength(24);
+		setSteps(2);
 		setDays(1);
-		setWeather(true);
-		setPrice(true);
+		setFixedPrice(true);
+		setFixedMarketPrice(0.275);
+		setMarketPriceFile("");
+		setOptimizer(optimizerOptions.get(0));
 		setMemapON(false);
-		setRunInServer(false);
 		setOptCriteria(criteriaOptions.get(0));
+		setLoggingMode(loggingOptions.get(0));
+		setLastSavedFile("");
+		clearDescriptorFile();
 	}
 
-	public void setRunInServer(boolean runInServer) {
-		this.runInServer = runInServer;
+	public String getSimulationName() {
+		return simulationName;
 	}
 
-	public boolean getRunInServer() {
-		return runInServer;
+	public void setSimulationName(String simulationName) {
+		this.simulationName = simulationName;
 	}
-
+	
 	public int getLength() {
 		return length;
 	}
@@ -88,20 +120,32 @@ public class Parameters {
 		this.days = days;
 	}
 
-	public boolean isWeather() {
-		return weather;
+	public boolean isFixedPrice() {
+		return fixedPrice;
 	}
 
-	public void setWeather(boolean weather) {
-		this.weather = weather;
+	public void setFixedPrice(boolean price) {
+		this.fixedPrice = price;
 	}
 
-	public boolean isPrice() {
-		return price;
+	public String getOptimizer() {
+		return optimizer;
 	}
 
-	public void setPrice(boolean price) {
-		this.price = price;
+	private void setOptimizer(String optimizer) {
+		this.optimizer = optimizer;
+	}
+	
+	public void nextOptimizer() {
+		int index = optimizerOptions.indexOf(optimizer);
+
+		if (index == optimizerOptions.size() - 1) {
+			setOptimizer(optimizerOptions.get(0));
+			Designer.parameterPanel.lbOptimizer2.setIcon(Icon.optimizer.get(0));
+		} else {
+			setOptimizer(optimizerOptions.get(index + 1));
+			Designer.parameterPanel.lbOptimizer2.setIcon(Icon.optimizer.get(index + 1));
+		}
 	}
 
 	public boolean isMemapON() {
@@ -116,7 +160,7 @@ public class Parameters {
 		return optCriteria;
 	}
 
-	public void setOptCriteria(String optCriteria) {
+	private void setOptCriteria(String optCriteria) {
 		this.optCriteria = optCriteria;
 	}
 
@@ -132,11 +176,59 @@ public class Parameters {
 		}
 	}
 
-	public ArrayList<File> getDescriptorFiles() {
+	public Set<File> getDescriptorFiles() {
 		return descriptorFiles;
 	}
 
 	public void addDescriptorFile(File descriptorFile) {
 		descriptorFiles.add(descriptorFile);
+	}
+	
+	public void clearDescriptorFile() {
+		descriptorFiles.clear();
+	}
+
+	public String getMarketPriceFile() {
+		return marketPriceFile;
+	}
+
+	public void setMarketPriceFile(String marketPriceFile) {
+		this.marketPriceFile = marketPriceFile;
+	}
+
+	public double getFixedMarketPrice() {
+		return fixedMarketPrice;
+	}
+
+	public void setFixedMarketPrice(double fixedMarketPrice) {
+		this.fixedMarketPrice = fixedMarketPrice;
+	}
+
+	public String getLoggingMode() {
+		return loggingMode;
+	}
+
+	private void setLoggingMode(String loggingMode) {
+		this.loggingMode = loggingMode;
+	}
+	
+	public void nextLoggingMode() {
+		int index = loggingOptions.indexOf(loggingMode);
+
+		if (index == loggingOptions.size() - 1) {
+			setLoggingMode(loggingOptions.get(0));
+			Designer.parameterPanel.lbLoggingMode2.setIcon(Icon.loggingMode.get(0));
+		} else {
+			setLoggingMode(loggingOptions.get(index + 1));
+			Designer.parameterPanel.lbLoggingMode2.setIcon(Icon.loggingMode.get(index + 1));
+		}
+	}
+
+	public String getLastSavedFile() {
+		return lastSavedFile;
+	}
+
+	public void setLastSavedFile(String lastSavedFile) {
+		this.lastSavedFile = lastSavedFile;
 	}
 }

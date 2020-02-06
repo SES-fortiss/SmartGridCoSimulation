@@ -30,7 +30,7 @@ public class StorageListener extends MouseAdapter implements FocusListener {
 		Storage s = Designer.buildings.get(building).getStorage().get(Designer.currentComponent);
 
 		DataUpdater up = new DataUpdater();
-		up.updateStorageData(s.getName(), s.getNetworkType(), s.getCapacity(), s.getMaxCharging(),
+		up.updateStorageData(s.getName(), s.getNetworkType(), s.getCapacity(), s.getSoc(), s.getMaxCharging(),
 				s.getMaxDischarging(), s.getEffIN(), s.getEffOUT());
 	}
 

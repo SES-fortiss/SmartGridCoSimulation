@@ -1,12 +1,13 @@
 package fortiss.simulation;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import fortiss.gui.listeners.button.AcceptListener;
 import fortiss.results.Reporter;
 import fortiss.simulation.listeners.helper.ProgressManager;
-import linprogMPC.controller.GuiController;
-import linprogMPC.helper.DirectoryConfiguration;
+import memap.controller.GuiController;
+import memap.helper.DirectoryConfiguration;
 
 public class Simulation implements Runnable {
 
@@ -22,12 +23,14 @@ public class Simulation implements Runnable {
 	public static boolean ready = false;
 
 	private void execute() throws InterruptedException, FileNotFoundException {
+		String fs = File.separator;
 
 		System.out.println(">> Interactive simulator: Setting up the topology.");
 		AcceptListener.loadingScreen.lbMessage.setText("Setting up the topology");
 
-		String location = System.getProperty("user.dir") + "/" + DirectoryConfiguration.mainDir + "/"
-				+ DirectoryConfiguration.configDir + "/parameterConfig.json";
+		String location = System.getProperty("user.dir") + fs + DirectoryConfiguration.mainDir + fs
+				+ DirectoryConfiguration.configDir + fs + "parameterConfig.json";
+
 		gc = new GuiController(location);
 
 		System.out.println(">> Interactive simulator: Starting simulation.");
@@ -37,7 +40,10 @@ public class Simulation implements Runnable {
 
 	public static void createAndRun() {
 		try {
-			new Simulation().execute();
+
+			Simulation sim = new Simulation();
+			sim.execute();
+
 		} catch (FileNotFoundException | InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -45,8 +51,9 @@ public class Simulation implements Runnable {
 
 	@Override
 	public void run() {
+
 		AcceptListener.loadingScreen.setVisible(true);
-		AcceptListener.loadingScreen.lbMessage.setText("Interactive Simulator is initializing");
+		AcceptListener.loadingScreen.lbMessage.setText("Simulator is initializing");
 		pmt = new Thread(pm);
 		pmt.start();
 

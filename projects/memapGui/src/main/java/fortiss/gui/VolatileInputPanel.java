@@ -8,6 +8,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -20,12 +21,13 @@ import fortiss.gui.listeners.selectionitem.VNetworkTypeListener;
 import fortiss.gui.listeners.textfield.VCOEmissionListener;
 import fortiss.gui.listeners.textfield.VCostListener;
 import fortiss.gui.listeners.textfield.VForecastFileListener;
-import fortiss.gui.listeners.textfield.VIndexListener;
 import fortiss.gui.listeners.textfield.VNameListener;
-import fortiss.gui.listeners.textfield.VPowerListener;
+import fortiss.gui.listeners.textfield.VMaxPowerListener;
+import fortiss.gui.listeners.textfield.VMinPowerListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
+import fortiss.media.Icon;
 
 /**
  * Input panel for volatile parameters.
@@ -34,10 +36,10 @@ public class VolatileInputPanel extends JPanel {
 
 	/** Volatile name */
 	public JTextField txtVName;
-	/** Volatile index */
-	public JTextField txtVIndex;
-	/** Volatile power */
-	public JTextField txtVPower;
+	/** Volatile minimum power */
+	public JTextField txtVMinimumPower;
+	/** Volatile maximum power */
+	public JTextField txtVMaximumPower;
 	/** Volatile forecast file path */
 	public JTextField txtVForecastFile;
 	/** Volatile cost */
@@ -52,12 +54,12 @@ public class VolatileInputPanel extends JPanel {
 	private JLabel lbVName;
 	/** Volatile network type label */
 	private JLabel lbVNetworkType;
-	/** Volatile power label */
-	private JLabel lblVPower;
+	/** Volatile minimum power label */
+	private JLabel lbVMinimumPower;
+	/** Volatile maximum power label */
+	private JLabel lbVMaximumPower;
 	/** Volatile forecast file path label */
 	private JLabel lbVForecastFile;
-	/** Volatile index label */
-	private JLabel lbVIndex;
 	/** Volatile cost label */
 	private JLabel lbVCost;
 	/** Volatile CO2 Emission label */
@@ -74,9 +76,8 @@ public class VolatileInputPanel extends JPanel {
 		lblVolatileProduction.setForeground(Colors.title);
 		lbVName.setForeground(Colors.normal);
 		lbVNetworkType.setForeground(Colors.normal);
-		lblVPower.setForeground(Colors.normal);
+		lbVMaximumPower.setForeground(Colors.normal);
 		lbVForecastFile.setForeground(Colors.normal);
-		lbVIndex.setForeground(Colors.normal);
 		lbVCost.setForeground(Colors.normal);
 		lbVCOEmission.setForeground(Colors.normal);
 	}
@@ -85,7 +86,7 @@ public class VolatileInputPanel extends JPanel {
 		StyleGenerator.setupStyle();
 		initialize();
 	}
-	
+
 	/**
 	 * Initializes the contents of the panel.
 	 */
@@ -94,15 +95,15 @@ public class VolatileInputPanel extends JPanel {
 				Colors.accent2));
 		setLayout(new FormLayout(
 				new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("85dlu"), ColumnSpec.decode("15dlu"),
-						ColumnSpec.decode("100dlu:grow"), ColumnSpec.decode("15dlu"), FormSpecs.RELATED_GAP_COLSPEC, },
+						ColumnSpec.decode("93dlu:grow"), FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
+						FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("15dlu"), FormSpecs.RELATED_GAP_COLSPEC, },
 				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
 						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
 						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, }));
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
 
 		lblVolatileProduction = new JLabel("VOLATILE PRODUCTION");
 		lblVolatileProduction.setFont(Fonts.getOswald());
@@ -114,7 +115,7 @@ public class VolatileInputPanel extends JPanel {
 		txtVName = new JTextField();
 		txtVName.addKeyListener(new VNameListener());
 		txtVName.addFocusListener(new VNameListener());
-		add(txtVName, "4, 8, fill, default");
+		add(txtVName, "4, 8, 3, 1, fill, default");
 		txtVName.setColumns(10);
 
 		lbVNetworkType = new JLabel("Network type");
@@ -126,55 +127,57 @@ public class VolatileInputPanel extends JPanel {
 		sVNetworkType.setModel(new DefaultComboBoxModel<String>(new String[] { "Heat", "Electricity" }));
 		sVNetworkType.addItemListener(new VNetworkTypeListener());
 		sVNetworkType.addMouseListener(new VNetworkTypeListener());
-		add(sVNetworkType, "4, 10, fill, default");
+		add(sVNetworkType, "4, 10, 3, 1, fill, default");
 
-		lblVPower = new JLabel("Installer power [kW]");
-		add(lblVPower, "2, 12");
+		lbVMinimumPower = new JLabel("Minimum power [kW]");
+		add(lbVMinimumPower, "2, 12");
 
-		txtVPower = new JTextField();
-		txtVPower.addKeyListener(new VPowerListener());
-		txtVPower.addFocusListener(new VPowerListener());
-		add(txtVPower, "4, 12, fill, default");
-		txtVPower.setColumns(10);
+		txtVMinimumPower = new JTextField();
+		txtVMinimumPower.addKeyListener(new VMinPowerListener());
+		txtVMinimumPower.addFocusListener(new VMinPowerListener());
+		add(txtVMinimumPower, "4, 12, 3, 1, fill, default");
+		txtVMinimumPower.setColumns(10);
+
+		lbVMaximumPower = new JLabel("Maximum power [kW]");
+		add(lbVMaximumPower, "2, 14");
+
+		txtVMaximumPower = new JTextField();
+		txtVMaximumPower.addKeyListener(new VMaxPowerListener());
+		txtVMaximumPower.addFocusListener(new VMaxPowerListener());
+		add(txtVMaximumPower, "4, 14, 3, 1, fill, default");
+		txtVMaximumPower.setColumns(10);
 
 		lbVForecastFile = new JLabel("Forecast file");
-		add(lbVForecastFile, "2, 14");
+		add(lbVForecastFile, "2, 16");
 
 		txtVForecastFile = new JTextField();
 		txtVForecastFile.addKeyListener(new VForecastFileListener());
 		txtVForecastFile.addFocusListener(new VForecastFileListener());
-		add(txtVForecastFile, "4, 14, fill, default");
+		add(txtVForecastFile, "4, 16, fill, default");
 		txtVForecastFile.setColumns(10);
 
-		JButton btVBrowse = new JButton("Browse");
+		JButton btVBrowse = new JButton("");
 		btVBrowse.addMouseListener(new VBrowseListener());
-		add(btVBrowse, "4, 16, right, center");
+		btVBrowse.setIcon(Icon.open);
+		btVBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
+		add(btVBrowse, "6, 16, right, center");
 
-		lbVIndex = new JLabel("Index");
-		add(lbVIndex, "2, 18");
-
-		txtVIndex = new JTextField();
-		txtVIndex.addKeyListener(new VIndexListener());
-		txtVIndex.addFocusListener(new VIndexListener());
-		add(txtVIndex, "4, 18, fill, default");
-		txtVIndex.setColumns(10);
-
-		lbVCost = new JLabel("Cost [cent/kWh] [EUR]");
-		add(lbVCost, "2, 20");
+		lbVCost = new JLabel("Cost [cent EUR/kWh]");
+		add(lbVCost, "2, 18");
 
 		txtVCost = new JTextField();
 		txtVCost.addKeyListener(new VCostListener());
 		txtVCost.addFocusListener(new VCostListener());
-		add(txtVCost, "4, 20, fill, default");
+		add(txtVCost, "4, 18, 3, 1, fill, default");
 		txtVCost.setColumns(10);
 
-		lbVCOEmission = new JLabel("CO2 Emissions [g/kWh]");
-		add(lbVCOEmission, "2, 22");
+		lbVCOEmission = new JLabel("CO2 Emissions [kg/kWh]");
+		add(lbVCOEmission, "2, 20");
 
 		txtVCOEmission = new JTextField();
 		txtVCOEmission.addKeyListener(new VCOEmissionListener());
 		txtVCOEmission.addFocusListener(new VCOEmissionListener());
-		add(txtVCOEmission, "4, 22, fill, default");
+		add(txtVCOEmission, "4, 20, 3, 1, fill, default");
 		txtVCOEmission.setColumns(10);
 	}
 }

@@ -1,79 +1,104 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.fortiss.memap</groupId>
+	<artifactId>memapGui</artifactId>
+	<version>0.1</version>
+	<packaging>jar</packaging>
 
-  <groupId>fortiss</groupId>
-  <artifactId>memapGui</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+	<name>memapGui</name>
+	<url>https://github.com/SES-fortiss/SmartGridCoSimulation</url>
 
-  <name>gui</name>
-  <url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  
-  	<build>
+	<build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.7.0</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<!-- Build an executable JAR -->
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>src/</classpathPrefix>
+							<mainClass>fortiss.gui.Designer</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
-  <dependencies>
-  <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-io -->
-  <dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-io</artifactId>
-    <version>1.3.2</version>
-  </dependency>
-<!-- https://mvnrepository.com/artifact/com.jgoodies/jgoodies-forms -->
-  <dependency>
-    <groupId>com.jgoodies</groupId>
-    <artifactId>jgoodies-forms</artifactId>
-    <version>1.8.0</version>
-  </dependency>
-  <!-- https://mvnrepository.com/artifact/org.knowm.xchart/xchart -->
-<dependency>
-    <groupId>org.knowm.xchart</groupId>
-    <artifactId>xchart</artifactId>
-    <version>3.5.4</version>
-</dependency>
-  
-  <dependency>
-    	<groupId>org.fortiss</groupId>
-    	<artifactId>gridarchitect</artifactId>
-    	<version>0.1</version>
-   </dependency>
-   
-   <dependency>
-    	<groupId>org.fortiss</groupId>
-    	<artifactId>memapServer</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-   </dependency>
-  
-  <dependency>
-    <groupId>com.jgoodies</groupId>
-    <artifactId>jgoodies-common</artifactId>
-    <version>1.8.0</version>
-  </dependency>
-  <dependency>
-    <groupId>com.google.code.gson</groupId>
-    <artifactId>gson</artifactId>
-    <version>2.8.5</version>
-  </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-io -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.3.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.jgoodies/jgoodies-forms -->
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>jgoodies-forms</artifactId>
+			<version>1.8.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.knowm.xchart/xchart -->
+		<dependency>
+			<groupId>org.knowm.xchart</groupId>
+			<artifactId>xchart</artifactId>
+			<version>3.6.1</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.fortiss</groupId>
+			<artifactId>gridarchitect</artifactId>
+			<version>0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.fortiss.memap</groupId>
+			<artifactId>memapCore</artifactId>
+			<version>0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>jgoodies-common</artifactId>
+			<version>1.8.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.5</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>

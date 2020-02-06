@@ -70,6 +70,7 @@ public class DConsumptionListener extends KeyAdapter implements FocusListener {
 			if (f.exists() || input.isEmpty()) {
 				valid = true;
 				o.setConsumptionProfile(input);
+				Designer.demandPanel.setData(input);
 			} else {
 				valid = false;
 				message = "Error. Invalid path to file";

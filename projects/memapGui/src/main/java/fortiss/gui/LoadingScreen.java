@@ -62,7 +62,7 @@ public class LoadingScreen extends JFrame {
 		setTitle("MEMAP - Interactive Simulator");
 		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		setType(Type.POPUP);
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(new Dimension(800, 440));
 		setLocationRelativeTo(null);
 		

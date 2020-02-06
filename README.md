@@ -1,4 +1,4 @@
-<img align="left" src="https://www.innolab-livinglabs.de/fileadmin/images/innolabMap/memap_logo.png" alt="MEMAP" width="150"/>
+<img align="left" src="https://github.com/SES-fortiss/SmartGridCoSimulation/blob/development/MEMAP-Logo.png" alt="MEMAP" width="150"/>
 
 Welcome to the **Multi energy management and aggregation platform (MEMAP)** project!
 
@@ -10,3 +10,7 @@ Use the following command to clone this repository:
 ``
 git clone https://github.com/SES-fortiss/SmartGridCoSimulation.git
 ``
+
+To get recent information about the project visit:
+
+https://memap-projekt.de/

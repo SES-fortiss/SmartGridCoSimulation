@@ -21,7 +21,8 @@ import fortiss.gui.listeners.textfield.CCostListener;
 import fortiss.gui.listeners.textfield.CEfficiencyPrimaryListener;
 import fortiss.gui.listeners.textfield.CEfficiencySecondaryListener;
 import fortiss.gui.listeners.textfield.CNameListener;
-import fortiss.gui.listeners.textfield.CPowerListener;
+import fortiss.gui.listeners.textfield.CMaxPowerListener;
+import fortiss.gui.listeners.textfield.CMinPowerListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
@@ -33,8 +34,10 @@ public class CouplerInputPanel extends JPanel {
 
 	/** Coupler name */
 	public JTextField txtCName;
-	/** Coupler power */
-	public JTextField txtCPower;
+	/** Coupler minimum power */
+	public JTextField txtCMinimumPower;
+	/** Coupler maximum power */
+	public JTextField txtCMaximumPower;
 	/** Coupler secondary network type */
 	public JTextField txtCSecondaryNetworkType;
 	/** Coupler primary network efficiency */
@@ -47,26 +50,29 @@ public class CouplerInputPanel extends JPanel {
 	public JTextField txtCCOEmission;
 	/** Coupler primary network type */
 	public JComboBox<String> sCPrimaryNetworkType;
-	/** Controllable area title label */
+	/** Coupler area title label */
 	private JLabel lblCoupler;
-	/** Controllable name label */
+	/** Coupler name label */
 	private JLabel lbCName;
-	/** Controllable primary network type label */
+	/** Coupler primary network type label */
 	private JLabel lbCPrimaryNetworkType;
-	/** Controllable secondary network type label */
+	/** Coupler secondary network type label */
 	private JLabel lbCSecondaryNetworkType;
-	/** Controllable power label */
-	private JLabel lbCInstalledPower;
-	/** Controllable primary network efficiency label */
+	/** Coupler minimum power label */
+	private JLabel lbCMinimumPower;
+	/** Coupler maximum power label */
+	private JLabel lbCMaximumPower;
+	/** Coupler primary network efficiency label */
 	private JLabel lbCPrimaryNetworkEfficiency;
-	/** Controllable secondary network efficiency label */
+	/** Coupler secondary network efficiency label */
 	private JLabel lbCSecondaryNetworkEfficiency;
-	/** Controllable cost label */
+	/** Coupler cost label */
 	private JLabel lbCCost;
-	/** Controllable CO2 Emission label */
+	/** Coupler CO2 Emission label */
 	private JLabel lbCCOEmission;
 
 	private static final long serialVersionUID = 1L;
+	
 
 	/** Necessary for dark mode on/off implementation */
 	@Override
@@ -78,7 +84,7 @@ public class CouplerInputPanel extends JPanel {
 		lbCName.setForeground(Colors.normal);
 		lbCPrimaryNetworkType.setForeground(Colors.normal);
 		lbCSecondaryNetworkType.setForeground(Colors.normal);
-		lbCInstalledPower.setForeground(Colors.normal);
+		lbCMaximumPower.setForeground(Colors.normal);
 		lbCPrimaryNetworkEfficiency.setForeground(Colors.normal);
 		lbCSecondaryNetworkEfficiency.setForeground(Colors.normal);
 		lbCCost.setForeground(Colors.normal);
@@ -96,17 +102,38 @@ public class CouplerInputPanel extends JPanel {
 	private void initialize() {
 		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Component information",
 				TitledBorder.RIGHT, TitledBorder.TOP, null, Colors.accent2));
-		setLayout(new FormLayout(
-				new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("85dlu"), ColumnSpec.decode("15dlu"),
-						ColumnSpec.decode("100dlu:grow"), ColumnSpec.decode("15dlu"), FormSpecs.RELATED_GAP_COLSPEC, },
-				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, }));
+		setLayout(new FormLayout(new ColumnSpec[] {
+				ColumnSpec.decode("15dlu"),
+				ColumnSpec.decode("85dlu"),
+				ColumnSpec.decode("15dlu"),
+				ColumnSpec.decode("100dlu:grow"),
+				ColumnSpec.decode("15dlu"),
+				FormSpecs.RELATED_GAP_COLSPEC,},
+			new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,}));
 
 		lblCoupler = new JLabel("COUPLER");
 		lblCoupler.setFont(Fonts.getOswald());
@@ -139,50 +166,59 @@ public class CouplerInputPanel extends JPanel {
 		txtCSecondaryNetworkType.setEditable(false);
 		add(txtCSecondaryNetworkType, "4, 12, fill, default");
 		txtCSecondaryNetworkType.setColumns(10);
+		
+		lbCMinimumPower = new JLabel("Minimum power [kW]");
+		add(lbCMinimumPower, "2, 14");
+		
+		txtCMinimumPower = new JTextField();
+		txtCMinimumPower.addKeyListener(new CMinPowerListener());
+		txtCMinimumPower.addFocusListener(new CMinPowerListener());
+		add(txtCMinimumPower, "4, 14, fill, default");
+		txtCMinimumPower.setColumns(10);
 
-		lbCInstalledPower = new JLabel("Installed power [kW]");
-		add(lbCInstalledPower, "2, 14");
+		lbCMaximumPower = new JLabel("Maximum power [kW]");
+		add(lbCMaximumPower, "2, 16");
 
-		txtCPower = new JTextField();
-		txtCPower.addKeyListener(new CPowerListener());
-		txtCPower.addFocusListener(new CPowerListener());
-		add(txtCPower, "4, 14, fill, default");
-		txtCPower.setColumns(10);
+		txtCMaximumPower = new JTextField();
+		txtCMaximumPower.addKeyListener(new CMaxPowerListener());
+		txtCMaximumPower.addFocusListener(new CMaxPowerListener());
+		add(txtCMaximumPower, "4, 16, fill, default");
+		txtCMaximumPower.setColumns(10);
 
 		lbCPrimaryNetworkEfficiency = new JLabel("Primary network efficiency [0-1]");
-		add(lbCPrimaryNetworkEfficiency, "2, 16");
+		add(lbCPrimaryNetworkEfficiency, "2, 18");
 
 		txtCEfficiencyPrimary = new JTextField();
 		txtCEfficiencyPrimary.addKeyListener(new CEfficiencyPrimaryListener());
 		txtCEfficiencyPrimary.addFocusListener(new CEfficiencyPrimaryListener());
-		add(txtCEfficiencyPrimary, "4, 16, fill, default");
+		add(txtCEfficiencyPrimary, "4, 18, fill, default");
 		txtCEfficiencyPrimary.setColumns(10);
 
 		lbCSecondaryNetworkEfficiency = new JLabel("Secondary network efficiency [0-1]");
-		add(lbCSecondaryNetworkEfficiency, "2, 18");
+		add(lbCSecondaryNetworkEfficiency, "2, 20");
 
 		txtCEfficiencySecondary = new JTextField();
 		txtCEfficiencySecondary.addKeyListener(new CEfficiencySecondaryListener());
 		txtCEfficiencySecondary.addFocusListener(new CEfficiencySecondaryListener());
-		add(txtCEfficiencySecondary, "4, 18, fill, default");
+		add(txtCEfficiencySecondary, "4, 20, fill, default");
 		txtCEfficiencySecondary.setColumns(10);
 
-		lbCCost = new JLabel("Cost [cent/kWh]");
-		add(lbCCost, "2, 20");
+		lbCCost = new JLabel("Cost [cent EUR/kWh]");
+		add(lbCCost, "2, 22");
 
 		txtCCost = new JTextField();
 		txtCCost.addKeyListener(new CCostListener());
 		txtCCost.addFocusListener(new CCostListener());
-		add(txtCCost, "4, 20, fill, default");
+		add(txtCCost, "4, 22, fill, default");
 		txtCCost.setColumns(10);
 
-		lbCCOEmission = new JLabel("CO2 Emissions [g/kWh]");
-		add(lbCCOEmission, "2, 22");
+		lbCCOEmission = new JLabel("CO2 Emissions [kg/kWh]");
+		add(lbCCOEmission, "2, 24");
 
 		txtCCOEmission = new JTextField();
 		txtCCOEmission.addKeyListener(new CCOEmissionListener());
 		txtCCOEmission.addFocusListener(new CCOEmissionListener());
-		add(txtCCOEmission, "4, 22, fill, default");
+		add(txtCCOEmission, "4, 24, fill, default");
 		txtCCOEmission.setColumns(10);
 	}
 }

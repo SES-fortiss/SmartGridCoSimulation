@@ -8,6 +8,7 @@ public class Storage {
 	private String name;
 	private String networkType;
 	private double capacity;
+	private double soc;
 	private double maxCharging;
 	private double maxDischarging;
 	private double effIN;
@@ -19,15 +20,18 @@ public class Storage {
 	 * @param name           an alphanumeric string
 	 * @param networkType    a string: Heat or Electricity
 	 * @param capacity       a positive double
+	 * @param soc			 state of charge
 	 * @param maxCharging    maximum charging rate. A positive double
 	 * @param maxDischarging maximum discharging rate. A positive double
 	 * @param effIN          charging efficiency. A positive double
 	 * @param effOUT         discharging efficiency. A positive double
 	 */
-	public Storage(String name, String networkType, double capacity, double maxCharging, double maxDischarging,
+	public Storage(String name, String networkType, double capacity, double soc, double maxCharging, double maxDischarging,
 			double effIN, double effOUT) {
 		this.setName(name);
 		this.setNetworkType(networkType);
+		this.setCapacity(capacity);
+		this.setSoc(soc);
 		this.setMaxCharging(maxCharging);
 		this.setMaxDischarging(maxDischarging);
 		this.setEffIN(effIN);
@@ -56,6 +60,14 @@ public class Storage {
 
 	public void setCapacity(double capacity) {
 		this.capacity = capacity;
+	}
+
+	public double getSoc() {
+		return soc;
+	}
+
+	public void setSoc(double soc) {
+		this.soc = soc;
 	}
 
 	public double getMaxCharging() {

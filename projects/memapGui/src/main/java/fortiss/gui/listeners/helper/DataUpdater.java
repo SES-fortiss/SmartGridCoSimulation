@@ -1,11 +1,21 @@
 package fortiss.gui.listeners.helper;
 
 import fortiss.gui.Designer;
+import fortiss.gui.ParameterInputPanel;
+import fortiss.simulation.Parameters;
 
 /**
  * Updates the displayed data according to user selection.
  */
 public class DataUpdater {
+
+	/**
+	 * Updates the simulation parameters and calls {@link ParameterInputPanel#update()}
+	 */
+	public void updateParameterData(Parameters par) {
+		Designer.parameterPanel.pars = par;
+		Designer.parameterPanel.update();
+	}
 
 	/**
 	 * Updates and shows the data of the selected building.
@@ -20,26 +30,23 @@ public class DataUpdater {
 	/**
 	 * Updates and shows the data of the selected demand.
 	 */
-	public void updateDemandData(String name, int index, String consumption, String networkType) {
+	public void updateDemandData(String name, String consumption) {
 		Designer.demandPanel.txtDName.setText(name);
-		Designer.demandPanel.txtDIndex.setText(Integer.toString(index));
 		Designer.demandPanel.txtDConsumption.setText(consumption);
-		Designer.demandPanel.sDNetworkType.setSelectedItem(networkType);
 		Designer.demandPanel.plotPanel.clearSeries();
-		if(!consumption.isEmpty()) {
-			Designer.demandPanel.plotPanel.setData(consumption);
-		}
+		Designer.demandPanel.setData(consumption);
 		Designer.cl.show(Designer.pl_comp_detail, "demand");
 	}
 
 	/**
 	 * Updates and shows the data of the selected storage.
 	 */
-	public void updateStorageData(String name, String networkType, double capacity, double maxCharging, double maxDRate,
-			double chargeE, double dischargeE) {
+	public void updateStorageData(String name, String networkType, double capacity, double soc, double maxCharging,
+			double maxDRate, double chargeE, double dischargeE) {
 		Designer.storagePanel.txtSName.setText(name);
 		Designer.storagePanel.sSNetworkType.setSelectedItem(networkType);
 		Designer.storagePanel.txtSCapacity.setText(Double.toString(capacity));
+		Designer.storagePanel.txtSStateOfCharge.setText(Double.toString(soc));
 		Designer.storagePanel.txtSMaxCharge.setText(Double.toString(maxCharging));
 		Designer.storagePanel.txtSMaxDischarge.setText(Double.toString(maxDRate));
 		Designer.storagePanel.txtSEffIN.setText(Double.toString(chargeE));
@@ -51,12 +58,12 @@ public class DataUpdater {
 	/**
 	 * Updates and shows the data of the selected volatile.
 	 */
-	public void updateVolProductionData(String producer, int index, String networktype, double power,
+	public void updateVolProductionData(String producer, String networktype, double minimumPower, double maximumPower,
 			String forcastFile, double cost, double coEmission) {
 		Designer.volatilePanel.txtVName.setText(producer);
-		Designer.volatilePanel.txtVIndex.setText(Integer.toString(index));
 		Designer.volatilePanel.sVNetworkType.setSelectedItem(networktype);
-		Designer.volatilePanel.txtVPower.setText(Double.toString(power));
+		Designer.volatilePanel.txtVMinimumPower.setText(Double.toString(minimumPower));
+		Designer.volatilePanel.txtVMaximumPower.setText(Double.toString(maximumPower));
 		Designer.volatilePanel.txtVForecastFile.setText(forcastFile);
 		Designer.volatilePanel.txtVCost.setText(Double.toString(cost));
 		Designer.volatilePanel.txtVCOEmission.setText(Double.toString(coEmission));
@@ -67,11 +74,12 @@ public class DataUpdater {
 	/**
 	 * Updates and shows the data of the selected controllable.
 	 */
-	public void updateContProductionData(String producer, String networkType, double power, double efficiency,
-			double cost, double coEmission) {
+	public void updateContProductionData(String producer, String networkType, double minimumPower, double maximumPower,
+			double efficiency, double cost, double coEmission) {
 		Designer.controllablePanel.txtCPName.setText(producer);
 		Designer.controllablePanel.sCPNetworkType.setSelectedItem(networkType);
-		Designer.controllablePanel.txtCPPower.setText(Double.toString(power));
+		Designer.controllablePanel.txtCPMinimumPower.setText(Double.toString(minimumPower));
+		Designer.controllablePanel.txtCPMaximumPower.setText(Double.toString(maximumPower));
 		Designer.controllablePanel.txtCPEfficiency.setText(Double.toString(efficiency));
 		Designer.controllablePanel.txtCPCost.setText(Double.toString(cost));
 		Designer.controllablePanel.txtCPCOEmission.setText(Double.toString(coEmission));
@@ -83,12 +91,13 @@ public class DataUpdater {
 	 * Updates and shows the data of the selected coupler.
 	 */
 	public void updateCouplerData(String name, String primaryNetworkType, String secondaryNetworkType,
-			double installedPower, double primaryNetworkEfficiency, double secondaryNetworkEfficiency, double cost,
-			double coEmission) {
+			double minimumPower, double maximumPower, double primaryNetworkEfficiency,
+			double secondaryNetworkEfficiency, double cost, double coEmission) {
 		Designer.couplerPanel.txtCName.setText(name);
 		Designer.couplerPanel.sCPrimaryNetworkType.setSelectedItem(primaryNetworkType);
 		Designer.couplerPanel.txtCSecondaryNetworkType.setText(secondaryNetworkType);
-		Designer.couplerPanel.txtCPower.setText(Double.toString(installedPower));
+		Designer.couplerPanel.txtCMinimumPower.setText(Double.toString(minimumPower));
+		Designer.couplerPanel.txtCMaximumPower.setText(Double.toString(maximumPower));
 		Designer.couplerPanel.txtCEfficiencyPrimary.setText(Double.toString(primaryNetworkEfficiency));
 		Designer.couplerPanel.txtCEfficiencySecondary.setText(Double.toString(secondaryNetworkEfficiency));
 		Designer.couplerPanel.txtCCost.setText(Double.toString(cost));

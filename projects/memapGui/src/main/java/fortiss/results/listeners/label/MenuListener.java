@@ -1,7 +1,5 @@
 package fortiss.results.listeners.label;
 
-import java.util.ArrayList;
-
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -14,8 +12,6 @@ public class MenuListener implements TreeSelectionListener {
 
 	private DefaultMutableTreeNode sel;
 	private DefaultMutableTreeNode par;
-	private ArrayList<ArrayList<Double>> data;
-	private int seriesIndex;
 	private int index;
 
 	/**
@@ -33,17 +29,15 @@ public class MenuListener implements TreeSelectionListener {
 			System.out.println(">> There are no results to show.");
 		}
 		index = getBuildingIndex();
-		data = Reporter.output.getData(index).values;
-		seriesIndex = Reporter.output.getData(index).labels.indexOf(sel.toString());
 
 		if (h.isPathSelected(selPath)) {
 			if (h.getSelectionCount() == 1) {
 				Reporter.plotPanel.clearSeries();
 			}
-			Reporter.plotPanel.addSeries(getSeriesName(), data.get(seriesIndex));
+			Reporter.plotPanel.addSeries(getSeriesName(), Reporter.output.getDataSeries(index, sel.toString()));			
 			Reporter.plotPanel.paintSeries();
 		} else {
-			Reporter.plotPanel.removeSeries(getSeriesName(), data.get(seriesIndex));
+			Reporter.plotPanel.removeSeries(getSeriesName(), Reporter.output.getDataSeries(index, sel.toString()));
 			Reporter.plotPanel.paintSeries();
 		}
 	}
@@ -64,7 +58,7 @@ public class MenuListener implements TreeSelectionListener {
 	 * @return a name to be assigned to a data series in the results interface.
 	 */
 	public String getSeriesName() {
-		String name = par.toString() + " - " + Reporter.output.getData(index).labels.get(seriesIndex);
+		String name = par.toString() + " - " + sel.toString();
 		return name;
 	}
 

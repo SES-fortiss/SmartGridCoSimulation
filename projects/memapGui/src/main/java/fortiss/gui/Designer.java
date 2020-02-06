@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.datatransfer.DataFlavor;
+import java.io.BufferedReader;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -14,10 +16,16 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
+import com.google.gson.Gson;
+
 import fortiss.components.Building;
+import fortiss.gui.listeners.helper.FileManager;
+import fortiss.gui.listeners.helper.ModelInitHelper;
+import fortiss.gui.listeners.window.ExitWindowListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
+import fortiss.simulation.Parameters;
 
 public class Designer extends JFrame {
 
@@ -59,7 +67,6 @@ public class Designer extends JFrame {
 	private JLabel lblFortissMemap;
 	
 	public static DataFlavor dataFlavor;
-
 	public static Designer frame;
 
 	/**
@@ -71,7 +78,9 @@ public class Designer extends JFrame {
 			public void run() {
 				StyleGenerator.setupStyle();
 				frame = new Designer();
-				frame.setVisible(true);
+				frame.setVisible(true);				
+				frame.initLastSession();		
+				frame.addWindowListener(new ExitWindowListener());
 			}
 		});
 	}
@@ -89,14 +98,13 @@ public class Designer extends JFrame {
 	 */
 	public Designer() {
 		setSize(new Dimension(1200, 810));
-		setLocationRelativeTo(null);
-		setTitle("MEMAP - Interactive Designer");
+		setLocationRelativeTo(null);	
 		setIconImage(Icon.smallMemapLogo.getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		contentPane = new JPanel();
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
-
+		
 		// Add dataFlavor class
 		dataFlavor = new DataFlavor(JLabel.class, JLabel.class.getSimpleName());
 
@@ -170,7 +178,30 @@ public class Designer extends JFrame {
 		lblFortissMemap = new JLabel(
 				"© 2019 FORTISS GMBH - AN INSTITUTE AFFILIATED TO THE TECHNICAL UNIVERSITY OF MUNICH");
 		lblFortissMemap.setHorizontalAlignment(SwingConstants.CENTER);
-		contentPane.add(lblFortissMemap, BorderLayout.SOUTH);
-
+		contentPane.add(lblFortissMemap, BorderLayout.SOUTH);					
 	}
-}
+
+	private void initLastSession() {
+		Gson gson = new Gson();		
+		FileManager fm = new FileManager();
+		BufferedReader br = fm.readParameterConfigFile();
+		
+		String workingFile = "";
+		Parameters par = null;
+		
+		if (br != null) {
+			par = gson.fromJson(br, Parameters.class);
+			par.clearDescriptorFile();
+			workingFile = par.getLastSavedFile();
+			
+			System.out.println(gson.toJson(par));
+		}
+		
+		if (!workingFile.equals("")) {
+			ModelInitHelper.loadFromFile(new File(workingFile));
+			ModelInitHelper.initParameters(par);
+		} else {
+			System.out.println("lastWorkingFile: " + workingFile);
+		}		
+	}	
+} 
