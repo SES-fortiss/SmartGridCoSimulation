@@ -1,4 +1,4 @@
-<img align="left" src="https://www.innolab-livinglabs.de/fileadmin/images/innolabMap/memap_logo.png" alt="MEMAP" width="150"/>
+<img align="left" src="https://memap-projekt.de/wp-content/uploads/2019/12/memap-logo.png" alt="MEMAP" width="150"/>
 
 Welcome to the **Multi energy management and aggregation platform (MEMAP)** project!
 
