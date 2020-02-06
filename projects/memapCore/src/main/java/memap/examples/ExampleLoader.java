@@ -1,6 +1,9 @@
 package memap.examples;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.InputStreamReader;
 
 import com.github.cliftonlabs.json_simple.JsonException;
@@ -32,14 +35,16 @@ import memap.messages.extension.NetworkType;
 public abstract class ExampleLoader {
 	public static TopologyController OpcUaExample() {
 		TopologyController topologyController = new TopologyController(OptHierarchy.MEMAP, Optimizer.MILP,
-				OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.RESULTS_ONLY, "MemapExample", 5, 96, 7,
+				OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.RESULTS_ONLY, "MemapExample", 5, 192, 20,
 				"ELECTRICITYPRICEEXAMPLE", 0, 4880);
 
 		try {
-			BufferedReader endpoint1 = new BufferedReader(new InputStreamReader(ExampleLoader.class.getClassLoader()
-					.getResourceAsStream(DirectoryConfiguration.exampleDir + "/FortissBuilding1Endpoint.json")));
-			BufferedReader nodes1 = new BufferedReader(new InputStreamReader(ExampleLoader.class.getClassLoader()
-					.getResourceAsStream(DirectoryConfiguration.exampleDir + "/FortissBuilding1Nodes.json")));
+//			BufferedReader endpoint1 = new BufferedReader(new InputStreamReader(ExampleLoader.class.getClassLoader()
+//					.getResourceAsStream(DirectoryConfiguration.exampleDir + "/FortissBuilding1Endpoint.json")));
+//			BufferedReader nodes1 = new BufferedReader(new InputStreamReader(ExampleLoader.class.getClassLoader()
+//					.getResourceAsStream(DirectoryConfiguration.exampleDir + "/FortissBuilding1Nodes.json")));
+			FileReader endpoint1 = new FileReader(("res/FortissBuilding1Endpoint.json"));
+			FileReader nodes1 = new FileReader(("res/FortissBuilding1Nodes.json"));
 			JsonObject jsonEndpoint1 = (JsonObject) Jsoner.deserialize(endpoint1);
 			JsonObject jsonNodes1 = (JsonObject) Jsoner.deserialize(nodes1);
 			BuildingController sampleBuilding1 = new OpcUaBuildingController(jsonEndpoint1, jsonNodes1);
@@ -51,13 +56,19 @@ public abstract class ExampleLoader {
 		} catch (IllegalStateException e2) {
 			System.err.println("WARNING: Failed to create Client. Building has not been initialised");
 			e2.printStackTrace();
+		} catch (FileNotFoundException e) {
+			System.err.println("WARNING: File not found. Building has not been initialised");
+			System.out.println(new File(".").getAbsolutePath());
+			e.printStackTrace();
 		}
 
 		try {
-			BufferedReader endpoint2 = new BufferedReader(new InputStreamReader(ExampleLoader.class.getClassLoader()
-					.getResourceAsStream(DirectoryConfiguration.exampleDir + "/FortissBuilding2Endpoint.json")));
-			BufferedReader nodes2 = new BufferedReader(new InputStreamReader(ExampleLoader.class.getClassLoader()
-					.getResourceAsStream(DirectoryConfiguration.exampleDir + "/FortissBuilding2Nodes.json")));
+//			BufferedReader endpoint2 = new BufferedReader(new InputStreamReader(ExampleLoader.class.getClassLoader()
+//					.getResourceAsStream(DirectoryConfiguration.exampleDir + "/FortissBuilding2Endpoint.json")));
+//			BufferedReader nodes2 = new BufferedReader(new InputStreamReader(ExampleLoader.class.getClassLoader()
+//					.getResourceAsStream(DirectoryConfiguration.exampleDir + "/FortissBuilding2Nodes.json")));
+			FileReader endpoint2 = new FileReader(("res/FortissBuilding2Endpoint.json"));
+			FileReader nodes2 = new FileReader(("res/FortissBuilding2Nodes.json"));
 			JsonObject jsonEndpoint2 = (JsonObject) Jsoner.deserialize(endpoint2);
 			JsonObject jsonNodes2 = (JsonObject) Jsoner.deserialize(nodes2);
 			BuildingController sampleBuilding2 = new OpcUaBuildingController(jsonEndpoint2, jsonNodes2);
@@ -68,6 +79,10 @@ public abstract class ExampleLoader {
 		} catch (IllegalStateException e2) {
 			System.err.println("WARNING: Failed to create Client. Building has not been initialised");
 			e2.printStackTrace();
+		} catch (FileNotFoundException e) {
+			System.err.println("WARNING: File not found. Building has not been initialised");
+			System.out.println(new File(".").getAbsolutePath());
+			e.printStackTrace();
 		}
 
 		try {
@@ -81,7 +96,7 @@ public abstract class ExampleLoader {
 
 	public static TopologyController CsvExample() {
 		final int PORT_UNDEFINED = 0;
-		TopologyController topologyController = new TopologyController(OptHierarchy.BUILDING, Optimizer.MILP,
+		TopologyController topologyController = new TopologyController(OptHierarchy.BUILDING, Optimizer.LP,
 				OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.FILES, "MemapExample", 5, 96, 2,
 				"ELECTRICITYPRICEEXAMPLE", 0, 4880);
 

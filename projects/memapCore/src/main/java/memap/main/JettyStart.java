@@ -70,6 +70,7 @@ public class JettyStart {
 		 * generates a building controller for every jsonEndpoint,jsonNodes tuple
 		 * Buildings get attached to the topology
 		 */
+		System.out.println("Anzahl Gebäude: " + endpointValues.size());
 		for (int i = 0; i < endpointValues.size(); i++) {
 			JsonObject jsonEndpoint = (JsonObject) endpointValues.get(i);
 			try {
@@ -81,10 +82,12 @@ public class JettyStart {
 					System.err.println("Topology could not be deserialized");
 					e.printStackTrace();
 				}
+				System.out.println("Gebäude " + i + " wird hinzugefügt....");
 				BuildingController sampleBuilding = new OpcUaBuildingController(jsonEndpoint, jsonNodes);
 				topologyMemapOn.attach(sampleBuilding);
 				topologyMemapOff.attach(sampleBuilding);
 				errorCode.put((String) jsonEndpoint.get("name"), 0);
+				System.out.println("Gebäude " + i + " wurde hinzugefügt....");
 
 			} catch (IllegalStateException e2) {
 				System.err.println("WARNING: Failed to create Client. Building has not been initialised");
