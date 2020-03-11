@@ -369,6 +369,7 @@ public class OpcUaBuildingController implements BuildingController {
 					JsonArray thermalStorages = (JsonArray) nodesConfig.get("thermalstorage");
 					for (int i = 0; i < thermalStorages.size(); i++) {
 						try {
+
 							JsonObject thermalStorage = (JsonObject) thermalStorages.get(i);
 							NodeId capacityId = NodeId.parse((String) thermalStorage.get("capacityId"));
 							NodeId stateOfChargeId = NodeId.parse((String) thermalStorage.get("stateOfChargeId"));
@@ -378,7 +379,7 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId effOutId = NodeId.parse((String) thermalStorage.get("effOutId"));
 							NodeId opCostId = NodeId.parse((String) thermalStorage.get("opCostId"));
 							NodeId costCO2Id = NodeId.parse((String) thermalStorage.get("costCO2Id"));
-							ClientStorage cs = new ClientStorage(client, "thermalstorage" + 1, capacityId,
+							ClientStorage cs = new ClientStorage(client, "thermalstorage" + i, capacityId,
 									stateOfChargeId, maxChargingId, maxDischargingId, effInId, effOutId,
 									NetworkType.HEAT, opCostId, costCO2Id, 0);
 							attach(cs);
