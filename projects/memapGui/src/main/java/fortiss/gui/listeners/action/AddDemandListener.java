@@ -4,7 +4,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import fortiss.components.Demand;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.ComponentIcons;
 import fortiss.gui.listeners.helper.DataUpdater;
 
@@ -16,16 +16,16 @@ public class AddDemandListener extends MouseAdapter {
 	public void mouseClicked(MouseEvent e) {
 
 		// Update current_comp
-		Designer.currentComponent = Designer.demandIcons.get(Designer.currentBuilding).size();
+		DesignerPanel.currentComponent = DesignerPanel.demandIcons.get(DesignerPanel.currentBuilding).size();
 
 		// Create demand
-		Designer.buildings.get(Designer.currentBuilding)
-				.addDemand(new Demand("Demand" + Designer.currentComponent, ""));
-		Demand d = Designer.buildings.get(Designer.currentBuilding).getDemand().get(Designer.currentComponent);
+		DesignerPanel.buildings.get(DesignerPanel.currentBuilding)
+				.addDemand(new Demand("Demand" + DesignerPanel.currentComponent, ""));
+		Demand d = DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getDemand().get(DesignerPanel.currentComponent);
 
 		// Create label
 		ComponentIcons components = new ComponentIcons();
-		components.createDemandIcon(Designer.currentBuilding, Designer.currentComponent, true);
+		components.createDemandIcon(DesignerPanel.currentBuilding, DesignerPanel.currentComponent, true);
 
 		// Show data
 		DataUpdater up = new DataUpdater();

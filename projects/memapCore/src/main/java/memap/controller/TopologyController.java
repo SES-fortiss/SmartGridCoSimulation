@@ -16,6 +16,7 @@ import memap.helper.configurationOptions.Optimizer;
 import memap.helper.configurationOptions.ToolUsage;
 import memap.main.ActorFactory;
 import memap.main.ConfigurationMEMAP;
+import memap.main.SimulationProgress;
 import memap.main.TopologyConfig;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
@@ -51,6 +52,7 @@ public class TopologyController implements Runnable {
 		this.topologyName = topologyName;
 		simulationStarter = new SimulationStarter(globalTime);
 		memapConfig = new ConfigurationMEMAP(optimizer, optimizationCriteria, optHierarchy, toolUsage, memapLogging);
+		globalTime.subscribeToCurrentTimeStep(SimulationProgress.getInstance());
 	}
 
 	/** Attach a building to the topology */

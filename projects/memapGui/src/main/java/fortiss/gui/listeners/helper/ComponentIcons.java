@@ -9,7 +9,7 @@ import fortiss.components.Coupler;
 import fortiss.components.Demand;
 import fortiss.components.Storage;
 import fortiss.components.Volatile;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.action.RemoveListener;
 import fortiss.gui.listeners.label.ControllableListener;
 import fortiss.gui.listeners.label.CouplerListener;
@@ -27,32 +27,32 @@ public class ComponentIcons {
 	public void createComponentLists(int building) {
 		// Create list of icons for current building and add it to the general icon
 		// lists
-		Designer.demandIcons.add(building, new ArrayList<JLabel>());
-		Designer.storageIcons.add(building, new ArrayList<JLabel>());
-		Designer.volatileIcons.add(building, new ArrayList<JLabel>());
-		Designer.controllableIcons.add(building, new ArrayList<JLabel>());
-		Designer.couplerIcons.add(building, new ArrayList<JLabel>());
+		DesignerPanel.demandIcons.add(building, new ArrayList<JLabel>());
+		DesignerPanel.storageIcons.add(building, new ArrayList<JLabel>());
+		DesignerPanel.volatileIcons.add(building, new ArrayList<JLabel>());
+		DesignerPanel.controllableIcons.add(building, new ArrayList<JLabel>());
+		DesignerPanel.couplerIcons.add(building, new ArrayList<JLabel>());
 	}
 
 	public void createIcons(int building) {
 		createComponentLists(building);
-		int elements = Designer.buildings.get(building).getDemand().size();
+		int elements = DesignerPanel.buildings.get(building).getDemand().size();
 		for (int i = 0; i < elements; i++) {
 			createDemandIcon(building, i, false);
 		}
-		elements = Designer.buildings.get(building).getStorage().size();
+		elements = DesignerPanel.buildings.get(building).getStorage().size();
 		for (int i = 0; i < elements; i++) {
 			createStorageIcon(building, i, false);
 		}
-		elements = Designer.buildings.get(building).getVolatile().size();
+		elements = DesignerPanel.buildings.get(building).getVolatile().size();
 		for (int i = 0; i < elements; i++) {
 			createVolProductionIcon(building, i, false);
 		}
-		elements = Designer.buildings.get(building).getControllable().size();
+		elements = DesignerPanel.buildings.get(building).getControllable().size();
 		for (int i = 0; i < elements; i++) {
 			createContProductionIcon(building, i, false);
 		}
-		elements = Designer.buildings.get(building).getCoupler().size();
+		elements = DesignerPanel.buildings.get(building).getCoupler().size();
 		for (int i = 0; i < elements; i++) {
 			createCouplerIcon(building, i, false);
 		}
@@ -60,13 +60,13 @@ public class ComponentIcons {
 
 	public void showComponent(JLabel icon) {
 		// Add icon to the panel
-		Designer.pl_comp.add(icon);
-		Designer.pl_comp.doLayout();
+		DesignerPanel.pl_comp.add(icon);
+		DesignerPanel.pl_comp.doLayout();
 		icon.requestFocus();
 	}
 
 	public void createDemandIcon(int building, int index, boolean visible) {
-		Demand d = Designer.buildings.get(building).getDemand().get(index);
+		Demand d = DesignerPanel.buildings.get(building).getDemand().get(index);
 		JLabel icon = new JLabel(d.getName());
 		icon.setName("demand");
 		icon.setIcon(Icon.uDemand);
@@ -76,13 +76,13 @@ public class ComponentIcons {
 		icon.addKeyListener(new RemoveListener());
 
 		// Add new icon to the currentBuilding icon list
-		Designer.demandIcons.get(building).add(icon);
+		DesignerPanel.demandIcons.get(building).add(icon);
 		if (visible)
 			showComponent(icon);
 	}
 
 	public void createStorageIcon(int building, int index, boolean visible) {
-		Storage s = Designer.buildings.get(building).getStorage().get(index);
+		Storage s = DesignerPanel.buildings.get(building).getStorage().get(index);
 		JLabel icon = new JLabel(s.getName());
 		icon.setName("storage");
 		icon.setIcon(Icon.uStorage);
@@ -92,13 +92,13 @@ public class ComponentIcons {
 		icon.addKeyListener(new RemoveListener());
 
 		// Add new icon to the currentBuilding icon list
-		Designer.storageIcons.get(building).add(icon);
+		DesignerPanel.storageIcons.get(building).add(icon);
 		if (visible)
 			showComponent(icon);
 	}
 
 	public void createVolProductionIcon(int building, int index, boolean visible) {
-		Volatile v = Designer.buildings.get(building).getVolatile().get(index);
+		Volatile v = DesignerPanel.buildings.get(building).getVolatile().get(index);
 		JLabel icon = new JLabel(v.getName());
 		icon.setName("volatile");
 		icon.setIcon(Icon.uVolatile);
@@ -108,13 +108,13 @@ public class ComponentIcons {
 		icon.addKeyListener(new RemoveListener());
 
 		// Add new icon to the currentBuilding icon list
-		Designer.volatileIcons.get(building).add(icon);
+		DesignerPanel.volatileIcons.get(building).add(icon);
 		if (visible)
 			showComponent(icon);
 	}
 
 	public void createContProductionIcon(int building, int index, boolean visible) {
-		Controllable cp = Designer.buildings.get(building).getControllable().get(index);
+		Controllable cp = DesignerPanel.buildings.get(building).getControllable().get(index);
 		JLabel icon = new JLabel(cp.getName());
 		icon.setName("controllable");
 		icon.setIcon(Icon.uControllable);
@@ -124,13 +124,13 @@ public class ComponentIcons {
 		icon.addKeyListener(new RemoveListener());
 
 		// Add new icon to the currentBuilding icon list
-		Designer.controllableIcons.get(building).add(icon);
+		DesignerPanel.controllableIcons.get(building).add(icon);
 		if (visible)
 			showComponent(icon);
 	}
 
 	public void createCouplerIcon(int building, int index, boolean visible) {
-		Coupler c = Designer.buildings.get(building).getCoupler().get(index);
+		Coupler c = DesignerPanel.buildings.get(building).getCoupler().get(index);
 		JLabel icon = new JLabel(c.getName());
 		icon.setName("coupler");
 		icon.setIcon(Icon.uCoupler);
@@ -140,7 +140,7 @@ public class ComponentIcons {
 		icon.addKeyListener(new RemoveListener());
 
 		// Add new icon to the currentBuilding icon list
-		Designer.couplerIcons.get(building).add(icon);
+		DesignerPanel.couplerIcons.get(building).add(icon);
 		if (visible)
 			showComponent(icon);
 	}

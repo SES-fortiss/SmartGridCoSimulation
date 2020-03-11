@@ -7,7 +7,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.ComponentUpdater;
 import fortiss.gui.listeners.helper.DataUpdater;
 import fortiss.gui.listeners.helper.FocusManager;
@@ -22,14 +22,14 @@ public class BuildingListener extends MouseAdapter implements FocusListener {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			JLabel lb = (JLabel) e.getSource();
 			lb.requestFocus(); // Required for removing buildings
-			Designer.currentBuilding = Designer.buildingIcons.indexOf(lb);
+			DesignerPanel.currentBuilding = DesignerPanel.buildingIcons.indexOf(lb);
 			ComponentUpdater so = new ComponentUpdater();
 			so.showComponents(e);
 			DataUpdater up = new DataUpdater();
-			up.updateEmsData(Designer.buildings.get(Designer.currentBuilding).getName(),
-					Integer.toString(Designer.buildings.get(Designer.currentBuilding).getPort()));
-			if (Designer.buildingCount > 0 && !Designer.pl_object.comp_box.isVisible()) {
-				Designer.pl_object.showComponentBox();
+			up.updateEmsData(DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getName(),
+					Integer.toString(DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getPort()));
+			if (DesignerPanel.buildingCount > 0 && !DesignerPanel.pl_object.comp_box.isVisible()) {
+				DesignerPanel.pl_object.showComponentBox();
 			}
 		}
 	}

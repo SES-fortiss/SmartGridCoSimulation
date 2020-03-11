@@ -10,9 +10,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import fortiss.components.Coupler;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FocusManager;
 import fortiss.gui.listeners.helper.InsertionVerifier;
+import fortiss.simulation.PlanningTool;
 
 public class CEfficiencySecondaryListener extends KeyAdapter implements FocusListener {
 
@@ -31,9 +32,9 @@ public class CEfficiencySecondaryListener extends KeyAdapter implements FocusLis
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = Designer.currentBuilding;
-		component = Designer.currentComponent;
-		o = Designer.buildings.get(building).getCoupler().get(component);
+		building = DesignerPanel.currentBuilding;
+		component = DesignerPanel.currentComponent;
+		o = DesignerPanel.buildings.get(building).getCoupler().get(component);
 		check = false;
 		valid = true;
 
@@ -51,7 +52,7 @@ public class CEfficiencySecondaryListener extends KeyAdapter implements FocusLis
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
 			String currentVal = Double.toString(o.getEfficiencySecondary());
-			JOptionPane.showMessageDialog(Designer.contentPane, message);
+			JOptionPane.showMessageDialog(PlanningTool.getMainContentPane(), message);
 			source.setText(currentVal);
 		}
 		FocusManager.focusLostCoupler(building, component);
@@ -105,7 +106,7 @@ public class CEfficiencySecondaryListener extends KeyAdapter implements FocusLis
 			check = true;
 		} else {
 			check = false;
-			Designer.pl_ems_detail.getToolkit().beep();
+			DesignerPanel.pl_ems_detail.getToolkit().beep();
 			e.consume();
 		}
 	}

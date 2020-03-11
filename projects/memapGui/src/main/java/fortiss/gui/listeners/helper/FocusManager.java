@@ -2,7 +2,7 @@ package fortiss.gui.listeners.helper;
 
 import javax.swing.JLabel;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.media.Icon;
 
 /**
@@ -11,35 +11,35 @@ import fortiss.media.Icon;
 public class FocusManager {
 	// Building
 	public static void focusBuilding(int building) {
-		JLabel lb = (JLabel) Designer.buildingIcons.get(building);
+		JLabel lb = (JLabel) DesignerPanel.buildingIcons.get(building);
 		lb.setIcon(Icon.sBuilding);
 		lb.revalidate();
-		Designer.pl_comp.repaint();
+		DesignerPanel.pl_comp.repaint();
 	}
 
 	public static void focusBuilding(JLabel lb) {
 		lb.setIcon(Icon.sBuilding);
 		lb.revalidate();
-		Designer.pl_comp.repaint();
+		DesignerPanel.pl_comp.repaint();
 	}
 
 	public static void focusLostBuilding(int building) {
-		JLabel lb = (JLabel) Designer.buildingIcons.get(building);
+		JLabel lb = (JLabel) DesignerPanel.buildingIcons.get(building);
 		lb.setIcon(Icon.uBuilding);
 		lb.revalidate();
-		Designer.pl_comp.repaint();
+		DesignerPanel.pl_comp.repaint();
 	}
 
 	public static void focusLostBuilding(JLabel lb) {
 		lb.setIcon(Icon.uBuilding);
 		lb.revalidate();
-		Designer.pl_comp.repaint();
+		DesignerPanel.pl_comp.repaint();
 	}
 
 	// Demand
 	public static void focusDemand(int building, int component) {
 		focusBuilding(building);
-		JLabel lb = (JLabel) Designer.demandIcons.get(building).get(component);
+		JLabel lb = (JLabel) DesignerPanel.demandIcons.get(building).get(component);
 		lb.setIcon(Icon.sDemand);
 		lb.revalidate();
 	}
@@ -52,7 +52,7 @@ public class FocusManager {
 
 	public static void focusLostDemand(int building, int component) {
 		focusLostBuilding(building);
-		JLabel lb = (JLabel) Designer.demandIcons.get(building).get(component);
+		JLabel lb = (JLabel) DesignerPanel.demandIcons.get(building).get(component);
 		lb.setIcon(Icon.uDemand);
 		lb.revalidate();
 	}
@@ -66,7 +66,7 @@ public class FocusManager {
 	// Storage
 	public static void focusStorage(int building, int component) {
 		focusBuilding(building);
-		JLabel lb = (JLabel) Designer.storageIcons.get(building).get(component);
+		JLabel lb = (JLabel) DesignerPanel.storageIcons.get(building).get(component);
 		lb.setIcon(Icon.sStorage);
 		lb.revalidate();
 	}
@@ -79,7 +79,7 @@ public class FocusManager {
 
 	public static void focusLostStorage(int building, int component) {
 		focusLostBuilding(building);
-		JLabel lb = (JLabel) Designer.storageIcons.get(building).get(component);
+		JLabel lb = (JLabel) DesignerPanel.storageIcons.get(building).get(component);
 		lb.setIcon(Icon.uStorage);
 		lb.revalidate();
 	}
@@ -93,7 +93,7 @@ public class FocusManager {
 	// Volatile
 	public static void focusVolatile(int building, int component) {
 		focusBuilding(building);
-		JLabel lb = (JLabel) Designer.volatileIcons.get(building).get(component);
+		JLabel lb = (JLabel) DesignerPanel.volatileIcons.get(building).get(component);
 		lb.setIcon(Icon.sVolatile);
 		lb.revalidate();
 	}
@@ -106,7 +106,7 @@ public class FocusManager {
 
 	public static void focusLostVolatile(int building, int component) {
 		focusLostBuilding(building);
-		JLabel lb = (JLabel) Designer.volatileIcons.get(building).get(component);
+		JLabel lb = (JLabel) DesignerPanel.volatileIcons.get(building).get(component);
 		lb.setIcon(Icon.uVolatile);
 		lb.revalidate();
 	}
@@ -120,7 +120,7 @@ public class FocusManager {
 	// Controllable
 	public static void focusControllable(int building, int component) {
 		focusBuilding(building);
-		JLabel lb = (JLabel) Designer.controllableIcons.get(building).get(component);
+		JLabel lb = (JLabel) DesignerPanel.controllableIcons.get(building).get(component);
 		lb.setIcon(Icon.sControllable);
 		lb.revalidate();
 	}
@@ -133,7 +133,7 @@ public class FocusManager {
 
 	public static void focusLostControllable(int building, int component) {
 		focusLostBuilding(building);
-		JLabel lb = (JLabel) Designer.controllableIcons.get(building).get(component);
+		JLabel lb = (JLabel) DesignerPanel.controllableIcons.get(building).get(component);
 		lb.setIcon(Icon.uControllable);
 		lb.revalidate();
 	}
@@ -147,7 +147,7 @@ public class FocusManager {
 	// Coupler
 	public static void focusCoupler(int building, int component) {
 		focusBuilding(building);
-		JLabel lb = (JLabel) Designer.couplerIcons.get(building).get(component);
+		JLabel lb = (JLabel) DesignerPanel.couplerIcons.get(building).get(component);
 		lb.setIcon(Icon.sCoupler);
 		lb.revalidate();
 	}
@@ -160,7 +160,7 @@ public class FocusManager {
 
 	public static void focusLostCoupler(int building, int component) {
 		focusLostBuilding(building);
-		JLabel lb = (JLabel) Designer.couplerIcons.get(building).get(component);
+		JLabel lb = (JLabel) DesignerPanel.couplerIcons.get(building).get(component);
 		lb.setIcon(Icon.uCoupler);
 		lb.revalidate();
 	}

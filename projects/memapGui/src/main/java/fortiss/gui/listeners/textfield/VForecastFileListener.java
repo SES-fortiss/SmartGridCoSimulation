@@ -10,9 +10,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import fortiss.components.Volatile;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FocusManager;
 import fortiss.gui.listeners.helper.InsertionVerifier;
+import fortiss.simulation.PlanningTool;
 
 public class VForecastFileListener extends KeyAdapter implements FocusListener {
 
@@ -30,9 +31,9 @@ public class VForecastFileListener extends KeyAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = Designer.currentBuilding;
-		component = Designer.currentComponent;
-		o = Designer.buildings.get(building).getVolatile().get(component);
+		building = DesignerPanel.currentBuilding;
+		component = DesignerPanel.currentComponent;
+		o = DesignerPanel.buildings.get(building).getVolatile().get(component);
 		check = false;
 		valid = true;
 
@@ -49,7 +50,7 @@ public class VForecastFileListener extends KeyAdapter implements FocusListener {
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
 			String currentVal = o.getForecastFile();
-			JOptionPane.showMessageDialog(Designer.contentPane, message);
+			JOptionPane.showMessageDialog(PlanningTool.getMainContentPane(), message);
 			source.setText(currentVal);
 		}
 		FocusManager.focusLostVolatile(building, component);
@@ -89,7 +90,7 @@ public class VForecastFileListener extends KeyAdapter implements FocusListener {
 			check = true;
 		} else {
 			check = false;
-			Designer.pl_ems_detail.getToolkit().beep();
+			DesignerPanel.pl_ems_detail.getToolkit().beep();
 			e.consume();
 		}
 	}

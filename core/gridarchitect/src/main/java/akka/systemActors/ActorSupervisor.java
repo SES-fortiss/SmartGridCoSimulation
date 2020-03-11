@@ -204,7 +204,6 @@ public class ActorSupervisor extends UntypedActor implements CurrentTimeStepSubs
     */
 	public void spawnGridActor(String actorName, ActorTopology actorTopology) {
     	getContext().actorOf(BasicActor.create(simulationName, "/user/ActorSupervisor/"+ actorName, actorTopology), actorName);
-    	// TODO test line to send global time to Basic Actor
     	getContext().actorSelection("/user/ActorSupervisor/" + actorName).tell(globalTime, getSelf());
     }
 

@@ -32,9 +32,13 @@ public class GuiController {
 
 	private TopologyController topMemapOn;
 	private TopologyController topMemapOff;
+	private String pathToConfigJson;
 
-	public GuiController(String pathToConfigJson) throws FileNotFoundException {
-
+	public GuiController(String pathToConfigJson) {
+		this.pathToConfigJson = pathToConfigJson;
+	}
+	
+	public void setUp() throws FileNotFoundException {
 		FileReader reader = new FileReader(pathToConfigJson);
 		JsonParser jsonParser = new JsonParser();
 		JsonObject configJson = (JsonObject) jsonParser.parse(reader);

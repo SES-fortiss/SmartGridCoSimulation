@@ -3,8 +3,9 @@ package fortiss.gui.listeners.action;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.PositionManager;
+import fortiss.simulation.PlanningTool;
 
 public class ResetListener extends MouseAdapter {
 
@@ -13,31 +14,31 @@ public class ResetListener extends MouseAdapter {
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		Designer.pl_ems.removeAll();
-		Designer.pl_ems.repaint();
-		Designer.pl_comp.removeAll();
-		Designer.pl_comp.repaint();
+		DesignerPanel.pl_ems.removeAll();
+		DesignerPanel.pl_ems.repaint();
+		DesignerPanel.pl_comp.removeAll();
+		DesignerPanel.pl_comp.repaint();
 
 		// Eliminate positions
 		PositionManager.clearPositions();
 
 		// Eliminate building icons
-		Designer.buildingIcons.clear();
+		DesignerPanel.buildingIcons.clear();
 
 		// Eliminate buildings
-		Designer.buildings.clear();
-		Designer.buildingCount = Designer.buildings.size();
+		DesignerPanel.buildings.clear();
+		DesignerPanel.buildingCount = DesignerPanel.buildings.size();
 
 		// Hide details
-		Designer.cl.show(Designer.pl_comp_detail, "initial");
+		DesignerPanel.cl.show(DesignerPanel.pl_comp_detail, "initial");
 
 		// Hide component box
-		Designer.pl_object.hideComponentBox();
-		Designer.frame.setTitle("");
+		DesignerPanel.pl_object.hideComponentBox();
+		PlanningTool.getPlanningToolWindow().setTitle("");
 		
 		// Clean lastSavedFile and descriptorFile paths
-		Designer.parameterPanel.pars.setLastSavedFile("");
-		Designer.parameterPanel.pars.clearDescriptorFile();
+		DesignerPanel.parameterPanel.pars.setLastSavedFile("");
+		DesignerPanel.parameterPanel.pars.clearDescriptorFile();
 
 	}
 }

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import javax.swing.JLabel;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.media.Icon;
 
 /**
@@ -31,7 +31,7 @@ public abstract class PositionManager {
 	 * @param icon a building label
 	 */
 	public static void removePosition(JLabel icon) {
-		int index = Designer.buildingIcons.indexOf(icon);
+		int index = DesignerPanel.buildingIcons.indexOf(icon);
 		position.remove(index);
 		ConnectionManager.removeConnectionsOf(icon);
 	}
@@ -52,10 +52,10 @@ public abstract class PositionManager {
 	 * @param icon a building icon
 	 */
 	public static void updateBuildingPosition(JLabel icon) {
-		int index = Designer.buildingIcons.indexOf(icon);
+		int index = DesignerPanel.buildingIcons.indexOf(icon);
 		position.set(index, getCentralPoint(icon));
 		ConnectionManager.updateLines();
-		Designer.pl_ems.repaint();
+		DesignerPanel.pl_ems.repaint();
 	}
 
 	/**
@@ -74,7 +74,7 @@ public abstract class PositionManager {
 	 * @param icon a building label
 	 */
 	public static Point2D getPositionOf(JLabel icon) {
-		int index = Designer.buildingIcons.indexOf(icon);
+		int index = DesignerPanel.buildingIcons.indexOf(icon);
 		return position.get(index);
 	}
 
@@ -101,7 +101,7 @@ public abstract class PositionManager {
 		}
 		icon.setLocation(x, y);
 		PositionManager.updateBuildingPosition(icon);
-		Designer.pl_ems.repaint();
+		DesignerPanel.pl_ems.repaint();
 	}
 
 	/**
@@ -109,7 +109,7 @@ public abstract class PositionManager {
 	 * panel is resized. Calls {@link PositionManager#fixPosition(JLabel)}
 	 */
 	public static void fixPositions() {
-		for (JLabel icon : Designer.buildingIcons) {
+		for (JLabel icon : DesignerPanel.buildingIcons) {
 			fixPosition(icon);
 		}
 	}
@@ -121,7 +121,7 @@ public abstract class PositionManager {
 	 * @return visibleRec area in which an icon is fully visible
 	 */
 	public static Rectangle getVisibleArea() {
-		Rectangle visibleRec = Designer.pl_ems.getVisibleRect();
+		Rectangle visibleRec = DesignerPanel.pl_ems.getVisibleRect();
 		visibleRec.width -= Icon.sBuilding.getIconWidth();
 		visibleRec.height -= Icon.sBuilding.getIconHeight() * (1.3);
 		return visibleRec;

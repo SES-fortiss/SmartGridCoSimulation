@@ -7,7 +7,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JComboBox;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 
 public class SNetworkTypeListener extends MouseAdapter implements ItemListener {
 
@@ -26,7 +26,7 @@ public class SNetworkTypeListener extends MouseAdapter implements ItemListener {
 			if (userSelection) {
 				JComboBox<?> o = (JComboBox<?>) e.getSource();
 				String sel = (String) o.getSelectedItem();
-				Designer.buildings.get(building).getStorage().get(component).setNetworkType(sel);
+				DesignerPanel.buildings.get(building).getStorage().get(component).setNetworkType(sel);
 			}
 			userSelection = false;
 		}
@@ -43,7 +43,7 @@ public class SNetworkTypeListener extends MouseAdapter implements ItemListener {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		userSelection = true;
-		building = Designer.currentBuilding;
-		component = Designer.currentComponent;
+		building = DesignerPanel.currentBuilding;
+		component = DesignerPanel.currentComponent;
 	}
 }

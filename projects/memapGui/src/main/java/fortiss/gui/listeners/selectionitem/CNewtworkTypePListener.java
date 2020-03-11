@@ -7,7 +7,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JComboBox;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 
 public class CNewtworkTypePListener extends MouseAdapter implements ItemListener {
 
@@ -30,14 +30,14 @@ public class CNewtworkTypePListener extends MouseAdapter implements ItemListener
 				String sel = (String) o.getSelectedItem();
 				String opt = "Electricity";
 
-				Designer.buildings.get(building).getCoupler().get(component).setNetworkTypeP(sel);
+				DesignerPanel.buildings.get(building).getCoupler().get(component).setNetworkTypeP(sel);
 				if (sel == "Heat") {
-					Designer.buildings.get(building).getCoupler().get(component).setNetworkTypeS(opt);
+					DesignerPanel.buildings.get(building).getCoupler().get(component).setNetworkTypeS(opt);
 				} else {
 					opt = "Heat";
-					Designer.buildings.get(building).getCoupler().get(component).setNetworkTypeS(opt);
+					DesignerPanel.buildings.get(building).getCoupler().get(component).setNetworkTypeS(opt);
 				}
-				Designer.couplerPanel.txtCSecondaryNetworkType.setText(opt);
+				DesignerPanel.couplerPanel.txtCSecondaryNetworkType.setText(opt);
 			}
 			userSelection = false;
 		}
@@ -54,8 +54,8 @@ public class CNewtworkTypePListener extends MouseAdapter implements ItemListener
 	@Override
 	public void mousePressed(MouseEvent e) {
 		userSelection = true;
-		building = Designer.currentBuilding;
-		component = Designer.currentComponent;
+		building = DesignerPanel.currentBuilding;
+		component = DesignerPanel.currentComponent;
 	}
 
 }

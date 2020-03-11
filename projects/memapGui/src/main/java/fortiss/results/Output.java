@@ -10,7 +10,7 @@ import java.util.Set;
 
 import fortiss.components.Building;
 import fortiss.datastructures.Data;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FileManager;
 import fortiss.simulation.Parameters;
 import memap.helper.DirectoryConfiguration;
@@ -34,7 +34,7 @@ public class Output {
 	 */
 	public void loadResults() {
 		FileManager fm = new FileManager();
-		Parameters pars = Designer.parameterPanel.pars;
+		Parameters pars = DesignerPanel.parameterPanel.pars;
 		String location = System.getProperty("user.dir");
 		String fs = File.separator;
 		String source = fs + DirectoryConfiguration.mainDir + fs + "results" + fs + pars.getSimulationName() + fs
@@ -62,7 +62,7 @@ public class Output {
 		}
 
 		// Read building optimization results
-		for (Building building : Designer.buildings) {
+		for (Building building : DesignerPanel.buildings) {
 			filename = building.getName() + optimizerQualifier;
 			filename = location + source + filename;
 			try {

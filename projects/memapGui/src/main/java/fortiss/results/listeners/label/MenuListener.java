@@ -6,7 +6,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import fortiss.results.Menu;
-import fortiss.results.Reporter;
+import fortiss.results.ReporterPanel;
 
 public class MenuListener implements TreeSelectionListener {
 
@@ -19,13 +19,14 @@ public class MenuListener implements TreeSelectionListener {
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
 		Menu h = (Menu) e.getSource();
+		
 		// Clicked: selected or deselected path (does not apply for re-selected components)
 		TreePath clickedPath = e.getPath();
 		// Selected: Equals to clicked only for selected components
 		TreePath selectedPath = e.getNewLeadSelectionPath();
 
 		if (selectedPath == null) {
-			Reporter.plotPanel.clearSeries();
+			ReporterPanel.plotPanel.clearSeries();
 			return;
 		}
 
@@ -35,24 +36,24 @@ public class MenuListener implements TreeSelectionListener {
 		if (currentlySelected > previouslySelected) {
 			// We are adding a series
 			String parent = getParent(clickedPath);
-			Reporter.plotPanel.addSeries(getSeriesName(parent, clicked),
-					Reporter.output.getDataSeries(parent, clicked));
-			Reporter.plotPanel.paintSeries();
+			ReporterPanel.plotPanel.addSeries(getSeriesName(parent, clicked),
+					ReporterPanel.output.getDataSeries(parent, clicked));
+			ReporterPanel.plotPanel.paintSeries();
 		} else if (currentlySelected < previouslySelected && currentlySelected > 1) {
 			// We are deselecting a series (first condition)
 			// or we are re-selecting one of the series that was previously selected (!second
 			// condition, goes to else)
 			String parent = getParent(clickedPath);
-			Reporter.plotPanel.removeSeries(getSeriesName(parent, clicked));
-			Reporter.plotPanel.paintSeries();
+			ReporterPanel.plotPanel.removeSeries(getSeriesName(parent, clicked));
+			ReporterPanel.plotPanel.paintSeries();
 		} else {
 			// We are changing one series for another or re-selecting
 			clicked = ((DefaultMutableTreeNode) selectedPath.getLastPathComponent()).toString();
 			String parent = getParent(selectedPath);
-			Reporter.plotPanel.clearSeries();
-			Reporter.plotPanel.addSeries(getSeriesName(parent, clicked),
-					Reporter.output.getDataSeries(getParent(selectedPath), clicked.toString()));
-			Reporter.plotPanel.paintSeries();
+			ReporterPanel.plotPanel.clearSeries();
+			ReporterPanel.plotPanel.addSeries(getSeriesName(parent, clicked),
+					ReporterPanel.output.getDataSeries(getParent(selectedPath), clicked.toString()));
+			ReporterPanel.plotPanel.paintSeries();
 		}
 
 		previouslySelected = currentlySelected;

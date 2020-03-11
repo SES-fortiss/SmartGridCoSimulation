@@ -3,7 +3,7 @@ package fortiss.gui.listeners.label;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 
 public class MarketPriceListener extends MouseAdapter {
 
@@ -12,13 +12,13 @@ public class MarketPriceListener extends MouseAdapter {
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if (Designer.parameterPanel.pars.isFixedPrice()) {
+		if (DesignerPanel.parameterPanel.pars.isFixedPrice()) {
 			// If Market price is fixed
-			Designer.parameterPanel.pars.setFixedPrice(false);
+			DesignerPanel.parameterPanel.pars.setFixedPrice(false);
 		} else {
 			// If Market price is variable
-			Designer.parameterPanel.pars.setFixedPrice(true);
+			DesignerPanel.parameterPanel.pars.setFixedPrice(true);
 		}
-		Designer.parameterPanel.updateMarketPriceOptions();
+		DesignerPanel.parameterPanel.updateMarketPriceOptions();
 	}
 }

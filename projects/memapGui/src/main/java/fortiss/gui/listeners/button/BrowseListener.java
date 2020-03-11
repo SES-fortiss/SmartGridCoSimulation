@@ -3,7 +3,7 @@ package fortiss.gui.listeners.button;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.Chooser;
 
 public class BrowseListener extends MouseAdapter {
@@ -19,8 +19,8 @@ public class BrowseListener extends MouseAdapter {
 		String path = c.choosePath();
 		
 		if (path != null) {
-			Designer.parameterPanel.txtMarketPriceFile.setText(path);
-			Designer.parameterPanel.pars.setMarketPriceFile(path);
+			DesignerPanel.parameterPanel.txtMarketPriceFile.setText(path);
+			DesignerPanel.parameterPanel.pars.setMarketPriceFile(path);
 		}
 	}
 }

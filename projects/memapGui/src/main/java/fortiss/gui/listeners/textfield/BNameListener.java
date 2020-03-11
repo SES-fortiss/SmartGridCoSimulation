@@ -8,10 +8,11 @@ import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FocusManager;
 import fortiss.gui.listeners.helper.InsertionVerifier;
 import fortiss.gui.listeners.helper.LabelUpdater;
+import fortiss.simulation.PlanningTool;
 
 public class BNameListener extends KeyAdapter implements FocusListener {
 
@@ -27,7 +28,7 @@ public class BNameListener extends KeyAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = Designer.currentBuilding;
+		building = DesignerPanel.currentBuilding;
 		check = false;
 		valid = true;
 
@@ -43,8 +44,8 @@ public class BNameListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
-			String currentVal = Designer.buildings.get(building).getName();
-			JOptionPane.showMessageDialog(Designer.contentPane, message);
+			String currentVal = DesignerPanel.buildings.get(building).getName();
+			JOptionPane.showMessageDialog(PlanningTool.getMainContentPane(), message);
 			source.setText(currentVal);
 		}
 		FocusManager.focusLostBuilding(building);
@@ -65,9 +66,9 @@ public class BNameListener extends KeyAdapter implements FocusListener {
 				message = "Error. This field can not be empty.";
 			} else {
 				valid = true;
-				Designer.buildings.get(building).setName(input);
+				DesignerPanel.buildings.get(building).setName(input);
 				LabelUpdater lu = new LabelUpdater();
-				lu.updateLabel(Designer.buildingIcons.get(building), input);
+				lu.updateLabel(DesignerPanel.buildingIcons.get(building), input);
 			}
 		}
 	}
@@ -84,7 +85,7 @@ public class BNameListener extends KeyAdapter implements FocusListener {
 			check = true;
 		} else {
 			check = false;
-			Designer.pl_ems_detail.getToolkit().beep();
+			DesignerPanel.pl_ems_detail.getToolkit().beep();
 			e.consume();
 		}
 	}

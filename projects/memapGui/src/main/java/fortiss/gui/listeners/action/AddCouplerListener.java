@@ -4,7 +4,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import fortiss.components.Coupler;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.ComponentIcons;
 import fortiss.gui.listeners.helper.DataUpdater;
 
@@ -15,16 +15,16 @@ public class AddCouplerListener extends MouseAdapter {
 	 */
 	public void mouseClicked(MouseEvent e) {
 		// Update current_comp
-		Designer.currentComponent = Designer.couplerIcons.get(Designer.currentBuilding).size();
+		DesignerPanel.currentComponent = DesignerPanel.couplerIcons.get(DesignerPanel.currentBuilding).size();
 
 		// Create coupler
-		Designer.buildings.get(Designer.currentBuilding).addCoupler(new Coupler("Coupler" + Designer.currentComponent,
+		DesignerPanel.buildings.get(DesignerPanel.currentBuilding).addCoupler(new Coupler("Coupler" + DesignerPanel.currentComponent,
 				"Heat", "Electricity", 0.0, 0.0, 1.0, 1.0, 0.0, 0.0));
-		Coupler c = Designer.buildings.get(Designer.currentBuilding).getCoupler().get(Designer.currentComponent);
+		Coupler c = DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getCoupler().get(DesignerPanel.currentComponent);
 
 		// Create label
 		ComponentIcons components = new ComponentIcons();
-		components.createCouplerIcon(Designer.currentBuilding, Designer.currentComponent, true);
+		components.createCouplerIcon(DesignerPanel.currentBuilding, DesignerPanel.currentComponent, true);
 
 		// Show data
 		DataUpdater up = new DataUpdater();

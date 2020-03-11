@@ -7,7 +7,6 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeSelectionModel;
 
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
@@ -30,23 +29,20 @@ public class Menu extends JTree {
 	 * properties.
 	 */
 	Menu(Output output) {
-		super();
 		setSelectionModel(new MenuSelectionModel());
-		getSelectionModel().setSelectionMode
-        (TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+		populateMenu(output); // with empty list
 		DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) this.getCellRenderer();
 		setBackground(Colors.background);
 		setFont(Fonts.getOpenSans());
 		renderer.setTextNonSelectionColor(Colors.normal);
 		renderer.setTextSelectionColor(Colors.accent2);
 		renderer.setBorderSelectionColor(Color.black);
-		getTreeStructure(output);
 	}
 
 	/**
-	 * @return the treeStructure for a given data  
+	 * @return the treeStructure for a given data
 	 */
-	private Object[] getTreeStructure(Output output) {	
+	private Object[] getTreeStructure(Output output) {
 		Object[] structure = new Object[output.getNumOfDatasets() + 1];
 		structure[0] = "Results";
 
@@ -59,7 +55,7 @@ public class Menu extends JTree {
 
 			int j = 1;
 			for (String key : output.getSeriesList(building)) {
-				if(!key.equals("Time step")) {
+				if (!key.equals("Time step")) {
 					subs[j] = key;
 					j++;
 				}
@@ -95,8 +91,14 @@ public class Menu extends JTree {
 		return (node);
 	}
 
+	/**
+	 * Populates the menu with results
+	 * 
+	 * @param output set of results
+	 */
 	public void populateMenu(Output output) {
 		final Object[] list = getTreeStructure(output);
 		setModel(new DefaultTreeModel(createTree(list)));
 	}
+
 }
