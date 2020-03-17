@@ -111,6 +111,7 @@ public class JettyStart {
 			public void run() {
 				while (simLoop) {
 					topologyMemapOn.startSimulation();
+					
 				}
 			}
 		};
