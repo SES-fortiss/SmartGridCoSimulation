@@ -12,6 +12,7 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 import memap.controller.BuildingController;
 import memap.controller.OpcUaBuildingController;
 import memap.controller.TopologyController;
+import memap.helper.EnergyPrices;
 import memap.helper.MEMAPLogging;
 import memap.helper.configurationOptions.OptHierarchy;
 import memap.helper.configurationOptions.OptimizationCriteria;
@@ -28,7 +29,7 @@ import memap.helper.configurationOptions.ToolUsage;
 public class JettyStart {
 
 	public TopologyController topologyMemapOn;
-	public TopologyController topologyMemapOff;
+//	public TopologyController topologyMemapOff;
 	public JsonObject errorCode;
 	public boolean simLoop = true;
 	ScheduledExecutorService memapOnOffRegulator = Executors.newScheduledThreadPool(2);
@@ -44,7 +45,7 @@ public class JettyStart {
 	public void stopSimulation() {
 		simLoop = false;
 		topologyMemapOn.endSimulation();
-		topologyMemapOff.endSimulation();
+//		topologyMemapOff.endSimulation();
 	}
 
 	/**
@@ -61,8 +62,10 @@ public class JettyStart {
 	public void run(JsonArray endpointValues) {
 		topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILP, OptimizationCriteria.EUR,
 				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
-		topologyMemapOff = new TopologyController("MemapOn", OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
-				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
+		TopologyConfig.getInstance().init(5, 96, 7, 4880, 0);
+		EnergyPrices.getInstance().init(0.285);
+//		topologyMemapOff = new TopologyController("MemapOff", OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
+//				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
 		errorCode = new JsonObject();
 
 		/*
@@ -84,9 +87,9 @@ public class JettyStart {
 				}
 				System.out.println("Buiding " + i + " will be added...");
 				BuildingController sampleBuilding = new OpcUaBuildingController(topologyMemapOn, jsonEndpoint, jsonNodes);
-				BuildingController sampleBuilding2 = new OpcUaBuildingController(topologyMemapOff, jsonEndpoint, jsonNodes);
+//				BuildingController sampleBuilding2 = new OpcUaBuildingController(topologyMemapOff, jsonEndpoint, jsonNodes);
 				topologyMemapOn.attach(sampleBuilding);
-				topologyMemapOff.attach(sampleBuilding2);
+//				topologyMemapOff.attach(sampleBuilding2);
 				errorCode.put((String) jsonEndpoint.get("name"), 0);
 				System.out.println("Building " + i + " was added...");
 
@@ -111,15 +114,15 @@ public class JettyStart {
 				}
 			}
 		};
-		Runnable simulationMemapOff = new Runnable() {
-			public void run() {
-				while (simLoop) {
-					topologyMemapOff.startSimulation();
-				}
-			}
-		};
+//		Runnable simulationMemapOff = new Runnable() {
+//			public void run() {
+//				while (simLoop) {
+//					topologyMemapOff.startSimulation();
+//				}
+//			}
+//		};
 
 		memapOnOffRegulator.schedule(simulationMemapOn, 0, TimeUnit.SECONDS);
-		memapOnOffRegulator.schedule(simulationMemapOff, 0, TimeUnit.SECONDS);
+//		memapOnOffRegulator.schedule(simulationMemapOff, 0, TimeUnit.SECONDS);
 	}
 }

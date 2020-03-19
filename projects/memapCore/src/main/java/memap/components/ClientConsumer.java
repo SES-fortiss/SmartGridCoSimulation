@@ -50,13 +50,15 @@ public class ClientConsumer extends Consumer implements CurrentTimeStepSubscribe
 	public ClientConsumer(BasicClient client, String name, NodeId nodeIdHeat, NodeId nodeIdElectricity, int port) {
 		super(name, port);
 		this.client = client;
-		Arrays.fill(heatProfile, 0.0);
-		Arrays.fill(electricityProfile, 0.0);
+		
 		
 		// Initialization delayed until after topologyConfig initialization
 		heatProfile = new Double[topologyConfig.getNrStepsMPC()];
 		electricityProfile = new Double[topologyConfig.getNrStepsMPC()];
 
+		Arrays.fill(heatProfile, 0.0);
+		Arrays.fill(electricityProfile, 0.0);
+		
 		// subscribe to the Value attribute of the server's CurrentTime node
 		ReadValueId readValueIdHeat = new ReadValueId(nodeIdHeat, AttributeId.Value.uid(), null,
 				QualifiedName.NULL_VALUE);
