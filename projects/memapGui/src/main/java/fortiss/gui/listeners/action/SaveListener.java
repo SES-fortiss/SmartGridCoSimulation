@@ -8,8 +8,9 @@ import javax.swing.JFileChooser;
 
 import org.apache.commons.io.FilenameUtils;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FileManager;
+import fortiss.simulation.PlanningTool;
 
 public class SaveListener extends MouseAdapter {
 
@@ -30,11 +31,11 @@ public class SaveListener extends MouseAdapter {
 				file = new File(file.toString() + ".json");
 			}
 
-			Designer.parameterPanel.pars.setLastSavedFile(file.getAbsolutePath());
+			DesignerPanel.parameterPanel.pars.setLastSavedFile(file.getAbsolutePath());
 			FileManager fm = new FileManager();
 			fm.writeMemapModel(file);
 			System.out.println(">> Save file: " + file.getAbsolutePath());
-			Designer.frame.setTitle("MEMAP - " + file.getAbsolutePath() + " - PlanningTool");			
+			PlanningTool.getPlanningToolWindow().setTitle("MEMAP - " + file.getAbsolutePath() + " - PlanningTool");			
 		}
 	}
 

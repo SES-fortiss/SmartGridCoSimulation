@@ -11,7 +11,7 @@ import java.awt.dnd.DropTargetListener;
 import javax.swing.JPanel;
 
 import fortiss.components.Building;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.BuildingIcons;
 import fortiss.gui.listeners.helper.ComponentIcons;
 import fortiss.gui.listeners.helper.DataUpdater;
@@ -21,7 +21,7 @@ public class DropListener extends DropTargetAdapter implements DropTargetListene
 	@SuppressWarnings("unused")
 	private DropTarget dropTarget;
 	private JPanel panel;
-	private DataFlavor dataFlavor = Designer.dataFlavor;
+	private DataFlavor dataFlavor = DesignerPanel.dataFlavor;
 
 	public DropListener(JPanel panel) {
 
@@ -36,44 +36,38 @@ public class DropListener extends DropTargetAdapter implements DropTargetListene
 	 * {@link fortiss.gui.listeners.helper.DataUpdater#updateEmsData(String, String)}.
 	 */
 	public void drop(DropTargetDropEvent event) {
-		
+
 		try {
-			
-			/** Clean transfer 
-			 * Transferable tr = event.getTransferable();
-			 * JLabel icon = (JLabel) tr.getTransferData(dataFlavor); 
-			 * this.panel.add(new JLabel(lb.getText(), lb.getIcon(),
-			 * lb.getHorizontalAlignment()));
-			 * */
 
 			if (event.isDataFlavorSupported(dataFlavor)) {
 				Point p = event.getLocation();
 				event.acceptDrop(DnDConstants.ACTION_COPY);
-				
+
 				// Create building
-				Designer.buildings.add(new Building("building" + Designer.buildingCount, 0, false, 0));
-				Designer.currentBuilding = Designer.buildingCount;
+				DesignerPanel.buildings.add(new Building("building" + DesignerPanel.buildingCount, 0, false, 0));
+				DesignerPanel.currentBuilding = DesignerPanel.buildingCount;
 
 				// Create building icon
 				BuildingIcons bi = new BuildingIcons();
-				bi.createBuildingIcon(Designer.buildingCount, p);
-				
-				// Create list of component icons for current building and add it to the general icon
+				bi.createBuildingIcon(DesignerPanel.buildingCount, p);
+
+				// Create list of component icons for current building and add it to the general
+				// icon
 				// lists
 				ComponentIcons components = new ComponentIcons();
-				components.createComponentLists(Designer.currentBuilding);
+				components.createComponentLists(DesignerPanel.currentBuilding);
 
 				// Show information in pl_ems_details
 				DataUpdater du = new DataUpdater();
-				du.updateEmsData(Designer.buildings.get(Designer.currentBuilding).getName(),
-						Integer.toString(Designer.buildings.get(Designer.currentBuilding).getPort()));
-				Designer.buildingCount = Designer.buildingCount + 1;
-				
+				du.updateEmsData(DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getName(),
+						Integer.toString(DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getPort()));
+				DesignerPanel.buildingCount = DesignerPanel.buildingCount + 1;
+
 				event.dropComplete(true);
 				this.panel.validate();
-				
-				if (Designer.buildingCount > 0 && !Designer.pl_object.comp_box.isVisible()) {
-					Designer.pl_object.showComponentBox();
+
+				if (DesignerPanel.buildingCount > 0 && !DesignerPanel.pl_object.comp_box.isVisible()) {
+					DesignerPanel.pl_object.showComponentBox();
 				}
 				return;
 			}

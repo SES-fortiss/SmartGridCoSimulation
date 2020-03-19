@@ -3,19 +3,27 @@ package memap.helper.lp;
 import com.joptimizer.optimizers.LPOptimizationRequest;
 import com.joptimizer.optimizers.LPPrimalDualMethod;
 
-import memap.main.ConfigurationMEMAP;
+import memap.controller.TopologyController;
+import memap.helper.configurationOptions.OptimizationCriteria;
 
 public class LPOptimizationStarter {
+	
+	/** Reference to topologyController ancestor */
+	TopologyController topologyController;
+	
+	public LPOptimizationStarter(TopologyController topologyController){
+		this.topologyController = topologyController;
+	}
 	
 	public double[] runLinProg(LPOptimizationProblem problem) {
 	
 		LPOptimizationRequest or = new LPOptimizationRequest();
 		
-		if (ConfigurationMEMAP.chosenCriteria == ConfigurationMEMAP.OptimizationCriteria.EUR) {
+		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
 			or.setC(problem.lambda);
 		}
 		
-		if (ConfigurationMEMAP.chosenCriteria == ConfigurationMEMAP.OptimizationCriteria.CO2) {
+		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
 			or.setC(problem.lambdaCO2);
 		}
 		

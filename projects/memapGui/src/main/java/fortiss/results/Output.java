@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import fortiss.components.Building;
 import fortiss.datastructures.Data;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FileManager;
 import fortiss.simulation.Parameters;
 import memap.helper.DirectoryConfiguration;
@@ -16,16 +19,22 @@ import memap.helper.DirectoryConfiguration;
  * Output represents a simulation complete set of results.
  */
 public class Output {
-	private Parameters pars = Designer.parameterPanel.pars;
-	private ArrayList<Data> output = new ArrayList<>();
-	public ArrayList<String> buildingNames = new ArrayList<>();
+
+	private Map<String, Data> resultsLibrary;
 
 	/**
-	 * Constructor for the class Output. Populates the list array with objects of
-	 * the class Data.
+	 * Constructor for the class Output.
 	 */
 	public Output() {
+		resultsLibrary = new HashMap<>();
+	}
+
+	/*
+	 * Populates the map with objects of the class Data.
+	 */
+	public void loadResults() {
 		FileManager fm = new FileManager();
+		Parameters pars = DesignerPanel.parameterPanel.pars;
 		String location = System.getProperty("user.dir");
 		String fs = File.separator;
 		String source = fs + DirectoryConfiguration.mainDir + fs + "results" + fs + pars.getSimulationName() + fs
@@ -42,63 +51,81 @@ public class Output {
 			optimizerQualifier += "_LP_Solutions.csv";
 		}
 
-		if (pars.isMemapON()) {
-			for (Building building : Designer.buildings) {
-				String filename = pars.getSimulationName() + optimizerQualifier;
-				buildingNames.add(building.getName());
-				filename = location + source + filename;
-				try {
-					output.add(new Data(fm.readFromSource(filename), true));
-				} catch (IOException | ParseException e) {
-					e.printStackTrace();
-				}
-			}
-		} else {
-			for (Building building : Designer.buildings) {
-				String filename = building.getName() + optimizerQualifier;
-				buildingNames.add(building.getName());
-				filename = location + source + filename;
-				try {
-					output.add(new Data(fm.readFromSource(filename), true));
-				} catch (IOException | ParseException e) {
-					e.printStackTrace();
-				}
-			}
+		// Read global optimization results
+		String filename = pars.getSimulationName() + optimizerQualifier;
+		filename = location + source + filename;
+
+		try {
+			resultsLibrary.put("Global optimization", new Data(fm.readFromSource(filename), true));
+		} catch (IOException | ParseException e) {
+			e.printStackTrace();
 		}
 
+		// Read building optimization results
+		for (Building building : DesignerPanel.buildings) {
+			filename = building.getName() + optimizerQualifier;
+			filename = location + source + filename;
+			try {
+				resultsLibrary.put(building.getName(), new Data(fm.readFromSource(filename), true));
+			} catch (IOException | ParseException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
-	 * @return the number of data sets.
+	 * @return the number of data sets in the results library
 	 */
-	public int size() {
-		return output.size();
+	public int getNumOfDatasets() {
+		return resultsLibrary.size();
 	}
 
 	/**
-	 * @param building    index of the building data set
-	 * @param seriesIndex the index of a series in data object
-	 * @return a label in data object
+	 * @param resultName a building name or "Global optimization" for global
+	 *                   optimization results
+	 * @param label      the label of a series in a data set
+	 * @return a series in the data set of a building
 	 */
-	public String getDataLabel(int building, int seriesIndex) {
-		return output.get(building).getLabel(seriesIndex);
+	public ArrayList<Double> getDataSeries(String resultName, String label) {
+		return resultsLibrary.get(resultName).getSeries(label);
 	}
 
 	/**
-	 * @param building index of the building data set
-	 * @param label    the label of a series in a data set
-	 * @return a series in data object
-	 */
-	public ArrayList<Double> getDataSeries(int building, String label) {
-		int indexOfLabel = output.get(building).getIndexOf(label);
-		return output.get(building).getSeries(indexOfLabel);
-	}
-
-	/**
+	 * @param resultName a building name or "Global optimization" for global
+	 *                   optimization results
 	 * @return number of series in a data set
 	 */
-	public int getDataSetSize(int building) {
-		return output.get(building).getNumOfSeries();
+	public int getDatasetSize(String resultName) {
+		int numOfSeries = 0;
+		if (resultsLibrary.containsKey(resultName)) {
+			numOfSeries = resultsLibrary.get(resultName).getNumOfSeries();
+		}
+		return numOfSeries;
 	}
 
+	/**
+	 * @return a set of result names including building names and "Global
+	 *         optimization" for global optimization results
+	 */
+	public Set<String> getResultList() {
+		return resultsLibrary.keySet();
+	}
+
+	/**
+	 * @param resultName a building name or "Global optimization" for global
+	 *                   optimization results
+	 * @return a set of series names in the data set of a building
+	 */
+	public Set<String> getSeriesList(String resultName) {
+		return resultsLibrary.get(resultName).getSeriesList();
+	}
+
+	/**
+	 * @param resultName a building name or "Global optimization" for global
+	 *                   optimization results
+	 * @return <code>true</code> if there are results for a given building name
+	 */
+	public boolean containsResultsFor(String resultName) {
+		return resultsLibrary.containsKey(resultName);
+	}
 }

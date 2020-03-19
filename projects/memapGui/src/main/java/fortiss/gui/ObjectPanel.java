@@ -89,7 +89,7 @@ public class ObjectPanel extends JPanel {
 		// Enable dragging label
 		DragSource ds = new DragSource();
 		ds.createDefaultDragGestureRecognizer(lb_new_ems, DnDConstants.ACTION_COPY, new DragListener());
-		new DropListener(Designer.pl_ems);
+		new DropListener(DesignerPanel.pl_ems);
 	}
 
 	public void showComponentBox() {

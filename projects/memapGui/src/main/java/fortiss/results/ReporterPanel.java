@@ -3,11 +3,9 @@ package fortiss.results;
 import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Graphics;
 
 import javax.swing.BoxLayout;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -19,25 +17,23 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
-import fortiss.gui.Designer;
 import fortiss.gui.PlotPanel;
-import fortiss.gui.listeners.window.ExitWindowListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
-import fortiss.media.Icon;
 import fortiss.results.listeners.label.MenuListener;
 
 /**
  * Report panel: shows results list and plots
  */
 @SuppressWarnings("serial")
-public class Reporter extends JFrame {
+public class ReporterPanel extends JPanel {
 
-	public static Reporter results;
+	public static ReporterPanel results;
 	public static JPanel plPlot;
 	public static PlotPanel plotPanel;
 	public static Output output;
+	private Menu treeResults;
 	private JPanel plSelection;
 	private JLabel lbInstructions;
 	private JLabel lbInstructions2;
@@ -56,33 +52,12 @@ public class Reporter extends JFrame {
 	}
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {	
-					results = new Reporter();
-					results.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-
-	}
-
-	/**
 	 * Create the application.
 	 */
-	public Reporter() {
-		
-		// Read results
+	public ReporterPanel() {
 		output = new Output();
 		StyleGenerator.setupStyle();
 		initialize();
-		
-		addWindowListener(new ExitWindowListener());
 	}
 
 	/**
@@ -97,13 +72,9 @@ public class Reporter extends JFrame {
 		}
 		
 		// Sets frame properties
-		setSize(new Dimension(1120, 810));
+		setSize(new Dimension(1920, 1080));
 		setBackground(Colors.background);
-		setLocationRelativeTo(null);
-		setTitle("MEMAP - "+ Designer.parameterPanel.pars.getLastSavedFile() +" - Results");
-		setIconImage(Icon.smallMemapLogo.getImage());
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
 		// Adds panel for result selection
 		plSelection = new JPanel();
@@ -112,7 +83,7 @@ public class Reporter extends JFrame {
 		plSelection.setMaximumSize(new Dimension(400, 32767));
 		plSelection.setBorder(UIManager.getBorder("DesktopIcon.border"));
 		plSelection.setPreferredSize(new Dimension(300, 810));
-		getContentPane().add(plSelection);
+		add(plSelection);
 		plSelection.setLayout(new FormLayout(new ColumnSpec[] { ColumnSpec.decode("264px:grow"), },
 				new RowSpec[] { FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 						RowSpec.decode("max(32dlu;default)"), RowSpec.decode("default:grow"), }));
@@ -133,7 +104,7 @@ public class Reporter extends JFrame {
 		plSelection.add(scrollPane, "1, 4, fill, fill");
 
 		// Adds tree for result list
-		Menu treeResults = new Menu();
+		treeResults = new Menu(output);
 		treeResults.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		treeResults.setBorder(null);
 		scrollPane.setViewportView(treeResults);
@@ -143,6 +114,11 @@ public class Reporter extends JFrame {
 
 		// Adds panel for plots
 		plotPanel = new PlotPanel();
-		getContentPane().add(plotPanel);
+		add(plotPanel);
+	}
+	
+	public void loadResults() {
+		output.loadResults();
+		treeResults.populateMenu(output);
 	}
 }

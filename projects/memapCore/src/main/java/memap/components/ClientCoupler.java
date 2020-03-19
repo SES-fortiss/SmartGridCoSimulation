@@ -5,10 +5,12 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 import memap.components.prototypes.Coupler;
+import memap.controller.TopologyController;
 import memap.helperOPCua.BasicClient;
 import memap.messages.extension.NetworkType;
 
 public class ClientCoupler extends Coupler {
+	
 	NetworkType primaryNetwork;
 	NetworkType secondaryNetwork;
 	double opCost;
@@ -52,5 +54,10 @@ public class ClientCoupler extends Coupler {
 		couplerMessage.maxPower = maxPower;
 
 		super.updateDisplay(couplerMessage);
+	}
+	
+	/** Passes a reference of an object of class {@link TopologyController} to the parent class */
+	public void setTopologyController(TopologyController topologyController) {
+		super.setTopologyController(topologyController);
 	}
 }

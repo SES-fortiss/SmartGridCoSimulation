@@ -4,7 +4,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import fortiss.components.Controllable;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.ComponentIcons;
 import fortiss.gui.listeners.helper.DataUpdater;
 
@@ -16,17 +16,17 @@ public class AddControllableListener extends MouseAdapter {
 	 */
 	public void mouseClicked(MouseEvent e) {
 		// Update current_comp
-		Designer.currentComponent = Designer.controllableIcons.get(Designer.currentBuilding).size();
+		DesignerPanel.currentComponent = DesignerPanel.controllableIcons.get(DesignerPanel.currentBuilding).size();
 
 		// Create contProduction
-		Designer.buildings.get(Designer.currentBuilding).addContProduction(
-				new Controllable("Controllable" + Designer.currentComponent, "Heat", 0.0, 0.0, 1.0, 0.0, 0.0));
-		Controllable cp = Designer.buildings.get(Designer.currentBuilding).getControllable()
-				.get(Designer.currentComponent);
+		DesignerPanel.buildings.get(DesignerPanel.currentBuilding).addContProduction(
+				new Controllable("Controllable" + DesignerPanel.currentComponent, "Heat", 0.0, 0.0, 1.0, 0.0, 0.0));
+		Controllable cp = DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getControllable()
+				.get(DesignerPanel.currentComponent);
 
 		// Create label
 		ComponentIcons components = new ComponentIcons();
-		components.createContProductionIcon(Designer.currentBuilding, Designer.currentComponent, true);
+		components.createContProductionIcon(DesignerPanel.currentBuilding, DesignerPanel.currentComponent, true);
 
 		// Show data
 		DataUpdater up = new DataUpdater();

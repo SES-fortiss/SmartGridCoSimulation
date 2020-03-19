@@ -51,8 +51,8 @@ public class BuildingPanel extends JPanel {
 		/** Necessary for dark mode on/off implementation */
 		setBackground(Colors.background);
 
-		for (int i = 0; i < Designer.buildingCount; i++) {
-			Designer.buildingIcons.get(i).setForeground(Colors.defaultCol);
+		for (int i = 0; i < DesignerPanel.buildingCount; i++) {
+			DesignerPanel.buildingIcons.get(i).setForeground(Colors.defaultCol);
 		}
 		
 		Graphics2D g2 = (Graphics2D) g;

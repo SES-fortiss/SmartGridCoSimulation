@@ -48,6 +48,7 @@ import memap.messages.extension.NetworkType;
  */
 public class OpcUaBuildingController implements BuildingController {
 
+	TopologyController topologyController;
 	public BasicClient client;
 	private static AtomicInteger nextId = new AtomicInteger(0); // Counter for providing unique names
 
@@ -74,9 +75,10 @@ public class OpcUaBuildingController implements BuildingController {
 	 * @param opcUaNodesConfig    the nodes config file (@see NodesConfigHandler)
 	 * @throws IllegalStateException when connection to server cannot be established
 	 */
-	public OpcUaBuildingController(JsonObject opcUaEndpointConfig, JsonObject opcUaNodesConfig)
-			throws IllegalStateException {
+	public OpcUaBuildingController(TopologyController topologyController, JsonObject opcUaEndpointConfig,
+			JsonObject opcUaNodesConfig) throws IllegalStateException {
 
+		this.topologyController = topologyController;
 		// Initialize ConfigHandlers to access the Jsons
 		this.endpointConfig = opcUaEndpointConfig;
 		this.nodesConfig = opcUaNodesConfig;
@@ -214,9 +216,11 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId effOutId = NodeId.parse((String) battery.get("effOutId"));
 							NodeId opCostId = NodeId.parse((String) battery.get("opCostId"));
 							NodeId costCO2Id = NodeId.parse((String) battery.get("costCO2Id"));
-							attach(new ClientStorage(client, "battery" + i, capacityId, stateOfChargeId, maxChargingId,
-									maxDischargingId, effInId, effOutId, NetworkType.ELECTRICITY, opCostId, costCO2Id,
-									0));
+							ClientStorage cs = new ClientStorage(client, "battery" + i, capacityId, stateOfChargeId,
+									maxChargingId, maxDischargingId, effInId, effOutId, NetworkType.ELECTRICITY,
+									opCostId, costCO2Id, 0);
+							attach(cs);
+							cs.setTopologyController(topologyController);
 							System.out.println("Added battery to " + name);
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add battery " + i + " to building " + name
@@ -236,8 +240,10 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId effElecId = NodeId.parse((String) chp.get("effElecId"));
 							NodeId opCostId = NodeId.parse((String) chp.get("opCostId"));
 							NodeId costCO2Id = NodeId.parse((String) chp.get("costCO2Id"));
-							attach(new ClientCoupler(client, "chp" + i, minPowerId, maxPowerId, effHeatId, effElecId,
-									NetworkType.HEAT, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0));
+							ClientCoupler cc = new ClientCoupler(client, "chp" + i, minPowerId, maxPowerId, effHeatId,
+									effElecId, NetworkType.HEAT, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0);
+							attach(cc);
+							cc.setTopologyController(topologyController);
 							System.out.println("Added chp to " + name);
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add chp " + i + " to building " + name
@@ -253,8 +259,10 @@ public class OpcUaBuildingController implements BuildingController {
 							JsonObject consumer = (JsonObject) consumers.get(i);
 							NodeId heatConsumptionId = NodeId.parse((String) consumer.get("heatConsumptionId"));
 							NodeId powerConsumptionId = NodeId.parse((String) consumer.get("powerConsumptionId"));
-							attach(new ClientConsumer(client, "consumer" + i, heatConsumptionId, powerConsumptionId,
-									0));
+							ClientConsumer cc = new ClientConsumer(client, "consumer" + i, heatConsumptionId,
+									powerConsumptionId, 0);
+							attach(cc);
+							cc.setTopologyController(topologyController);
 							System.out.println("Added consumer to " + name);
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add consumer " + i + " to building " + name
@@ -273,8 +281,10 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId effId = NodeId.parse((String) gasboiler.get("effId"));
 							NodeId opCostId = NodeId.parse((String) gasboiler.get("opCostId"));
 							NodeId costCO2Id = NodeId.parse((String) gasboiler.get("costCO2Id"));
-							attach(new ClientProducer(client, "gasboilers" + i, minPowerId, maxPowerId, effId,
-									NetworkType.HEAT, opCostId, costCO2Id, 0));
+							ClientProducer cp = new ClientProducer(client, "gasboilers" + i, minPowerId, maxPowerId,
+									effId, NetworkType.HEAT, opCostId, costCO2Id, 0);
+							attach(cp);
+							cp.setTopologyController(topologyController);
 							System.out.println("Added gasboiler to " + name);
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add gasboiler " + i + " to building " + name
@@ -294,10 +304,13 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId effElecId = NodeId.parse((String) heatpump.get("effElecId"));
 							NodeId opCostId = NodeId.parse((String) heatpump.get("opCostId"));
 							NodeId costCO2Id = NodeId.parse((String) heatpump.get("costCO2Id"));
-							attach(new ClientCoupler(client, "heatpump" + i, minPowerId, maxPowerId, effHeatId,
-									effElecId, NetworkType.HEAT, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0));							
+							ClientCoupler cc = new ClientCoupler(client, "heatpump" + i, minPowerId, maxPowerId,
+									effHeatId, effElecId, NetworkType.HEAT, NetworkType.ELECTRICITY, opCostId,
+									costCO2Id, 0);
+							attach(cc);
+							cc.setTopologyController(topologyController);
 							System.out.println("Added heatpump to " + name);
-							
+
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add heatpump " + i + " to building " + name
 									+ ".\nPlease check " + heatpumps.toString());
@@ -316,8 +329,10 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId productionId = NodeId.parse((String) pv.get("productionId"));
 							NodeId opCostId = NodeId.parse((String) pv.get("opCostId"));
 							NodeId costCO2Id = NodeId.parse((String) pv.get("costCO2Id"));
-							attach(new ClientVolatileProducer(client, "pvs" + i, minPowerId, maxPowerId, effId,
-									productionId, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0));
+							ClientVolatileProducer cvp = new ClientVolatileProducer(client, "pvs" + i, minPowerId,
+									maxPowerId, effId, productionId, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0);
+							attach(cvp);
+							cvp.setTopologyController(topologyController);
 							System.out.println("Added pv to " + name);
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add pv " + i + " to building " + name
@@ -337,8 +352,11 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId productionId = NodeId.parse((String) solarthermic.get("productionId"));
 							NodeId opCostId = NodeId.parse((String) solarthermic.get("opCostId"));
 							NodeId costCO2Id = NodeId.parse((String) solarthermic.get("costCO2Id"));
-							attach(new ClientVolatileProducer(client, "solarthermic" + i, minPowerId, maxPowerId, effId,
-									productionId, NetworkType.HEAT, opCostId, costCO2Id, 0));
+							ClientVolatileProducer cvp = new ClientVolatileProducer(client, "solarthermic" + i,
+									minPowerId, maxPowerId, effId, productionId, NetworkType.HEAT, opCostId, costCO2Id,
+									0);
+							attach(cvp);
+							cvp.setTopologyController(topologyController);
 							System.out.println("Added solarthermic to " + name);
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add solarthermic " + i + " to building " + name
@@ -360,9 +378,11 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId effOutId = NodeId.parse((String) thermalStorage.get("effOutId"));
 							NodeId opCostId = NodeId.parse((String) thermalStorage.get("opCostId"));
 							NodeId costCO2Id = NodeId.parse((String) thermalStorage.get("costCO2Id"));
-							attach(new ClientStorage(client, "thermalstorage" + 1, capacityId, stateOfChargeId,
-									maxChargingId, maxDischargingId, effInId, effOutId, NetworkType.HEAT, opCostId,
-									costCO2Id, 0));
+							ClientStorage cs = new ClientStorage(client, "thermalstorage" + 1, capacityId,
+									stateOfChargeId, maxChargingId, maxDischargingId, effInId, effOutId,
+									NetworkType.HEAT, opCostId, costCO2Id, 0);
+							attach(cs);
+							cs.setTopologyController(topologyController);
 							System.out.println("Added thermalstorage to " + name);
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add thermalstorage " + i + " to building " + name
@@ -378,5 +398,4 @@ public class OpcUaBuildingController implements BuildingController {
 	private static String getNextId() {
 		return Integer.toString(nextId.incrementAndGet());
 	}
-
 }

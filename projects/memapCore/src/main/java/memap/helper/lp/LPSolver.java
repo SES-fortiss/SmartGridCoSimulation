@@ -6,37 +6,43 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
-import akka.systemActors.GlobalTime;
+import memap.controller.TopologyController;
+import memap.helper.EnergyPrices;
 import memap.helper.HelperConcat;
 import memap.helper.SolutionHandler;
-import memap.main.ConfigurationMEMAP;
+import memap.helper.configurationOptions.Optimizer;
 import memap.main.TopologyConfig;
 import memap.messages.BuildingMessage;
 import memap.messages.OptimizationResultMessage;
 
 public class LPSolver {
 
+	/** Reference to topologyController ancestor */
+	private TopologyController topologyController;
+	/** Reference to topology configuration */
+	TopologyConfig topologyConfig = TopologyConfig.getInstance();
+	/** Time step for which the solver is created */
+	private int currentTimeStep;
+	
 	BuildingMessage buildingMessage;
 	private ArrayList<BuildingMessage> buildingMessageList;
 
-	int nStepsMPC = 0;
 	SolutionHandler solHandler;
 	double[] buildingsTotalCosts;
 	double[] buildingsTotalCO2;
-	int actualTimeStep;
 	double[][] buildingsSolutionPerTimeStep;
 	String actorName;
 	OptimizationResultMessage optResult;
 
-	public LPSolver(BuildingMessage buildingMessage, int nStepsMPC, SolutionHandler solHandler, double[] totalEURVector,
-			double[] totalCO2Vector, int actualTimeStep, double[][] solutionPerTimeStep, String actorName,
+	public LPSolver(TopologyController topologyController, BuildingMessage buildingMessage, SolutionHandler solHandler, double[] totalEURVector,
+			double[] totalCO2Vector, int currentTimeStep, double[][] solutionPerTimeStep, String actorName,
 			OptimizationResultMessage optResult) {
+		this.topologyController = topologyController;
 		this.buildingMessage = buildingMessage;
-		this.nStepsMPC = nStepsMPC;
 		this.solHandler = solHandler;
 		this.buildingsTotalCosts = totalEURVector;
 		this.buildingsTotalCO2 = totalCO2Vector;
-		this.actualTimeStep = actualTimeStep;
+		this.currentTimeStep = currentTimeStep;
 		this.buildingsSolutionPerTimeStep = solutionPerTimeStep;
 		this.actorName = actorName;
 		this.optResult = optResult;
@@ -44,16 +50,18 @@ public class LPSolver {
 
 	public void solveLPOptProblem() {
 
+		int nStepsMPC = topologyConfig.getNrStepsMPC();
+		EnergyPrices energyPrices = EnergyPrices.getInstance();
 		LPOptimizationProblem problem = null;
 		try {
 			// LP Optimization
-			LPMatrixBuildup mb = new LPMatrixBuildup();
+			LPMatrixBuildup mb = new LPMatrixBuildup(topologyController, currentTimeStep);
 
-			if (ConfigurationMEMAP.chosenOptimizer == ConfigurationMEMAP.Optimizer.LP) {
+			if (topologyController.getOptimizer() == Optimizer.LP) {
 				problem = mb.singleBuilding(buildingMessage);
 			}
 
-			if (ConfigurationMEMAP.chosenOptimizer == ConfigurationMEMAP.Optimizer.LPwithConnections) {
+			if (topologyController.getOptimizer() == Optimizer.LPwithConnections) {
 				if (buildingMessageList != null) {
 					problem = mb.multipleBuildings(getBuildingMessageList());
 				} else {
@@ -63,7 +71,7 @@ public class LPSolver {
 				}
 			}
 
-			LPOptimizationStarter os = new LPOptimizationStarter();
+			LPOptimizationStarter os = new LPOptimizationStarter(topologyController);
 			double[] optSolution = os.runLinProg(problem);
 
 			// Determination of costs
@@ -71,44 +79,37 @@ public class LPSolver {
 			double buildingCO2PerTimestep = 0;
 			buildingCostPerTimestep = solHandler.calculateTimeStepCosts(optSolution, problem.lambda);
 			buildingCO2PerTimestep = solHandler.calculateTimeStepCosts(optSolution, problem.lambdaCO2);
-			buildingsTotalCosts[GlobalTime.getCurrentTimeStep()] = buildingCostPerTimestep;
-			buildingsTotalCO2[GlobalTime.getCurrentTimeStep()] = buildingCO2PerTimestep;
-			
+			buildingsTotalCosts[currentTimeStep] = buildingCostPerTimestep;
+			buildingsTotalCO2[currentTimeStep] = buildingCO2PerTimestep;
+
 			double costTotal = 0;
 			double CO2Total = 0;
-			
+
 			for (int i = 0; i < buildingsTotalCosts.length; i++) {
 				costTotal += buildingsTotalCosts[i];
 				CO2Total += buildingsTotalCO2[i];
 			}
 
 			// Creation of the result vector
-			double[] currentStep = { 0 + actualTimeStep};
+			double[] currentStep = { 0 + currentTimeStep };
 			double[] currentDemand = solHandler.getDemandForThisTimestep(problem.b_eq, nStepsMPC);
 			double[] currentOptVector = solHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
 			double[] currentSOC = solHandler.getCurrentSOC(buildingMessage.storageList);
 			double[] totalCostsValue = { costTotal };
 			double[] co2emissionsValue = { CO2Total };
-			double[] currentEnergyPrice = { TopologyConfig.energyPrices.getElectricityPriceInEuro(actualTimeStep) };
-			
-			//double[] currentPosDemand = solHandler.getPositiveDemandForThisTimestep(problem, nStepsMPC);
-			//double[] currentEffOptVector = solHandler.getEffSolutionForThisTimeStep(optSolution, problem.etas, nStepsMPC);
+			double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep) };
 
 			String[] timeStep = { "Time step" };
 			String[] currentDemandNames = solHandler.getNamesForDemand();
 			String[] currentOptVectorNames = solHandler.getVectorNamesForThisTimeStep(problem.namesUB, nStepsMPC);
 			String[] currentSOCNames = solHandler.getNamesForSOC(buildingMessage.storageList);
 			String[] energyPrice = { "Energy price [EUR]" };
-			
 			String[] totalCosts = { "Total costs [EUR]" };
-			String[] co2emissions = { "CO2 emissions [kg CO2/kWh]"};
-			
-			//String[] posDemandStrings = { "Positive demandHeat", "positiveDemandHeatTotal", "positiveDemandElectricity" };
-			//String[] currentEffNames = solHandler.getEffNamesForThisTimeStep(problem.namesUB, nStepsMPC);
+			String[] co2emissions = { "CO2 emissions [kg CO2/kWh]" };
 
 			String[] namesResult = HelperConcat.concatAllObjects(timeStep, currentDemandNames, currentOptVectorNames,
 					currentSOCNames, energyPrice, totalCosts, co2emissions);
-			
+
 			double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector,
 					currentSOC, currentEnergyPrice, totalCostsValue, co2emissionsValue);
 
@@ -118,17 +119,18 @@ public class LPSolver {
 			for (int i = 1; i < vectorResultStr.length; i++) {
 				vectorResultStr[i] = df.format(vectorResult[i]);
 			}
-			vectorResultStr[0] = ((Integer) actualTimeStep).toString();
+			vectorResultStr[0] = ((Integer) currentTimeStep).toString();
 
 			System.out.println("LP: " + this.actorName + " Names: " + Arrays.toString(namesResult));
 			System.out.println("LP: " + this.actorName + " Result: " + Arrays.toString(vectorResultStr));
 
 			// Save
-			buildingsSolutionPerTimeStep[actualTimeStep] = vectorResult;
+			buildingsSolutionPerTimeStep[currentTimeStep] = vectorResult;
 
-			String saveString = TopologyConfig.simulationName + "/MPC" + TopologyConfig.N_STEPS_MPC + "_LP/";
+			String saveString = topologyController.getSimulationName() + "/MPC" + nStepsMPC + "_LP/";
 			saveString += actorName + "_MPC" + nStepsMPC + "_LP_Solutions.csv";
-			if (GlobalTime.getCurrentTimeStep() == (TopologyConfig.NR_OF_ITERATIONS - 1)) {
+
+			if (currentTimeStep == (topologyConfig.getNrOfIterations() - 1)) {
 				solHandler.exportMatrix(buildingsSolutionPerTimeStep, saveString, namesResult);
 			}
 

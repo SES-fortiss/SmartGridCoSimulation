@@ -51,7 +51,7 @@ public class PlotPanel extends JPanel {
 	 * @param seriesName a name for the data series.
 	 */
 	public void addSeries(String seriesName, ArrayList<Double> series) {
-		
+
 		if (!chart.getSeriesMap().containsKey(seriesName)) {
 
 			double[] xvalues = new double[series.size()];
@@ -59,19 +59,20 @@ public class PlotPanel extends JPanel {
 			for (int i = 0; i < xvalues.length; i++) {
 				xvalues[i] = i;
 				yvalues[i] = series.get(i);
-			}			
-			
-			// Series wit maximum value smaller than 1 in absolute value are plotted in a separate axis
+			}
+
+			// Series with maximum value smaller than 0.5 in absolute value are plotted in a
+			// separate axis
 			if (Collections.max(series) < 0.5 && Collections.min(series) > -0.5 && chart.getSeriesMap().size() > 0) {
-				XYSeries seriesx = chart.addSeries(seriesName + "(right)", xvalues, yvalues);
+				XYSeries seriesx = chart.addSeries(seriesName, xvalues, yvalues);
+				seriesx.setLabel(seriesName + "(right)");
 				seriesx.setMarker(SeriesMarkers.NONE);
 				seriesx.setYAxisGroup(1);
 				chart.getStyler().setYAxisMax(1, 0.5);
 				chart.getStyler().setYAxisMin(1, -0.5);
-				//seriesx.getXYSeriesRenderStyle();
-				//System.out.println(seriesx.getXYSeriesRenderStyle().name());
 			} else {
-				XYSeries seriesx = chart.addSeries(seriesName + "(left)", xvalues, yvalues);
+				XYSeries seriesx = chart.addSeries(seriesName, xvalues, yvalues);
+				seriesx.setLabel(seriesName + "(left)");
 				seriesx.setMarker(SeriesMarkers.NONE);
 				seriesx.setYAxisGroup(0);
 				if (Collections.max(series) < 0.5 && Collections.min(series) > -0.5) {
@@ -81,7 +82,7 @@ public class PlotPanel extends JPanel {
 					chart.getStyler().setYAxisMax(0, null);
 					chart.getStyler().setYAxisMin(0, null);
 				}
-			}						
+			}
 		}
 	}
 
@@ -91,14 +92,14 @@ public class PlotPanel extends JPanel {
 	 * @param series     a data series.
 	 * @param seriesName the name of the data series {@code series}
 	 */
-	public void removeSeries(String seriesName, ArrayList<Double> series) {
+	public void removeSeries(String seriesName) {
 		if (chart.getSeriesMap().containsKey(seriesName)) {
 			chart.removeSeries(seriesName);
 		}
 	}
 
 	/**
-	 * Remove all series and their names from the list of data series. Call
+	 * Remove all series from the chart and from the list of data series. Call
 	 * {@link #clearPlot()}
 	 */
 	public void clearSeries() {
@@ -107,8 +108,8 @@ public class PlotPanel extends JPanel {
 	}
 
 	/**
-	 * Remove all plotted series and their names from plot panel. Ensure that an
-	 * off-screen image is cleared to the background color
+	 * Remove all plotted series from plot panel. Ensure that an off-screen image is
+	 * cleared to the background color
 	 */
 	public void clearPlot() {
 		Graphics2D gf = (Graphics2D) getGraphics();
@@ -117,7 +118,7 @@ public class PlotPanel extends JPanel {
 	}
 
 	/**
-	 * Plots all the data this.series in the {@code series} list.
+	 * Plots all the data series in the {@code series} list.
 	 */
 	public void paintSeries() {
 		Graphics2D gf = (Graphics2D) this.getGraphics();

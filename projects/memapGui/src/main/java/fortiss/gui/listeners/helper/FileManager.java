@@ -15,7 +15,7 @@ import java.util.Set;
 import com.google.gson.Gson;
 
 import fortiss.components.Building;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import memap.helper.DirectoryConfiguration;
 import simulation.SimulationStarter;
 
@@ -127,7 +127,7 @@ public class FileManager {
 
 		// Create JSON string
 		Gson gson = new Gson();
-		String str = gson.toJson(Designer.parameterPanel.pars);
+		String str = gson.toJson(DesignerPanel.parameterPanel.pars);
 		writeFile(str, file);
 	}
 
@@ -144,7 +144,7 @@ public class FileManager {
 
 		Set<Building> mySet = new HashSet<Building>();
 
-		for (Building building : Designer.buildings) {
+		for (Building building : DesignerPanel.buildings) {
 			mySet.add(building);
 		}
 
@@ -163,7 +163,7 @@ public class FileManager {
 		String location = System.getProperty("user.dir") + File.separator + 
 				mainDir + File.separator + configDir + File.separator;
 
-		for (Building building : Designer.buildings) {
+		for (Building building : DesignerPanel.buildings) {
 			System.out.println(">> Writing descriptor " + building.getName() + " in " + location);
 
 			String filename = location + building.getName() + ".json";
@@ -171,13 +171,13 @@ public class FileManager {
 
 			Gson gson = new Gson();
 			String str = gson.toJson(building);
-			Designer.parameterPanel.pars.addDescriptorFile(file);
+			DesignerPanel.parameterPanel.pars.addDescriptorFile(file);
 			writeFile(str, file);
 		}
 	}
 
 	public void writeMemapModel() {
-		File file = new File(Designer.parameterPanel.pars.getLastSavedFile());
+		File file = new File(DesignerPanel.parameterPanel.pars.getLastSavedFile());
 		writeMemapModel(file);
 	}
 }

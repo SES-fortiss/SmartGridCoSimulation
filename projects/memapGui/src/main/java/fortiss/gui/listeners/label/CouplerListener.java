@@ -8,7 +8,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 
 import fortiss.components.Coupler;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.DataUpdater;
 import fortiss.gui.listeners.helper.FocusManager;
 
@@ -21,13 +21,13 @@ public class CouplerListener extends MouseAdapter implements FocusListener {
 	 */
 	@Override
 	public void mousePressed(MouseEvent e) {
-		building = Designer.currentBuilding;
+		building = DesignerPanel.currentBuilding;
 
 		JLabel lb = (JLabel) e.getSource();
 		lb.requestFocus(); // Required for removing components
 
-		Designer.currentComponent = Designer.couplerIcons.get(building).indexOf(lb);
-		Coupler c = Designer.buildings.get(building).getCoupler().get(Designer.currentComponent);
+		DesignerPanel.currentComponent = DesignerPanel.couplerIcons.get(building).indexOf(lb);
+		Coupler c = DesignerPanel.buildings.get(building).getCoupler().get(DesignerPanel.currentComponent);
 
 		DataUpdater up = new DataUpdater();
 		up.updateCouplerData(c.getName(), c.getNetworkTypeP(), c.getNetworkTypeS(), c.getMinimumPower(),
@@ -40,7 +40,7 @@ public class CouplerListener extends MouseAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = Designer.currentBuilding;
+		building = DesignerPanel.currentBuilding;
 		JLabel lb = (JLabel) e.getSource();
 		FocusManager.focusCoupler(building, lb);
 	}

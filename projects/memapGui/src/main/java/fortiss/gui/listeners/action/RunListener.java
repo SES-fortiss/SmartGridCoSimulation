@@ -3,7 +3,7 @@ package fortiss.gui.listeners.action;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 
 public class RunListener extends MouseAdapter {
 
@@ -13,6 +13,6 @@ public class RunListener extends MouseAdapter {
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		Designer.cl.show(Designer.pl_comp_detail, "parameter");		
+		DesignerPanel.cl.show(DesignerPanel.pl_comp_detail, "parameter");		
 	}
 }

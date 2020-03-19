@@ -4,7 +4,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import fortiss.components.Storage;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.ComponentIcons;
 import fortiss.gui.listeners.helper.DataUpdater;
 
@@ -15,16 +15,16 @@ public class AddStorageListener extends MouseAdapter {
 	 */
 	public void mouseClicked(MouseEvent e) {
 		// Update current_comp
-		Designer.currentComponent = Designer.storageIcons.get(Designer.currentBuilding).size();
+		DesignerPanel.currentComponent = DesignerPanel.storageIcons.get(DesignerPanel.currentBuilding).size();
 
 		// Create storage
-		Designer.buildings.get(Designer.currentBuilding)
-				.addStorage(new Storage("Storage" + Designer.currentComponent, "Heat", 0.0, 0.0, 0.0, 0.0, 1.0, 1.0));
-		Storage s = Designer.buildings.get(Designer.currentBuilding).getStorage().get(Designer.currentComponent);
+		DesignerPanel.buildings.get(DesignerPanel.currentBuilding)
+				.addStorage(new Storage("Storage" + DesignerPanel.currentComponent, "Heat", 0.0, 0.0, 0.0, 0.0, 1.0, 1.0));
+		Storage s = DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getStorage().get(DesignerPanel.currentComponent);
 
 		// Create label
 		ComponentIcons components = new ComponentIcons();
-		components.createStorageIcon(Designer.currentBuilding, Designer.currentComponent, true);
+		components.createStorageIcon(DesignerPanel.currentBuilding, DesignerPanel.currentComponent, true);
 
 		// Show data
 		DataUpdater up = new DataUpdater();

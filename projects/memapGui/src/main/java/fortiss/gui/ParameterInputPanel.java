@@ -46,10 +46,10 @@ import com.jgoodies.forms.layout.Sizes;
  */
 public class ParameterInputPanel extends JPanel {
 
-	private static final long serialVersionUID = 1L;
-
 	/** Parameters of the simulation */
-	public Parameters pars;
+	public Parameters pars = new Parameters();
+	
+	private static final long serialVersionUID = 1L;
 
 	/** Simulation name */
 	private JTextField txtSimulationName;
@@ -119,8 +119,6 @@ public class ParameterInputPanel extends JPanel {
 		StyleGenerator.setupStyle();
 		setBackground(Colors.background);
 		setForeground(Colors.normal);
-		// Add default parameters
-		pars = new Parameters();
 		initialize();
 		updateMarketPriceOptions();
 	}

@@ -1,7 +1,5 @@
 package memap.helper.milp;
 
-import static memap.main.ConfigurationMEMAP.chosenMEMAPLogging;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,42 +8,41 @@ import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
+import memap.controller.TopologyController;
 import memap.helper.DirectoryConfiguration;
+import memap.helper.MEMAPLogging;
 import memap.helper.SolutionHandler;
-import memap.main.TopologyConfig;
-import memap.main.ConfigurationMEMAP.MEMAPLogging;
 import memap.messages.BuildingMessage;
 import memap.messages.OptimizationResultMessage;
 
 /**
- * Note, this class might have many cloning from MILP with no connections, 
- * we are trying to remove as many clones as possible, after finishing the
- * correct implementation of MILP.
+ * Note, this class might have many cloning from MILP with no connections, we
+ * are trying to remove as many clones as possible, after finishing the correct
+ * implementation of MILP.
  * 
  * @author bytschkow
  *
  */
 public class MILPSolverWithConnections extends MILPSolver {
-	
-	MILPProblemWithConnections mp;	
-	ArrayList<BuildingMessage> buildingMessages = new ArrayList<>();	
 
-	public MILPSolverWithConnections(ArrayList<BasicAnswer> answerListReceived, int nStepsMPC,
-			SolutionHandler milpSolHandler, double[] buildingsTotalCostsMILP, double[] buildingsTotalCO2MILP,
-			int actualTimeStep, double[][] buildingsSolutionPerTimeStepMILP, String actorName,
+	MILPProblemWithConnections mp;
+	ArrayList<BuildingMessage> buildingMessages = new ArrayList<>();
+
+	public MILPSolverWithConnections(TopologyController topologyController, int currentTimeStep,
+			ArrayList<BasicAnswer> answerListReceived, SolutionHandler milpSolHandler, double[] buildingsTotalCostsMILP,
+			double[] buildingsTotalCO2MILP, double[][] buildingsSolutionPerTimeStepMILP, String actorName,
 			OptimizationResultMessage optResult) {
 
-		super(nStepsMPC, milpSolHandler, buildingsTotalCostsMILP, buildingsTotalCO2MILP,
-				actualTimeStep, buildingsSolutionPerTimeStepMILP, actorName,
-				optResult); 
-		
+		super(topologyController, currentTimeStep, milpSolHandler, buildingsTotalCostsMILP, buildingsTotalCO2MILP,
+				buildingsSolutionPerTimeStepMILP, actorName, optResult);
+
 		for (BasicAnswer basicAnswer : answerListReceived) {
 			AnswerContent answerContent = basicAnswer.answerContent;
 			if (answerContent instanceof BuildingMessage) {
 				BuildingMessage bm = (BuildingMessage) answerContent;
 				this.buildingMessages.add(bm);
 			}
-		}	
+		}
 	}
 
 	/**
@@ -74,19 +71,19 @@ public class MILPSolverWithConnections extends MILPSolver {
 		/* clean up first */
 		problem = LpSolve.makeLp(0, nCols);
 		problem.deleteLp();
-		
+
 		/* Create an empty model */
 		problem = LpSolve.makeLp(0, nCols);
 		if (problem.getLp() == 0)
 			return null; /* couldn't construct a new model... */
 
 		// Build matrices
-		mp = new MILPProblemWithConnections(nStepsMPC, nCols);
+		mp = new MILPProblemWithConnections(topologyController, currentTimeStep, nStepsMPC, nCols);
 
 		// 1) create model and include all names
 		mp.createNames(problem, buildingMessages);
 
-		if (chosenMEMAPLogging == MEMAPLogging.ALL) {
+		if (topologyController.getLogging() == MEMAPLogging.ALL) {
 
 			String[] names = new String[nCols + 1];
 			for (int i = 0; i < names.length; i++) {
@@ -102,32 +99,32 @@ public class MILPSolverWithConnections extends MILPSolver {
 
 		// 2) add the demand constraints (equality constraints)
 		problem = mp.createDemandConstraints(problem, buildingMessages);
-		
-		String fs = File.separator;
-		//String fs = "/";
-		
-		String addOnPath = DirectoryConfiguration.mainDir + fs +
-				DirectoryConfiguration.resultDir + fs +
-				TopologyConfig.simulationName + fs +
-				"MPC" + TopologyConfig.N_STEPS_MPC + "_MILP" +fs + 
-				"MILP_"+actorName;
 
-		if (chosenMEMAPLogging == MEMAPLogging.ALL || chosenMEMAPLogging == MEMAPLogging.FILES) {			
-			problem.writeLp(addOnPath+"_DEMAND.lp");
+		String fs = File.separator;
+
+		String addOnPath = DirectoryConfiguration.mainDir + fs + DirectoryConfiguration.resultDir + fs
+				+ topologyController.getSimulationName() + fs + "MPC" + topologyConfig.getNrStepsMPC() + "_MILP" + fs
+				+ "MILP_" + actorName;
+
+		if (topologyController.getLogging() == MEMAPLogging.ALL
+				|| topologyController.getLogging() == MEMAPLogging.FILES) {
+			problem.writeLp(addOnPath + "_DEMAND.lp");
 			System.out.println("Logging of each addition into LP FILES under: " + addOnPath);
 		}
 
 		// 3) add the inequality constraints (component boundaries)
 		problem = mp.createComponentBoundaries(problem, buildingMessages);
 
-		if (chosenMEMAPLogging == MEMAPLogging.ALL || chosenMEMAPLogging == MEMAPLogging.FILES) {
+		if (topologyController.getLogging() == MEMAPLogging.ALL
+				|| topologyController.getLogging() == MEMAPLogging.FILES) {
 			problem.writeLp(addOnPath + "_Boundaries.lp");
 		}
 
 		// 4) SOC inequality constraints.
 		problem = mp.createSOCBoundaries(problem, buildingMessages);
 
-		if (chosenMEMAPLogging == MEMAPLogging.ALL || chosenMEMAPLogging == MEMAPLogging.FILES) {
+		if (topologyController.getLogging() == MEMAPLogging.ALL
+				|| topologyController.getLogging() == MEMAPLogging.FILES) {
 			problem.writeLp(addOnPath + "_SOC_Boundaries.lp");
 		}
 
@@ -136,7 +133,8 @@ public class MILPSolverWithConnections extends MILPSolver {
 		// 5) Set objective function
 		problem = mp.createObjectiveFunction(problem, buildingMessages);
 
-		if (chosenMEMAPLogging == MEMAPLogging.ALL || chosenMEMAPLogging == MEMAPLogging.FILES) {
+		if (topologyController.getLogging() == MEMAPLogging.ALL
+				|| topologyController.getLogging() == MEMAPLogging.FILES) {
 			problem.writeLp(addOnPath + "_FINAL.lp");
 		}
 
@@ -144,17 +142,17 @@ public class MILPSolverWithConnections extends MILPSolver {
 	}
 
 	public void solveMILP() throws LpSolveException {
-		
+
 		double[] optSolution = new double[nCols];
-		String[] names = new String[nCols];						
+		String[] names = new String[nCols];
 		solveMILPinternal(optSolution, names);
-		
+
 		// Determination of costs
 		double[] lambda = mp.getLambdaEUR();
 		double[] lambdaCO2 = mp.getLambdaCO2();
-		
+
 		workWithResults(optSolution, names, lambda, lambdaCO2, buildingMessages);
-		
+
 	}
 
 }

@@ -8,7 +8,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 
 import fortiss.components.Controllable;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.DataUpdater;
 import fortiss.gui.listeners.helper.FocusManager;
 
@@ -21,13 +21,13 @@ public class ControllableListener extends MouseAdapter implements FocusListener 
 	 */
 	@Override
 	public void mousePressed(MouseEvent e) {
-		building = Designer.currentBuilding;
+		building = DesignerPanel.currentBuilding;
 
 		JLabel lb = (JLabel) e.getSource();
 		lb.requestFocus(); // Required for removing components
 
-		Designer.currentComponent = Designer.controllableIcons.get(building).indexOf(lb);
-		Controllable cp = Designer.buildings.get(building).getControllable().get(Designer.currentComponent);
+		DesignerPanel.currentComponent = DesignerPanel.controllableIcons.get(building).indexOf(lb);
+		Controllable cp = DesignerPanel.buildings.get(building).getControllable().get(DesignerPanel.currentComponent);
 
 		DataUpdater up = new DataUpdater();
 		up.updateContProductionData(cp.getName(), cp.getNetworkType(), cp.getMinimumPower(), cp.getMaximumPower(),
@@ -39,7 +39,7 @@ public class ControllableListener extends MouseAdapter implements FocusListener 
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = Designer.currentBuilding;
+		building = DesignerPanel.currentBuilding;
 		JLabel lb = (JLabel) e.getSource();
 		FocusManager.focusControllable(building, lb);
 	}

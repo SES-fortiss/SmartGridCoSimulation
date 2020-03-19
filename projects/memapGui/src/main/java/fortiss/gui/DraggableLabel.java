@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 public class DraggableLabel implements Transferable {
 
 	private JLabel lb;
-	private DataFlavor dataFlavor = Designer.dataFlavor;
+	private DataFlavor dataFlavor = DesignerPanel.dataFlavor;
 
 	public DraggableLabel(JLabel lb) {
 		this.lb = lb;

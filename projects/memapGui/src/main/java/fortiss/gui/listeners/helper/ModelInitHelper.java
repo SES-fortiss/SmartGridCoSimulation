@@ -11,18 +11,24 @@ import com.google.gson.stream.JsonReader;
 
 import fortiss.components.Building;
 import fortiss.components.Demand;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.action.ResetListener;
 import fortiss.simulation.Parameters;
+import fortiss.simulation.PlanningTool;
 
 public class ModelInitHelper {
 
+	/**
+	 * Load a topology
+	 * 
+	 * @param file a configuration file
+	 */
 	public static void loadFromFile(File file) {
 
 		if (file != null) {
 			try {
 
-				Designer.parameterPanel.pars.getDescriptorFiles().clear();
+				DesignerPanel.parameterPanel.pars.getDescriptorFiles().clear();
 
 				// ResetListener simulation
 				ResetListener r = new ResetListener();
@@ -31,12 +37,12 @@ public class ModelInitHelper {
 				Gson gson = new Gson(); // Gson parser
 				JsonReader reader = new JsonReader(new FileReader(file));
 				Building[] myBuilding = gson.fromJson(reader, Building[].class);
-				Designer.buildings = new ArrayList<Building>(Arrays.asList(myBuilding));
+				DesignerPanel.buildings = new ArrayList<Building>(Arrays.asList(myBuilding));
 
 				// Set the path of consumption file to an empty string if the file it point to
 				// does not exists. Necessary because gson.fromJson() bypasses the constructor
 				// of Demand.
-				for (Building building : Designer.buildings) {
+				for (Building building : DesignerPanel.buildings) {
 					for (Demand demand : building.getDemand()) {
 						String consumptionFilePath = demand.getConsumptionProfile();
 						File f = new File(consumptionFilePath);
@@ -53,14 +59,14 @@ public class ModelInitHelper {
 				bi.createBuildingIcons();
 				createComponentIcons();
 
-				Designer.buildingCount = Designer.buildings.size();
-				Designer.currentBuilding = 0;
+				DesignerPanel.buildingCount = DesignerPanel.buildings.size();
+				DesignerPanel.currentBuilding = 0;
 				DataUpdater up = new DataUpdater();
-				up.updateEmsData(Designer.buildings.get(Designer.currentBuilding).getName(),
-						Integer.toString(Designer.buildings.get(Designer.currentBuilding).getPort()));
+				up.updateEmsData(DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getName(),
+						Integer.toString(DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getPort()));
 
-				Designer.frame.setTitle("MEMAP - " + file.getAbsolutePath() + " - PlanningTool");
-				Designer.parameterPanel.pars.setLastSavedFile(file.getAbsolutePath());
+				PlanningTool.getPlanningToolWindow().setTitle("MEMAP - " + file.getAbsolutePath() + " - DesignerPanel");
+				DesignerPanel.parameterPanel.pars.setLastSavedFile(file.getAbsolutePath());
 				System.out.println(">> Loaded file: " + file.getAbsolutePath());
 
 			} catch (FileNotFoundException e1) {
@@ -74,12 +80,13 @@ public class ModelInitHelper {
 	 * Create component icons. Calls the ComponentIcons createIcons function.
 	 */
 	private static void createComponentIcons() {
-		for (int i = 0; i < Designer.buildings.size(); i++) {
+		for (int i = 0; i < DesignerPanel.buildings.size(); i++) {
 			ComponentIcons components = new ComponentIcons();
 			components.createIcons(i);
 		}
 	}
 
+	/** Load the parameters */
 	public static void initParameters(Parameters par) {
 		DataUpdater up = new DataUpdater();
 		up.updateParameterData(par);

@@ -8,7 +8,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 
 import fortiss.components.Volatile;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.DataUpdater;
 import fortiss.gui.listeners.helper.FocusManager;
 
@@ -21,13 +21,13 @@ public class VolatileListener extends MouseAdapter implements FocusListener {
 	 */
 	@Override
 	public void mousePressed(MouseEvent e) {
-		building = Designer.currentBuilding;
+		building = DesignerPanel.currentBuilding;
 
 		JLabel lb = (JLabel) e.getSource();
 		lb.requestFocus(); // Required for removing components
 
-		Designer.currentComponent = Designer.volatileIcons.get(building).indexOf(lb);
-		Volatile v = Designer.buildings.get(building).getVolatile().get(Designer.currentComponent);
+		DesignerPanel.currentComponent = DesignerPanel.volatileIcons.get(building).indexOf(lb);
+		Volatile v = DesignerPanel.buildings.get(building).getVolatile().get(DesignerPanel.currentComponent);
 
 		DataUpdater up = new DataUpdater();
 		up.updateVolProductionData(v.getName(), v.getNetworkType(), v.getMinimumPower(), v.getMaximumPower(),
@@ -39,7 +39,7 @@ public class VolatileListener extends MouseAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = Designer.currentBuilding;
+		building = DesignerPanel.currentBuilding;
 		JLabel lb = (JLabel) e.getSource();
 		FocusManager.focusVolatile(building, lb);
 	}

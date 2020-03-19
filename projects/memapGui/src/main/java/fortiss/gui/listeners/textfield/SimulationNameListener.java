@@ -8,9 +8,10 @@ import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.InsertionVerifier;
 import fortiss.simulation.Parameters;
+import fortiss.simulation.PlanningTool;
 
 public class SimulationNameListener extends KeyAdapter implements FocusListener {
 
@@ -28,7 +29,7 @@ public class SimulationNameListener extends KeyAdapter implements FocusListener 
 	public void focusGained(FocusEvent e) {
 		check = false;
 		valid = true;
-		o = Designer.parameterPanel.pars;
+		o = DesignerPanel.parameterPanel.pars;
 		source = (JTextField) e.getSource();
 		message = "An unidentified error has occurred.";
 	}
@@ -41,7 +42,7 @@ public class SimulationNameListener extends KeyAdapter implements FocusListener 
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
 			String currentVal = o.getSimulationName();
-			JOptionPane.showMessageDialog(Designer.contentPane, message);
+			JOptionPane.showMessageDialog(PlanningTool.getMainContentPane(), message);
 			source.setText(currentVal);
 		}
 	}
@@ -78,7 +79,7 @@ public class SimulationNameListener extends KeyAdapter implements FocusListener 
 			check = true;
 		} else {
 			check = false;
-			Designer.pl_ems_detail.getToolkit().beep();
+			DesignerPanel.pl_ems_detail.getToolkit().beep();
 			e.consume();
 		}
 	}

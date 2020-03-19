@@ -10,9 +10,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import fortiss.components.Demand;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FocusManager;
 import fortiss.gui.listeners.helper.InsertionVerifier;
+import fortiss.simulation.PlanningTool;
 
 public class DConsumptionListener extends KeyAdapter implements FocusListener {
 
@@ -30,9 +31,9 @@ public class DConsumptionListener extends KeyAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = Designer.currentBuilding;
-		component = Designer.currentComponent;
-		o = Designer.buildings.get(building).getDemand().get(component);
+		building = DesignerPanel.currentBuilding;
+		component = DesignerPanel.currentComponent;
+		o = DesignerPanel.buildings.get(building).getDemand().get(component);
 		check = false;
 		valid = true;
 
@@ -49,7 +50,7 @@ public class DConsumptionListener extends KeyAdapter implements FocusListener {
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
 			String currentVal = o.getConsumptionProfile();
-			JOptionPane.showMessageDialog(Designer.contentPane, message);
+			JOptionPane.showMessageDialog(PlanningTool.getMainContentPane(), message);
 			source.setText(currentVal);
 		}
 		FocusManager.focusLostDemand(building, component);
@@ -70,7 +71,7 @@ public class DConsumptionListener extends KeyAdapter implements FocusListener {
 			if (f.exists() || input.isEmpty()) {
 				valid = true;
 				o.setConsumptionProfile(input);
-				Designer.demandPanel.setData(input);
+				DesignerPanel.demandPanel.setData(input);
 			} else {
 				valid = false;
 				message = "Error. Invalid path to file";
@@ -90,7 +91,7 @@ public class DConsumptionListener extends KeyAdapter implements FocusListener {
 			check = true;
 		} else {
 			check = false;
-			Designer.pl_ems_detail.getToolkit().beep();
+			DesignerPanel.pl_ems_detail.getToolkit().beep();
 			e.consume();
 		}
 	}

@@ -4,7 +4,7 @@ import java.awt.Point;
 
 import javax.swing.JLabel;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.action.RemoveListener;
 import fortiss.gui.listeners.label.BuildingListener;
 import fortiss.gui.listeners.label.ConnectorListener;
@@ -22,7 +22,7 @@ public class BuildingIcons {
 	 * @see fortiss.gui.listeners.action.LoadListener
 	 */
 	public void createBuildingIcons() {
-		for (int i = 0; i < Designer.buildings.size(); i++) {
+		for (int i = 0; i < DesignerPanel.buildings.size(); i++) {
 
 			createBuildingIcon(i, new Point(0, 0));
 		}
@@ -37,10 +37,10 @@ public class BuildingIcons {
 	 */
 	public void createBuildingIcon(int index, Point p) {
 
-		JLabel icon = new JLabel(Designer.buildings.get(index).getName());
+		JLabel icon = new JLabel(DesignerPanel.buildings.get(index).getName());
 		icon.setName("building");
 		icon.setFont(Fonts.getOpenSans());
-		Designer.buildingIcons.add(index, icon);
+		DesignerPanel.buildingIcons.add(index, icon);
 		icon.setVerticalTextPosition(JLabel.BOTTOM);
 		icon.setHorizontalTextPosition(JLabel.CENTER);
 		icon.setToolTipText("Building " + index);
@@ -61,13 +61,13 @@ public class BuildingIcons {
 		icon.addMouseMotionListener(new ConnectorListener());
 		icon.addMouseListener(new PositionListener());
 		icon.addMouseMotionListener(new PositionListener());
-		Designer.pl_ems.add(icon);
-		Designer.pl_ems.doLayout();
+		DesignerPanel.pl_ems.add(icon);
+		DesignerPanel.pl_ems.doLayout();
 
 		icon.requestFocus();
 
 		// Clear component panel
-		Designer.pl_comp.removeAll();
+		DesignerPanel.pl_comp.removeAll();
 		// repaint of component panel is triggered by the FocusManager
 	}
 }

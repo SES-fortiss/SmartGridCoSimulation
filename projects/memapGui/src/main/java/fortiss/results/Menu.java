@@ -6,20 +6,16 @@ import java.awt.Graphics;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
 
-import fortiss.gui.Designer;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
-import memap.main.ConfigurationMEMAP;
-import memap.main.ConfigurationMEMAP.OptHierarchy;
 
 /**
  * Shows the available results
  */
 @SuppressWarnings("serial")
 public class Menu extends JTree {
-	static int buildingCount = Designer.buildingCount;
-	// private static ArrayList<String> series;
 
 	@Override
 	public void paintComponent(Graphics g) {
@@ -32,59 +28,42 @@ public class Menu extends JTree {
 	 * Constructor for the class Menu. Calls JTree constructor. Modifies color
 	 * properties.
 	 */
-	Menu() {
-		super(createTree(treeStructure()));
-		this.setSelectionModel(new MenuSelectionModel());
+	Menu(Output output) {
+		setSelectionModel(new MenuSelectionModel());
+		populateMenu(output); // with empty list
 		DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) this.getCellRenderer();
 		setBackground(Colors.background);
 		setFont(Fonts.getOpenSans());
 		renderer.setTextNonSelectionColor(Colors.normal);
 		renderer.setTextSelectionColor(Colors.accent2);
 		renderer.setBorderSelectionColor(Color.black);
-		treeStructure();
-	}
-
-	private static Object[] treeStructure() {
-		Object[] structure;
-		if (ConfigurationMEMAP.chosenOptimizationHierarchy.equals(OptHierarchy.MEMAP)) {
-			structure = memapOnStructure();
-		} else {
-			structure = memapOffStructure();
-		}
-		return structure;
 	}
 
 	/**
-	 * Tree structure when Memap is off
+	 * @return the treeStructure for a given data
 	 */
-	private static Object[] memapOffStructure() {
-		Object[] structure = new Object[buildingCount + 1];
+	private Object[] getTreeStructure(Output output) {
+		Object[] structure = new Object[output.getNumOfDatasets() + 1];
 		structure[0] = "Results";
-		for (int i = 1; i <= buildingCount; i++) {
-			int numberOfSeries = Reporter.output.getDataSetSize(i - 1);
+
+		int i = 1;
+		for (String building : output.getResultList()) {
+			int numberOfSeries = output.getDatasetSize(building);
 
 			Object[] subs = new Object[numberOfSeries];
-			subs[0] = Designer.buildings.get(i - 1).getName();
+			subs[0] = building;
 
-			for (int j = 1; j < subs.length; j++) {
-				subs[j] = Reporter.output.getDataLabel(i - 1, j);
+			int j = 1;
+			for (String key : output.getSeriesList(building)) {
+				if (!key.equals("Time step")) {
+					subs[j] = key;
+					j++;
+				}
 			}
 			structure[i] = subs;
+			i++;
 		}
 
-		return structure;
-	}
-
-	/**
-	 * Tree structure when Memap is on
-	 */
-	private static Object[] memapOnStructure() {
-		int numberOfSeries = Reporter.output.getDataSetSize(0);
-		Object[] structure = new Object[numberOfSeries];
-		structure[0] = "Results";
-		for (int j = 1; j < structure.length; j++) {
-			structure[j] = Reporter.output.getDataLabel(0, j);
-		}
 		return structure;
 	}
 
@@ -95,7 +74,8 @@ public class Menu extends JTree {
 	 * @param Object [] The hierarchy of the tree.
 	 * @return A DefaultMutableTreeNode
 	 */
-	static DefaultMutableTreeNode createTree(final Object[] list) {
+	private DefaultMutableTreeNode createTree(final Object[] list) {
+
 		final DefaultMutableTreeNode node = new DefaultMutableTreeNode(list[0]);
 		DefaultMutableTreeNode child;
 		for (int i = 1; i < list.length; i++) {
@@ -110,4 +90,15 @@ public class Menu extends JTree {
 		}
 		return (node);
 	}
+
+	/**
+	 * Populates the menu with results
+	 * 
+	 * @param output set of results
+	 */
+	public void populateMenu(Output output) {
+		final Object[] list = getTreeStructure(output);
+		setModel(new DefaultTreeModel(createTree(list)));
+	}
+
 }

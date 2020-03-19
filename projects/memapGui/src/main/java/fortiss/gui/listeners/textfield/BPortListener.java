@@ -8,9 +8,10 @@ import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FocusManager;
 import fortiss.gui.listeners.helper.InsertionVerifier;
+import fortiss.simulation.PlanningTool;
 
 public class BPortListener extends KeyAdapter implements FocusListener {
 
@@ -26,7 +27,7 @@ public class BPortListener extends KeyAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = Designer.currentBuilding;
+		building = DesignerPanel.currentBuilding;
 		check = false;
 		valid = true;
 
@@ -42,8 +43,8 @@ public class BPortListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
-			String currentVal = Integer.toString(Designer.buildings.get(building).getPort());
-			JOptionPane.showMessageDialog(Designer.contentPane, message);
+			String currentVal = Integer.toString(DesignerPanel.buildings.get(building).getPort());
+			JOptionPane.showMessageDialog(PlanningTool.getMainContentPane(), message);
 			source.setText(currentVal);
 		}
 		FocusManager.focusLostBuilding(building);
@@ -69,7 +70,7 @@ public class BPortListener extends KeyAdapter implements FocusListener {
 					message = "Error. Invalid port number. Only numbers between 1024 and 49151, and 0 are valid.";
 				} else {
 					valid = true;
-					Designer.buildings.get(building).setPort(Integer.parseUnsignedInt(input));
+					DesignerPanel.buildings.get(building).setPort(Integer.parseUnsignedInt(input));
 				}
 			}
 		}
@@ -87,7 +88,7 @@ public class BPortListener extends KeyAdapter implements FocusListener {
 			check = true;
 		} else {
 			check = false;
-			Designer.pl_ems_detail.getToolkit().beep();
+			DesignerPanel.pl_ems_detail.getToolkit().beep();
 			e.consume();
 		}
 	}

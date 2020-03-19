@@ -8,7 +8,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 
 import fortiss.components.Storage;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.DataUpdater;
 import fortiss.gui.listeners.helper.FocusManager;
 
@@ -21,13 +21,13 @@ public class StorageListener extends MouseAdapter implements FocusListener {
 	 */
 	@Override
 	public void mousePressed(MouseEvent e) {
-		building = Designer.currentBuilding;
+		building = DesignerPanel.currentBuilding;
 
 		JLabel lb = (JLabel) e.getSource();
 		lb.requestFocus(); // Required for removing components
 
-		Designer.currentComponent = Designer.storageIcons.get(building).indexOf(lb);
-		Storage s = Designer.buildings.get(building).getStorage().get(Designer.currentComponent);
+		DesignerPanel.currentComponent = DesignerPanel.storageIcons.get(building).indexOf(lb);
+		Storage s = DesignerPanel.buildings.get(building).getStorage().get(DesignerPanel.currentComponent);
 
 		DataUpdater up = new DataUpdater();
 		up.updateStorageData(s.getName(), s.getNetworkType(), s.getCapacity(), s.getSoc(), s.getMaxCharging(),
@@ -39,7 +39,7 @@ public class StorageListener extends MouseAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = Designer.currentBuilding;
+		building = DesignerPanel.currentBuilding;
 		JLabel lb = (JLabel) e.getSource();
 		FocusManager.focusStorage(building, lb);
 	}

@@ -8,7 +8,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 
 import fortiss.components.Demand;
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.DataUpdater;
 import fortiss.gui.listeners.helper.FocusManager;
 
@@ -21,13 +21,13 @@ public class DemandListener extends MouseAdapter implements FocusListener {
 	 */
 	@Override
 	public void mousePressed(MouseEvent e) {
-		building = Designer.currentBuilding;
+		building = DesignerPanel.currentBuilding;
 
 		JLabel lb = (JLabel) e.getSource();
 		lb.requestFocus(); // Required for removing components
 
-		Designer.currentComponent = Designer.demandIcons.get(building).indexOf(lb);
-		Demand d = Designer.buildings.get(building).getDemand().get(Designer.currentComponent);
+		DesignerPanel.currentComponent = DesignerPanel.demandIcons.get(building).indexOf(lb);
+		Demand d = DesignerPanel.buildings.get(building).getDemand().get(DesignerPanel.currentComponent);
 
 		DataUpdater up = new DataUpdater();
 		up.updateDemandData(d.getName(), d.getConsumptionProfile());
@@ -38,7 +38,7 @@ public class DemandListener extends MouseAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = Designer.currentBuilding;
+		building = DesignerPanel.currentBuilding;
 		JLabel lb = (JLabel) e.getSource();
 		FocusManager.focusDemand(building, lb);
 	}

@@ -1,17 +1,20 @@
 package memap.components;
 
 import akka.basicMessages.AnswerContent;
-import akka.systemActors.GlobalTime;
+import akka.timeManagement.CurrentTimeStepSubscriber;
 import memap.components.prototypes.Producer;
+import memap.controller.TopologyController;
 import memap.helper.SolarRadiation;
 import memap.messages.extension.NetworkType;
 import memap.messages.planning.VolatileProducerMessage;
 
-public class CSVVolatileProducer extends Producer {
+public class CSVVolatileProducer extends Producer implements CurrentTimeStepSubscriber{
+	
+	private int currentTimeStep;
 	public NetworkType networkType;
-	double opCost;
-	double costCO2;
-	static double efficiency = 1.0;
+	private double opCost;
+	private double costCO2;
+	private static double efficiency = 1.0;
 	public VolatileProducerMessage volatileProducerMessage;
 	private SolarRadiation solarRadiation = null;
 
@@ -31,12 +34,14 @@ public class CSVVolatileProducer extends Producer {
 		this.networkType = networkType;
 		this.opCost = opCost;
 		this.costCO2 = costCO2;
-		solarRadiation = new SolarRadiation(csvFile);
+		// Initialization delayed until after topologyConfig initialization
+		solarRadiation = new SolarRadiation(csvFile, topologyConfig.getTimeStepsPerDay());
 	}
 
 	@Override
 	public void makeDecision() {
-		int cts = GlobalTime.getCurrentTimeStep();
+		int nStepsMPC = topologyConfig.getNrStepsMPC();
+		int cts = currentTimeStep;
 		volatileProducerMessage.id = fullActorPath;
 		volatileProducerMessage.name = actorName;
 		volatileProducerMessage.minPower = minPower;
@@ -56,5 +61,20 @@ public class CSVVolatileProducer extends Producer {
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
 		return volatileProducerMessage;
+	}
+
+	@Override
+	public void update(int currentTimeStep) {
+		this.currentTimeStep = currentTimeStep;
+	}
+	
+	/**
+	 * Passes a reference of an object of class {@link TopologyController} to the
+	 * parent class and subscribe to global currentTimeStep
+	 */
+	@Override
+	public void setTopologyController(TopologyController topologyController) {
+		super.setTopologyController(topologyController);
+		this.topologyController.subscribeToCurrentTimeStep(this);
 	}
 }

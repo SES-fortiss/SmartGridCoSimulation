@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.media.Icon;
 
 /**
@@ -141,10 +141,10 @@ public class Parameters {
 
 		if (index == optimizerOptions.size() - 1) {
 			setOptimizer(optimizerOptions.get(0));
-			Designer.parameterPanel.lbOptimizer2.setIcon(Icon.optimizer.get(0));
+			DesignerPanel.parameterPanel.lbOptimizer2.setIcon(Icon.optimizer.get(0));
 		} else {
 			setOptimizer(optimizerOptions.get(index + 1));
-			Designer.parameterPanel.lbOptimizer2.setIcon(Icon.optimizer.get(index + 1));
+			DesignerPanel.parameterPanel.lbOptimizer2.setIcon(Icon.optimizer.get(index + 1));
 		}
 	}
 
@@ -169,10 +169,10 @@ public class Parameters {
 
 		if (index == criteriaOptions.size() - 1) {
 			setOptCriteria(criteriaOptions.get(0));
-			Designer.parameterPanel.lbOptCriteria2.setIcon(Icon.optCriteria.get(0));
+			DesignerPanel.parameterPanel.lbOptCriteria2.setIcon(Icon.optCriteria.get(0));
 		} else {
 			setOptCriteria(criteriaOptions.get(index + 1));
-			Designer.parameterPanel.lbOptCriteria2.setIcon(Icon.optCriteria.get(index + 1));
+			DesignerPanel.parameterPanel.lbOptCriteria2.setIcon(Icon.optCriteria.get(index + 1));
 		}
 	}
 
@@ -217,10 +217,10 @@ public class Parameters {
 
 		if (index == loggingOptions.size() - 1) {
 			setLoggingMode(loggingOptions.get(0));
-			Designer.parameterPanel.lbLoggingMode2.setIcon(Icon.loggingMode.get(0));
+			DesignerPanel.parameterPanel.lbLoggingMode2.setIcon(Icon.loggingMode.get(0));
 		} else {
 			setLoggingMode(loggingOptions.get(index + 1));
-			Designer.parameterPanel.lbLoggingMode2.setIcon(Icon.loggingMode.get(index + 1));
+			DesignerPanel.parameterPanel.lbLoggingMode2.setIcon(Icon.loggingMode.get(index + 1));
 		}
 	}
 

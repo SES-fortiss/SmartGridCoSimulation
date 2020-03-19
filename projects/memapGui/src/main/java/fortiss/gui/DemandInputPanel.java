@@ -188,9 +188,11 @@ public class DemandInputPanel extends JPanel {
 		}
 
 		if (!data.equals(null)) {
-			plotPanel.clearSeries();		
-			plotPanel.addSeries("Heat", data.getSeries(0));
-			plotPanel.addSeries("Electricity", data.getSeries(1));
+			plotPanel.clearSeries();
+			//plotPanel.addSeries("Heat", data.getSeries(0));
+			//plotPanel.addSeries("Electricity", data.getSeries(1));
+			plotPanel.addSeries("Heat", data.getSeries("Series"+1));
+			plotPanel.addSeries("Electricity", data.getSeries("Series"+2));
 			plotPanel.setPlotted(false);
 		}
 	}
@@ -207,7 +209,7 @@ public class DemandInputPanel extends JPanel {
 			e1.printStackTrace();
 		}
 		txtDConsumption.setText("");
-		Designer.buildings.get(Designer.currentBuilding).getDemand().get(Designer.currentComponent)
+		DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getDemand().get(DesignerPanel.currentComponent)
 				.setConsumptionProfile("");
 	}
 }

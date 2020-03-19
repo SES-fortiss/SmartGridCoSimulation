@@ -21,10 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
-import topology.ActorTopology;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
@@ -36,7 +32,14 @@ import akka.systemMessages.CompletionMessage;
 import akka.systemMessages.EndSimulationMessage;
 import akka.systemMessages.TimeStepMessage;
 import akka.systemMessages.TimeoutMessage;
+import akka.timeManagement.CurrentTimeStepSubscriber;
+import akka.timeManagement.GlobalTime;
 import configuration.GridArchitectConfiguration;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
+import simulation.SimulationStarter;
+import topology.ActorTopology;
 
 
 /**
@@ -47,7 +50,7 @@ import configuration.GridArchitectConfiguration;
  * ActorSupervisor to handle Akka internals.
  * 
  */
-public class ActorSupervisor extends UntypedActor {
+public class ActorSupervisor extends UntypedActor implements CurrentTimeStepSubscriber {
 
     public boolean receivedAllStates = false;
     public List<ActorRef> responseTrace = new ArrayList<ActorRef>();
@@ -59,6 +62,11 @@ public class ActorSupervisor extends UntypedActor {
     public int totalActorCount = 0;
     public String simulationName;
     public ActorTopology actorTopology;
+    
+    /** Reference to global time in {@link SimulationStarter} */
+	GlobalTime globalTime;
+	int currentTimeStep;
+
 
     /*
      * ActorSupervisor Constructor
@@ -90,6 +98,7 @@ public class ActorSupervisor extends UntypedActor {
     @Override
 	public void preStart() {
         getContext().system().eventStream().subscribe(getSelf(), TimeStepMessage.class);
+        
     }
     
     @Override
@@ -101,7 +110,7 @@ public class ActorSupervisor extends UntypedActor {
     public String toString() {
         return "GridActorSupervisor{" +
               //  ", timeStep=" + timeStep +
-              ", timeStep=" + GlobalTime.currentTimeStep +
+              ", timeStep=" + globalTime.getCurrentTimeStep() +
                 ", receivedPower=" + receivedAllStates +
                 ", responseTrace=" + responseTrace +
                 ", responseTraceMap=" + responseTraceMap +
@@ -112,10 +121,15 @@ public class ActorSupervisor extends UntypedActor {
                 ", gridTopology=" + actorTopology +
                 '}';
     }
-
     @Override
     public void onReceive(Object message) throws Exception {             	
         
+    	if (message instanceof GlobalTime) {
+        	globalTime = (GlobalTime) message;
+        	globalTime.subscribeToCurrentTimeStep(this);
+        	return;
+        }
+    	
         if (message instanceof TimeStepMessage) {
         	handleTimeStepMessage(getSender(), (TimeStepMessage)message);
         	return;
@@ -189,14 +203,15 @@ public class ActorSupervisor extends UntypedActor {
     * Spawn Grid Actor.
     */
 	public void spawnGridActor(String actorName, ActorTopology actorTopology) {
-    	getContext().actorOf(BasicActor.create(simulationName, "/user/ActorSupervisor/"+actorName, actorTopology), actorName);
+    	getContext().actorOf(BasicActor.create(simulationName, "/user/ActorSupervisor/"+ actorName, actorTopology), actorName);
+    	getContext().actorSelection("/user/ActorSupervisor/" + actorName).tell(globalTime, getSelf());
     }
 
     /*
     *  Forwards the new TimeStep to the first Layer of Actors.
     *  */
     public void handleTimeStepMessage(ActorRef sender, TimeStepMessage message) {
-    	GlobalTime.currentTimeStep= message.timeStep;
+    	globalTime.setCurrentTimeStep(message.timeStep);
         this.responseTrace = new ArrayList<ActorRef>();
         try {
             askChildren();
@@ -245,7 +260,7 @@ public class ActorSupervisor extends UntypedActor {
         
         for (ActorRef child: getContext().getChildren()) {
         	//System.out.println("Request: "+ new BasicRequest(timeStep, actorTrace, null));
-            childrenResponseList.add(ask(child, new BasicRequest(GlobalTime.currentTimeStep, actorTrace, null), GridArchitectConfiguration.rootActorResponseTime));
+            childrenResponseList.add(ask(child, new BasicRequest(globalTime.getCurrentTimeStep(), globalTime.getCurrentTime(), actorTrace, null), GridArchitectConfiguration.rootActorResponseTime));
             //System.out.println("Supervisor: ASK A CHILD");
         }
         
@@ -271,9 +286,8 @@ public class ActorSupervisor extends UntypedActor {
         this.reportToMonitor();
     }
     
-    public int getCurrentTimeStep()
-    {
-    	return GlobalTime.currentTimeStep;
+    public int getCurrentTimeStep() {
+    	return globalTime.getCurrentTimeStep();
     }
     
     public class IntitializeException extends Exception {
@@ -282,4 +296,9 @@ public class ActorSupervisor extends UntypedActor {
     		super(string);
     	}
     }
+
+	@Override
+	public void update(int currentTimeStep) {
+		this.currentTimeStep = currentTimeStep;
+	}
 }

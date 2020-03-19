@@ -12,44 +12,45 @@ package akka.basicMessages;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import scala.Serializable;
 import akka.actor.ActorRef;
-import akka.systemActors.GlobalTime;
+import scala.Serializable;
 
 /**
  * Created with IntelliJ IDEA. User: amack Date: 6/13/13 Time: 1:59 PM To change this template use File | Settings | File Templates.
  */
 @SuppressWarnings("serial")
 public class BasicRequest implements Serializable {
+	
 	public final int timeStep;
 	public final LocalDateTime timeValue;
 	public final List<ActorRef> actorTrace;
 	public final RequestContent requestContent;
 
-	public BasicRequest(int timeStep, List<ActorRef> actorTrace, RequestContent requestContent) {
+	public BasicRequest(int timeStep, LocalDateTime timeValue, List<ActorRef> actorTrace, RequestContent requestContent) {
 		this.timeStep = timeStep;
-		this.timeValue = GlobalTime.currentTime;
+		this.timeValue = timeValue;
 		this.actorTrace = actorTrace;
 		this.requestContent = requestContent;
 	}
 
-	public BasicRequest(int timeStep) {
+	public BasicRequest(int timeStep, LocalDateTime timeValue) {
 		this.timeStep = timeStep;
-		this.timeValue = GlobalTime.currentTime;
+		this.timeValue = timeValue;
 		this.actorTrace = null;
 		this.requestContent = null;
 	}
 
-	public BasicRequest() {
-		this.timeStep = GlobalTime.currentTimeStep;
-		this.timeValue = GlobalTime.currentTime;
+	// TODO Not used. Remove? 
+	/*public BasicRequest() {
+		this.timeStep = globalTime.getCurrentTimeStep();
+		this.timeValue = globalTime.getCurrentTime();
 		this.actorTrace = null;
 		this.requestContent = null;
-	}
+	}*/
 
 	@Override
 	public String toString() {
 		return String.format("timeStep:%s, actorTrace:%s, requestContent:%s", timeStep, actorTrace, requestContent/* , recieverPath */);
 	}
-
+	
 }

@@ -8,10 +8,9 @@ import memap.components.prototypes.Device;
 public class CSVBuildingController implements BuildingController {
 
 	public String name;
-
 	private Set<Device> devices = new HashSet<Device>();
 
-	public CSVBuildingController(String name, Boolean hasLDHeating, int heatTransportLength) {
+	public CSVBuildingController(String name) {
 		this.name = name;
 	}
 
@@ -29,4 +28,5 @@ public class CSVBuildingController implements BuildingController {
 	public void attach(Device device) {
 		this.devices.add(device);
 	}
+
 }

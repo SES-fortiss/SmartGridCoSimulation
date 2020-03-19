@@ -3,7 +3,7 @@ package fortiss.gui.listeners.label;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.media.Icon;
 
 public class MemapListener extends MouseAdapter {
@@ -13,12 +13,12 @@ public class MemapListener extends MouseAdapter {
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if (Designer.parameterPanel.pars.isMemapON() == true) {
-			Designer.parameterPanel.pars.setMemapON(false);
-			Designer.parameterPanel.lbMemap2.setIcon(Icon.offMemap);
+		if (DesignerPanel.parameterPanel.pars.isMemapON() == true) {
+			DesignerPanel.parameterPanel.pars.setMemapON(false);
+			DesignerPanel.parameterPanel.lbMemap2.setIcon(Icon.offMemap);
 		} else {
-			Designer.parameterPanel.pars.setMemapON(true);
-			Designer.parameterPanel.lbMemap2.setIcon(Icon.onMemap);
+			DesignerPanel.parameterPanel.pars.setMemapON(true);
+			DesignerPanel.parameterPanel.lbMemap2.setIcon(Icon.onMemap);
 		}
 	}
 }

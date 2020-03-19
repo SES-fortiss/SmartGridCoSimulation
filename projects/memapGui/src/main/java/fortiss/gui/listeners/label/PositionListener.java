@@ -7,7 +7,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
-import fortiss.gui.Designer;
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.PositionManager;
 
 public class PositionListener extends MouseAdapter {
@@ -19,7 +19,7 @@ public class PositionListener extends MouseAdapter {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if (SwingUtilities.isLeftMouseButton(e)) {
-			Designer.pl_ems.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			DesignerPanel.pl_ems.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		}
 	}
 
@@ -46,7 +46,7 @@ public class PositionListener extends MouseAdapter {
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if (SwingUtilities.isLeftMouseButton(e)) {
-			Designer.pl_ems.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			DesignerPanel.pl_ems.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
 			JLabel icon = (JLabel) e.getComponent();
 			if (!PositionManager.getVisibleArea().contains(icon.getX(), icon.getY())) {

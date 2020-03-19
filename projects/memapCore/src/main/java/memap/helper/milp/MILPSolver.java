@@ -1,32 +1,36 @@
 package memap.helper.milp;
 
-import static memap.main.ConfigurationMEMAP.chosenMEMAPLogging;
-
-import java.io.File;
-import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
-import akka.systemActors.GlobalTime;
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
+import memap.controller.TopologyController;
+import memap.helper.EnergyPrices;
 import memap.helper.HelperConcat;
+import memap.helper.MEMAPLogging;
 import memap.helper.SolutionHandler;
 import memap.main.TopologyConfig;
-import memap.main.ConfigurationMEMAP.MEMAPLogging;
 import memap.messages.BuildingMessage;
 import memap.messages.BuildingMessageHandler;
 import memap.messages.OptimizationResultMessage;
 
 public class MILPSolver {
-	
-	
+	/** Reference to topologyController ancestor */
+	protected TopologyController topologyController;
+	/** Reference to topology configuration */
+	protected TopologyConfig topologyConfig = TopologyConfig.getInstance();
+	/** Reference to energy prices */
+	protected EnergyPrices energyPrices = EnergyPrices.getInstance();
+	/** Time step for which the solver is created */
+	protected int currentTimeStep;
+
 	protected LpSolve problem = null;
-	
-	protected int nStepsMPC = 0;
+
+	protected int nStepsMPC;
 	protected int nCols = 0;
 
 	// to work with solutions
@@ -34,32 +38,31 @@ public class MILPSolver {
 	protected double[] buildingStepCostsMILP;
 	protected double[] buildingStepCO2MILP;
 	protected double[][] buildingsSolutionPerTimeStepMILP;
-	
+
 	protected String actorName;
 	protected OptimizationResultMessage optResult;
-	protected int timeStepIndex = 0;
-	
 	private BuildingMessage localBuildingMessage;
 	private ArrayList<BuildingMessage> localBuildingMessages = new ArrayList<>();
-	
-	public MILPSolver(int nStepsMPC, SolutionHandler milpSolHandler, double[] buildingsTotalCostsMILP,
-			double[] buildingsTotalCO2MILP, int actualTimeStep, double[][] buildingsSolutionPerTimeStepMILP,
-			String actorName, OptimizationResultMessage optResult) {
-		
-		this.nStepsMPC = nStepsMPC;
+
+	public MILPSolver(TopologyController topologyController, int currentTimeStep, SolutionHandler milpSolHandler,
+			double[] buildingsTotalCostsMILP, double[] buildingsTotalCO2MILP,
+			double[][] buildingsSolutionPerTimeStepMILP, String actorName, OptimizationResultMessage optResult) {
+
+		this.topologyController = topologyController;
+		this.nStepsMPC = topologyConfig.getNrStepsMPC();
 		this.buildingStepCostsMILP = buildingsTotalCostsMILP;
 		this.buildingStepCO2MILP = buildingsTotalCO2MILP;
 		this.buildingsSolutionPerTimeStepMILP = buildingsSolutionPerTimeStepMILP;
-		this.timeStepIndex = actualTimeStep;
+		this.currentTimeStep = currentTimeStep;
 		this.milpSolHandler = milpSolHandler;
 		this.actorName = actorName;
 		this.optResult = optResult;
-		
-		setDLLLibrariesPath();		
+
+		setDLLLibrariesPath();
 	}
 
 	public void printNames() throws LpSolveException {
-				
+
 		String[] names = new String[nCols + 1];
 		for (int i = 0; i < names.length; i++) {
 			names[i] = problem.getColName(i);
@@ -70,105 +73,108 @@ public class MILPSolver {
 		System.out.println("*****************");
 		System.out.println("nCols: " + nCols);
 		System.out.println("Colnames: " + Arrays.toString(names));
-		
+
 	}
-	
+
 	protected void solveMILPinternal(double[] optSolution, String[] names) throws LpSolveException {
 		problem.setVerbose(LpSolve.IMPORTANT); // only important messages
 		int result = problem.solve();
-		
+
 		if (result == LpSolve.OPTIMAL) {
 			result = 0;
-			
+
 			problem.getVariables(optSolution);
 			for (int j = 0; j < nCols; j++)
 				names[j] = problem.getColName(j + 1);
 
 			// ONLY FOR LOGGING
-			if (chosenMEMAPLogging == MEMAPLogging.ALL) {
+			if (topologyController.getLogging() == MEMAPLogging.ALL) {
 				for (int j = 0; j < nCols; j++) {
 					System.out.println(names[j] + ": " + optSolution[j]);
 				}
-			}			
+			}
 		} else {
 			result = 5;
-			System.err.println("No solution found. Resuming execution, but wihtout a solution");
+			System.err.println("No solution found. Resuming execution, but without a solution");
 			System.exit(1);
-			// TODO Add code to account for the other 14 solver status values
-			// TODO maybe switch to linear solver instead?
+			// TODO Add code to account for the other 14 solver status values. maybe switch
+			// to linear solver instead?
+			// TODO Add some UI warning. When this error takes place the results window does
+			// not appear.
 		}
 	}
-	
-	protected void workWithResults(double[] optSolution, String[] names, double[] lambda, double[] lambdaCO2, BuildingMessage buildingMessage) {
+
+	protected void workWithResults(double[] optSolution, String[] names, double[] lambda, double[] lambdaCO2,
+			BuildingMessage buildingMessage) {
 		this.localBuildingMessage = buildingMessage;
 		this.localBuildingMessages = null;
 		workWithResults(optSolution, names, lambda, lambdaCO2);
 	}
-	
-	protected void workWithResults(double[] optSolution, String[] names, double[] lambda, double[] lambdaCO2, ArrayList<BuildingMessage> buildingMessages) {
+
+	protected void workWithResults(double[] optSolution, String[] names, double[] lambda, double[] lambdaCO2,
+			ArrayList<BuildingMessage> buildingMessages) {
 		this.localBuildingMessage = null;
 		this.localBuildingMessages = buildingMessages;
 		workWithResults(optSolution, names, lambda, lambdaCO2);
 	}
-	
+
 	private void workWithResults(double[] optSolution, String[] names, double[] lambda, double[] lambdaCO2) {
-		
-		BuildingMessageHandler buildingMessageHandler = new BuildingMessageHandler();	
-		
+
+		BuildingMessageHandler buildingMessageHandler = new BuildingMessageHandler();
+
 		double buildingCostPerTimestep = 0;
 		double buildingCO2PerTimestep = 0;
 		buildingCostPerTimestep = milpSolHandler.calculateTimeStepCosts(optSolution, lambda);
 		buildingCO2PerTimestep = milpSolHandler.calculateTimeStepCosts(optSolution, lambdaCO2);
-		buildingStepCostsMILP[timeStepIndex] = buildingCostPerTimestep;
-		buildingStepCO2MILP[GlobalTime.getCurrentTimeStep()] = buildingCO2PerTimestep;
-		
+		buildingStepCostsMILP[currentTimeStep] = buildingCostPerTimestep;
+		buildingStepCO2MILP[currentTimeStep] = buildingCO2PerTimestep;
+
 		// to calculate the total costs
 		double costTotal = 0;
 		double CO2Total = 0;
-		
+
 		for (int i = 0; i < buildingStepCostsMILP.length; i++) {
 			costTotal += buildingStepCostsMILP[i];
 			CO2Total += buildingStepCO2MILP[i];
 		}
-		
-		// Creation of the result vector
 
-		double[] currentStep = { timeStepIndex };
-		double[] currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);		
-		double[] currentEnergyPrice = { TopologyConfig.energyPrices.getElectricityPriceInEuro(timeStepIndex) };		
+		// Creation of the result vector
+		double[] currentStep = { currentTimeStep };
+		double[] currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
+		double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep) };
 		double[] totalCostsEUR = { costTotal };
-		double[] totalCO2emissions = { CO2Total };				
+		double[] totalCO2emissions = { CO2Total };
 
 		String[] timeStep = { "Time step" };
-		String[] currentOptVectorNames = milpSolHandler.getVectorNamesForThisTimeStep(names, nStepsMPC);		
-		String[] energyPrice = { "Energy price [EUR]" };		
+		String[] currentOptVectorNames = milpSolHandler.getVectorNamesForThisTimeStep(names, nStepsMPC);
+		String[] energyPrice = { "Energy price [EUR]" };
 		String[] totalCosts = { "Total costs [EUR]" };
-		String[] co2emissions = { "CO2 emissions [kg CO2/kWh]"};
-		
+		String[] co2emissions = { "CO2 emissions [kg CO2/kWh]" };
+
 		double[] currentDemand = null;
-		double[] currentSOC = null; 
-		String[] currentSOCNames = null;		
+		double[] currentSOC = null;
+		String[] currentSOCNames = null;
 		String[] currentDemandNames = null;
 		if (localBuildingMessage != null) {
-			currentDemand = milpSolHandler.getDemandForThisTimestep(localBuildingMessage.getCombinedDemandVector(),nStepsMPC);
+			currentDemand = milpSolHandler.getDemandForThisTimestep(localBuildingMessage.getCombinedDemandVector(),
+					nStepsMPC);
 			currentSOC = milpSolHandler.getCurrentSOC(localBuildingMessage.storageList);
 			currentSOCNames = milpSolHandler.getNamesForSOC(localBuildingMessage.storageList);
 			currentDemandNames = milpSolHandler.getNamesForDemand();
 		} else {
-			
+
 			double[] demandVector = buildingMessageHandler.getCombinedDemandVector(localBuildingMessages, nStepsMPC);
 			currentDemand = milpSolHandler.getDemandForThisTimestep(demandVector, nStepsMPC);
 			currentSOC = milpSolHandler.getCurrentSOCs(localBuildingMessages);
-			
+
 			currentDemandNames = milpSolHandler.getNamesForDemand(localBuildingMessages, nStepsMPC);
 			currentSOCNames = milpSolHandler.getNamesForSOCs(localBuildingMessages);
 		}
-		
 
-		String[] namesResult = HelperConcat.concatAllObjects(timeStep, currentDemandNames, currentOptVectorNames, currentSOCNames, energyPrice,
-				totalCosts, co2emissions);
-		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentEnergyPrice,
-				totalCostsEUR, totalCO2emissions);
+		String[] namesResult = HelperConcat.concatAllObjects(timeStep, currentDemandNames, currentOptVectorNames,
+				currentSOCNames, energyPrice, totalCosts, co2emissions);
+		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC,
+				currentEnergyPrice, totalCostsEUR, totalCO2emissions);
 
 		// Format results vector for printing
 		String[] vectorResultStr = new String[vectorResult.length];
@@ -176,17 +182,18 @@ public class MILPSolver {
 		for (int i = 1; i < vectorResultStr.length; i++) {
 			vectorResultStr[i] = df.format(vectorResult[i]);
 		}
-		
+
 		System.out.println("MILP: " + this.actorName + " Names: " + Arrays.toString(namesResult));
 		System.out.println("MILP: " + this.actorName + " Result: " + Arrays.toString(vectorResult));
 
 		// Save
-		buildingsSolutionPerTimeStepMILP[timeStepIndex] = vectorResult;
+		buildingsSolutionPerTimeStepMILP[currentTimeStep] = vectorResult;
 
 		if (true) {
-			String saveString = TopologyConfig.simulationName + "/MPC" + TopologyConfig.N_STEPS_MPC + "_MILP/";
+			String saveString = topologyController.getSimulationName() + "/MPC" + topologyConfig.getNrStepsMPC()
+					+ "_MILP/";
 			saveString += actorName + "_MPC" + nStepsMPC + "_MILP_Solutions.csv";
-			if (GlobalTime.getCurrentTimeStep() == (TopologyConfig.NR_OF_ITERATIONS - 1)) {
+			if (currentTimeStep == (topologyConfig.getNrOfIterations() - 1)) {
 				milpSolHandler.exportMatrix(buildingsSolutionPerTimeStepMILP, saveString, namesResult);
 			}
 		}
@@ -208,21 +215,33 @@ public class MILPSolver {
 		}
 
 		// Clean up such that all used memory by lp-solve is freed
-		if (problem.getLp() != 0) problem.deleteLp();
-		
+		if (problem.getLp() != 0)
+			problem.deleteLp();
+
 	}
-	
-	/** The following is currently disabled, but should remain
-	 *  for documentation if the *.dlls are necessary 
+
+	/**
+	 * The following is currently disabled, but should remain for documentation if
+	 * the *.dlls are necessary
 	 */
 	protected void setDLLLibrariesPath() {
-		/** NOTE this is a reflection hack to set the right path for executing the optimizer */
-		/** Found online https://stackoverflow.com/questions/32638404/add-java-library-path-to-java-manifest */
-		/** AND here: https://stackoverflow.com/questions/15961483/setting-djava-library-path-programmatically-or-alternatives */
+		/**
+		 * NOTE this is a reflection hack to set the right path for executing the
+		 * optimizer
+		 */
+		/**
+		 * Found online
+		 * https://stackoverflow.com/questions/32638404/add-java-library-path-to-java-manifest
+		 */
+		/**
+		 * AND here:
+		 * https://stackoverflow.com/questions/15961483/setting-djava-library-path-programmatically-or-alternatives
+		 */
 		/** AND here: http://stackoverflow.com/a/24988095 */
-		
-		/** NOTE we deactivated this, since the *.dll are now directly shipped with the tool.
-		 * Maybe we need this later, but for now this is ok as it is.
+
+		/**
+		 * NOTE we deactivated this, since the *.dll are now directly shipped with the
+		 * tool. Maybe we need this later, but for now this is ok as it is.
 		 * 
 		
 		

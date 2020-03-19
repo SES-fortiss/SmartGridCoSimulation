@@ -22,21 +22,21 @@ public class AddedComponentPanel extends JPanel {
 		super.paintComponent(g);
 		setBackground(Colors.background);
 		
-		for (int i = 0; i < Designer.buildingCount; i++) {
-			for (int j = 0; j < Designer.demandIcons.get(i).size(); j++) {
-				Designer.demandIcons.get(i).get(j).setForeground(Colors.defaultCol);
+		for (int i = 0; i < DesignerPanel.buildingCount; i++) {
+			for (int j = 0; j < DesignerPanel.demandIcons.get(i).size(); j++) {
+				DesignerPanel.demandIcons.get(i).get(j).setForeground(Colors.defaultCol);
 			}
-			for (int j = 0; j < Designer.storageIcons.get(i).size(); j++) {
-				Designer.storageIcons.get(i).get(j).setForeground(Colors.defaultCol);
+			for (int j = 0; j < DesignerPanel.storageIcons.get(i).size(); j++) {
+				DesignerPanel.storageIcons.get(i).get(j).setForeground(Colors.defaultCol);
 			}
-			for (int j = 0; j < Designer.volatileIcons.get(i).size(); j++) {
-				Designer.volatileIcons.get(i).get(j).setForeground(Colors.defaultCol);
+			for (int j = 0; j < DesignerPanel.volatileIcons.get(i).size(); j++) {
+				DesignerPanel.volatileIcons.get(i).get(j).setForeground(Colors.defaultCol);
 			}
-			for (int j = 0; j < Designer.controllableIcons.get(i).size(); j++) {
-				Designer.controllableIcons.get(i).get(j).setForeground(Colors.defaultCol);
+			for (int j = 0; j < DesignerPanel.controllableIcons.get(i).size(); j++) {
+				DesignerPanel.controllableIcons.get(i).get(j).setForeground(Colors.defaultCol);
 			}
-			for (int j = 0; j < Designer.couplerIcons.get(i).size(); j++) {
-				Designer.couplerIcons.get(i).get(j).setForeground(Colors.defaultCol);
+			for (int j = 0; j < DesignerPanel.couplerIcons.get(i).size(); j++) {
+				DesignerPanel.couplerIcons.get(i).get(j).setForeground(Colors.defaultCol);
 			}
 		}
 	}

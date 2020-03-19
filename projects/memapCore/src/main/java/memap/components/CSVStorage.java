@@ -1,9 +1,11 @@
 package memap.components;
 
 import memap.components.prototypes.Storage;
+import memap.controller.TopologyController;
 import memap.messages.extension.NetworkType;
 
 public class CSVStorage extends Storage {
+	
 	NetworkType networkType;
 	double opCost;
 	double costCO2;
@@ -41,6 +43,12 @@ public class CSVStorage extends Storage {
 		storageMessage.efficiencyCharge = effIN;
 		storageMessage.efficiencyDischarge = effOUT;
 		storageMessage.networkType = networkType;
+	}
+	
+	/** Passes a reference of an object of class {@link TopologyController} to the parent class */
+	@Override
+	public void setTopologyController(TopologyController topologyController) {
+		super.setTopologyController(topologyController);
 	}
 
 }

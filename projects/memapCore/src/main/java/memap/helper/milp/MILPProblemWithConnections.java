@@ -1,16 +1,15 @@
 package memap.helper.milp;
 
-import static memap.main.ConfigurationMEMAP.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import akka.systemActors.GlobalTime;
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
+import memap.controller.TopologyController;
 import memap.helper.CO2profiles;
-import memap.main.TopologyConfig;
+import memap.helper.MEMAPLogging;
+import memap.helper.configurationOptions.OptimizationCriteria;
 import memap.messages.BuildingMessage;
 import memap.messages.extension.NetworkType;
 import memap.messages.planning.ConnectionMessage;
@@ -30,8 +29,8 @@ public class MILPProblemWithConnections extends MILPProblem {
 	HashMap<BuildingMessage, Integer> mapBuildingMessageToIndex = new HashMap<>();
 	HashMap<ConnectionMessage, Integer> mapConnectionToIndex = new HashMap<>();
 	
-	public MILPProblemWithConnections(int nStepsMPC, int nCols) {
-		super(nStepsMPC, nCols);
+	public MILPProblemWithConnections(TopologyController topologyController, int currentTimeStep, int nStepsMPC, int nCols) {
+		super(topologyController, currentTimeStep, nStepsMPC, nCols);
 	}
 	
 	public LpSolve createNames(LpSolve problem, ArrayList<BuildingMessage> buildingMessages) throws LpSolveException {		
@@ -117,7 +116,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 			totalStorage += bm.getNrOfStorages();
 		}
 		
-        if (chosenMEMAPLogging == MEMAPLogging.ALL) {        	
+        if (topologyController.getLogging() == MEMAPLogging.ALL) {        	
         	for (BuildingMessage bm : buildingMessages) {
         		double [] demand = bm.getCombinedDemandVector();
             	System.out.println("Demand of " + bm.name + ":  " + Arrays.toString(demand) + "    List size: " + bm.demandList.size());
@@ -207,7 +206,7 @@ public class MILPProblemWithConnections extends MILPProblem {
             	
             	problem.addConstraint(rowHEAT, LpSolve.EQ, demandHEAT[i + b_counter*nStepsMPC]);
             	
-            	if (chosenMEMAPLogging == MEMAPLogging.ALL) {            	
+            	if (topologyController.getLogging() == MEMAPLogging.ALL) {            	
             		System.out.println("Adding HEAT --> rowHEAT: " + Arrays.toString(rowHEAT) + " EQ: " + demandHEAT[i+b_counter*nStepsMPC]);
             	}
             	
@@ -264,7 +263,7 @@ public class MILPProblemWithConnections extends MILPProblem {
         	
         	problem.addConstraint(rowELEC, LpSolve.EQ, demandELEC[i]);
         	
-        	if (chosenMEMAPLogging == MEMAPLogging.ALL) {
+        	if (topologyController.getLogging() == MEMAPLogging.ALL) {
         		System.out.println("Adding markets --> rowELEC: " + Arrays.toString(rowELEC) + " EQ: " + demandELEC[i]);
 			}       	     	        	
 		}
@@ -370,7 +369,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 	        
 	        int indexBuilding = mapBuildingMessageToIndex.get(bm);
 			
-			double factor = 24.0 / TopologyConfig.TIMESTEPS_PER_DAY; // = 0.25 f�r 96 Schritte /Tag
+			double factor = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 f�r 96 Schritte /Tag
 			
 	        for (StorageMessage sm : bm.storageList) {
 	        	
@@ -418,7 +417,7 @@ public class MILPProblemWithConnections extends MILPProblem {
         int[] colno  = new int[nCols];
         double[] row = new double[nCols];
         
-		int cts = GlobalTime.getCurrentTimeStep();
+		int cts = currentTimeStep;
         int counter = 0;
         
         for (int i = 0; i < nStepsMPC; i++) {        	
@@ -435,11 +434,11 @@ public class MILPProblemWithConnections extends MILPProblem {
 	        		int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  	
 	            	colno[counter] = index;
 	            	
-	            	if (chosenCriteria == OptimizationCriteria.EUR) {
+	            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
 	            		row[counter++] = pm.operationalCostEUR;
 					}
 	            	
-	            	if (chosenCriteria == OptimizationCriteria.CO2) {
+	            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
 	            		row[counter++] = pm.operationalCostCO2;
 	            	}
 	            	
@@ -450,11 +449,11 @@ public class MILPProblemWithConnections extends MILPProblem {
 	        		int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  	
 	            	colno[counter] = index;
 	            	
-	            	if (chosenCriteria == OptimizationCriteria.EUR) {
+	            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
 	            		row[counter++] = pm.operationalCostEUR;
 					}
 	            	
-	            	if (chosenCriteria == OptimizationCriteria.CO2) {
+	            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
 	            		row[counter++] = pm.operationalCostCO2;
 	            	}	            	
 	            	
@@ -465,11 +464,11 @@ public class MILPProblemWithConnections extends MILPProblem {
 	        		int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  	
 	            	colno[counter] = index;
 	            	
-	            	if (chosenCriteria == OptimizationCriteria.EUR) {
+	            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
 	            		row[counter++] = cm.operationalCostEUR;
 					}
 	            	
-	            	if (chosenCriteria == OptimizationCriteria.CO2) {
+	            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
 	            		row[counter++] = cm.operationalCostCO2;
 	            	}
 	            	
@@ -480,11 +479,11 @@ public class MILPProblemWithConnections extends MILPProblem {
 	        		
 	        		double price = 0;
 	        		
-	            	if (chosenCriteria == OptimizationCriteria.EUR) {
+	            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
 	            		price = sm.operationalCostEUR + 0.0001 * i; // damit es sp�ter etwas teuerer wird (besseres Ergebnis)
 					}
 	            	
-	            	if (chosenCriteria == OptimizationCriteria.CO2) {
+	            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
 	            		price = sm.operationalCostCO2 + 0.0001 * i;
 	            	}
 	        		
@@ -499,16 +498,16 @@ public class MILPProblemWithConnections extends MILPProblem {
         	
         	int index = nCols + 1 - 2*nStepsMPC + i;
         	
-        	if (chosenCriteria == OptimizationCriteria.EUR) {
+        	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
         		// buy
             	colno[counter] = index;
-            	row[counter++] = TopologyConfig.energyPrices.getElectricityPriceInEuro(cts+i);
+            	row[counter++] = energyPrices.getElectricityPriceInEuro(cts+i);
             	// sell
             	colno[counter] = index+nStepsMPC;
-            	row[counter++] = -TopologyConfig.energyPrices.getElectricityPriceInEuro(cts+i)*0.5;
+            	row[counter++] = -energyPrices.getElectricityPriceInEuro(cts+i)*0.5;
 			}
         	
-        	if (chosenCriteria == OptimizationCriteria.CO2) {
+        	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
         		// buy
             	colno[counter] = index;
             	row[counter++] = CO2profiles.getCO2emissions(cts+i);

@@ -8,15 +8,19 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import memap.helper.lp.LPOptimizationProblem;
-import memap.main.TopologyConfig;
 import memap.messages.BuildingMessage;
 import memap.messages.planning.StorageMessage;
 
+
 public class SolutionHandler {
 
-	/** MPC horizon */
-	int nMPC = TopologyConfig.N_STEPS_MPC;
-
+	/** MPC horizon: Initialization must be delayed until after {@link TopologyConfig} initialization */
+	private int nStepsMPC;
+	
+	public SolutionHandler(int nStepsMPC){
+		this.nStepsMPC = nStepsMPC;
+	}
+	
 	/**
 	 * Export a matrix with or without header.
 	 * 
@@ -25,6 +29,7 @@ public class SolutionHandler {
 	 * @param header   if null, the matrix is exported without header
 	 */
 	public void exportMatrix(double[][] data, String filename, String[] header) {
+		
 		BufferedWriter bw = null;
 		String source = File.separator + DirectoryConfiguration.mainDir + File.separator + DirectoryConfiguration.resultDir + File.separator + filename;
 		String location = System.getProperty("user.dir");
@@ -35,11 +40,10 @@ public class SolutionHandler {
 		location = location + source;
 		System.out.println("Try file location: " + location);
 		
+		
 	    File destination = new File(location);
-	    destination.getParentFile().mkdirs();
-	    destination.setWritable(true);
-	    destination.setReadable(true);
-        
+	    
+	    FileManager.setUpDirectoryHierarchy(destination);
 		
 		File file = destination;
 		try {
@@ -100,14 +104,14 @@ public class SolutionHandler {
 	public double[][] getCorrectedSolutionVector(double[][] matrix, double[] vec, int NumberOfStorages)
 			throws IOException {
 		if (matrix[0].length == vec.length) {
-			int size = (int) (matrix[0].length / nMPC - 4);
+			int size = (int) (matrix[0].length / nStepsMPC - 4);
 			double[][] TotalDeviceProduction = new double[size + NumberOfStorages][2];
 
 			for (int i = 0; i < size + NumberOfStorages; i++) {
-				for (int j = 0; j < nMPC; j++) {
+				for (int j = 0; j < nStepsMPC; j++) {
 
-					TotalDeviceProduction[i][0] += matrix[j][i * nMPC + j] * vec[i * nMPC + j]; // Heat
-					TotalDeviceProduction[i][1] += matrix[j + nMPC][i * nMPC + j] * vec[i * nMPC + j]; // Electricity
+					TotalDeviceProduction[i][0] += matrix[j][i * nStepsMPC + j] * vec[i * nStepsMPC + j]; // Heat
+					TotalDeviceProduction[i][1] += matrix[j + nStepsMPC][i * nStepsMPC + j] * vec[i * nStepsMPC + j]; // Electricity
 				}
 			}
 			return TotalDeviceProduction;
@@ -124,8 +128,8 @@ public class SolutionHandler {
 	public double calculateTimeStepCosts(double[] optSolution, double[] lambda) {
 		double result = 0;
 
-		for (int i = 0; i < lambda.length / nMPC; i++) {
-			result += lambda[(i * nMPC)] * optSolution[(i * nMPC)] * 0.25;
+		for (int i = 0; i < lambda.length / nStepsMPC; i++) {
+			result += lambda[(i * nStepsMPC)] * optSolution[(i * nStepsMPC)] * 0.25;
 		}
 
 		return result;
@@ -161,18 +165,18 @@ public class SolutionHandler {
 		double summeB_el = 0;
 		for (int j = 0; j < problem.b_eq.length / 2; j++) {
 			summeB_H += problem.b_eq[j];
-			summeB_el += problem.b_eq[nMPC + j];
+			summeB_el += problem.b_eq[nStepsMPC + j];
 		}
 
-		int x1 = (int) (optSolution.length - 4 * nMPC);
+		int x1 = (int) (optSolution.length - 4 * nStepsMPC);
 		double purchase_el = 0;
 		double purchase_H = 0;
 
-		for (int i = x1; i < x1 + nMPC; i++) {
+		for (int i = x1; i < x1 + nStepsMPC; i++) {
 			// difference between purchased and sold electricity
-			purchase_el += optSolution[nMPC + i] - optSolution[i];
+			purchase_el += optSolution[nStepsMPC + i] - optSolution[i];
 			// difference between purchased and sold heat
-			purchase_H += optSolution[3 * nMPC + i] - optSolution[2 * nMPC + i];
+			purchase_H += optSolution[3 * nStepsMPC + i] - optSolution[2 * nStepsMPC + i];
 		}
 
 		double purchasedEnergy = purchase_el + purchase_H;
@@ -200,7 +204,7 @@ public class SolutionHandler {
 			double newBuildingCosts = 0;
 			nrOfProducers2 += buildingSpec.getNrOfVolatileProducers() + buildingSpec.getNrOfControllableProducers();
 			nrOfStorages2 += buildingSpec.getNrOfStorages();
-			range2 = nMPC * (nrOfProducers2 + 2 * nrOfStorages2);
+			range2 = nStepsMPC * (nrOfProducers2 + 2 * nrOfStorages2);
 			for (int j = range1; j < range2; j++) {
 				newBuildingCosts += problem.lambda[j] * sol[j];
 			}
@@ -400,7 +404,7 @@ public class SolutionHandler {
 	 * @param buildingMessageList a list of building messages
 	 * @return an array with the names of storage objects
 	 */
-	// TODO: Not used	
+	// TODO: Not used. Remove?
 public String[] getNamesForSOCs(ArrayList<BuildingMessage> buildingMessageList) {
 		ArrayList<StorageMessage> storeMessageList = new ArrayList<StorageMessage>();
 		for (BuildingMessage bm : buildingMessageList) {

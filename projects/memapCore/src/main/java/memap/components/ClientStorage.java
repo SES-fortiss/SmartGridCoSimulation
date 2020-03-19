@@ -5,10 +5,12 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 import memap.components.prototypes.Storage;
+import memap.controller.TopologyController;
 import memap.helperOPCua.BasicClient;
 import memap.messages.extension.NetworkType;
 
 public class ClientStorage extends Storage {
+	
 	NetworkType networkType;
 	double opCost;
 	double costCO2;
@@ -50,6 +52,12 @@ public class ClientStorage extends Storage {
 		storageMessage.efficiencyCharge = effIN;
 		storageMessage.efficiencyDischarge = effOUT;
 		storageMessage.networkType = networkType;
+	}
+	
+	/** Passes a reference of an object of class {@link TopologyController} to the parent class */
+	@Override
+	public void setTopologyController(TopologyController topologyController) {
+		super.setTopologyController(topologyController);
 	}
 
 }
