@@ -9,6 +9,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -44,7 +45,14 @@ public class ReporterPanel extends JPanel {
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		plotPanel.paintSeries();
+		if (plotPanel.isPlotted()) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					plotPanel.paintSeries();
+				}
+			});
+		}
 		plSelection.setBackground(Colors.background);
 		plSelection.setForeground(Colors.normal);
 		lbInstructions.setForeground(Colors.title);

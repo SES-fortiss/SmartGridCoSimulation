@@ -13,6 +13,10 @@ public class SimulationProgress implements CurrentTimeStepSubscriber {
 	private final int max = (TopologyConfig.getInstance().getNrDays()
 			* TopologyConfig.getInstance().getTimeStepsPerDay()) - 1;
 
+	public void restart() {
+		progress = 0;
+	}
+	
 	public static SimulationProgress getInstance() {
 		return sp;
 	}

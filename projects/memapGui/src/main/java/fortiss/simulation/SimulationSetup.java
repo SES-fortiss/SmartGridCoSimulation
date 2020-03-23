@@ -17,7 +17,6 @@ public class SimulationSetup extends SimulationState {
 	 */
 	@Override
 	public void execute(ProgressManager pm) {
-
 		PlanningTool.showTracker();
 
 		TrackerPanel loadingScreen = PlanningTool.getTrackerPanel();
@@ -41,5 +40,4 @@ public class SimulationSetup extends SimulationState {
 		pm.execute();
 
 	}
-
 }

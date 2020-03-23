@@ -45,7 +45,10 @@ abstract public class Icon {
 	private static String fixedMarketPath = "/resources/fixedMarket.png";
 	private static String visualizePath = "/resources/visualize.png";
 	private static String vsvFormatPath = "/resources/csvFormat.png";
-
+	private static String seriesPath = "/resources/series.png";
+	private static String statisticsPath = "/resources/statistics.png";
+	private static String editPath = "/resources/edit.png";
+	
 	public static ImageIcon fortissLogo = new ImageIcon(
 			new ImageIcon(Icon.class.getResource(fortissLogoPath)).getImage().getScaledInstance(180, 60, Image.SCALE_SMOOTH));
 	
@@ -133,6 +136,13 @@ abstract public class Icon {
 	public static ImageIcon allLogs = new ImageIcon(new ImageIcon(Icon.class.getResource(allLogsPath)).getImage()
 			.getScaledInstance(85, 35, Image.SCALE_SMOOTH));
 
+	public static ImageIcon series = new ImageIcon(
+			new ImageIcon(Icon.class.getResource(seriesPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+	public static ImageIcon statistics = new ImageIcon(
+			new ImageIcon(Icon.class.getResource(statisticsPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+	public static ImageIcon edit = new ImageIcon(
+			new ImageIcon(Icon.class.getResource(editPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+	
 	@SuppressWarnings("serial")
 	public static ArrayList<ImageIcon> optCriteria = new ArrayList<ImageIcon>() {
 		{

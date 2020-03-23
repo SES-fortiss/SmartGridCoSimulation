@@ -8,6 +8,8 @@ import fortiss.gui.DesignerPanel;
 import fortiss.gui.PlanningToolWindow;
 import fortiss.gui.TrackerPanel;
 import fortiss.gui.style.StyleGenerator;
+import fortiss.media.Icon;
+import fortiss.results.ReporterOverviewPanel;
 import fortiss.results.ReporterPanel;
 import fortiss.simulation.listeners.helper.ProgressManager;
 import memap.controller.GuiController;
@@ -23,6 +25,8 @@ public class PlanningTool {
 	private static TrackerPanel trackerPanel;
 	/** Reporter panel */
 	private static ReporterPanel reporterPanel;
+	/** Reporter overview panel */
+	private static ReporterOverviewPanel overviewPanel;
 	/** GUI controller */
 	private static GuiController guiController;
 
@@ -40,35 +44,35 @@ public class PlanningTool {
 
 	/**
 	 * Initialize the application panels and add them to the main frame's content
-	 * pane
+	 * pane.
 	 */
 	public static void init() {
-
-		setReporterPanel(new ReporterPanel());
-		getPlanningToolWindow().getContentPane().add(getReporterPanel(), "reporterPanel");
-
-		setTrackerPanel(new TrackerPanel());
-		getPlanningToolWindow().getContentPane().add(getTrackerPanel(), "trackerPanel");
-
 		setDesignerPanel(new DesignerPanel());
-		getPlanningToolWindow().getContentPane().add(getDesignerPanel(), "designerPanel");
+		setReporterOverviewPanel(new ReporterOverviewPanel());
+		setReporterPanel(new ReporterPanel());
+		setTrackerPanel(new TrackerPanel());
+		
+		getPlanningToolWindow().addPanelAsCard("trackerPanel", getTrackerPanel());
 	}
 
 	/** Show the designer panel using the information from last session */
 	public static void showDesigner() {
 		getDesignerPanel().initLastSession();
-		showScreen("designerPanel");
+		getPlanningToolWindow().addPanelAsTab("Design tool", Icon.edit, getDesignerPanel());
 	}
 
 	/** Show the tracker panel */
 	public static void showTracker() {
+		trackerPanel.restart();
 		showScreen("trackerPanel");
 	}
 
 	/** Loads the results and show the reporter panel */
 	public static void showReporter() {
 		getReporterPanel().loadResults();
-		showScreen("reporterPanel");
+		showScreen("tabbedPane");
+		getPlanningToolWindow().addPanelAsTab("Results overview", Icon.statistics, getReporterOverviewPanel());
+		getPlanningToolWindow().addPanelAsTab("Detailed results", Icon.series, getReporterPanel());
 	}
 
 	/** Revalidates and repaints the main frame's content pane */
@@ -77,6 +81,7 @@ public class PlanningTool {
 		getPlanningToolWindow().getContentPane().repaint();
 	}
 
+	/** Shows a panel that has been added as a card */
 	private static void showScreen(String screenName) {
 		CardLayout cl = (CardLayout) getPlanningToolWindow().getContentPane().getLayout();
 		cl.show(getPlanningToolWindow().getContentPane(), screenName);
@@ -114,6 +119,20 @@ public class PlanningTool {
 	/** @return reporterPanel */
 	public static ReporterPanel getReporterPanel() {
 		return reporterPanel;
+	}
+
+	/**
+	 * Set the overviewPanel
+	 * 
+	 * @param overviewPanel an object of type {@link ReporterOverviewPanel}}
+	 */
+	public static void setReporterOverviewPanel(ReporterOverviewPanel overviewPanel) {
+		PlanningTool.overviewPanel = overviewPanel;
+	}
+	
+	/** @return overviewPanel */
+	public static ReporterOverviewPanel getReporterOverviewPanel() {
+		return overviewPanel;
 	}
 
 	/**
