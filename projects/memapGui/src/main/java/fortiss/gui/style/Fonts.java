@@ -22,6 +22,19 @@ public class Fonts {
 		}
 		return font;
 	}
+	
+	public static Font getOswald(int fontSize) {
+		Font font;
+		try {
+			InputStream file = Fonts.class.getResourceAsStream(oswaldPath);
+	        font = Font.createFont(Font.TRUETYPE_FONT, file);
+			font  = font.deriveFont(Font.LAYOUT_LEFT_TO_RIGHT, fontSize);
+		} catch (Exception e) {
+			System.err.println(e);
+			font = new Font("Tahoma", Font.BOLD, fontSize);
+		}
+		return font;
+	}
 
 	public static Font getOpenSans() {
 		Font font;
@@ -32,6 +45,19 @@ public class Fonts {
 		} catch (Exception e) {
 			System.err.println(e);
 			font = new Font("Tahoma", Font.PLAIN, 12);
+		}
+		return font;
+	}
+	
+	public static Font getOpenSans(int fontSize) {
+		Font font;
+		try {	 
+			InputStream file = Fonts.class.getResourceAsStream(openSansPath);
+	        font = Font.createFont(Font.TRUETYPE_FONT, file);
+			font  = font.deriveFont(Font.LAYOUT_LEFT_TO_RIGHT, fontSize);
+		} catch (Exception e) {
+			System.err.println(e);
+			font = new Font("Tahoma", Font.PLAIN, fontSize);
 		}
 		return font;
 	}

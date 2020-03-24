@@ -8,6 +8,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,17 +28,17 @@ public class DesignerPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	// Object arrays
-	public static ArrayList<Building> buildings = new ArrayList<Building>();	
-	public static ArrayList<JLabel> buildingIcons = new ArrayList<JLabel>();
-	public static ArrayList<ArrayList<JLabel>> demandIcons = new ArrayList<ArrayList<JLabel>>();
-	public static ArrayList<ArrayList<JLabel>> storageIcons = new ArrayList<ArrayList<JLabel>>();
-	public static ArrayList<ArrayList<JLabel>> volatileIcons = new ArrayList<ArrayList<JLabel>>();
-	public static ArrayList<ArrayList<JLabel>> controllableIcons = new ArrayList<ArrayList<JLabel>>();
-	public static ArrayList<ArrayList<JLabel>> couplerIcons = new ArrayList<ArrayList<JLabel>>();
+	public static TreeMap<String, Building> buildings = new TreeMap<String, Building>();
+	public static TreeMap<String, JLabel> buildingIcons = new TreeMap<String, JLabel>();
+	public static TreeMap<String, ArrayList<JLabel>> demandIcons = new TreeMap<String, ArrayList<JLabel>>();
+	public static TreeMap<String, ArrayList<JLabel>> storageIcons = new TreeMap<String, ArrayList<JLabel>>();
+	public static TreeMap<String, ArrayList<JLabel>> volatileIcons = new TreeMap<String, ArrayList<JLabel>>();
+	public static TreeMap<String, ArrayList<JLabel>> controllableIcons = new TreeMap<String, ArrayList<JLabel>>();
+	public static TreeMap<String, ArrayList<JLabel>> couplerIcons = new TreeMap<String, ArrayList<JLabel>>();
 	
 	// Flags
 	public static int buildingCount = buildings.size();
-	public static int currentBuilding;
+	public static String selectedBuilding = "";
 	public static int currentComponent;
 	
 	// Panels

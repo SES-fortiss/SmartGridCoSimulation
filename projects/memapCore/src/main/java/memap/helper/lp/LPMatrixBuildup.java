@@ -124,6 +124,7 @@ public class LPMatrixBuildup {
 			mapBuildingToInt.put(buildingMessage.name, nrOfBuildings);
 			arrayOfBuildings.add(buildingMessage.name);
 
+			// TODO Fix after including connections between buildings
 			// Note, this is a hack, that assumes that buildings are named "B...1", "B..2",
 			// etc. This might be super buggy.
 

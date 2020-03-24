@@ -8,6 +8,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.Line2D;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
@@ -47,14 +48,14 @@ public class BuildingPanel extends JPanel {
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
+
 		/** Necessary for dark mode on/off implementation */
 		setBackground(Colors.background);
 
-		for (int i = 0; i < DesignerPanel.buildingCount; i++) {
-			DesignerPanel.buildingIcons.get(i).setForeground(Colors.defaultCol);
+		for (JLabel icon : DesignerPanel.buildingIcons.values()) {
+			icon.setForeground(Colors.defaultCol);
 		}
-		
+
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setStroke(new BasicStroke(2, // Width
 				BasicStroke.CAP_ROUND, // End-cap style

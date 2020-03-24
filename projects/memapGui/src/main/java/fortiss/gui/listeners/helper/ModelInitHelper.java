@@ -3,10 +3,15 @@ package fortiss.gui.listeners.helper;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 
 import fortiss.components.Building;
@@ -30,19 +35,32 @@ public class ModelInitHelper {
 
 				DesignerPanel.parameterPanel.pars.getDescriptorFiles().clear();
 
-				// ResetListener simulation
+				// Reset simulation
 				ResetListener r = new ResetListener();
 				r.mouseClicked(null);
 
 				Gson gson = new Gson(); // Gson parser
 				JsonReader reader = new JsonReader(new FileReader(file));
-				Building[] myBuilding = gson.fromJson(reader, Building[].class);
-				DesignerPanel.buildings = new ArrayList<Building>(Arrays.asList(myBuilding));
+
+				DesignerPanel.buildings = new TreeMap<String, Building>();
+				try {
+					// Do not read the json file using an array. It will result in incorrect parsing
+					HashSet<Building> buildingSet = gson.fromJson(reader, new TypeToken<HashSet<Building>>() {
+					}.getType());
+					Iterator<Building> iterator = buildingSet.iterator();
+					while (iterator.hasNext()) {
+						Building building = iterator.next();
+						DesignerPanel.buildings.put(building.getName(), building);
+					}
+				} catch (JsonIOException | JsonSyntaxException e) {
+					e.printStackTrace();
+				}
 
 				// Set the path of consumption file to an empty string if the file it point to
 				// does not exists. Necessary because gson.fromJson() bypasses the constructor
 				// of Demand.
-				for (Building building : DesignerPanel.buildings) {
+				for (Entry<String, Building> entry : DesignerPanel.buildings.entrySet()) {
+					Building building = entry.getValue();
 					for (Demand demand : building.getDemand()) {
 						String consumptionFilePath = demand.getConsumptionProfile();
 						File f = new File(consumptionFilePath);
@@ -60,10 +78,10 @@ public class ModelInitHelper {
 				createComponentIcons();
 
 				DesignerPanel.buildingCount = DesignerPanel.buildings.size();
-				DesignerPanel.currentBuilding = 0;
+				DesignerPanel.selectedBuilding = DesignerPanel.buildings.firstKey();
 				DataUpdater up = new DataUpdater();
-				up.updateEmsData(DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getName(),
-						Integer.toString(DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getPort()));
+				Building building = DesignerPanel.buildings.get(DesignerPanel.selectedBuilding);
+				up.updateEmsData(building.getName(), Integer.toString(building.getPort()));
 
 				PlanningTool.getPlanningToolWindow().setTitle("MEMAP - " + file.getAbsolutePath() + " - DesignerPanel");
 				DesignerPanel.parameterPanel.pars.setLastSavedFile(file.getAbsolutePath());
@@ -77,12 +95,12 @@ public class ModelInitHelper {
 	}
 
 	/**
-	 * Create component icons. Calls the ComponentIcons createIcons function.
+	 * Create component icons for all existing buildings
 	 */
 	private static void createComponentIcons() {
-		for (int i = 0; i < DesignerPanel.buildings.size(); i++) {
+		for (String buildingName : DesignerPanel.buildings.keySet()) {
 			ComponentIcons components = new ComponentIcons();
-			components.createIcons(i);
+			components.createIcons(buildingName);
 		}
 	}
 

@@ -14,20 +14,20 @@ import fortiss.gui.listeners.helper.FocusManager;
 
 public class DemandListener extends MouseAdapter implements FocusListener {
 
-	private static int building;
+	private static String buildingName;
 
 	/**
 	 * Manages the actions performed when the label is selected: Panels, data shown.
 	 */
 	@Override
 	public void mousePressed(MouseEvent e) {
-		building = DesignerPanel.currentBuilding;
+		buildingName = DesignerPanel.selectedBuilding;
 
 		JLabel lb = (JLabel) e.getSource();
 		lb.requestFocus(); // Required for removing components
 
-		DesignerPanel.currentComponent = DesignerPanel.demandIcons.get(building).indexOf(lb);
-		Demand d = DesignerPanel.buildings.get(building).getDemand().get(DesignerPanel.currentComponent);
+		DesignerPanel.currentComponent = DesignerPanel.demandIcons.get(buildingName).indexOf(lb);
+		Demand d = DesignerPanel.buildings.get(buildingName).getDemand().get(DesignerPanel.currentComponent);
 
 		DataUpdater up = new DataUpdater();
 		up.updateDemandData(d.getName(), d.getConsumptionProfile());
@@ -38,9 +38,9 @@ public class DemandListener extends MouseAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = DesignerPanel.currentBuilding;
+		buildingName = DesignerPanel.selectedBuilding;
 		JLabel lb = (JLabel) e.getSource();
-		FocusManager.focusDemand(building, lb);
+		FocusManager.focusDemand(buildingName, lb);
 	}
 
 	/**
@@ -49,6 +49,6 @@ public class DemandListener extends MouseAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		JLabel lb = (JLabel) e.getSource();
-		FocusManager.focusLostDemand(building, lb);
+		FocusManager.focusLostDemand(buildingName, lb);
 	}
 }

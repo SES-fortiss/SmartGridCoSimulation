@@ -155,18 +155,19 @@ public class MILPSolver {
 		double[] currentSOC = null;
 		String[] currentSOCNames = null;
 		String[] currentDemandNames = null;
+
 		if (localBuildingMessage != null) {
+			// Without connections
 			currentDemand = milpSolHandler.getDemandForThisTimestep(localBuildingMessage.getCombinedDemandVector(),
 					nStepsMPC);
 			currentSOC = milpSolHandler.getCurrentSOC(localBuildingMessage.storageList);
-			currentSOCNames = milpSolHandler.getNamesForSOC(localBuildingMessage.storageList);
 			currentDemandNames = milpSolHandler.getNamesForDemand();
+			currentSOCNames = milpSolHandler.getNamesForSOC(localBuildingMessage.storageList);
 		} else {
-
+			// With connections
 			double[] demandVector = buildingMessageHandler.getCombinedDemandVector(localBuildingMessages, nStepsMPC);
 			currentDemand = milpSolHandler.getDemandForThisTimestep(demandVector, nStepsMPC);
 			currentSOC = milpSolHandler.getCurrentSOCs(localBuildingMessages);
-
 			currentDemandNames = milpSolHandler.getNamesForDemand(localBuildingMessages, nStepsMPC);
 			currentSOCNames = milpSolHandler.getNamesForSOCs(localBuildingMessages);
 		}
@@ -189,13 +190,10 @@ public class MILPSolver {
 		// Save
 		buildingsSolutionPerTimeStepMILP[currentTimeStep] = vectorResult;
 
-		if (true) {
-			String saveString = topologyController.getSimulationName() + "/MPC" + topologyConfig.getNrStepsMPC()
-					+ "_MILP/";
-			saveString += actorName + "_MPC" + nStepsMPC + "_MILP_Solutions.csv";
-			if (currentTimeStep == (topologyConfig.getNrOfIterations() - 1)) {
-				milpSolHandler.exportMatrix(buildingsSolutionPerTimeStepMILP, saveString, namesResult);
-			}
+		String saveString = topologyController.getSimulationName() + "/MPC" + topologyConfig.getNrStepsMPC() + "_MILP/";
+		saveString += actorName + "_MPC" + nStepsMPC + "_MILP_Solutions.csv";
+		if (currentTimeStep == (topologyConfig.getNrOfIterations() - 1)) {
+			milpSolHandler.exportMatrix(buildingsSolutionPerTimeStepMILP, saveString, namesResult);
 		}
 
 		// Request content to send
@@ -214,9 +212,7 @@ public class MILPSolver {
 			optResult.resultMap.put(str2, values);
 		}
 
-		// Clean up such that all used memory by lp-solve is freed
-		if (problem.getLp() != 0)
-			problem.deleteLp();
+		// Memory is cleaned up in the child classes 
 
 	}
 
@@ -243,53 +239,41 @@ public class MILPSolver {
 		 * NOTE we deactivated this, since the *.dll are now directly shipped with the
 		 * tool. Maybe we need this later, but for now this is ok as it is.
 		 * 
-		
-		
-		String location = System.getProperty("user.dir") + File.separator + "res";
-		System.out.println("Setting java libraries to: " + location);	
-		
-		try {
-			Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
-		    usrPathsField.setAccessible(true);
-	
-		    String[] paths = (String[]) usrPathsField.get(null);
-		    
-		  	for (String path : paths)
-		        if (path.equals(location))
-		            return;
-	
-		    String[] newPaths = new String[paths.length + 1];
-		    newPaths[0] = location;
-		    for (int i = 1; i < newPaths.length; i++) {
-				newPaths[i] = paths[i-1];
-			}
-		    
-		    usrPathsField.set(null, newPaths);
-		    paths = (String[]) usrPathsField.get(null);		    		    
-		    
-		    String tmp = "";
-		    for (String string : paths) {
-				tmp += string + ";\n";
-			}
-		    System.out.println("current paths " + tmp);
-		    System.out.println("other way: " + System.getProperty("java.library.path"));
-		    
-		    
-		 // second way
-		    System.setProperty( "java.library.path", location );
-		    Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
-		    fieldSysPath.setAccessible( true );
-		    fieldSysPath.set( null, null );
-		    
-		    System.out.println("other way after adaptation: " + System.getProperty("java.library.path"));
-		    
-		    System.load("/usr/lib/liblpsolve55.so");
-		    
-		    
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-			*/
+		 * 
+		 * 
+		 * String location = System.getProperty("user.dir") + File.separator + "res";
+		 * System.out.println("Setting java libraries to: " + location);
+		 * 
+		 * try { Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
+		 * usrPathsField.setAccessible(true);
+		 * 
+		 * String[] paths = (String[]) usrPathsField.get(null);
+		 * 
+		 * for (String path : paths) if (path.equals(location)) return;
+		 * 
+		 * String[] newPaths = new String[paths.length + 1]; newPaths[0] = location; for
+		 * (int i = 1; i < newPaths.length; i++) { newPaths[i] = paths[i-1]; }
+		 * 
+		 * usrPathsField.set(null, newPaths); paths = (String[])
+		 * usrPathsField.get(null);
+		 * 
+		 * String tmp = ""; for (String string : paths) { tmp += string + ";\n"; }
+		 * System.out.println("current paths " + tmp); System.out.println("other way: "
+		 * + System.getProperty("java.library.path"));
+		 * 
+		 * 
+		 * // second way System.setProperty( "java.library.path", location ); Field
+		 * fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
+		 * fieldSysPath.setAccessible( true ); fieldSysPath.set( null, null );
+		 * 
+		 * System.out.println("other way after adaptation: " +
+		 * System.getProperty("java.library.path"));
+		 * 
+		 * System.load("/usr/lib/liblpsolve55.so");
+		 * 
+		 * 
+		 * } catch (Exception e) { e.printStackTrace(); }
+		 * 
+		 */
 	}
 }

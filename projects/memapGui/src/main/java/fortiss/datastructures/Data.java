@@ -13,9 +13,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Data represents a set of data series of any kind read from a CSV. 
+ * Data represents a set of data series of any kind read from a CSV.
  */
 public class Data {
+
+	public static final String BYROW = "by row";
+	public static final String BYCOLUMN = "by column";
 
 	private Map<String, ArrayList<Double>> dataset = new LinkedHashMap<String, ArrayList<Double>>();
 
@@ -24,21 +27,28 @@ public class Data {
 	 * 
 	 * @param br        a BufferedReader
 	 * @param hasHeader a boolean. <code>true</code> if the CSV file has a header
+	 * @param readMode  either {@link Data#BYCOLUMN} or {@link Data#BYROW}
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	public Data(BufferedReader br, boolean hasHeader) throws IOException, ParseException {
-		createSeries(br, hasHeader);
+	public Data(BufferedReader br, boolean hasHeader, String readMode) throws IOException, ParseException {
+		if (readMode.equals(BYCOLUMN)) {
+			readByColumn(br, hasHeader);
+		} else if (readMode.equals(BYROW)) {
+			readByRow(br, hasHeader);
+		} else {
+			throw new IllegalArgumentException("Unsupported read mode");
+		}
 	}
 
 	/**
-	 * Reads the seriesList from a CSV file and stores it in the corresponding
-	 * lists.
+	 * Reads the column-wise stored series from a CSV file and stores it in the
+	 * corresponding lists.
 	 * 
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	private void createSeries(BufferedReader br, boolean hasHeader) throws IOException, ParseException {
+	private void readByColumn(BufferedReader br, boolean hasHeader) throws IOException, ParseException {
 
 		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
 		String[] br_names = br.readLine().split(";");
@@ -62,6 +72,30 @@ public class Data {
 			for (int i = 0; i < br_values.size(); i++) {
 				dataset.get(br_names[i]).add(nf.parse(br_values.get(i)).doubleValue());
 			}
+		}
+	}
+
+	/**
+	 * Reads the row-wise stored series from a CSV file and stores it in the corresponding
+	 * lists.
+	 * 
+	 * @throws ParseException
+	 * @throws IOException
+	 */
+	private void readByRow(BufferedReader br, boolean hasHeader) throws IOException, ParseException {
+
+		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
+		String line;
+		while ((line = br.readLine()) != null) {
+
+			// Index 0 is name, index larger than 0 are values
+			List<String> series = Arrays.asList(line.split(";"));
+			dataset.put(series.get(0), new ArrayList<Double>());
+
+			for (int i = 1; i < series.size(); i++) {
+				dataset.get(series.get(0)).add(nf.parse(series.get(i)).doubleValue());
+			}
+
 		}
 	}
 

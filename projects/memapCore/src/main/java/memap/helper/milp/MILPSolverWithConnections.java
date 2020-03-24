@@ -153,6 +153,9 @@ public class MILPSolverWithConnections extends MILPSolver {
 
 		workWithResults(optSolution, names, lambda, lambdaCO2, buildingMessages);
 
+		// Clean up such that all used memory by lp-solve is freed
+		if (problem.getLp() != 0)
+			problem.deleteLp();
 	}
 
 }

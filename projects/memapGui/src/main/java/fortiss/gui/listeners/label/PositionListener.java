@@ -33,8 +33,7 @@ public class PositionListener extends MouseAdapter {
 			JLabel icon = (JLabel) e.getComponent();
 			icon.setLocation(icon.getX() + e.getX() - icon.getWidth() / 2,
 					icon.getY() + e.getY() - icon.getHeight() / 2);
-			PositionManager.updateBuildingPosition(icon);
-			// repaint of component panel is triggered by the FocusManager
+			PositionManager.updateBuildingPosition(icon.getText(), icon);
 		}
 	}
 
@@ -50,7 +49,7 @@ public class PositionListener extends MouseAdapter {
 
 			JLabel icon = (JLabel) e.getComponent();
 			if (!PositionManager.getVisibleArea().contains(icon.getX(), icon.getY())) {
-				PositionManager.fixPosition(icon);
+				PositionManager.fixPosition(icon.getText(), icon);
 			}
 		}
 	}

@@ -44,27 +44,26 @@ public class DropListener extends DropTargetAdapter implements DropTargetListene
 				event.acceptDrop(DnDConstants.ACTION_COPY);
 
 				// Create building
-				DesignerPanel.buildings.add(new Building("building" + DesignerPanel.buildingCount, 0, false, 0));
-				DesignerPanel.currentBuilding = DesignerPanel.buildingCount;
+				String buildingName = "building" + DesignerPanel.buildingCount;
+				Building building = new Building(buildingName, 0);
+				DesignerPanel.buildings.put(buildingName, building);
+				DesignerPanel.selectedBuilding = buildingName;
 
 				// Create building icon
 				BuildingIcons bi = new BuildingIcons();
-				bi.createBuildingIcon(DesignerPanel.buildingCount, p);
+				bi.createBuildingIcon(buildingName, p);
 
-				// Create list of component icons for current building and add it to the general
-				// icon
-				// lists
+				// Create component icons
 				ComponentIcons components = new ComponentIcons();
-				components.createComponentLists(DesignerPanel.currentBuilding);
+				components.createComponentLists(buildingName);
 
 				// Show information in pl_ems_details
 				DataUpdater du = new DataUpdater();
-				du.updateEmsData(DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getName(),
-						Integer.toString(DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getPort()));
+				du.updateEmsData(building.getName(), Integer.toString(building.getPort()));
 				DesignerPanel.buildingCount = DesignerPanel.buildingCount + 1;
 
 				event.dropComplete(true);
-				this.panel.validate();
+				panel.validate();
 
 				if (DesignerPanel.buildingCount > 0 && !DesignerPanel.pl_object.comp_box.isVisible()) {
 					DesignerPanel.pl_object.showComponentBox();

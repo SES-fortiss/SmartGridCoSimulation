@@ -15,16 +15,16 @@ public class AddVolatileListener extends MouseAdapter {
 	 */
 	public void mouseClicked(MouseEvent arg0) {
 		// Update current_comp
-		DesignerPanel.currentComponent = DesignerPanel.volatileIcons.get(DesignerPanel.currentBuilding).size();
+		DesignerPanel.currentComponent = DesignerPanel.volatileIcons.get(DesignerPanel.selectedBuilding).size();
 
 		// Create Volatile
-		DesignerPanel.buildings.get(DesignerPanel.currentBuilding)
+		DesignerPanel.buildings.get(DesignerPanel.selectedBuilding)
 				.addVolProduction(new Volatile("Volatile" + DesignerPanel.currentComponent, "Heat", 0.0, 0.0, "", 0.0, 0.0));
-		Volatile v = DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getVolatile().get(DesignerPanel.currentComponent);
+		Volatile v = DesignerPanel.buildings.get(DesignerPanel.selectedBuilding).getVolatile().get(DesignerPanel.currentComponent);
 
 		// Create label
 		ComponentIcons components = new ComponentIcons();
-		components.createVolProductionIcon(DesignerPanel.currentBuilding, DesignerPanel.currentComponent, true);
+		components.createVolProductionIcon(DesignerPanel.selectedBuilding, DesignerPanel.currentComponent, true);
 
 		// Show data
 		DataUpdater up = new DataUpdater();

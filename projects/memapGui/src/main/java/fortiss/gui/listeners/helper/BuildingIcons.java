@@ -22,9 +22,9 @@ public class BuildingIcons {
 	 * @see fortiss.gui.listeners.action.LoadListener
 	 */
 	public void createBuildingIcons() {
-		for (int i = 0; i < DesignerPanel.buildings.size(); i++) {
-
-			createBuildingIcon(i, new Point(0, 0));
+		
+		for (String buildingName : DesignerPanel.buildings.keySet()) {
+			createBuildingIcon(buildingName, new Point(0, 0));
 		}
 	}
 
@@ -35,22 +35,22 @@ public class BuildingIcons {
 	 * {@link fortiss.gui.listeners.helper.PositionManager#fixPosition(JLabel)} if
 	 * the icon is outside the visible area.
 	 */
-	public void createBuildingIcon(int index, Point p) {
+	public void createBuildingIcon(String buildingName, Point p) {
 
-		JLabel icon = new JLabel(DesignerPanel.buildings.get(index).getName());
+		JLabel icon = new JLabel(buildingName);
 		icon.setName("building");
 		icon.setFont(Fonts.getOpenSans());
-		DesignerPanel.buildingIcons.add(index, icon);
+		DesignerPanel.buildingIcons.put(buildingName, icon);
 		icon.setVerticalTextPosition(JLabel.BOTTOM);
 		icon.setHorizontalTextPosition(JLabel.CENTER);
-		icon.setToolTipText("Building " + index);
+		icon.setToolTipText(buildingName);
 		icon.setIcon(Icon.uBuilding);
 		icon.setLocation(p);
 
 		// Create position. Fix position if the icon is outside visible area
-		PositionManager.addPosition(icon);
+		PositionManager.addPosition(buildingName, icon);
 		if (!PositionManager.getVisibleArea().contains(p)) {
-			PositionManager.fixPosition(icon);
+			PositionManager.fixPosition(buildingName, icon);
 		}
 
 		// Listeners
@@ -68,6 +68,5 @@ public class BuildingIcons {
 
 		// Clear component panel
 		DesignerPanel.pl_comp.removeAll();
-		// repaint of component panel is triggered by the FocusManager
 	}
 }

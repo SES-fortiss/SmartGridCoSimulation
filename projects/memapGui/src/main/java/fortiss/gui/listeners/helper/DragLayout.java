@@ -201,7 +201,7 @@ public class DragLayout implements LayoutManager {
 					Point p = component.getLocation();
 					Dimension d = getActualSize(component);
 					component.setBounds(p.x + x, p.y + y, d.width, d.height);
-					PositionManager.updateBuildingPosition((JLabel) component);
+					PositionManager.updateBuildingPosition(((JLabel) component).getText(), (JLabel) component);
 				}
 			}
 		}

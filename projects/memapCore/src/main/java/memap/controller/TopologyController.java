@@ -117,8 +117,6 @@ public class TopologyController implements Runnable {
 		return memapConfig.getLogging();
 	}
 	
-	// TopologyConfig methods
-	
 	public String getSimulationName() {
 		return topologyName;
 	}
@@ -126,7 +124,6 @@ public class TopologyController implements Runnable {
 	public void setSimulationName(String topologyName) {
 		this.topologyName = topologyName;
 	}
-
 
 	public void setOptimizationHierarchy(OptHierarchy optimizationHierarchy) {
 		memapConfig.setOptimizationHierarchy(optimizationHierarchy);
@@ -136,7 +133,6 @@ public class TopologyController implements Runnable {
 		globalTime.subscribeToCurrentTimeStep(subscriber);
 	}
 	
-
 	@Override
 	public void run() {
 		startSimulation();

@@ -8,8 +8,6 @@ import java.util.ArrayList;
 public class Building {
 	private String name;
 	private int port;
-	private boolean ldHeating;
-	private int heatTransportLength;
 	private ArrayList<Demand> demand_list;
 	private ArrayList<Coupler> coupler_list;
 	private ArrayList<Controllable> controllable_list;
@@ -26,16 +24,15 @@ public class Building {
 	 * 
 	 * TODO Create input option for length and losses through GUI Task#94
 	 */
-	public Building(String name, int port, boolean ldHeating, int heatTransportLength) {
+	public Building(String name, int port) {
 		this.setName(name);
 		this.setPort(port);
-		this.setLdHeating(ldHeating);
-		this.setHeatTransportLength(heatTransportLength);
-		this.demand_list = new ArrayList<Demand>();
-		this.coupler_list = new ArrayList<Coupler>();
-		this.controllable_list = new ArrayList<Controllable>();
-		this.volatile_list = new ArrayList<Volatile>();
-		this.storage_list = new ArrayList<Storage>();
+		
+		demand_list = new ArrayList<Demand>();
+		coupler_list = new ArrayList<Coupler>();
+		controllable_list = new ArrayList<Controllable>();
+		volatile_list = new ArrayList<Volatile>();
+		storage_list = new ArrayList<Storage>();
 	}
 
 	public String getName() {
@@ -52,22 +49,6 @@ public class Building {
 
 	public void setPort(int port) {
 		this.port = port;
-	}
-
-	public boolean isLdHeating() {
-		return ldHeating;
-	}
-
-	public void setLdHeating(boolean heating) {
-		this.ldHeating = heating;
-	}
-
-	public int getHeatTransportLength() {
-		return heatTransportLength;
-	}
-
-	public void setHeatTransportLength(int heatTransport) {
-		this.heatTransportLength = heatTransport;
 	}
 
 	public void addDemand(Demand demand) {

@@ -15,7 +15,7 @@ import fortiss.simulation.PlanningTool;
 
 public class BPortListener extends KeyAdapter implements FocusListener {
 
-	private static int building;
+	private static String buildingName;
 	private static boolean check;
 	private static boolean valid;
 	private static JTextField source;
@@ -27,13 +27,13 @@ public class BPortListener extends KeyAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = DesignerPanel.currentBuilding;
+		buildingName = DesignerPanel.selectedBuilding;
 		check = false;
 		valid = true;
 
 		source = (JTextField) e.getSource();
 		message = "An unidentified error has occurred.";
-		FocusManager.focusBuilding(building);
+		FocusManager.focusBuilding(buildingName);
 	}
 
 	/**
@@ -43,17 +43,17 @@ public class BPortListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
-			String currentVal = Integer.toString(DesignerPanel.buildings.get(building).getPort());
+			String currentVal = Integer.toString(DesignerPanel.buildings.get(buildingName).getPort());
 			JOptionPane.showMessageDialog(PlanningTool.getMainContentPane(), message);
 			source.setText(currentVal);
 		}
-		FocusManager.focusLostBuilding(building);
+		FocusManager.focusLostBuilding(buildingName);
 	}
 
 	/**
-	 * Verifies if the input is a non-empty valid port value. In that case, @param
-	 * valid is set to <code>true</code>, and the value is saved to the
-	 * corresponding object. Otherwise, @param valid is set to <code>false</code>.
+	 * Verifies if the input is a non-empty valid port value. In that case, valid is
+	 * set to <code>true</code>, and the value is saved to the corresponding object.
+	 * Otherwise, valid is set to <code>false</code>.
 	 */
 	@Override
 	public void keyReleased(KeyEvent e) {
@@ -70,15 +70,15 @@ public class BPortListener extends KeyAdapter implements FocusListener {
 					message = "Error. Invalid port number. Only numbers between 1024 and 49151, and 0 are valid.";
 				} else {
 					valid = true;
-					DesignerPanel.buildings.get(building).setPort(Integer.parseUnsignedInt(input));
+					DesignerPanel.buildings.get(buildingName).setPort(Integer.parseUnsignedInt(input));
 				}
 			}
 		}
 	}
 
 	/**
-	 * Verifies if the input is a valid character. If so, the @param check flag is
-	 * set to <code>true</code>. Otherwise, the event is consumed.
+	 * Verifies if the input is a valid character. If so, the check flag is set to
+	 * <code>true</code>. Otherwise, the event is consumed.
 	 */
 	@Override
 	public void keyTyped(KeyEvent e) {

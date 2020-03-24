@@ -11,7 +11,7 @@ import fortiss.gui.DesignerPanel;
 
 public class VNetworkTypeListener extends MouseAdapter implements ItemListener {
 
-	private static int building;
+	private static String buildingName;
 	private static int component;
 	private static boolean userSelection;
 
@@ -26,7 +26,7 @@ public class VNetworkTypeListener extends MouseAdapter implements ItemListener {
 			if (userSelection) {
 				JComboBox<?> o = (JComboBox<?>) e.getSource();
 				String sel = (String) o.getSelectedItem();
-				DesignerPanel.buildings.get(building).getVolatile().get(component).setNetworkType(sel);
+				DesignerPanel.buildings.get(buildingName).getVolatile().get(component).setNetworkType(sel);
 			}
 			userSelection = false;
 		}
@@ -35,7 +35,7 @@ public class VNetworkTypeListener extends MouseAdapter implements ItemListener {
 	/**
 	 * Set parameter values and calls FocusManager function.
 	 * 
-	 * @par building index of current building.
+	 * @par buildingName index of current building.
 	 * @par component index of current component.
 	 * @par userSelection TRUE if listener is triggered after user select the item
 	 *      on screen.
@@ -44,7 +44,7 @@ public class VNetworkTypeListener extends MouseAdapter implements ItemListener {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		userSelection = true;
-		building = DesignerPanel.currentBuilding;
+		buildingName = DesignerPanel.selectedBuilding;
 		component = DesignerPanel.currentComponent;
 	}
 

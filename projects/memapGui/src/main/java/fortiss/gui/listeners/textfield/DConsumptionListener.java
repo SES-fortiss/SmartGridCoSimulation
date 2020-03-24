@@ -17,7 +17,7 @@ import fortiss.simulation.PlanningTool;
 
 public class DConsumptionListener extends KeyAdapter implements FocusListener {
 
-	private static int building;
+	private static String buildingName;
 	private static int component;
 	private static boolean check;
 	private static boolean valid;
@@ -31,15 +31,15 @@ public class DConsumptionListener extends KeyAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = DesignerPanel.currentBuilding;
+		buildingName = DesignerPanel.selectedBuilding;
 		component = DesignerPanel.currentComponent;
-		o = DesignerPanel.buildings.get(building).getDemand().get(component);
+		o = DesignerPanel.buildings.get(buildingName).getDemand().get(component);
 		check = false;
 		valid = true;
 
 		source = (JTextField) e.getSource();
 		message = "An unidentified error has occurred.";
-		FocusManager.focusDemand(building, component);
+		FocusManager.focusDemand(buildingName, component);
 	}
 
 	/**
@@ -53,14 +53,13 @@ public class DConsumptionListener extends KeyAdapter implements FocusListener {
 			JOptionPane.showMessageDialog(PlanningTool.getMainContentPane(), message);
 			source.setText(currentVal);
 		}
-		FocusManager.focusLostDemand(building, component);
+		FocusManager.focusLostDemand(buildingName, component);
 	}
 
 	/**
 	 * Verifies if the input is an empty field or a non-empty valid path value. In
-	 * that case, @param valid is set to <code>true</code>, and the value is saved
-	 * to the corresponding object. Otherwise, @param valid is set to
-	 * <code>false</code>.
+	 * that case, valid is set to <code>true</code>, and the value is saved to the
+	 * corresponding object. Otherwise, valid is set to <code>false</code>.
 	 */
 	@Override
 	public void keyReleased(KeyEvent e) {
@@ -80,8 +79,8 @@ public class DConsumptionListener extends KeyAdapter implements FocusListener {
 	}
 
 	/**
-	 * Verifies if the input is a valid character. If so, the @param check flag is
-	 * set to <code>true</code>. Otherwise, the event is consumed.
+	 * Verifies if the input is a valid character. If so, the check flag is set to
+	 * <code>true</code>. Otherwise, the event is consumed.
 	 */
 	@Override
 	public void keyTyped(KeyEvent e) {

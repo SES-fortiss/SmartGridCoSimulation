@@ -11,7 +11,7 @@ import fortiss.gui.DesignerPanel;
 
 public class CNewtworkTypePListener extends MouseAdapter implements ItemListener {
 
-	private static int building;
+	private static String buildingName;
 	private static int component;
 	private static boolean userSelection;
 
@@ -30,12 +30,12 @@ public class CNewtworkTypePListener extends MouseAdapter implements ItemListener
 				String sel = (String) o.getSelectedItem();
 				String opt = "Electricity";
 
-				DesignerPanel.buildings.get(building).getCoupler().get(component).setNetworkTypeP(sel);
+				DesignerPanel.buildings.get(buildingName).getCoupler().get(component).setNetworkTypeP(sel);
 				if (sel == "Heat") {
-					DesignerPanel.buildings.get(building).getCoupler().get(component).setNetworkTypeS(opt);
+					DesignerPanel.buildings.get(buildingName).getCoupler().get(component).setNetworkTypeS(opt);
 				} else {
 					opt = "Heat";
-					DesignerPanel.buildings.get(building).getCoupler().get(component).setNetworkTypeS(opt);
+					DesignerPanel.buildings.get(buildingName).getCoupler().get(component).setNetworkTypeS(opt);
 				}
 				DesignerPanel.couplerPanel.txtCSecondaryNetworkType.setText(opt);
 			}
@@ -46,7 +46,7 @@ public class CNewtworkTypePListener extends MouseAdapter implements ItemListener
 	/**
 	 * Set parameter values and calls FocusManager function.
 	 * 
-	 * @par building index of current building.
+	 * @par buildingName name of current building.
 	 * @par component index of current component.
 	 * @par userSelection TRUE if listener is triggered after user select the item
 	 *      on screen.
@@ -54,7 +54,7 @@ public class CNewtworkTypePListener extends MouseAdapter implements ItemListener
 	@Override
 	public void mousePressed(MouseEvent e) {
 		userSelection = true;
-		building = DesignerPanel.currentBuilding;
+		buildingName = DesignerPanel.selectedBuilding;
 		component = DesignerPanel.currentComponent;
 	}
 

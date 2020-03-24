@@ -1,7 +1,9 @@
 package fortiss.gui;
 
 import java.awt.Graphics;
+import java.util.ArrayList;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
@@ -9,7 +11,7 @@ import javax.swing.border.TitledBorder;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.StyleGenerator;
 
-/** 
+/**
  * Panel to show components added to a building
  */
 public class AddedComponentPanel extends JPanel {
@@ -21,31 +23,44 @@ public class AddedComponentPanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		setBackground(Colors.background);
-		
-		for (int i = 0; i < DesignerPanel.buildingCount; i++) {
-			for (int j = 0; j < DesignerPanel.demandIcons.get(i).size(); j++) {
-				DesignerPanel.demandIcons.get(i).get(j).setForeground(Colors.defaultCol);
-			}
-			for (int j = 0; j < DesignerPanel.storageIcons.get(i).size(); j++) {
-				DesignerPanel.storageIcons.get(i).get(j).setForeground(Colors.defaultCol);
-			}
-			for (int j = 0; j < DesignerPanel.volatileIcons.get(i).size(); j++) {
-				DesignerPanel.volatileIcons.get(i).get(j).setForeground(Colors.defaultCol);
-			}
-			for (int j = 0; j < DesignerPanel.controllableIcons.get(i).size(); j++) {
-				DesignerPanel.controllableIcons.get(i).get(j).setForeground(Colors.defaultCol);
-			}
-			for (int j = 0; j < DesignerPanel.couplerIcons.get(i).size(); j++) {
-				DesignerPanel.couplerIcons.get(i).get(j).setForeground(Colors.defaultCol);
+
+		for (ArrayList<JLabel> iconList : DesignerPanel.demandIcons.values()) {
+			for (JLabel icon : iconList) {
+				icon.setForeground(Colors.defaultCol);
 			}
 		}
+		
+		for (ArrayList<JLabel> iconList : DesignerPanel.storageIcons.values()) {
+			for (JLabel icon : iconList) {
+				icon.setForeground(Colors.defaultCol);
+			}
+		}
+		
+		for (ArrayList<JLabel> iconList : DesignerPanel.volatileIcons.values()) {
+			for (JLabel icon : iconList) {
+				icon.setForeground(Colors.defaultCol);
+			}
+		}
+		
+		for (ArrayList<JLabel> iconList : DesignerPanel.controllableIcons.values()) {
+			for (JLabel icon : iconList) {
+				icon.setForeground(Colors.defaultCol);
+			}
+		}
+		
+		for (ArrayList<JLabel> iconList : DesignerPanel.couplerIcons.values()) {
+			for (JLabel icon : iconList) {
+				icon.setForeground(Colors.defaultCol);
+			}
+		}
+
 	}
-	
+
 	public AddedComponentPanel() {
 		StyleGenerator.setupStyle();
 		initialize();
 	}
-	
+
 	/**
 	 * Initializes the contents of the panel.
 	 */

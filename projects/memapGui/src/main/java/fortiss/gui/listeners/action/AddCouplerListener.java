@@ -15,16 +15,16 @@ public class AddCouplerListener extends MouseAdapter {
 	 */
 	public void mouseClicked(MouseEvent e) {
 		// Update current_comp
-		DesignerPanel.currentComponent = DesignerPanel.couplerIcons.get(DesignerPanel.currentBuilding).size();
+		DesignerPanel.currentComponent = DesignerPanel.couplerIcons.get(DesignerPanel.selectedBuilding).size();
 
 		// Create coupler
-		DesignerPanel.buildings.get(DesignerPanel.currentBuilding).addCoupler(new Coupler("Coupler" + DesignerPanel.currentComponent,
+		DesignerPanel.buildings.get(DesignerPanel.selectedBuilding).addCoupler(new Coupler("Coupler" + DesignerPanel.currentComponent,
 				"Heat", "Electricity", 0.0, 0.0, 1.0, 1.0, 0.0, 0.0));
-		Coupler c = DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getCoupler().get(DesignerPanel.currentComponent);
+		Coupler c = DesignerPanel.buildings.get(DesignerPanel.selectedBuilding).getCoupler().get(DesignerPanel.currentComponent);
 
 		// Create label
 		ComponentIcons components = new ComponentIcons();
-		components.createCouplerIcon(DesignerPanel.currentBuilding, DesignerPanel.currentComponent, true);
+		components.createCouplerIcon(DesignerPanel.selectedBuilding, DesignerPanel.currentComponent, true);
 
 		// Show data
 		DataUpdater up = new DataUpdater();

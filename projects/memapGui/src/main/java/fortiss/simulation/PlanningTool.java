@@ -9,6 +9,7 @@ import fortiss.gui.PlanningToolWindow;
 import fortiss.gui.TrackerPanel;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
+import fortiss.results.Reporter;
 import fortiss.results.ReporterOverviewPanel;
 import fortiss.results.ReporterPanel;
 import fortiss.simulation.listeners.helper.ProgressManager;
@@ -23,6 +24,8 @@ public class PlanningTool {
 	private static DesignerPanel designerPanel;
 	/** Progress panel */
 	private static TrackerPanel trackerPanel;
+	/** Reporter */
+	private static Reporter reporter;
 	/** Reporter panel */
 	private static ReporterPanel reporterPanel;
 	/** Reporter overview panel */
@@ -43,15 +46,16 @@ public class PlanningTool {
 	}
 
 	/**
-	 * Initialize the application panels and add them to the main frame's content
-	 * pane.
+	 * Initialize the application panels (and manager classes) and add them to the
+	 * main frame's content pane.
 	 */
 	public static void init() {
+		setReporter(new Reporter());
 		setDesignerPanel(new DesignerPanel());
 		setReporterOverviewPanel(new ReporterOverviewPanel());
 		setReporterPanel(new ReporterPanel());
 		setTrackerPanel(new TrackerPanel());
-		
+
 		getPlanningToolWindow().addPanelAsCard("trackerPanel", getTrackerPanel());
 	}
 
@@ -69,7 +73,8 @@ public class PlanningTool {
 
 	/** Loads the results and show the reporter panel */
 	public static void showReporter() {
-		getReporterPanel().loadResults();
+		getReporter().showResults();
+
 		showScreen("tabbedPane");
 		getPlanningToolWindow().addPanelAsTab("Results overview", Icon.statistics, getReporterOverviewPanel());
 		getPlanningToolWindow().addPanelAsTab("Detailed results", Icon.series, getReporterPanel());
@@ -129,7 +134,7 @@ public class PlanningTool {
 	public static void setReporterOverviewPanel(ReporterOverviewPanel overviewPanel) {
 		PlanningTool.overviewPanel = overviewPanel;
 	}
-	
+
 	/** @return overviewPanel */
 	public static ReporterOverviewPanel getReporterOverviewPanel() {
 		return overviewPanel;
@@ -175,5 +180,19 @@ public class PlanningTool {
 	/** @return content pane in planningToolWindow */
 	public static Container getMainContentPane() {
 		return getPlanningToolWindow().getContentPane();
+	}
+
+	/**
+	 * Set the reporter
+	 * 
+	 * @param reporter an object of type {@link Reporter}}
+	 */
+	public static void setReporter(Reporter reporter) {
+		PlanningTool.reporter = reporter;
+	}
+
+	/** @return reporter */
+	public static Reporter getReporter() {
+		return reporter;
 	}
 }

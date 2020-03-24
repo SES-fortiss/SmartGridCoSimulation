@@ -1,6 +1,7 @@
 package memap.helper.milp;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 import lpsolve.LpSolve;
@@ -9,6 +10,7 @@ import memap.controller.TopologyController;
 import memap.helper.DirectoryConfiguration;
 import memap.helper.FileManager;
 import memap.helper.MEMAPLogging;
+import memap.helper.MetricsHandler;
 import memap.helper.SolutionHandler;
 import memap.messages.BuildingMessage;
 import memap.messages.OptimizationResultMessage;
@@ -26,12 +28,12 @@ public class MILPSolverNoConnections extends MILPSolver {
 	private BuildingMessage buildingMessage; // for problems without connections
 
 	public MILPSolverNoConnections(TopologyController topologyController, int currentTimeStep,
-			BuildingMessage buildingMessage, SolutionHandler milpSolHandler,
-			double[] buildingStepCostsMILP, double[] buildingStepCO2MILP, double[][] buildingsSolutionPerTimeStepMILP2,
-			String actorName, OptimizationResultMessage optResult) {
+			BuildingMessage buildingMessage, SolutionHandler milpSolHandler, double[] buildingStepCostsMILP,
+			double[] buildingStepCO2MILP, double[][] buildingsSolutionPerTimeStepMILP2, String actorName,
+			OptimizationResultMessage optResult) {
 
-		super(topologyController, currentTimeStep, milpSolHandler, buildingStepCostsMILP,
-				buildingStepCO2MILP, buildingsSolutionPerTimeStepMILP2, actorName, optResult);
+		super(topologyController, currentTimeStep, milpSolHandler, buildingStepCostsMILP, buildingStepCO2MILP,
+				buildingsSolutionPerTimeStepMILP2, actorName, optResult);
 
 		this.buildingMessage = buildingMessage;
 	}
@@ -151,5 +153,24 @@ public class MILPSolverNoConnections extends MILPSolver {
 		double[] lambdaCO2 = mp.getLambdaCO2();
 
 		workWithResults(optSolution, names, lambda, lambdaCO2, buildingMessage);
+
+		// METRICS FOR RESULTS OVERVIEW
+		MetricsHandler mc = new MILPMetricsHandler(topologyController, buildingMessage, optResult, optSolution, problem,
+				milpSolHandler, currentTimeStep, nStepsMPC);
+
+		// filename to be created
+		String filename = topologyController.getSimulationName() + "/MPC" + nStepsMPC + "_MILP/";
+		filename += actorName + "_MPC" + nStepsMPC + "_MILP_Overview.csv";
+
+		try {
+			mc.calculateOverviewMetrics(filename);
+		} catch (IOException e) {
+			System.err.println("There was an error in the metrics calculation");
+			e.printStackTrace();
+		}
+
+		// Clean up such that all used memory by lp-solve is freed
+		if (problem.getLp() != 0)
+			problem.deleteLp();
 	}
 }

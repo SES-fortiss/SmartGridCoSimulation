@@ -28,9 +28,9 @@ public class Menu extends JTree {
 	 * Constructor for the class Menu. Calls JTree constructor. Modifies color
 	 * properties.
 	 */
-	Menu(Output output) {
+	Menu(){
 		setSelectionModel(new MenuSelectionModel());
-		populateMenu(output); // with empty list
+		setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Results"))); 
 		DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) this.getCellRenderer();
 		setBackground(Colors.background);
 		setFont(Fonts.getOpenSans());
@@ -42,19 +42,19 @@ public class Menu extends JTree {
 	/**
 	 * @return the treeStructure for a given data
 	 */
-	private Object[] getTreeStructure(Output output) {
-		Object[] structure = new Object[output.getNumOfDatasets() + 1];
+	private Object[] getTreeStructure(ResultsLibrary outcome) {
+		Object[] structure = new Object[outcome.getNumOfDatasets() + 1];
 		structure[0] = "Results";
 
 		int i = 1;
-		for (String building : output.getResultList()) {
-			int numberOfSeries = output.getDatasetSize(building);
+		for (String building : outcome.getResultList()) {
+			int numberOfSeries = outcome.getDatasetSize(building);
 
 			Object[] subs = new Object[numberOfSeries];
 			subs[0] = building;
 
 			int j = 1;
-			for (String key : output.getSeriesList(building)) {
+			for (String key : outcome.getSeriesList(building)) {
 				if (!key.equals("Time step")) {
 					subs[j] = key;
 					j++;
@@ -94,10 +94,10 @@ public class Menu extends JTree {
 	/**
 	 * Populates the menu with results
 	 * 
-	 * @param output set of results
+	 * @param outcome set of results
 	 */
-	public void populateMenu(Output output) {
-		final Object[] list = getTreeStructure(output);
+	public void populateMenu(ResultsLibrary outcome) {
+		final Object[] list = getTreeStructure(outcome);
 		setModel(new DefaultTreeModel(createTree(list)));
 	}
 

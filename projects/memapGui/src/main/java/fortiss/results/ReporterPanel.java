@@ -11,7 +11,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
@@ -32,8 +31,7 @@ public class ReporterPanel extends JPanel {
 
 	public static ReporterPanel results;
 	public static JPanel plPlot;
-	public static PlotPanel plotPanel;
-	public static Output output;
+	public PlotPanel plotPanel;
 	private Menu treeResults;
 	private JPanel plSelection;
 	private JLabel lbInstructions;
@@ -63,7 +61,6 @@ public class ReporterPanel extends JPanel {
 	 * Create the application.
 	 */
 	public ReporterPanel() {
-		output = new Output();
 		StyleGenerator.setupStyle();
 		initialize();
 	}
@@ -72,15 +69,8 @@ public class ReporterPanel extends JPanel {
 	 * Initializes the contents of the frame.
 	 */
 	private void initialize() {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-				| UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		}
 		
-		// Sets frame properties
-		setSize(new Dimension(1920, 1080));
+		// Sets panel properties
 		setBackground(Colors.background);
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
@@ -112,7 +102,7 @@ public class ReporterPanel extends JPanel {
 		plSelection.add(scrollPane, "1, 4, fill, fill");
 
 		// Adds tree for result list
-		treeResults = new Menu(output);
+		treeResults = new Menu();
 		treeResults.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		treeResults.setBorder(null);
 		scrollPane.setViewportView(treeResults);
@@ -125,8 +115,7 @@ public class ReporterPanel extends JPanel {
 		add(plotPanel);
 	}
 	
-	public void loadResults() {
-		output.loadResults();
-		treeResults.populateMenu(output);
+	public void populateMenu(ResultsLibrary detailedResult) {
+		treeResults.populateMenu(detailedResult);
 	}
 }

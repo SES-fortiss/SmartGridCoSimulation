@@ -92,7 +92,7 @@ public class TrackerPanel extends JPanel {
 	}
 
 	public boolean isDone() {
-		return progressBar.getValue() > progressBar.getMaximum();
+		return progressBar.getValue() >= progressBar.getMaximum();
 	}
 	
 	public void setProgress(int progress) {

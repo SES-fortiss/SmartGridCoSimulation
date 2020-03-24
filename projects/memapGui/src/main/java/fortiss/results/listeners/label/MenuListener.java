@@ -5,19 +5,32 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+
 import fortiss.results.Menu;
+import fortiss.results.Reporter;
 import fortiss.results.ReporterPanel;
+import fortiss.results.ResultsLibrary;
+import fortiss.simulation.PlanningTool;
 
 public class MenuListener implements TreeSelectionListener {
 
+	/** A reference to the reporter */
+	Reporter reporter;
+	/** A reference to the reporter panel */
+	ReporterPanel reporterPanel;
+	
 	int previouslySelected = 0;
-
+	
 	/**
 	 * Identifies the field selected by the user in the results tree and calls
 	 * plotResults. Only leafs can be selected. @see MenuSelectionModel
 	 */
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
+		reporter = PlanningTool.getReporter();
+		ResultsLibrary detailedResult = reporter.getDetailedResult();
+		reporterPanel = PlanningTool.getReporterPanel();
+		
 		Menu h = (Menu) e.getSource();
 		
 		// Clicked: selected or deselected path (does not apply for re-selected components)
@@ -26,7 +39,7 @@ public class MenuListener implements TreeSelectionListener {
 		TreePath selectedPath = e.getNewLeadSelectionPath();
 
 		if (selectedPath == null) {
-			ReporterPanel.plotPanel.clearSeries();
+			reporterPanel.plotPanel.clearSeries();
 			return;
 		}
 
@@ -36,24 +49,24 @@ public class MenuListener implements TreeSelectionListener {
 		if (currentlySelected > previouslySelected) {
 			// We are adding a series
 			String parent = getParent(clickedPath);
-			ReporterPanel.plotPanel.addSeries(getSeriesName(parent, clicked),
-					ReporterPanel.output.getDataSeries(parent, clicked));
-			ReporterPanel.plotPanel.paintSeries();
+			reporterPanel.plotPanel.addSeries(getSeriesName(parent, clicked),
+					detailedResult.getDataSeries(parent, clicked));
+			reporterPanel.plotPanel.paintSeries();
 		} else if (currentlySelected < previouslySelected && currentlySelected > 1) {
 			// We are deselecting a series (first condition)
 			// or we are re-selecting one of the series that was previously selected (!second
 			// condition, goes to else)
 			String parent = getParent(clickedPath);
-			ReporterPanel.plotPanel.removeSeries(getSeriesName(parent, clicked));
-			ReporterPanel.plotPanel.paintSeries();
+			reporterPanel.plotPanel.removeSeries(getSeriesName(parent, clicked));
+			reporterPanel.plotPanel.paintSeries();
 		} else {
 			// We are changing one series for another or re-selecting
 			clicked = ((DefaultMutableTreeNode) selectedPath.getLastPathComponent()).toString();
 			String parent = getParent(selectedPath);
-			ReporterPanel.plotPanel.clearSeries();
-			ReporterPanel.plotPanel.addSeries(getSeriesName(parent, clicked),
-					ReporterPanel.output.getDataSeries(getParent(selectedPath), clicked.toString()));
-			ReporterPanel.plotPanel.paintSeries();
+			reporterPanel.plotPanel.clearSeries();
+			reporterPanel.plotPanel.addSeries(getSeriesName(parent, clicked),
+					detailedResult.getDataSeries(getParent(selectedPath), clicked.toString()));
+			reporterPanel.plotPanel.paintSeries();
 		}
 
 		previouslySelected = currentlySelected;

@@ -15,18 +15,20 @@ public class AddControllableListener extends MouseAdapter {
 	 * DataUpdater.
 	 */
 	public void mouseClicked(MouseEvent e) {
+		
+		String selectedBuilding = DesignerPanel.selectedBuilding;
 		// Update current_comp
-		DesignerPanel.currentComponent = DesignerPanel.controllableIcons.get(DesignerPanel.currentBuilding).size();
+		DesignerPanel.currentComponent = DesignerPanel.controllableIcons.get(selectedBuilding).size();
 
 		// Create contProduction
-		DesignerPanel.buildings.get(DesignerPanel.currentBuilding).addContProduction(
+		DesignerPanel.buildings.get(selectedBuilding).addContProduction(
 				new Controllable("Controllable" + DesignerPanel.currentComponent, "Heat", 0.0, 0.0, 1.0, 0.0, 0.0));
-		Controllable cp = DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getControllable()
+		Controllable cp = DesignerPanel.buildings.get(selectedBuilding).getControllable()
 				.get(DesignerPanel.currentComponent);
 
 		// Create label
 		ComponentIcons components = new ComponentIcons();
-		components.createContProductionIcon(DesignerPanel.currentBuilding, DesignerPanel.currentComponent, true);
+		components.createContProductionIcon(selectedBuilding, DesignerPanel.currentComponent, true);
 
 		// Show data
 		DataUpdater up = new DataUpdater();

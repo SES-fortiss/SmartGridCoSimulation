@@ -16,16 +16,16 @@ public class AddDemandListener extends MouseAdapter {
 	public void mouseClicked(MouseEvent e) {
 
 		// Update current_comp
-		DesignerPanel.currentComponent = DesignerPanel.demandIcons.get(DesignerPanel.currentBuilding).size();
+		DesignerPanel.currentComponent = DesignerPanel.demandIcons.get(DesignerPanel.selectedBuilding).size();
 
 		// Create demand
-		DesignerPanel.buildings.get(DesignerPanel.currentBuilding)
+		DesignerPanel.buildings.get(DesignerPanel.selectedBuilding)
 				.addDemand(new Demand("Demand" + DesignerPanel.currentComponent, ""));
-		Demand d = DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getDemand().get(DesignerPanel.currentComponent);
+		Demand d = DesignerPanel.buildings.get(DesignerPanel.selectedBuilding).getDemand().get(DesignerPanel.currentComponent);
 
 		// Create label
 		ComponentIcons components = new ComponentIcons();
-		components.createDemandIcon(DesignerPanel.currentBuilding, DesignerPanel.currentComponent, true);
+		components.createDemandIcon(DesignerPanel.selectedBuilding, DesignerPanel.currentComponent, true);
 
 		// Show data
 		DataUpdater up = new DataUpdater();

@@ -14,20 +14,20 @@ import fortiss.gui.listeners.helper.FocusManager;
 
 public class CouplerListener extends MouseAdapter implements FocusListener {
 
-	private static int building;
+	private static String buildingName;
 
 	/**
 	 * Manages the actions performed when the label is selected: Panels, data shown.
 	 */
 	@Override
 	public void mousePressed(MouseEvent e) {
-		building = DesignerPanel.currentBuilding;
+		buildingName = DesignerPanel.selectedBuilding;
 
 		JLabel lb = (JLabel) e.getSource();
 		lb.requestFocus(); // Required for removing components
 
-		DesignerPanel.currentComponent = DesignerPanel.couplerIcons.get(building).indexOf(lb);
-		Coupler c = DesignerPanel.buildings.get(building).getCoupler().get(DesignerPanel.currentComponent);
+		DesignerPanel.currentComponent = DesignerPanel.couplerIcons.get(buildingName).indexOf(lb);
+		Coupler c = DesignerPanel.buildings.get(buildingName).getCoupler().get(DesignerPanel.currentComponent);
 
 		DataUpdater up = new DataUpdater();
 		up.updateCouplerData(c.getName(), c.getNetworkTypeP(), c.getNetworkTypeS(), c.getMinimumPower(),
@@ -40,9 +40,9 @@ public class CouplerListener extends MouseAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = DesignerPanel.currentBuilding;
+		buildingName = DesignerPanel.selectedBuilding;
 		JLabel lb = (JLabel) e.getSource();
-		FocusManager.focusCoupler(building, lb);
+		FocusManager.focusCoupler(buildingName, lb);
 	}
 
 	/**
@@ -51,6 +51,6 @@ public class CouplerListener extends MouseAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		JLabel lb = (JLabel) e.getSource();
-		FocusManager.focusLostCoupler(building, lb);
+		FocusManager.focusLostCoupler(buildingName, lb);
 	}
 }

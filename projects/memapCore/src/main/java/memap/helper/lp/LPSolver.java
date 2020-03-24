@@ -9,6 +9,7 @@ import java.util.Locale;
 import memap.controller.TopologyController;
 import memap.helper.EnergyPrices;
 import memap.helper.HelperConcat;
+import memap.helper.MetricsHandler;
 import memap.helper.SolutionHandler;
 import memap.helper.configurationOptions.Optimizer;
 import memap.main.TopologyConfig;
@@ -23,7 +24,7 @@ public class LPSolver {
 	TopologyConfig topologyConfig = TopologyConfig.getInstance();
 	/** Time step for which the solver is created */
 	private int currentTimeStep;
-	
+
 	BuildingMessage buildingMessage;
 	private ArrayList<BuildingMessage> buildingMessageList;
 
@@ -34,9 +35,9 @@ public class LPSolver {
 	String actorName;
 	OptimizationResultMessage optResult;
 
-	public LPSolver(TopologyController topologyController, BuildingMessage buildingMessage, SolutionHandler solHandler, double[] totalEURVector,
-			double[] totalCO2Vector, int currentTimeStep, double[][] solutionPerTimeStep, String actorName,
-			OptimizationResultMessage optResult) {
+	public LPSolver(TopologyController topologyController, BuildingMessage buildingMessage, SolutionHandler solHandler,
+			double[] totalEURVector, double[] totalCO2Vector, int currentTimeStep, double[][] solutionPerTimeStep,
+			String actorName, OptimizationResultMessage optResult) {
 		this.topologyController = topologyController;
 		this.buildingMessage = buildingMessage;
 		this.solHandler = solHandler;
@@ -145,6 +146,16 @@ public class LPSolver {
 				String str = problem.namesUB[i * nStepsMPC];
 				optResult.resultMap.put(str, result);
 			}
+
+			// METRICS FOR RESULTS OVERVIEW
+			MetricsHandler mc = new LPMetricsHandler(buildingMessage, optResult, optSolution, problem,
+					currentTimeStep, nStepsMPC);
+
+			// filename to be created
+			String filename = topologyController.getSimulationName() + "/MPC" + nStepsMPC + "_LP/";
+			filename += actorName + "_MPC" + nStepsMPC + "_LP_Overview.csv";
+
+			mc.calculateOverviewMetrics(filename);
 
 		} catch (Exception e) {
 			e.printStackTrace();

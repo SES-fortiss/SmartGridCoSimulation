@@ -11,9 +11,9 @@ public class VBrowseListener extends MouseAdapter {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		int building = DesignerPanel.currentBuilding;
+		String buildingName = DesignerPanel.selectedBuilding;
 		int component = DesignerPanel.currentComponent;
-		Volatile v = DesignerPanel.buildings.get(building).getVolatile().get(component);
+		Volatile v = DesignerPanel.buildings.get(buildingName).getVolatile().get(component);
 
 		// Update selection in text field
 		Chooser c = new Chooser();

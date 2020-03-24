@@ -17,7 +17,7 @@ import fortiss.simulation.PlanningTool;
 
 public class CEfficiencyPrimaryListener extends KeyAdapter implements FocusListener {
 
-	private static int building;
+	private static String buildingName;
 	private static int component;
 	private static boolean check;
 	private static boolean valid;
@@ -32,16 +32,16 @@ public class CEfficiencyPrimaryListener extends KeyAdapter implements FocusListe
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = DesignerPanel.currentBuilding;
+		buildingName = DesignerPanel.selectedBuilding;
 		component = DesignerPanel.currentComponent;
-		o = DesignerPanel.buildings.get(building).getCoupler().get(component);
+		o = DesignerPanel.buildings.get(buildingName).getCoupler().get(component);
 		check = false;
 		valid = true;
 
 		source = (JTextField) e.getSource();
 		message = "An unidentified error has occurred.";
 		v = new InsertionVerifier();
-		FocusManager.focusCoupler(building, component);
+		FocusManager.focusCoupler(buildingName, component);
 	}
 
 	/**
@@ -55,13 +55,13 @@ public class CEfficiencyPrimaryListener extends KeyAdapter implements FocusListe
 			JOptionPane.showMessageDialog(PlanningTool.getMainContentPane(), message);
 			source.setText(currentVal);
 		}
-		FocusManager.focusLostCoupler(building, component);
+		FocusManager.focusLostCoupler(buildingName, component);
 	}
 
 	/**
-	 * Verifies if the input is a non-empty value. In that case, @param valid is set
-	 * to <code>true</code>, and the value is saved to the corresponding object.
-	 * Otherwise, @param valid is set to <code>false</code>.
+	 * Verifies if the input is a non-empty value. In that case, valid is set to
+	 * <code>true</code>, and the value is saved to the corresponding object.
+	 * Otherwise, valid is set to <code>false</code>.
 	 */
 	@Override
 	public void keyReleased(KeyEvent e) {
@@ -96,8 +96,8 @@ public class CEfficiencyPrimaryListener extends KeyAdapter implements FocusListe
 	}
 
 	/**
-	 * Verifies if the input is a valid character. If so, the @param check flag is
-	 * set to <code>true</code>. Otherwise, the event is consumed.
+	 * Verifies if the input is a valid character. If so, the check flag is set to
+	 * <code>true</code>. Otherwise, the event is consumed.
 	 */
 	@Override
 	public void keyTyped(KeyEvent e) {

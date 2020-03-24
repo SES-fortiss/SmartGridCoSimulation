@@ -14,20 +14,20 @@ import fortiss.gui.listeners.helper.FocusManager;
 
 public class ControllableListener extends MouseAdapter implements FocusListener {
 
-	private static int building;
+	private static String buildingName;
 
 	/**
 	 * Manages the actions performed when the label is selected: Panels, data shown.
 	 */
 	@Override
 	public void mousePressed(MouseEvent e) {
-		building = DesignerPanel.currentBuilding;
+		buildingName = DesignerPanel.selectedBuilding;
 
 		JLabel lb = (JLabel) e.getSource();
 		lb.requestFocus(); // Required for removing components
 
-		DesignerPanel.currentComponent = DesignerPanel.controllableIcons.get(building).indexOf(lb);
-		Controllable cp = DesignerPanel.buildings.get(building).getControllable().get(DesignerPanel.currentComponent);
+		DesignerPanel.currentComponent = DesignerPanel.controllableIcons.get(buildingName).indexOf(lb);
+		Controllable cp = DesignerPanel.buildings.get(buildingName).getControllable().get(DesignerPanel.currentComponent);
 
 		DataUpdater up = new DataUpdater();
 		up.updateContProductionData(cp.getName(), cp.getNetworkType(), cp.getMinimumPower(), cp.getMaximumPower(),
@@ -39,9 +39,9 @@ public class ControllableListener extends MouseAdapter implements FocusListener 
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = DesignerPanel.currentBuilding;
+		buildingName = DesignerPanel.selectedBuilding;
 		JLabel lb = (JLabel) e.getSource();
-		FocusManager.focusControllable(building, lb);
+		FocusManager.focusControllable(buildingName, lb);
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class ControllableListener extends MouseAdapter implements FocusListener 
 	@Override
 	public void focusLost(FocusEvent e) {
 		JLabel lb = (JLabel) e.getSource();
-		FocusManager.focusLostControllable(building, lb);
+		FocusManager.focusLostControllable(buildingName, lb);
 	}
 
 }

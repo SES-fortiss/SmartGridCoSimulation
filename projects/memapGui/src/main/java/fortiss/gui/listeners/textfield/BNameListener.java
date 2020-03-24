@@ -16,7 +16,7 @@ import fortiss.simulation.PlanningTool;
 
 public class BNameListener extends KeyAdapter implements FocusListener {
 
-	private static int building;
+	private static String buildingName;
 	private static boolean check;
 	private static boolean valid;
 	private static JTextField source;
@@ -28,13 +28,13 @@ public class BNameListener extends KeyAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		building = DesignerPanel.currentBuilding;
+		buildingName = DesignerPanel.selectedBuilding;
 		check = false;
 		valid = true;
 
 		source = (JTextField) e.getSource();
 		message = "An unidentified error has occurred.";
-		FocusManager.focusBuilding(building);
+		FocusManager.focusBuilding(buildingName);
 	}
 
 	/**
@@ -44,17 +44,17 @@ public class BNameListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
-			String currentVal = DesignerPanel.buildings.get(building).getName();
+			String currentVal = DesignerPanel.buildings.get(buildingName).getName();
 			JOptionPane.showMessageDialog(PlanningTool.getMainContentPane(), message);
 			source.setText(currentVal);
 		}
-		FocusManager.focusLostBuilding(building);
+		FocusManager.focusLostBuilding(buildingName);
 	}
 
 	/**
-	 * Verifies if the input is a non-empty value. In that case, @param valid is set
-	 * to <code>true</code>, and the value is saved to the corresponding object.
-	 * Otherwise, @param valid is set to <code>false</code>.
+	 * Verifies if the input is a non-empty value. In that case, valid is set to
+	 * <code>true</code>, and the value is saved to the corresponding object.
+	 * Otherwise, valid is set to <code>false</code>.
 	 */
 	@Override
 	public void keyReleased(KeyEvent e) {
@@ -66,16 +66,16 @@ public class BNameListener extends KeyAdapter implements FocusListener {
 				message = "Error. This field can not be empty.";
 			} else {
 				valid = true;
-				DesignerPanel.buildings.get(building).setName(input);
+				DesignerPanel.buildings.get(buildingName).setName(input);
 				LabelUpdater lu = new LabelUpdater();
-				lu.updateLabel(DesignerPanel.buildingIcons.get(building), input);
+				lu.updateLabel(DesignerPanel.buildingIcons.get(buildingName), input);
 			}
 		}
 	}
 
 	/**
-	 * Verifies if the input is a valid character. If so, the @param check flag is
-	 * set to <code>true</code>. Otherwise, the event is consumed.
+	 * Verifies if the input is a valid character. If so, the check flag is set to
+	 * <code>true</code>. Otherwise, the event is consumed.
 	 */
 	@Override
 	public void keyTyped(KeyEvent e) {

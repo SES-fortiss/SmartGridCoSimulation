@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 
@@ -144,7 +145,8 @@ public class FileManager {
 
 		Set<Building> mySet = new HashSet<Building>();
 
-		for (Building building : DesignerPanel.buildings) {
+		for (Entry<String, Building> entry : DesignerPanel.buildings.entrySet()) {
+			Building building = entry.getValue();
 			mySet.add(building);
 		}
 
@@ -163,7 +165,8 @@ public class FileManager {
 		String location = System.getProperty("user.dir") + File.separator + 
 				mainDir + File.separator + configDir + File.separator;
 
-		for (Building building : DesignerPanel.buildings) {
+		for (Entry<String, Building> entry : DesignerPanel.buildings.entrySet()) {
+			Building building = entry.getValue();
 			System.out.println(">> Writing descriptor " + building.getName() + " in " + location);
 
 			String filename = location + building.getName() + ".json";

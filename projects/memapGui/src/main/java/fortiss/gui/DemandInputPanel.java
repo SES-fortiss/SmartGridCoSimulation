@@ -188,7 +188,7 @@ public class DemandInputPanel extends JPanel {
 		} else {
 			try {
 				FileManager fm = new FileManager();
-				this.data = new Data(fm.readFromSource(location), false);
+				this.data = new Data(fm.readFromSource(location), false, Data.BYCOLUMN);
 			} catch (IOException | ParseException e) {
 				System.out.println("<INFO> Data for demand at " + location + " could not be read. Using zeros only.");
 				loadEmptyData();
@@ -197,10 +197,8 @@ public class DemandInputPanel extends JPanel {
 
 		if (!data.equals(null)) {
 			plotPanel.clearSeries();
-			//plotPanel.addSeries("Heat", data.getSeries(0));
-			//plotPanel.addSeries("Electricity", data.getSeries(1));
-			plotPanel.addSeries("Heat", data.getSeries("Series"+1));
-			plotPanel.addSeries("Electricity", data.getSeries("Series"+2));
+			plotPanel.addSeries("Heat", data.getSeries("Series" + 1));
+			plotPanel.addSeries("Electricity", data.getSeries("Series" + 2));
 			plotPanel.setPlotted(false);
 		}
 	}
@@ -210,14 +208,14 @@ public class DemandInputPanel extends JPanel {
 		ExampleFiles ef = new ExampleFiles();
 
 		try {
-			this.data = new Data(fm.readFromResources(ef.getFile("EXAMPLE0")), false);
+			this.data = new Data(fm.readFromResources(ef.getFile("EXAMPLE0")), false, Data.BYCOLUMN);
 		} catch (IOException | ParseException e1) {
 			data = null;
 			System.err.println("Resources error. Default consumption file not found.");
 			e1.printStackTrace();
 		}
 		txtDConsumption.setText("");
-		DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getDemand().get(DesignerPanel.currentComponent)
+		DesignerPanel.buildings.get(DesignerPanel.selectedBuilding).getDemand().get(DesignerPanel.currentComponent)
 				.setConsumptionProfile("");
 	}
 }

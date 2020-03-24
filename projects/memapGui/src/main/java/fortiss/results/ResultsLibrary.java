@@ -1,77 +1,33 @@
 package fortiss.results;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import fortiss.components.Building;
 import fortiss.datastructures.Data;
-import fortiss.gui.DesignerPanel;
-import fortiss.gui.listeners.helper.FileManager;
-import fortiss.simulation.Parameters;
-import memap.helper.DirectoryConfiguration;
 
 /**
- * Output represents a simulation complete set of results.
+ * ResultsLibrary represents the set of results of a simulation
  */
-public class Output {
+public abstract class ResultsLibrary {
 
-	private Map<String, Data> resultsLibrary;
+	/** Result library map */
+	protected Map<String, Data> resultsLibrary;
+	
+	/** A qualifier for the file name according to the type of data */
+	protected String typeQualifier;
 
 	/**
-	 * Constructor for the class Output.
+	 * Constructor for the class ResultsLibrary
 	 */
-	public Output() {
+	public ResultsLibrary(String typeQualifier) {
 		resultsLibrary = new HashMap<>();
+		this.typeQualifier = typeQualifier;
 	}
 
-	/*
-	 * Populates the map with objects of the class Data.
-	 */
-	public void loadResults() {
-		FileManager fm = new FileManager();
-		Parameters pars = DesignerPanel.parameterPanel.pars;
-		String location = System.getProperty("user.dir");
-		String fs = File.separator;
-		String source = fs + DirectoryConfiguration.mainDir + fs + "results" + fs + pars.getSimulationName() + fs
-				+ "MPC" + pars.getSteps();
-
-		String optimizerQualifier = "_MPC" + pars.getSteps();
-		if (pars.getOptimizer().equals("milp")) {
-			source += "_MILP" + fs;
-			optimizerQualifier += "_MILP_Solutions.csv";
-		}
-
-		if (pars.getOptimizer().equals("lp")) {
-			source += "_LP" + fs;
-			optimizerQualifier += "_LP_Solutions.csv";
-		}
-
-		// Read global optimization results
-		String filename = pars.getSimulationName() + optimizerQualifier;
-		filename = location + source + filename;
-
-		try {
-			resultsLibrary.put("Global optimization", new Data(fm.readFromSource(filename), true));
-		} catch (IOException | ParseException e) {
-			e.printStackTrace();
-		}
-
-		// Read building optimization results
-		for (Building building : DesignerPanel.buildings) {
-			filename = building.getName() + optimizerQualifier;
-			filename = location + source + filename;
-			try {
-				resultsLibrary.put(building.getName(), new Data(fm.readFromSource(filename), true));
-			} catch (IOException | ParseException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+	/** Load results */
+	public abstract void load();
 
 	/**
 	 * @return the number of data sets in the results library

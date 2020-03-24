@@ -125,7 +125,7 @@ public class Connection {
 	 * sets {@link Connection#ln} to it.
 	 */
 	public void setLn() {
-		this.ln = new Line2D.Float(PositionManager.getPositionOf(nodeA), PositionManager.getPositionOf(nodeB));
+		this.ln = new Line2D.Float(PositionManager.getPositionOf(nodeA.getText()), PositionManager.getPositionOf(nodeB.getText()));
 	}
 
 	/**

@@ -2,7 +2,8 @@ package fortiss.gui.listeners.helper;
 
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.swing.JLabel;
 
@@ -14,15 +15,16 @@ import fortiss.media.Icon;
  */
 public abstract class PositionManager {
 
-	public static ArrayList<Point2D> position = new ArrayList<Point2D>();
+	public static TreeMap<String, Point2D> position = new TreeMap<String, Point2D>();
 
 	/**
 	 * Adds the position of a building icon.
 	 * 
+	 * @param buildingName the name of a building
 	 * @param icon a building label
 	 */
-	public static void addPosition(JLabel icon) {
-		position.add(getCentralPoint(icon));
+	public static void addPosition(String buildingName, JLabel icon) {
+		position.put(buildingName, getCentralPoint(icon));
 	}
 
 	/**
@@ -30,10 +32,9 @@ public abstract class PositionManager {
 	 * 
 	 * @param icon a building label
 	 */
-	public static void removePosition(JLabel icon) {
-		int index = DesignerPanel.buildingIcons.indexOf(icon);
-		position.remove(index);
-		ConnectionManager.removeConnectionsOf(icon);
+	public static void removePosition(String buildingName) {
+		position.remove(buildingName);
+		ConnectionManager.removeConnectionsOf(buildingName);
 	}
 
 	/**
@@ -49,11 +50,11 @@ public abstract class PositionManager {
 	 * Updates position of a building label. Calls
 	 * {@link fortiss.gui.listeners.helper.ConnectionManager#updateLines()}
 	 * 
+	 * @param buildingName the name of a building
 	 * @param icon a building icon
 	 */
-	public static void updateBuildingPosition(JLabel icon) {
-		int index = DesignerPanel.buildingIcons.indexOf(icon);
-		position.set(index, getCentralPoint(icon));
+	public static void updateBuildingPosition(String buildingName, JLabel icon) {
+		position.replace(buildingName, getCentralPoint(icon));
 		ConnectionManager.updateLines();
 		DesignerPanel.pl_ems.repaint();
 	}
@@ -71,11 +72,10 @@ public abstract class PositionManager {
 	/**
 	 * Returns the position of a building.
 	 * 
-	 * @param icon a building label
+	 * @param buildingName the name of a building
 	 */
-	public static Point2D getPositionOf(JLabel icon) {
-		int index = DesignerPanel.buildingIcons.indexOf(icon);
-		return position.get(index);
+	public static Point2D getPositionOf(String buildingName) {
+		return position.get(buildingName);
 	}
 
 	/**
@@ -83,7 +83,7 @@ public abstract class PositionManager {
 	 * visible area of the panel. Calls
 	 * {@link PositionManager#updateBuildingPosition(JLabel)}.
 	 */
-	public static void fixPosition(JLabel icon) {
+	public static void fixPosition(String buildingName, JLabel icon) {
 		int x = icon.getX();
 		int y = icon.getY();
 
@@ -100,7 +100,7 @@ public abstract class PositionManager {
 			y = getVisibleArea().height;
 		}
 		icon.setLocation(x, y);
-		PositionManager.updateBuildingPosition(icon);
+		PositionManager.updateBuildingPosition(buildingName, icon);
 		DesignerPanel.pl_ems.repaint();
 	}
 
@@ -109,8 +109,10 @@ public abstract class PositionManager {
 	 * panel is resized. Calls {@link PositionManager#fixPosition(JLabel)}
 	 */
 	public static void fixPositions() {
-		for (JLabel icon : DesignerPanel.buildingIcons) {
-			fixPosition(icon);
+		for (Entry<String, JLabel> entry : DesignerPanel.buildingIcons.entrySet()) {
+			String buildingName = entry.getKey();
+			JLabel icon = entry.getValue();
+			fixPosition(buildingName, icon);
 		}
 	}
 

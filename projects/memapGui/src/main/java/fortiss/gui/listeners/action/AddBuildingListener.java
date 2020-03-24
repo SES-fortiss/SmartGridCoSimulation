@@ -15,29 +15,30 @@ public class AddBuildingListener extends MouseAdapter {
 	/**
 	 * Creates a building object and a building icon. Calls
 	 * {@link fortiss.gui.listeners.helper.BuildingIcons#createBuildingIcon(int, Point)}
-	 * {@link fortiss.gui.listeners.helper.ComponentIcons#createComponentLists(int)},
+	 * {@link fortiss.gui.listeners.helper.ComponentIcons#createComponentLists(String)},
 	 * {@link fortiss.gui.listeners.helper.DataUpdater#updateEmsData(String, String)}.
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
 
 		// create building
-		DesignerPanel.buildings.add(new Building("building" + DesignerPanel.buildingCount, 0, false, 0));
-		DesignerPanel.currentBuilding = DesignerPanel.buildingCount;
+		String buildingName = "building" + DesignerPanel.buildingCount;
+		Building building = new Building(buildingName, 0);
 
-		// create label
+		DesignerPanel.buildings.put(buildingName, building);
+		DesignerPanel.selectedBuilding = buildingName;
+
+		// Create building icon
 		BuildingIcons bi = new BuildingIcons();
-		bi.createBuildingIcon(DesignerPanel.buildingCount, new Point(0, 0));
+		bi.createBuildingIcon(buildingName, new Point(0, 0));
 
-		// Create list of icons for current building and add it to the general icon
-		// lists
+		// Create component icons
 		ComponentIcons components = new ComponentIcons();
-		components.createComponentLists(DesignerPanel.currentBuilding);
+		components.createComponentLists(buildingName);
 
 		// Show information in pl_ems_details
 		DataUpdater du = new DataUpdater();
-		du.updateEmsData(DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getName(),
-				Integer.toString(DesignerPanel.buildings.get(DesignerPanel.currentBuilding).getPort()));
+		du.updateEmsData(building.getName(), Integer.toString(building.getPort()));
 		DesignerPanel.buildingCount = DesignerPanel.buildingCount + 1;
 	}
 }

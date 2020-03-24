@@ -7,6 +7,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.JLabel;
 
+import fortiss.gui.DesignerPanel;
+
 /**
  * Manager of connections between building icons/labels
  */
@@ -36,8 +38,10 @@ public abstract class ConnectionManager {
 	/**
 	 * Removes all the connections between node and other nodes in the connections
 	 * list. Calls {@link ConnectionManager#updateLines()}
+	 * @param buildingName the name of a building
 	 */
-	public static void removeConnectionsOf(JLabel node) {
+	public static void removeConnectionsOf(String buildingName) {
+		JLabel node = DesignerPanel.buildingIcons.get(buildingName);
 		ArrayList<Connection> rm = new ArrayList<Connection>();
 		for (Connection c : cl) {
 			if (c.isNode(node)) {
