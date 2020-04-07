@@ -19,7 +19,7 @@
 			&emsp; &emsp; &emsp; &emsp;    
 			
 				<!--Textbox containing the Server IP address of the building that is added-->
-			<label class="label">OPC-UA server address</label> <input type="name" class="input serverIP" id="IPServer" value="opc.tcp://0.0.0.0:4880"	size="40">
+			<label class="label">OPC-UA server address</label> <input type="name" class="input serverIP" id="IPServer" value="opc.tcp://0.0.0.0:4850"	size="40">
 			
 							<!--extra spacing			
 			&emsp; &emsp; &emsp; &emsp; 
@@ -89,7 +89,7 @@
     	}
         	setTimeout(function() {
     	    	var messageForServer=JSON.stringify({"name": buildName, "endpointURL": serverIP, "endpointDescriptor": "0", "config": stringConfig});
-        		  // Code, der erst nach 0.1 Sekunden ausgeführt wird
+        		  // Code, der erst nach 0.1 Sekunden ausgefï¿½hrt wird
             	wstool._send(messageForServer);
         		  var clientSees="Name: " + buildName + " , URL: "+serverIP + " , ConfigFile: " + configFile.name;
         		wstool.write(clientSees);

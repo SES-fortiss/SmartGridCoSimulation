@@ -27,7 +27,6 @@ import memap.messages.BuildingMessageHandler;
 import memap.messages.OptimizationResultMessage;
 import memap.messages.extension.ChildSpecification;
 import opcMEMAP.MemapOpcServerStarter;
-
 /**
  * This model optimizes over several buildings for the planning tool.
  * 
@@ -128,7 +127,6 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 
 			System.out.println(topologyController.getOptimizer() + ": " + this.actorName + " cost = "
 					+ String.format("%.03f", costTotal) + " EUR ; CO2: " + String.format("%.03f", CO2Total) + " kg");
-			
 			try {
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
