@@ -1,5 +1,6 @@
 package memap.helper.milp;
 
+import java.sql.Connection;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import memap.main.TopologyConfig;
 import memap.messages.BuildingMessage;
 import memap.messages.BuildingMessageHandler;
 import memap.messages.OptimizationResultMessage;
+import memap.messages.planning.ConnectionDB;
 
 public class MILPSolver {
 	/** Reference to topologyController ancestor */
@@ -121,7 +123,6 @@ public class MILPSolver {
 	private void workWithResults(double[] optSolution, String[] names, double[] lambda, double[] lambdaCO2) {
 
 		BuildingMessageHandler buildingMessageHandler = new BuildingMessageHandler();
-
 		double buildingCostPerTimestep = 0;
 		double buildingCO2PerTimestep = 0;
 		buildingCostPerTimestep = milpSolHandler.calculateTimeStepCosts(optSolution, lambda);
@@ -175,6 +176,7 @@ public class MILPSolver {
 				currentSOCNames, energyPrice, totalCosts, co2emissions);
 		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC,
 				currentEnergyPrice, totalCostsEUR, totalCO2emissions);
+		ConnectionDB.addResults(vectorResult);
 
 		// Format results vector for printing
 		String[] vectorResultStr = new String[vectorResult.length];
@@ -182,7 +184,6 @@ public class MILPSolver {
 		for (int i = 1; i < vectorResultStr.length; i++) {
 			vectorResultStr[i] = df.format(vectorResult[i]);
 		}
-
 		System.out.println("MILP: " + this.actorName + " Names: " + Arrays.toString(namesResult));
 		System.out.println("MILP: " + this.actorName + " Result: " + Arrays.toString(vectorResult));
 
@@ -217,6 +218,8 @@ public class MILPSolver {
 		// Clean up such that all used memory by lp-solve is freed
 		if (problem.getLp() != 0)
 			problem.deleteLp();
+		
+
 
 	}
 

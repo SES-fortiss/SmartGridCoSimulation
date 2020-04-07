@@ -1,7 +1,11 @@
 package memap.main;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import memap.controller.TopologyController;
 import memap.examples.ExampleLoader;
+import memap.messages.planning.ConnectionDB;
 import memap.websocket.JettyWebsocket;
 import opcMEMAP.ConfigInterface;
 
@@ -28,7 +32,7 @@ import opcMEMAP.ConfigInterface;
 
 public class Simulation {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		// Show help screen by default
 		String arg = "help";
 
@@ -40,11 +44,12 @@ public class Simulation {
 
 	}
 
-	private static void run(TopologyController topologyController) {
+	private static void run(TopologyController topologyController) throws SQLException {
+		Connection con = ConnectionDB.connectToDB();
 		topologyController.startSimulation();
 	}
 
-	private static void argParser(String arg) {
+	private static void argParser(String arg) throws SQLException {
 		switch (arg) {
 		case "help":
 		case "h":
