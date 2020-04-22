@@ -1,5 +1,6 @@
 package memap.helper.milp;
 
+import java.sql.Connection;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -175,6 +176,7 @@ public class MILPSolver {
 				currentSOCNames, energyPrice, totalCosts, co2emissions);
 		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC,
 				currentEnergyPrice, totalCostsEUR, totalCO2emissions);
+
 		ConnectionDB.addResults(currentStep, currentDemand, currentOptVector, currentSOC,
 				currentEnergyPrice, totalCostsEUR, totalCO2emissions);
 
