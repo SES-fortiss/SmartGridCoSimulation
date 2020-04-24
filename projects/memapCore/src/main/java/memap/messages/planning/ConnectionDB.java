@@ -25,16 +25,33 @@ public class ConnectionDB {
 	public static void addResults(double[] currentStep, double[] currentDemand, double[] currentOptVector, double[] currentSOC,
 			double[] currentEnergyPrice, double[] totalCostsEUR, double[] totalCO2emissions)
 	{
-		String r1 = Arrays.toString(currentStep);
-		String r2 = Arrays.toString(currentDemand);
-		String r3 = Arrays.toString(currentOptVector);
-		String r4 = Arrays.toString(currentSOC);
-		String r5 = Arrays.toString(currentEnergyPrice);
-		String r6 = Arrays.toString(totalCostsEUR);
-		String r7 = Arrays.toString(totalCO2emissions);
-		String sql = "CREATE TABLE IF NOT EXISTS milp(currentStep VARCHAR(100) NULL, currentDemand VARCHAR(100) NULL, currentOptVector VARCHAR(100) NULL, currentSOC VARCHAR(100) NULL, currentEnergyPrice VARCHAR(100) NULL, totalCostsEUR VARCHAR(100) NULL, totalCO2emissions VARCHAR(100) NULL, timestamp TIMESTAMPTZ NULL); "
-				+ "INSERT INTO milp(currentStep, currentDemand, currentOptVector, currentSOC,\r\n" + 
-				"				currentEnergyPrice, totalCostsEUR, totalCO2emissions,timestamp) VALUES ('" + r1 + "','" + r2 + "','" + r3 + "','" + r4 + "','" + r5 + "','" + r6 + "','" + r7 + "',NOW());";
+		double step;
+		double currentDemand1;double currentDemand2;
+		double currentOptVector1;double currentOptVector2;double currentOptVector3;
+		double currentOptVector4;double currentOptVector5;double currentOptVector6;
+		double currentSOC1;
+		double price;
+		double cost;
+		double CO2;
+		step = currentStep[0];
+		currentDemand1 = currentDemand[0];currentDemand2 = currentDemand[1];
+		currentOptVector1 = currentOptVector[0];
+		currentOptVector2 = currentOptVector[1];
+		currentOptVector3 = currentOptVector[2];
+		currentOptVector4 = currentOptVector[3];
+		currentOptVector5 = currentOptVector[4];
+		currentOptVector6 = currentOptVector[5];
+		currentSOC1 = currentSOC[0];
+		price = currentEnergyPrice[0];
+		cost = totalCostsEUR[0];
+		CO2 = totalCO2emissions[0];
+		String sql = "CREATE TABLE IF NOT EXISTS milp(currentStep DOUBLE PRECISION NULL, currentDemand1 DOUBLE PRECISION  NULL, currentDemand2 DOUBLE PRECISION NULL,\r\n" + 
+				"currentOptVector1 DOUBLE PRECISION NULL, currentOptVector2 DOUBLE PRECISION NULL, currentOptVector3 DOUBLE PRECISION NULL, currentOptVector4 DOUBLE PRECISION NULL, currentOptVector5 DOUBLE PRECISION NULL, currentOptVector6 DOUBLE PRECISION,\r\n" +
+				"currentSOC DOUBLE PRECISION NULL, currentEnergyPrice DOUBLE PRECISION NULL, totalCostsEUR DOUBLE PRECISION NULL, totalCO2emissions DOUBLE PRECISION NULL, timestamp TIMESTAMPTZ NULL);" +
+				" INSERT INTO milp(currentStep, currentDemand1, currentDemand2, currentOptVector1, currentOptVector2, currentOptVector3, currentOptVector4, currentOptVector5, currentOptVector6,\r\n"+
+				"currentSOC, currentEnergyPrice, totalCostsEUR, totalCO2emissions, timestamp) VALUES('" + step + "','" + currentDemand1 + "','" + currentDemand2 + "','" + currentOptVector1 + "','" + currentOptVector2 + "','" + currentOptVector3 + "','" + currentOptVector4 + "','" + currentOptVector5 + "','" + currentOptVector6 + "','" +
+				currentSOC1 + "','" + price + "','" + cost + "','" + CO2 + "', NOW());";
+				
 		try (Connection conn = connectToDB();
 				PreparedStatement pst = conn.prepareStatement(sql);
 				ResultSet rs = pst.executeQuery()){}
