@@ -14,6 +14,7 @@ import memap.helper.EnergyPrices;
 import memap.helper.HelperConcat;
 import memap.helper.MEMAPLogging;
 import memap.helper.SolutionHandler;
+import memap.helper.configurationOptions.ToolUsage;
 import memap.main.TopologyConfig;
 import memap.messages.BuildingMessage;
 import memap.messages.BuildingMessageHandler;
@@ -176,9 +177,11 @@ public class MILPSolver {
 				currentSOCNames, energyPrice, totalCosts, co2emissions);
 		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC,
 				currentEnergyPrice, totalCostsEUR, totalCO2emissions);
-
-		ConnectionDB.addResults(currentStep, currentDemand, currentOptVector, currentSOC,
+		
+		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
+			ConnectionDB.addResults(namesResult, currentStep, currentDemand, currentOptVector, currentSOC,
 				currentEnergyPrice, totalCostsEUR, totalCO2emissions);
+		}
 
 		// Format results vector for printing
 		String[] vectorResultStr = new String[vectorResult.length];
