@@ -15,18 +15,22 @@ import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import memap.helper.configurationOptions.OptHierarchy;
+
 
 public class ConnectionDB {
+	private static String tableName;
+
 	public static Connection connectToDB() throws SQLException {
 		String url = "jdbc:postgresql://localhost:5432/testdb";
 		String user = "postgres";
-		String password = "abc1234";
+		String password = "MEMAP_DB";
 		Connection con = DriverManager.getConnection(url, user, password);
 		System.out.println("Connection to database: Successfull");
 		return con;
     }
 	
-	public static void addResults(String[] namesResult, double[] currentStep, double[] currentDemand, double[] currentOptVector, double[] currentSOC,
+	public static void addResults(OptHierarchy Hierarchy, String[] namesResult, double[] currentStep, double[] currentDemand, double[] currentOptVector, double[] currentSOC,
 			double[] currentEnergyPrice, double[] totalCostsEUR, double[] totalCO2emissions)
 	{
 		List<String> names = new ArrayList<String>(namesResult.length);
@@ -35,20 +39,28 @@ public class ConnectionDB {
 		while (itr.hasNext()) {
 		  itr.set(itr.next().replaceAll("\\s", ""));
 		}
-		double step;
+		long step;
 		double heatdemand;
 		double elecdemand;
 		double price;
 		double cost;
 		double CO2;
-		step = currentStep[0];
+//		step = currentStep[0];
+		step = System.currentTimeMillis() / 1000L;
 		heatdemand = currentDemand[0];
 		elecdemand = currentDemand[1];
 		price = currentEnergyPrice[0];
 		cost = totalCostsEUR[0];
 		CO2 = totalCO2emissions[0];
 		
-		String createtable = "CREATE TABLE IF NOT EXISTS test(";
+		if (Hierarchy ==  OptHierarchy.MEMAP) {
+			tableName = "MemapON";
+		} else {
+			// which building?
+			tableName = "MemapOFF";
+		}
+		
+		String createtable = "CREATE TABLE IF NOT EXISTS " + tableName + "(";
 		String columns = "";
 		String list = "";
 		
@@ -59,7 +71,7 @@ public class ConnectionDB {
 		}
 		String sql1 = createtable + columns;
 		sql1 = sql1 + "EnergyPrice_EUR DOUBLE PRECISION NULL, TotalCostsEUR DOUBLE PRECISION NULL, TotalCO2emissions DOUBLE PRECISION NULL, timestamp TIMESTAMPTZ NULL);";
-		list = "INSERT INTO test(" + list + "EnergyPrice_EUR, TotalCostsEUR, TotalCO2emissions, timestamp) VALUES('" + step + "','" + heatdemand + "','" + elecdemand;
+		list = "INSERT INTO " + tableName + "(" + list + "EnergyPrice_EUR, TotalCostsEUR, TotalCO2emissions, timestamp) VALUES('" + step + "','" + heatdemand + "','" + elecdemand;
 		for(double i : currentOptVector) 
 			list += "','" + i;
 		for(double j : currentSOC)

@@ -1,5 +1,7 @@
 package memap.components.prototypes;
 
+import java.io.FileWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -180,6 +182,12 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 				if (port != 0) {
 //					this.mServer = new MemapOpcServerStarter(false, gson.toJson(buildingMessage), port);
 					this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult), port);
+					try (Writer writer = new FileWriter("Output.json")) {
+					    writer.write(gson.toJson(optResult));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					
 					try {
 						this.mServer.start();
 					} catch (Exception e) {

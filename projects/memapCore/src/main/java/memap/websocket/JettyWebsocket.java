@@ -22,7 +22,7 @@ public abstract class JettyWebsocket
     public static void main(String[] args)
     {
     	//Initialize new Server and add a context
-        Server server = new Server(8080);
+        Server server = new Server(8013);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
         server.setHandler(context);

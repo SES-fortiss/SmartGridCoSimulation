@@ -179,7 +179,7 @@ public class MILPSolver {
 				currentEnergyPrice, totalCostsEUR, totalCO2emissions);
 		
 		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
-			ConnectionDB.addResults(namesResult, currentStep, currentDemand, currentOptVector, currentSOC,
+			ConnectionDB.addResults(topologyController.getOptimizationHierarchy(), namesResult, currentStep, currentDemand, currentOptVector, currentSOC,
 				currentEnergyPrice, totalCostsEUR, totalCO2emissions);
 		}
 
