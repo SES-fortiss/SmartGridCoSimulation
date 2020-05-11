@@ -7,8 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import lpsolve.LpSolve;
 import memap.helper.lp.LPOptimizationProblem;
 import memap.messages.BuildingMessage;
+import memap.messages.planning.CouplerMessage;
+import memap.messages.planning.ProducerMessage;
 import memap.messages.planning.StorageMessage;
 
 
@@ -229,6 +232,54 @@ public class SolutionHandler {
 		double[] result = new double[optSolution.length / nStepsMPC];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = optSolution[i * nStepsMPC];
+		}
+		return result;
+	}
+	
+	/**
+	 * This method will compare the names with the ones from 
+	 * the building messages and will correct the output efficiency
+	 * 
+	 * @param localBuildingMessage
+	 * @param names
+	 * @param optSolution
+	 * @param nStepsMPC
+	 * @return
+	 */
+	public double[] getEffSolutionForThisTimeStep(BuildingMessage lbm, String[] names, double[] optSolution, int nStepsMPC) {
+		// Caution: this method works only for one device per device class !
+		
+		double[] result = new double[optSolution.length / nStepsMPC];
+		
+		ArrayList<ProducerMessage> pm = lbm.controllableProducerList;
+		ArrayList<ProducerMessage> vpm = lbm.volatileProducerList;
+		ArrayList<CouplerMessage> cm = lbm.couplerList;
+		ArrayList<StorageMessage> sm = lbm.storageList;
+		
+		// create loop till maxNr to catch other devices of ne class.
+		int maxNr = Math.max(Math.max(lbm.getNrOfCouplers(), lbm.getNrOfControllableProducers()), Math.max(lbm.getNrOfStorages(), lbm.getNrOfVolatileProducers()));
+//		System.out.println("Numbers: " + lbm.getNrOfCouplers() + lbm.getNrOfControllableProducers() + lbm.getNrOfStorages() + lbm.getNrOfVolatileProducers());
+			
+		for (int i = 0; i < result.length; i++) {
+			// get device name at this position
+			String devName = names[i * nStepsMPC].replace("_T0", "");
+			// compare device name with building message
+			for (int j = 0; j < maxNr; j++) {	
+				if (lbm.getNrOfControllableProducers() > j && devName.equals(pm.get(j).name)) {
+					result[i] = optSolution[i * nStepsMPC]*pm.get(j).efficiency;
+				} else if (lbm.getNrOfVolatileProducers() > j && devName.equals(vpm.get(j).name)) {
+					result[i] = optSolution[i * nStepsMPC]*vpm.get(j).efficiency;
+				} else if (lbm.getNrOfCouplers() > j && devName.equals(cm.get(j).name)) {
+					// has to be changed to primary efficiency ?
+					result[i] = optSolution[i * nStepsMPC]*cm.get(j).efficiencyHeat;
+				} else if (lbm.getNrOfStorages() > j && devName.equals(sm.get(j).name + "Discharge")) {
+					result[i] = optSolution[i * nStepsMPC]*sm.get(j).efficiencyDischarge;
+				} else if (lbm.getNrOfStorages() > j && devName.equals(sm.get(j).name + "Charge")) {
+					result[i] = optSolution[i * nStepsMPC]*sm.get(j).efficiencyCharge;
+				} else {
+					result[i] = optSolution[i * nStepsMPC];
+				}
+			}
 		}
 		return result;
 	}

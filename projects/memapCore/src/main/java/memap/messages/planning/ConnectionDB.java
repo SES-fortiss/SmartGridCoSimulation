@@ -82,7 +82,7 @@ public class ConnectionDB {
 				PreparedStatement pst = conn.prepareStatement(sql1);
 				ResultSet rs = pst.executeQuery()){}
 		catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("DB-Message: " + ex.getMessage());
         }
 	}
 }

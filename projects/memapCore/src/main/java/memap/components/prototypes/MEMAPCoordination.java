@@ -130,7 +130,7 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 			System.out.println(topologyController.getOptimizer() + ": " + this.actorName + " cost = "
 					+ String.format("%.03f", costTotal) + " EUR ; CO2: " + String.format("%.03f", CO2Total) + " kg");
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(15000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -182,11 +182,11 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 				if (port != 0) {
 //					this.mServer = new MemapOpcServerStarter(false, gson.toJson(buildingMessage), port);
 					this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult), port);
-					try (Writer writer = new FileWriter("Output.json")) {
-					    writer.write(gson.toJson(optResult));
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+//					try (Writer writer = new FileWriter("Output.json")) {
+//					    writer.write(gson.toJson(optResult));
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
 					
 					try {
 						this.mServer.start();

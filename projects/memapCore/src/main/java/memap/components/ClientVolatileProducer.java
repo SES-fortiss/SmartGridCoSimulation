@@ -49,14 +49,14 @@ public class ClientVolatileProducer extends Producer {
 	 * @param costCO2Id           CO2 cost [kg CO2/kWh]
 	 * @param port
 	 */
-	public ClientVolatileProducer(BasicClient client, String name, NodeId minPowerId, NodeId maxPowerId, NodeId effId,
-			NodeId currentProductionId, NetworkType networkType, NodeId opCostId, NodeId costCO2Id, int port)
+	public ClientVolatileProducer(BasicClient client, String name,  NodeId nodeIdSector, NodeId minPowerId, NodeId maxPowerId, NodeId effId,
+			NodeId currentProductionId, NodeId opCostId, NodeId costCO2Id, int port)
 			throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(minPowerId), client.readFinalDoubleValue(maxPowerId),
 				client.readFinalDoubleValue(effId), port);
 
 		volatileProducerMessage = new VolatileProducerMessage();
-		this.networkType = networkType;
+		this.networkType = setNetworkType(client, nodeIdSector);
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
 		
@@ -129,5 +129,10 @@ public class ClientVolatileProducer extends Producer {
 	@Override
 	public void setTopologyController(TopologyController topologyController) {
 		super.setTopologyController(topologyController);
+	}
+
+	@Override
+	public NetworkType setNetworkType(BasicClient client, NodeId nodeIdSector) {
+		return super.setNetworkType(client, nodeIdSector);
 	}
 }

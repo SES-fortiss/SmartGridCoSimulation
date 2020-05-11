@@ -28,13 +28,13 @@ public class ClientCoupler extends Coupler {
 	 * @param costCO2Id        CO2 cost [kg CO2/kWh]
 	 * @param port
 	 */
-	public ClientCoupler(BasicClient client, String name, NodeId minPowerId, NodeId maxPowerId, NodeId effHeatId, NodeId effElecId,
-			NetworkType primaryNetwork, NetworkType secondaryNetwork, NodeId opCostId, NodeId costCO2Id, int port) throws InterruptedException, ExecutionException {
+	public ClientCoupler(BasicClient client, String name, NodeId nodeIdPrimSector, NodeId nodeIdSecSector, NodeId minPowerId, NodeId maxPowerId, NodeId effHeatId, NodeId effElecId,
+			NodeId opCostId, NodeId costCO2Id, int port) throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(minPowerId), client.readFinalDoubleValue(maxPowerId), client.readFinalDoubleValue(effHeatId),
 				client.readFinalDoubleValue(effElecId), port);
 		
-		this.primaryNetwork = primaryNetwork;
-		this.secondaryNetwork = secondaryNetwork;
+		primaryNetwork = setNetworkType(client, nodeIdPrimSector);
+		secondaryNetwork = setNetworkType(client, nodeIdSecSector);
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
 	}
@@ -59,5 +59,10 @@ public class ClientCoupler extends Coupler {
 	/** Passes a reference of an object of class {@link TopologyController} to the parent class */
 	public void setTopologyController(TopologyController topologyController) {
 		super.setTopologyController(topologyController);
+	}
+	
+	@Override
+	public NetworkType setNetworkType(BasicClient client, NodeId nodeIdSector) {
+		return super.setNetworkType(client, nodeIdSector);
 	}
 }

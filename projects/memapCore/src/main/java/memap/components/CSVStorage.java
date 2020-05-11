@@ -50,5 +50,10 @@ public class CSVStorage extends Storage {
 	public void setTopologyController(TopologyController topologyController) {
 		super.setTopologyController(topologyController);
 	}
+	
+	@Override
+	public Double getStateOfCharge() {
+		return stateOfCharge;
+	}
 
 }

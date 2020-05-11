@@ -14,7 +14,7 @@ import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonObject;
 
 import memap.components.prototypes.Device;
-import memap.components.ClientConsumer;
+import memap.components.ClientDemand;
 import memap.components.ClientCoupler;
 import memap.components.ClientProducer;
 import memap.components.ClientStorage;
@@ -84,7 +84,6 @@ public class OpcUaBuildingController implements BuildingController {
 		this.nodesConfig = opcUaNodesConfig;
 		EndpointConfigHandler endpointConfigHandler = new EndpointConfigHandler();
 		NodesConfigHandler nodesConfigHandler = new NodesConfigHandler();
-
 		// Initialize the client which connects to the OpcUaServer
 		endpointConfigHandler.initEndpoint();
 		try {
@@ -199,195 +198,150 @@ public class OpcUaBuildingController implements BuildingController {
 	 *
 	 */
 	private class NodesConfigHandler {
-
+		
+		private String nameString;
 		private void initDevices() {
 			for (String key : nodesConfig.keySet()) {
+				
 				switch (key) {
-				case "battery":
-					JsonArray batteries = (JsonArray) nodesConfig.get("battery");
-					for (int i = 0; i < batteries.size(); i++) {
+				case "INFO":
+					JsonArray infos = (JsonArray) nodesConfig.get("INFO");
+					for (int i = 0; i < infos.size(); i++) {
 						try {
-							JsonObject battery = (JsonObject) batteries.get(i);
-							NodeId capacityId = NodeId.parse((String) battery.get("capacityId"));
-							NodeId stateOfChargeId = NodeId.parse((String) battery.get("stateOfChargeId"));
-							NodeId maxChargingId = NodeId.parse((String) battery.get("maxChargingId"));
-							NodeId maxDischargingId = NodeId.parse((String) battery.get("maxDischargingId"));
-							NodeId effInId = NodeId.parse((String) battery.get("effInId"));
-							NodeId effOutId = NodeId.parse((String) battery.get("effOutId"));
-							NodeId opCostId = NodeId.parse((String) battery.get("opCostId"));
-							NodeId costCO2Id = NodeId.parse((String) battery.get("costCO2Id"));
-							ClientStorage cs = new ClientStorage(client, "battery" + i, capacityId, stateOfChargeId,
-									maxChargingId, maxDischargingId, effInId, effOutId, NetworkType.ELECTRICITY,
+							JsonObject info = (JsonObject) infos.get(i);
+							NodeId nid1 = NodeId.parse((String) info.get("EMSnameID"));	
+//							NodeId nid1 = NodeId.parse((String) info.get("site"));		
+//							NodeId nid2 = NodeId.parse((String) info.get("ems"));
+//							NodeId nid3 = NodeId.parse((String) info.get("object"));
+							String EmsName = client.readFinalStringValue(nid1);
+//							String str1 = client.readFinalStringValue(nid1);
+//							String str2 = client.readFinalStringValue(nid2);
+//							String str3 = client.readFinalStringValue(nid3);
+//							nameString = str1 + "EMS" + str2 + "OBJ" + str3;
+							System.out.println("EMSnameID: " + EmsName);
+						} catch (Exception e) {
+							System.err.println("WARNING: Could not add name string to building " + name
+									+ ".\nPlease check " + infos.toString());
+						}
+					}
+					break;
+				
+				case "COUPL":
+					JsonArray coupler = (JsonArray) nodesConfig.get("COUPL");
+					for (int i = 0; i < coupler.size(); i++) {
+						try {
+							JsonObject coupl = (JsonObject) coupler.get(i);
+							NodeId primarySectId = NodeId.parse((String) coupl.get("PrimSect"));
+							NodeId secondarySectId = NodeId.parse((String) coupl.get("SecdSect"));
+							NodeId minPowerId = NodeId.parse((String) coupl.get("MinPower"));
+							NodeId maxPowerId = NodeId.parse((String) coupl.get("MaxPower"));
+							NodeId effHeatId = NodeId.parse((String) coupl.get("effHeatId"));
+							NodeId effElecId = NodeId.parse((String) coupl.get("effElecId"));
+							NodeId opCostId = NodeId.parse((String) coupl.get("opCostId"));
+							NodeId costCO2Id = NodeId.parse((String) coupl.get("costCO2Id"));
+							ClientCoupler cc = new ClientCoupler(client, "COUPL" + String.format("%02d",  i),primarySectId, secondarySectId, minPowerId, maxPowerId, effHeatId,
+									effElecId, opCostId, costCO2Id, 0);
+							attach(cc);
+							cc.setTopologyController(topologyController);
+							System.out.println("Added coupler to " + name);
+						} catch (Exception e) {
+							System.err.println("WARNING: Could not add coupler " + i + " to building " + name
+									+ ".\nPlease check " + coupler.toString());
+						}
+					}
+					break;
+
+				case "DEMND":
+					JsonArray demands = (JsonArray) nodesConfig.get("DEMND");
+					for (int i = 0; i < demands.size(); i++) {
+						try {
+							JsonObject demnd = (JsonObject) demands.get(i);
+							NodeId demndSectId = NodeId.parse((String) demnd.get("DemndSect"));
+							NodeId consumptionId = NodeId.parse((String) demnd.get("DemandFC1"));
+							NodeId jsonForecastId = NodeId.parse((String) demnd.get("DemFCjson"));
+							NodeId arrayForecastId = NodeId.parse((String) demnd.get("DemFCarray"));
+							NodeId demandSetpointId = NodeId.parse((String) demnd.get("DemndSetPt"));
+							ClientDemand cd = new ClientDemand(client, "DEMND" + String.format("%02d",  i), demndSectId, consumptionId, arrayForecastId, jsonForecastId, demandSetpointId, 0);
+							attach(cd);
+							cd.setTopologyController(topologyController);
+							System.out.println("Added demand to " + name);
+						} catch (Exception e) {
+							System.err.println("WARNING: Could not add demand " + i + " to building " + name
+									+ ".\nPlease check " + demands.toString());
+						}
+					}
+					break;
+
+				case "CPROD":
+					JsonArray cproducers = (JsonArray) nodesConfig.get("CPROD");
+					for (int i = 0; i < cproducers.size(); i++) {
+						try {
+							JsonObject cprod = (JsonObject) cproducers.get(i);
+							NodeId primarySectId = NodeId.parse((String) cprod.get("PrimSect"));	
+							NodeId minPowerId = NodeId.parse((String) cprod.get("MinPower"));
+							NodeId maxPowerId = NodeId.parse((String) cprod.get("MaxPower"));
+							NodeId effId = NodeId.parse((String) cprod.get("EffPrim"));
+							NodeId opCostId = NodeId.parse((String) cprod.get("PrimEnCost"));
+							NodeId costCO2Id = NodeId.parse((String) cprod.get("CO2PerKWh"));
+							ClientProducer cp = new ClientProducer(client, "CPROD" + String.format("%02d",  i), primarySectId, minPowerId, maxPowerId,
+									effId, opCostId, costCO2Id, 0);
+							attach(cp);
+							cp.setTopologyController(topologyController);
+							System.out.println("Added controllable producer to " + name);
+						} catch (Exception e) {
+							System.err.println("WARNING: Could not add controllable producer " + i + " to building " + name
+									+ ".\nPlease check " + cproducers.toString());
+						}
+					}
+					break;
+
+				case "VPROD":
+					JsonArray vproducers = (JsonArray) nodesConfig.get("VPROD");
+					for (int i = 0; i < vproducers.size(); i++) {
+						try {
+							JsonObject vprod = (JsonObject) vproducers.get(i);
+							NodeId primarySectId = NodeId.parse((String) vprod.get("PrimSect"));
+							NodeId minPowerId = NodeId.parse((String) vprod.get("MinPower"));
+							NodeId maxPowerId = NodeId.parse((String) vprod.get("MaxPower"));
+							NodeId effId = NodeId.parse((String) vprod.get("EffPrim"));
+							NodeId productionId = NodeId.parse((String) vprod.get("--spaceholder--"));
+							NodeId opCostId = NodeId.parse((String) vprod.get("PrimEnCost"));
+							NodeId costCO2Id = NodeId.parse((String) vprod.get("CO2PerKWh"));
+							ClientVolatileProducer cvp = new ClientVolatileProducer(client, "VPROD" + String.format("%02d",  i), primarySectId, minPowerId,
+									maxPowerId, effId, productionId, opCostId, costCO2Id, 0);
+							attach(cvp);
+							cvp.setTopologyController(topologyController);
+							System.out.println("Added volatile producers to " + name);
+						} catch (Exception e) {
+							System.err.println("WARNING: Could not add volatile producer " + i + " to building " + name
+									+ ".\nPlease check " + vproducers.toString());
+						}
+					}
+					break;
+					
+				case "STRGE":
+					JsonArray storages = (JsonArray) nodesConfig.get("STRGE");
+					for (int i = 0; i < storages.size(); i++) {
+						try {
+							JsonObject strge = (JsonObject) storages.get(i);
+							NodeId primarySectId = NodeId.parse((String) strge.get("PrimSect"));		
+							NodeId capacityId = NodeId.parse((String) strge.get("Capacity"));
+							NodeId stateOfChargeId = NodeId.parse((String) strge.get("curSOC"));
+							NodeId maxChargingId = NodeId.parse((String) strge.get("MaxPowerIn"));
+							NodeId maxDischargingId = NodeId.parse((String) strge.get("MaxPower"));
+							NodeId effInId = NodeId.parse((String) strge.get("EffPrim"));
+							NodeId effOutId = NodeId.parse((String) strge.get("DisEffPrim"));
+							NodeId opCostId = NodeId.parse((String) strge.get("PrimEnCost"));
+							NodeId costCO2Id = NodeId.parse((String) strge.get("CO2PerKWh"));
+							ClientStorage cs = new ClientStorage(client, "STRGE" + String.format("%02d",  i), capacityId, stateOfChargeId,
+									maxChargingId, maxDischargingId, effInId, effOutId, NetworkType.HEAT,
 									opCostId, costCO2Id, 0);
 							attach(cs);
 							cs.setTopologyController(topologyController);
-							System.out.println("Added battery to " + name);
+							System.out.println("Added storage to " + name);
 						} catch (Exception e) {
-							System.err.println("WARNING: Could not add battery " + i + " to building " + name
-									+ ".\nPlease check " + batteries.toString());
-						}
-					}
-					break;
-
-				case "chp":
-					JsonArray chps = (JsonArray) nodesConfig.get("chp");
-					for (int i = 0; i < chps.size(); i++) {
-						try {
-							JsonObject chp = (JsonObject) chps.get(i);
-							NodeId minPowerId = NodeId.parse((String) chp.get("minPowerId"));
-							NodeId maxPowerId = NodeId.parse((String) chp.get("maxPowerId"));
-							NodeId effHeatId = NodeId.parse((String) chp.get("effHeatId"));
-							NodeId effElecId = NodeId.parse((String) chp.get("effElecId"));
-							NodeId opCostId = NodeId.parse((String) chp.get("opCostId"));
-							NodeId costCO2Id = NodeId.parse((String) chp.get("costCO2Id"));
-							ClientCoupler cc = new ClientCoupler(client, "chp" + i, minPowerId, maxPowerId, effHeatId,
-									effElecId, NetworkType.HEAT, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0);
-							attach(cc);
-							cc.setTopologyController(topologyController);
-							System.out.println("Added chp to " + name);
-						} catch (Exception e) {
-							System.err.println("WARNING: Could not add chp " + i + " to building " + name
-									+ ".\nPlease check " + chps.toString());
-						}
-					}
-					break;
-
-				case "consumer":
-					JsonArray consumers = (JsonArray) nodesConfig.get("consumer");
-					for (int i = 0; i < consumers.size(); i++) {
-						try {
-							JsonObject consumer = (JsonObject) consumers.get(i);
-							NodeId heatConsumptionId = NodeId.parse((String) consumer.get("heatConsumptionId"));
-							NodeId powerConsumptionId = NodeId.parse((String) consumer.get("powerConsumptionId"));
-							ClientConsumer cc = new ClientConsumer(client, "consumer" + i, heatConsumptionId,
-									powerConsumptionId, 0);
-							attach(cc);
-							cc.setTopologyController(topologyController);
-							System.out.println("Added consumer to " + name);
-						} catch (Exception e) {
-							System.err.println("WARNING: Could not add consumer " + i + " to building " + name
-									+ ".\nPlease check " + consumers.toString());
-						}
-					}
-					break;
-
-				case "gasboiler":
-					JsonArray gasboilers = (JsonArray) nodesConfig.get("gasboiler");
-					for (int i = 0; i < gasboilers.size(); i++) {
-						try {
-							JsonObject gasboiler = (JsonObject) gasboilers.get(i);
-							NodeId minPowerId = NodeId.parse((String) gasboiler.get("minPowerId"));
-							NodeId maxPowerId = NodeId.parse((String) gasboiler.get("maxPowerId"));
-							NodeId effId = NodeId.parse((String) gasboiler.get("effId"));
-							NodeId opCostId = NodeId.parse((String) gasboiler.get("opCostId"));
-							NodeId costCO2Id = NodeId.parse((String) gasboiler.get("costCO2Id"));
-							ClientProducer cp = new ClientProducer(client, "gasboilers" + i, minPowerId, maxPowerId,
-									effId, NetworkType.HEAT, opCostId, costCO2Id, 0);
-							attach(cp);
-							cp.setTopologyController(topologyController);
-							System.out.println("Added gasboiler to " + name);
-						} catch (Exception e) {
-							System.err.println("WARNING: Could not add gasboiler " + i + " to building " + name
-									+ ".\nPlease check " + gasboilers.toString());
-						}
-					}
-					break;
-
-				case "heatpump":
-					JsonArray heatpumps = (JsonArray) nodesConfig.get("heatpump");
-					for (int i = 0; i < heatpumps.size(); i++) {
-						try {
-							JsonObject heatpump = (JsonObject) heatpumps.get(i);
-							NodeId minPowerId = NodeId.parse((String) heatpump.get("minPowerId"));
-							NodeId maxPowerId = NodeId.parse((String) heatpump.get("maxPowerId"));
-							NodeId effHeatId = NodeId.parse((String) heatpump.get("effHeatId"));
-							NodeId effElecId = NodeId.parse((String) heatpump.get("effElecId"));
-							NodeId opCostId = NodeId.parse((String) heatpump.get("opCostId"));
-							NodeId costCO2Id = NodeId.parse((String) heatpump.get("costCO2Id"));
-							ClientCoupler cc = new ClientCoupler(client, "heatpump" + i, minPowerId, maxPowerId,
-									effHeatId, effElecId, NetworkType.HEAT, NetworkType.ELECTRICITY, opCostId,
-									costCO2Id, 0);
-							attach(cc);
-							cc.setTopologyController(topologyController);
-							System.out.println("Added heatpump to " + name);
-
-						} catch (Exception e) {
-							System.err.println("WARNING: Could not add heatpump " + i + " to building " + name
-									+ ".\nPlease check " + heatpumps.toString());
-						}
-					}
-					break;
-
-				case "pv":
-					JsonArray pvs = (JsonArray) nodesConfig.get("pv");
-					for (int i = 0; i < pvs.size(); i++) {
-						try {
-							JsonObject pv = (JsonObject) pvs.get(i);
-							NodeId minPowerId = NodeId.parse((String) pv.get("minPowerId"));
-							NodeId maxPowerId = NodeId.parse((String) pv.get("maxPowerId"));
-							NodeId effId = NodeId.parse((String) pv.get("effId"));
-							NodeId productionId = NodeId.parse((String) pv.get("productionId"));
-							NodeId opCostId = NodeId.parse((String) pv.get("opCostId"));
-							NodeId costCO2Id = NodeId.parse((String) pv.get("costCO2Id"));
-							ClientVolatileProducer cvp = new ClientVolatileProducer(client, "pvs" + i, minPowerId,
-									maxPowerId, effId, productionId, NetworkType.ELECTRICITY, opCostId, costCO2Id, 0);
-							attach(cvp);
-							cvp.setTopologyController(topologyController);
-							System.out.println("Added pv to " + name);
-						} catch (Exception e) {
-							System.err.println("WARNING: Could not add pv " + i + " to building " + name
-									+ ".\nPlease check " + pvs.toString());
-						}
-					}
-					break;
-
-				case "solarthermic":
-					JsonArray solarthermics = (JsonArray) nodesConfig.get("solarthermic");
-					for (int i = 0; i < solarthermics.size(); i++) {
-						try {
-							JsonObject solarthermic = (JsonObject) solarthermics.get(i);
-							NodeId minPowerId = NodeId.parse((String) solarthermic.get("minPowerId"));
-							NodeId maxPowerId = NodeId.parse((String) solarthermic.get("maxPowerId"));
-							NodeId effId = NodeId.parse((String) solarthermic.get("effId"));
-							NodeId productionId = NodeId.parse((String) solarthermic.get("productionId"));
-							NodeId opCostId = NodeId.parse((String) solarthermic.get("opCostId"));
-							NodeId costCO2Id = NodeId.parse((String) solarthermic.get("costCO2Id"));
-							ClientVolatileProducer cvp = new ClientVolatileProducer(client, "solarthermic" + i,
-									minPowerId, maxPowerId, effId, productionId, NetworkType.HEAT, opCostId, costCO2Id,
-									0);
-							attach(cvp);
-							cvp.setTopologyController(topologyController);
-							System.out.println("Added solarthermic to " + name);
-						} catch (Exception e) {
-							System.err.println("WARNING: Could not add solarthermic " + i + " to building " + name
-									+ ".\nPlease check " + solarthermics.toString());
-						}
-					}
-					break;
-
-				case "thermalstorage":
-					JsonArray thermalStorages = (JsonArray) nodesConfig.get("thermalstorage");
-					for (int i = 0; i < thermalStorages.size(); i++) {
-						try {
-
-							JsonObject thermalStorage = (JsonObject) thermalStorages.get(i);
-							NodeId capacityId = NodeId.parse((String) thermalStorage.get("capacityId"));
-							NodeId stateOfChargeId = NodeId.parse((String) thermalStorage.get("stateOfChargeId"));
-							NodeId maxChargingId = NodeId.parse((String) thermalStorage.get("maxChargingId"));
-							NodeId maxDischargingId = NodeId.parse((String) thermalStorage.get("maxDischargingId"));
-							NodeId effInId = NodeId.parse((String) thermalStorage.get("effInId"));
-							NodeId effOutId = NodeId.parse((String) thermalStorage.get("effOutId"));
-							NodeId opCostId = NodeId.parse((String) thermalStorage.get("opCostId"));
-							NodeId costCO2Id = NodeId.parse((String) thermalStorage.get("costCO2Id"));
-							ClientStorage cs = new ClientStorage(client, "thermalstorage" + i, capacityId,
-									stateOfChargeId, maxChargingId, maxDischargingId, effInId, effOutId,
-									NetworkType.HEAT, opCostId, costCO2Id, 0);
-							attach(cs);
-							cs.setTopologyController(topologyController);
-							System.out.println("Added thermalstorage to " + name);
-						} catch (Exception e) {
-							System.err.println("WARNING: Could not add thermalstorage " + i + " to building " + name
-									+ ".\nPlease check " + thermalStorages.toString());
+							System.err.println("WARNING: Could not add storage " + i + " to building " + name
+									+ ".\nPlease check " + storages.toString());
 						}
 					}
 					break;

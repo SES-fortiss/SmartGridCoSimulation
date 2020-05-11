@@ -26,14 +26,13 @@ public class ClientProducer extends Producer {
 	 * @param costCO2Id   CO2 cost [kg CO2/kWh]
 	 * @param port
 	 */
-	public ClientProducer(BasicClient client, String name, NodeId minPowerId, NodeId maxPowerId, NodeId effId,
-			NetworkType networkType, NodeId opCostId, NodeId costCO2Id, int port)
+	public ClientProducer(BasicClient client, String name, NodeId nodeIdSector, NodeId minPowerId, NodeId maxPowerId, NodeId effId, NodeId opCostId, NodeId costCO2Id, int port)
 			throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(minPowerId), client.readFinalDoubleValue(maxPowerId),
 				client.readFinalDoubleValue(effId), port);
-		this.networkType = networkType;
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
+		networkType = this.setNetworkType(client, nodeIdSector);
 	}
 
 	public void makeDecision() {
@@ -50,6 +49,12 @@ public class ClientProducer extends Producer {
 	/** Passes a reference of an object of class {@link TopologyController} to the parent class */
 	public void setTopologyController(TopologyController topologyController) {
 		super.setTopologyController(topologyController);
+	}
+	
+
+	@Override
+	public NetworkType setNetworkType(BasicClient client, NodeId nodeIdSector) {
+		return super.setNetworkType(client, nodeIdSector);
 	}
 
 }

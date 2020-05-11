@@ -62,7 +62,7 @@ public class JettyStart {
 	public void run(JsonArray endpointValues) {
 		topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILP, OptimizationCriteria.EUR,
 				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
-		TopologyConfig.getInstance().init(5, 96, 7, 4880, 0);
+		TopologyConfig.getInstance().init(5, 96, 30, 4880, 0);
 		EnergyPrices.getInstance().init(0.285);
 //		topologyMemapOff = new TopologyController("MemapOff", OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
 //				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);

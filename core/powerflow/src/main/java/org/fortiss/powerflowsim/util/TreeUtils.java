@@ -47,7 +47,7 @@ public class TreeUtils {
 		TreeNode node = (TreeNode) parent.getLastPathComponent();
 		if (node.getChildCount() >= 0) {
 			for (@SuppressWarnings("unchecked")
-			Enumeration<TreeNode> e = node.children(); e.hasMoreElements();) {
+			Enumeration<? extends TreeNode> e = node.children(); e.hasMoreElements();) {
 				TreeNode treeNode = (TreeNode) e.nextElement();
 				TreePath path = parent.pathByAddingChild(treeNode);
 				expandAll(tree, path, expand);

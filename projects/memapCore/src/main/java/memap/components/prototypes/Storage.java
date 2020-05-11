@@ -1,5 +1,7 @@
 package memap.components.prototypes;
 
+import java.util.List;
+
 import akka.basicMessages.AnswerContent;
 import memap.controller.TopologyController;
 import memap.messages.OptimizationResultMessage;
@@ -42,6 +44,15 @@ public abstract class Storage extends Device {
 
 		return storageMessage;
 	}
+	
+	/**
+	 * Implement this method to retrieve the current SOC.
+	 * 
+	 * @param timeStep
+	 * @return State Of Charge
+	 */
+	public abstract Double getStateOfCharge();
+	
 
 	@Override
 	public void handleRequest() {
@@ -63,9 +74,10 @@ public abstract class Storage extends Device {
 				}
 			}
 
-			double soc_alt = stateOfCharge;
-			double leistung = linprogStorageInput[0] * effIN - linprogStorageOutput[0] * 1 / effOUT;
-			stateOfCharge = soc_alt + leistung * stepLengthInHours;
+//			double soc_alt = stateOfCharge;
+//			double leistung = linprogStorageInput[0] * effIN - linprogStorageOutput[0] * 1 / effOUT;
+//			stateOfCharge = soc_alt + leistung * stepLengthInHours;
+			stateOfCharge = this.getStateOfCharge();
 		}
 	}
 	

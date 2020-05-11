@@ -66,16 +66,27 @@ public class MILPSolver {
 
 	public void printNames() throws LpSolveException {
 
-		String[] names = new String[nCols + 1];
+		int nCols2 = problem.getNorigColumns();
+		String[] names = new String[nCols2 + 1];
 		for (int i = 0; i < names.length; i++) {
-			names[i] = problem.getColName(i);
+			names[i] = problem.getOrigcolName(i);
 		}
+		
+		int nRows = problem.getNorigRows();
+		String[] rowNames = new String[nRows + 1];
+		for (int j = 0; j < rowNames.length; j++) {
+			rowNames[j] = problem.getOrigrowName(j);
+		}
+		
 
 		System.out.println("*****************");
 		System.out.println("***** MILP ******");
 		System.out.println("*****************");
-		System.out.println("nCols: " + nCols);
+		System.out.println("nCols2: " + nCols2);
 		System.out.println("Colnames: " + Arrays.toString(names));
+		System.out.println("*****************");
+		System.out.println("nRows: " + nRows);
+		System.out.println("Rownames: " + Arrays.toString(rowNames));
 
 	}
 
@@ -142,7 +153,8 @@ public class MILPSolver {
 
 		// Creation of the result vector
 		double[] currentStep = { currentTimeStep };
-		double[] currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
+//		double[] currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
+		double[] currentOptVector = milpSolHandler.getEffSolutionForThisTimeStep(localBuildingMessage, names, optSolution, nStepsMPC);
 		double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep) };
 		double[] totalCostsEUR = { costTotal };
 		double[] totalCO2emissions = { CO2Total };
@@ -214,10 +226,10 @@ public class MILPSolver {
 
 			// TODO : Improve this work around
 			// as this might be required for controllable gens and couplers
-			String str = names[i * nStepsMPC];
-			String str2 = str.substring(0, str.indexOf("_"));
+			String str = names[i * nStepsMPC].replace("_T0", "");
+//			String str2 = str.substring(0, str.indexOf("_"));
 
-			optResult.resultMap.put(str2, values);
+			optResult.resultMap.put(str, values);
 		}
 
 		// Clean up such that all used memory by lp-solve is freed

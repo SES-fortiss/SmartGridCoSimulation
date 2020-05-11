@@ -43,6 +43,20 @@ public class BasicClient {
 		}
 		return null;
 	}
+	
+	public String readFinalStringValue(NodeId nodeId) throws InterruptedException, ExecutionException {
+		Object obj = client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, nodeId).get().getValue()
+				.getValue();
+		if (obj instanceof String) {
+			String string = ((String) obj);
+			return string;
+		} else {
+			System.out.println("This is not a string!");
+			System.out.println(obj.toString());
+			System.out.println(nodeId.toString());
+		}
+		return null;
+	}	
 
 	public UaSubscriptionManager getSubscriptionManager() {
 		return client.getSubscriptionManager();

@@ -1,6 +1,9 @@
 package memap.components.prototypes;
 
 import java.util.LinkedList;
+import java.util.concurrent.ExecutionException;
+
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 import com.google.gson.Gson;
 
@@ -9,7 +12,9 @@ import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
 import memap.controller.TopologyController;
 import memap.external.M2MDisplay;
+import memap.helperOPCua.BasicClient;
 import memap.main.TopologyConfig;
+import memap.messages.extension.NetworkType;
 
 public abstract class Device extends BehaviorModel {
 
@@ -78,4 +83,37 @@ public abstract class Device extends BehaviorModel {
 	 */
 	public void setTopologyController(TopologyController topologyController) {
 	};
+	
+
+	public NetworkType setNetworkType(BasicClient client, NodeId nodeIdSector) {
+		// TODO Hard-coded readable strings
+		NetworkType nwT = null;		
+		String primarynetwork = null;
+		
+		try {
+			primarynetwork = client.readFinalStringValue(nodeIdSector);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		switch (primarynetwork) {
+		case "elec":
+			nwT = NetworkType.ELECTRICITY;
+			break;
+		case "electricity":
+			nwT =  NetworkType.ELECTRICITY;
+			break;
+		case "heat":
+			nwT =  NetworkType.HEAT;
+			break;
+		case "":
+			System.out.println("Sector not defined!");
+			break;
+		}
+		return nwT;
+	};
+
 }
