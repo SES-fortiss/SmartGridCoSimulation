@@ -209,7 +209,7 @@ public class OpcUaBuildingController implements BuildingController {
 					for (int i = 0; i < infos.size(); i++) {
 						try {
 							JsonObject info = (JsonObject) infos.get(i);
-							NodeId nid1 = NodeId.parse((String) info.get("EMSnameID"));	
+							NodeId nid1 = NodeId.parse((String) info.get("nameID"));	
 //							NodeId nid1 = NodeId.parse((String) info.get("site"));		
 //							NodeId nid2 = NodeId.parse((String) info.get("ems"));
 //							NodeId nid3 = NodeId.parse((String) info.get("object"));
@@ -218,7 +218,7 @@ public class OpcUaBuildingController implements BuildingController {
 //							String str2 = client.readFinalStringValue(nid2);
 //							String str3 = client.readFinalStringValue(nid3);
 //							nameString = str1 + "EMS" + str2 + "OBJ" + str3;
-							System.out.println("EMSnameID: " + EmsName);
+							System.out.println("EMS nameID: " + EmsName);
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add name string to building " + name
 									+ ".\nPlease check " + infos.toString());
@@ -235,10 +235,10 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId secondarySectId = NodeId.parse((String) coupl.get("SecdSect"));
 							NodeId minPowerId = NodeId.parse((String) coupl.get("MinPower"));
 							NodeId maxPowerId = NodeId.parse((String) coupl.get("MaxPower"));
-							NodeId effHeatId = NodeId.parse((String) coupl.get("effHeatId"));
-							NodeId effElecId = NodeId.parse((String) coupl.get("effElecId"));
-							NodeId opCostId = NodeId.parse((String) coupl.get("opCostId"));
-							NodeId costCO2Id = NodeId.parse((String) coupl.get("costCO2Id"));
+							NodeId effHeatId = NodeId.parse((String) coupl.get("ErrPrim"));
+							NodeId effElecId = NodeId.parse((String) coupl.get("EffSec"));
+							NodeId opCostId = NodeId.parse((String) coupl.get("PrimEnCost"));
+							NodeId costCO2Id = NodeId.parse((String) coupl.get("CO2PerKWh"));
 							ClientCoupler cc = new ClientCoupler(client, "COUPL" + String.format("%02d",  i),primarySectId, secondarySectId, minPowerId, maxPowerId, effHeatId,
 									effElecId, opCostId, costCO2Id, 0);
 							attach(cc);
@@ -327,7 +327,7 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId primarySectId = NodeId.parse((String) strge.get("PrimSect"));		
 							NodeId capacityId = NodeId.parse((String) strge.get("Capacity"));
 							NodeId stateOfChargeId = NodeId.parse((String) strge.get("curSOC"));
-							NodeId maxChargingId = NodeId.parse((String) strge.get("MaxPowerIn"));
+							NodeId maxChargingId = NodeId.parse((String) strge.get("MaxChrgPwr"));
 							NodeId maxDischargingId = NodeId.parse((String) strge.get("MaxPower"));
 							NodeId effInId = NodeId.parse((String) strge.get("EffPrim"));
 							NodeId effOutId = NodeId.parse((String) strge.get("DisEffPrim"));
