@@ -20,7 +20,6 @@ import memap.components.ClientProducer;
 import memap.components.ClientStorage;
 import memap.components.ClientVolatileProducer;
 import memap.helperOPCua.BasicClient;
-import memap.messages.extension.NetworkType;
 
 /**
  * OpcUaBuildingController is an implementation of BuildingController used for
@@ -199,7 +198,6 @@ public class OpcUaBuildingController implements BuildingController {
 	 */
 	private class NodesConfigHandler {
 		
-		private String nameString;
 		private void initDevices() {
 			for (String key : nodesConfig.keySet()) {
 				
@@ -209,7 +207,7 @@ public class OpcUaBuildingController implements BuildingController {
 					for (int i = 0; i < infos.size(); i++) {
 						try {
 							JsonObject info = (JsonObject) infos.get(i);
-							NodeId nid1 = NodeId.parse((String) info.get("nameID"));	
+							NodeId nid1 = NodeId.parse((String) info.get("nameId"));	
 //							NodeId nid1 = NodeId.parse((String) info.get("site"));		
 //							NodeId nid2 = NodeId.parse((String) info.get("ems"));
 //							NodeId nid3 = NodeId.parse((String) info.get("object"));
@@ -256,12 +254,11 @@ public class OpcUaBuildingController implements BuildingController {
 					for (int i = 0; i < demands.size(); i++) {
 						try {
 							JsonObject demnd = (JsonObject) demands.get(i);
-							NodeId demndSectId = NodeId.parse((String) demnd.get("DemndSect"));
-							NodeId consumptionId = NodeId.parse((String) demnd.get("DemandFC1"));
-							NodeId jsonForecastId = NodeId.parse((String) demnd.get("DemFCjson"));
-							NodeId arrayForecastId = NodeId.parse((String) demnd.get("DemFCarray"));
+							NodeId demndSectId = NodeId.parse((String) demnd.get("PrimSect"));
+							NodeId arrayForecastId = NodeId.parse((String) demnd.get("DemandFC"));
+							NodeId consumptionId = NodeId.parse((String) demnd.get("currentDem"));
 							NodeId demandSetpointId = NodeId.parse((String) demnd.get("DemndSetPt"));
-							ClientDemand cd = new ClientDemand(client, "DEMND" + String.format("%02d",  i), demndSectId, consumptionId, arrayForecastId, jsonForecastId, demandSetpointId, 0);
+							ClientDemand cd = new ClientDemand(client, "DEMND" + String.format("%02d",  i), demndSectId, consumptionId, arrayForecastId, demandSetpointId, 0);
 							attach(cd);
 							cd.setTopologyController(topologyController);
 							System.out.println("Added demand to " + name);
@@ -301,13 +298,13 @@ public class OpcUaBuildingController implements BuildingController {
 						try {
 							JsonObject vprod = (JsonObject) vproducers.get(i);
 							NodeId primarySectId = NodeId.parse((String) vprod.get("PrimSect"));
-							NodeId minPowerId = NodeId.parse((String) vprod.get("MinPower"));
-							NodeId maxPowerId = NodeId.parse((String) vprod.get("MaxPower"));
 							NodeId effId = NodeId.parse((String) vprod.get("EffPrim"));
-							NodeId productionId = NodeId.parse((String) vprod.get("--spaceholder--"));
+//							NodeId minPowerId = NodeId.parse((String) vprod.get("MinPower"));
+							NodeId maxPowerId = NodeId.parse((String) vprod.get("MaxPower"));
+							NodeId productionId = NodeId.parse((String) vprod.get("curPwrPrim"));
 							NodeId opCostId = NodeId.parse((String) vprod.get("PrimEnCost"));
 							NodeId costCO2Id = NodeId.parse((String) vprod.get("CO2PerKWh"));
-							ClientVolatileProducer cvp = new ClientVolatileProducer(client, "VPROD" + String.format("%02d",  i), primarySectId, minPowerId,
+							ClientVolatileProducer cvp = new ClientVolatileProducer(client, "VPROD" + String.format("%02d",  i), primarySectId,
 									maxPowerId, effId, productionId, opCostId, costCO2Id, 0);
 							attach(cvp);
 							cvp.setTopologyController(topologyController);
@@ -324,17 +321,17 @@ public class OpcUaBuildingController implements BuildingController {
 					for (int i = 0; i < storages.size(); i++) {
 						try {
 							JsonObject strge = (JsonObject) storages.get(i);
-							NodeId primarySectId = NodeId.parse((String) strge.get("PrimSect"));		
-							NodeId capacityId = NodeId.parse((String) strge.get("Capacity"));
-							NodeId stateOfChargeId = NodeId.parse((String) strge.get("curSOC"));
-							NodeId maxChargingId = NodeId.parse((String) strge.get("MaxChrgPwr"));
-							NodeId maxDischargingId = NodeId.parse((String) strge.get("MaxPower"));
+							NodeId primarySectId = NodeId.parse((String) strge.get("PrimSect"));
 							NodeId effInId = NodeId.parse((String) strge.get("EffPrim"));
 							NodeId effOutId = NodeId.parse((String) strge.get("DisEffPrim"));
+							NodeId maxChargingId = NodeId.parse((String) strge.get("MaxPowerIn"));
+							NodeId maxDischargingId = NodeId.parse((String) strge.get("MaxPower"));
+							NodeId capacityId = NodeId.parse((String) strge.get("Capacity"));
+							NodeId stateOfChargeId = NodeId.parse((String) strge.get("curSOC"));
 							NodeId opCostId = NodeId.parse((String) strge.get("PrimEnCost"));
 							NodeId costCO2Id = NodeId.parse((String) strge.get("CO2PerKWh"));
 							ClientStorage cs = new ClientStorage(client, "STRGE" + String.format("%02d",  i), capacityId, stateOfChargeId,
-									maxChargingId, maxDischargingId, effInId, effOutId, NetworkType.HEAT,
+									maxChargingId, maxDischargingId, effInId, effOutId, primarySectId,
 									opCostId, costCO2Id, 0);
 							attach(cs);
 							cs.setTopologyController(topologyController);

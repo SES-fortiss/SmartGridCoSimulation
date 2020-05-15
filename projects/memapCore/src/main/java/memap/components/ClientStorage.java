@@ -47,12 +47,12 @@ public class ClientStorage extends Storage {
 	 * @param port
 	 */
 	public ClientStorage(BasicClient client, String name, NodeId capacityId, NodeId stateOfCharge, NodeId maxChargingId,
-			NodeId maxDischargingId, NodeId effInId, NodeId effOutId, NetworkType networkType, NodeId opCostId,
+			NodeId maxDischargingId, NodeId effInId, NodeId effOutId, NodeId nodeIdSector, NodeId opCostId,
 			NodeId costCO2Id, int port) throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(capacityId), client.readFinalDoubleValue(stateOfCharge),
 				client.readFinalDoubleValue(maxChargingId), client.readFinalDoubleValue(maxDischargingId),
 				client.readFinalDoubleValue(effInId), client.readFinalDoubleValue(effOutId), port);
-		this.networkType = networkType;
+		this.networkType = setNetworkType(client, nodeIdSector);
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
 		
