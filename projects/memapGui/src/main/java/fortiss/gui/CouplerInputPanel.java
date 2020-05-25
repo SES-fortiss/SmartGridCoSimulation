@@ -84,6 +84,7 @@ public class CouplerInputPanel extends JPanel {
 		lbCName.setForeground(Colors.normal);
 		lbCPrimaryNetworkType.setForeground(Colors.normal);
 		lbCSecondaryNetworkType.setForeground(Colors.normal);
+		lbCMinimumPower.setForeground(Colors.normal);
 		lbCMaximumPower.setForeground(Colors.normal);
 		lbCPrimaryNetworkEfficiency.setForeground(Colors.normal);
 		lbCSecondaryNetworkEfficiency.setForeground(Colors.normal);
@@ -104,9 +105,9 @@ public class CouplerInputPanel extends JPanel {
 				TitledBorder.RIGHT, TitledBorder.TOP, null, Colors.accent2));
 		setLayout(new FormLayout(new ColumnSpec[] {
 				ColumnSpec.decode("15dlu"),
-				ColumnSpec.decode("85dlu"),
+				ColumnSpec.decode("120dlu"),
 				ColumnSpec.decode("15dlu"),
-				ColumnSpec.decode("100dlu:grow"),
+				ColumnSpec.decode("70dlu:grow"),
 				ColumnSpec.decode("15dlu"),
 				FormSpecs.RELATED_GAP_COLSPEC,},
 			new RowSpec[] {

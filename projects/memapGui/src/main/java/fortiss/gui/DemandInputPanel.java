@@ -103,10 +103,18 @@ public class DemandInputPanel extends JPanel {
 
 		panel = new JPanel();
 		add(panel, "1, 2, fill, fill");
-		panel.setLayout(new FormLayout(new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("85dlu:grow"),
-				ColumnSpec.decode("15dlu"), ColumnSpec.decode("93dlu:grow"), FormSpecs.RELATED_GAP_COLSPEC,
-				FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("15dlu"), FormSpecs.RELATED_GAP_COLSPEC, },
+		panel.setLayout(new FormLayout(new ColumnSpec[] { 
+				ColumnSpec.decode("15dlu"), 
+				ColumnSpec.decode("120dlu"),
+				ColumnSpec.decode("15dlu"), 
+				ColumnSpec.decode("75dlu:grow"), 
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC, 
+				FormSpecs.RELATED_GAP_COLSPEC, 
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC, 
+				ColumnSpec.decode("15dlu"), 
+				FormSpecs.RELATED_GAP_COLSPEC, },
 				new RowSpec[] { FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
 						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,

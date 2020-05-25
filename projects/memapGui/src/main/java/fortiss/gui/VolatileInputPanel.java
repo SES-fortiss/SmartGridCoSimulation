@@ -76,6 +76,7 @@ public class VolatileInputPanel extends JPanel {
 		lblVolatileProduction.setForeground(Colors.title);
 		lbVName.setForeground(Colors.normal);
 		lbVNetworkType.setForeground(Colors.normal);
+		lbVMinimumPower.setForeground(Colors.normal);
 		lbVMaximumPower.setForeground(Colors.normal);
 		lbVForecastFile.setForeground(Colors.normal);
 		lbVCost.setForeground(Colors.normal);
@@ -93,17 +94,39 @@ public class VolatileInputPanel extends JPanel {
 	private void initialize() {
 		setBorder(new TitledBorder(null, "Component information", TitledBorder.RIGHT, TitledBorder.TOP, null,
 				Colors.accent2));
-		setLayout(new FormLayout(
-				new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("85dlu"), ColumnSpec.decode("15dlu"),
-						ColumnSpec.decode("93dlu:grow"), FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
-						FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("15dlu"), FormSpecs.RELATED_GAP_COLSPEC, },
-				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
+		setLayout(new FormLayout(new ColumnSpec[] {
+				ColumnSpec.decode("15dlu"),
+				ColumnSpec.decode("left:120dlu"),
+				ColumnSpec.decode("15dlu"),
+				ColumnSpec.decode("75dlu:grow"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("15dlu"),
+				FormSpecs.RELATED_GAP_COLSPEC,},
+			new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("default:grow"),}));
 
 		lblVolatileProduction = new JLabel("VOLATILE PRODUCTION");
 		lblVolatileProduction.setFont(Fonts.getOswald());

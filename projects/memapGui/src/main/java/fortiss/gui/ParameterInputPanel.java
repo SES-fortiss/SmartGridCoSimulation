@@ -25,7 +25,6 @@ import fortiss.gui.listeners.button.AcceptListener;
 import fortiss.gui.listeners.button.BrowseListener;
 import fortiss.gui.listeners.label.LoggingModeListener;
 import fortiss.gui.listeners.label.MarketPriceListener;
-import fortiss.gui.listeners.label.MemapListener;
 import fortiss.gui.listeners.label.OptimizationCriteriaListener;
 import fortiss.gui.listeners.label.OptimizerListener;
 import fortiss.gui.listeners.selectionitem.DaysListener;
@@ -65,8 +64,6 @@ public class ParameterInputPanel extends JPanel {
 	public JLabel lbOptCriteria2;
 	/** Optimizer icon */
 	public JLabel lbOptimizer2;
-	/** Optimization mode icon */
-	public JLabel lbMemap2;
 	/** Market price icon */
 	public JLabel lbMarketPrice;
 	/** Logging Mode */
@@ -86,8 +83,6 @@ public class ParameterInputPanel extends JPanel {
 	private JLabel lbOptCriteria;
 	/** label for optimizer */
 	private JLabel lbOptimizer;
-	/** label for optimization mode */
-	private JLabel lbMemap;
 	/** label for market price */
 	private JLabel lbPrice;
 	/** label for market price instruction */
@@ -106,13 +101,15 @@ public class ParameterInputPanel extends JPanel {
 		setBackground(Colors.background);
 		setForeground(Colors.normal);
 		lbTitle.setForeground(Colors.title);
+		lbSimulationName.setForeground(Colors.normal);
 		lbLength.setForeground(Colors.normal);
 		lbSteps.setForeground(Colors.normal);
 		lbDays.setForeground(Colors.normal);
-		lbMemap.setForeground(Colors.normal);
 		lbPrice.setForeground(Colors.normal);
 		lbMarketPriceInstruction.setForeground(Colors.normal);
-		lbOptCriteria2.setForeground(Colors.normal);
+		lbOptimizer.setForeground(Colors.normal);
+		lbLoggingMode.setForeground(Colors.normal);
+		lbOptCriteria.setForeground(Colors.normal);
 	}
 
 	public ParameterInputPanel() {
@@ -129,26 +126,46 @@ public class ParameterInputPanel extends JPanel {
 	public void initialize() {
 		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Parameter input", TitledBorder.RIGHT,
 				TitledBorder.TOP, null, Colors.accent2));
-		setLayout(new FormLayout(
-				new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("max(75dlu;default)"),
-						FormSpecs.DEFAULT_COLSPEC, ColumnSpec.decode("50dlu:grow"), FormSpecs.RELATED_GAP_COLSPEC,
-						ColumnSpec.decode("20dlu"), ColumnSpec.decode("10dlu"), ColumnSpec.decode("20dlu"),
-						FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("20dlu"), },
-				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.UNRELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.UNRELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.UNRELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC,
-						new RowSpec(RowSpec.CENTER,
-								Sizes.bounded(Sizes.DEFAULT, Sizes.constant("2dlu", false),
-										Sizes.constant("15dlu", false)),
-								0),
-						FormSpecs.UNRELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						RowSpec.decode("20dlu"), FormSpecs.UNRELATED_GAP_ROWSPEC, RowSpec.decode("20dlu"),
-						FormSpecs.UNRELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						RowSpec.decode("50dlu"), FormSpecs.UNRELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						RowSpec.decode("default:grow"), }));
+		setLayout(new FormLayout(new ColumnSpec[] {
+				ColumnSpec.decode("15dlu"),
+				ColumnSpec.decode("max(75dlu;default)"),
+				FormSpecs.DEFAULT_COLSPEC,
+				ColumnSpec.decode("50dlu:grow"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("20dlu"),
+				ColumnSpec.decode("10dlu"),
+				ColumnSpec.decode("20dlu"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("20dlu"),},
+			new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("fill:default"),
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.UNRELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.UNRELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.UNRELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				new RowSpec(RowSpec.CENTER, Sizes.bounded(Sizes.DEFAULT, Sizes.constant("2dlu", false), Sizes.constant("15dlu", false)), 0),
+				FormSpecs.UNRELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.UNRELATED_GAP_ROWSPEC,
+				RowSpec.decode("20dlu"),
+				FormSpecs.UNRELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("50dlu"),
+				FormSpecs.UNRELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				RowSpec.decode("50dlu:grow"),}));
 
 		lbTitle = new JLabel("SIMULATION PARAMETERS");
 		lbTitle.setFont(Fonts.getOswald());
@@ -196,7 +213,7 @@ public class ParameterInputPanel extends JPanel {
 		sDays.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		sDays.setModel(new DefaultComboBoxModel<Integer>(new Integer[] { 1, 2, 3, 4, 5 }));
 		sDays.addItemListener(new DaysListener());
-		add(sDays, "7, 14, 2, 1, fill, default");
+		add(sDays, "6, 14, 3, 1, fill, default");
 
 		lbPrice = new JLabel("Market price [EUR]");
 		add(lbPrice, "2, 16");
@@ -243,31 +260,23 @@ public class ParameterInputPanel extends JPanel {
 		lbOptimizer2.addMouseListener(new OptimizerListener());
 		add(lbOptimizer2, "6, 19, 3, 1, right, default");
 
-		lbMemap = new JLabel("Global optimization");
-		add(lbMemap, "2, 21");
-
-		lbMemap2 = new JLabel();
-		lbMemap2.setIcon(Icon.offMemap);
-		lbMemap2.addMouseListener(new MemapListener());
-		add(lbMemap2, "6, 21, 3, 1, right, default");
-
 		lbOptCriteria = new JLabel("Optimization criteria");
-		add(lbOptCriteria, "2, 23");
+		add(lbOptCriteria, "2, 21");
 
 		lbOptCriteria2 = new JLabel("");
 		lbOptCriteria2.setIcon(Icon.optCost);
 		lbOptCriteria2.addMouseListener(new OptimizationCriteriaListener());
-		add(lbOptCriteria2, "6, 23, 3, 1, right, default");
+		add(lbOptCriteria2, "6, 21, 3, 1, right, default");
 
 		lbLoggingMode = new JLabel("Logging mode");
-		add(lbLoggingMode, "2, 25");
+		add(lbLoggingMode, "2, 23");
 
 		lbLoggingMode2 = new JLabel("");
 		lbLoggingMode2.setIcon(Icon.resultLogs);
 		lbLoggingMode2.addMouseListener(new LoggingModeListener());
-		add(lbLoggingMode2, "6, 25, 3, 1, right, default");
+		add(lbLoggingMode2, "6, 23, 3, 1, right, default");
 
-		add(btAccept, "1, 29, 7, 1, center, center");
+		add(btAccept, "1, 27, 7, 1, center, center");
 
 	}
 
@@ -322,11 +331,7 @@ public class ParameterInputPanel extends JPanel {
 			lbOptimizer2.setIcon(Icon.lp);
 		if (pars.getOptimizer().equals("milp"))
 			lbOptimizer2.setIcon(Icon.milp);
-
-		if (!pars.isMemapON())
-			lbMemap2.setIcon(Icon.offMemap);
-		if (pars.isMemapON())
-			lbMemap2.setIcon(Icon.onMemap);
+		
 	}
 
 }

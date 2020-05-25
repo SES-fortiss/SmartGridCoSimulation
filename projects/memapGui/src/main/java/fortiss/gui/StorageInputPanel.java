@@ -25,6 +25,7 @@ import fortiss.gui.listeners.textfield.SStateOfChargeListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
+import javax.swing.border.CompoundBorder;
 
 /**
  * Input panel for storage parameters.
@@ -98,9 +99,9 @@ public class StorageInputPanel extends JPanel {
 				Colors.accent2));
 		setLayout(new FormLayout(new ColumnSpec[] {
 				ColumnSpec.decode("15dlu"),
-				ColumnSpec.decode("left:85dlu:grow"),
+				ColumnSpec.decode("120dlu"),
 				ColumnSpec.decode("15dlu"),
-				ColumnSpec.decode("116dlu:grow"),
+				ColumnSpec.decode("75dlu:grow"),
 				ColumnSpec.decode("15dlu"),
 				FormSpecs.RELATED_GAP_COLSPEC,},
 			new RowSpec[] {
@@ -144,6 +145,7 @@ public class StorageInputPanel extends JPanel {
 		lbSNetworkType = new JLabel("Network Type");
 		add(lbSNetworkType, "2, 10, left, center");
 		sSNetworkType = new JComboBox<>();
+		sSNetworkType.setBorder(new CompoundBorder());
 		sSNetworkType.setFocusTraversalKeysEnabled(false);
 		sSNetworkType.setFocusable(false);
 		sSNetworkType.setModel(new DefaultComboBoxModel<String>(new String[] { "Heat", "Electricity" }));

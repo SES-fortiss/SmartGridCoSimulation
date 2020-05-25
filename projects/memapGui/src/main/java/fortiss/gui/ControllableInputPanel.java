@@ -73,6 +73,7 @@ public class ControllableInputPanel extends JPanel {
 		lblControllableProduction.setForeground(Colors.title);
 		lbCPName.setForeground(Colors.normal);
 		lbCPNetworkType.setForeground(Colors.normal);
+		lbCPMinimumPower.setForeground(Colors.normal);
 		lbCPMaximumPower.setForeground(Colors.normal);
 		lbCPEfficiency.setForeground(Colors.normal);
 		lbCPCost.setForeground(Colors.normal);
@@ -91,8 +92,13 @@ public class ControllableInputPanel extends JPanel {
 		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Component information",
 				TitledBorder.RIGHT, TitledBorder.TOP, null, Colors.accent2));
 		setLayout(new FormLayout(
-				new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("85dlu"), ColumnSpec.decode("15dlu"),
-						ColumnSpec.decode("100dlu:grow"), ColumnSpec.decode("15dlu"), FormSpecs.RELATED_GAP_COLSPEC, },
+				new ColumnSpec[] {
+						ColumnSpec.decode("15dlu"), 
+						ColumnSpec.decode("120dlu"), 
+						ColumnSpec.decode("15dlu"),
+						ColumnSpec.decode("75dlu:grow"), 
+						ColumnSpec.decode("15dlu"), 
+						FormSpecs.RELATED_GAP_COLSPEC, },
 				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
 						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,

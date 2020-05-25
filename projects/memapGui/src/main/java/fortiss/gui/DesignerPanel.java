@@ -89,6 +89,7 @@ public class DesignerPanel extends JPanel {
 
 		// Add panel for components details
 		pl_comp_detail = new JPanel();
+		pl_comp_detail.setPreferredSize(new Dimension(550, getHeight()));
 		add(pl_comp_detail, BorderLayout.EAST);
 		pl_comp_detail.setLayout(new CardLayout(0, 0));
 		cl = (CardLayout) pl_comp_detail.getLayout();
