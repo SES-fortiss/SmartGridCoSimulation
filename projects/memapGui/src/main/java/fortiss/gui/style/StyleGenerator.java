@@ -45,7 +45,7 @@ abstract public class StyleGenerator {
 		UIManager.put("MenuItem.font", defaultFont);
 		UIManager.put("RadioButtonMenuItem.font", defaultFont);
 		UIManager.put("CheckBoxMenuItem.font", defaultFont);
-		UIManager.put("Menu.font", defaultFont);
+		UIManager.put("MenuBar.font", defaultFont);
 		UIManager.put("PopupMenu.font", defaultFont);
 		UIManager.put("OptionPane.font", defaultFont);
 		UIManager.put("Panel.font", defaultFont);

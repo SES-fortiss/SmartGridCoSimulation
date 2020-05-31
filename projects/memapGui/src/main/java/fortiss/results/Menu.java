@@ -25,7 +25,7 @@ public class Menu extends JTree {
 	}
 
 	/**
-	 * Constructor for the class Menu. Calls JTree constructor. Modifies color
+	 * Constructor for the class MenuBar. Calls JTree constructor. Modifies color
 	 * properties.
 	 */
 	Menu(){

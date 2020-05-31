@@ -99,7 +99,6 @@ public class TrackerPanel extends JPanel {
 		progressBar.setValue(progress);
 	}
 	
-	// TODO Call the method to restart progress bar after resetting or loading
 	public void restart() {
 		progressBar.setValue(0);
 	}

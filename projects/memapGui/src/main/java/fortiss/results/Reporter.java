@@ -30,7 +30,6 @@ public class Reporter {
 	public void showResults() {
 		showDetailedResults();
 		showOverviewResults();
-		
 	}
 	
 	private void showDetailedResults() {

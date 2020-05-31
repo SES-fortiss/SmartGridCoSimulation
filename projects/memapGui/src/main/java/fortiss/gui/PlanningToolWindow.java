@@ -1,10 +1,9 @@
 package fortiss.gui;
 
-import java.awt.CardLayout;
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
@@ -21,33 +20,38 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import fortiss.gui.listeners.window.ExitWindowListener;
+import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
 import fortiss.simulation.PlanningTool;
 
 public class PlanningToolWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
+	private MenuBar menuBar;
 	private JTabbedPane tabbedPane;
-	private Rectangle innerBounds;
 
 	public PlanningToolWindow() {
+		StyleGenerator.setupStyle();
 		setDefaultLookAndFeelDecorated(true);
 
 		addWindowListener(new ExitWindowListener());
 		setLocationRelativeTo(null);
 		setIconImage(Icon.smallMemapLogo.getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		getContentPane().setLayout(new CardLayout(0, 0));
+		getContentPane().setLayout(new BorderLayout());
+
+		menuBar = new MenuBar();
+		getContentPane().add(menuBar, BorderLayout.NORTH);
 
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		addPanelAsCard("tabbedPane", tabbedPane);
+		getContentPane().add(tabbedPane, BorderLayout.CENTER);
 
 		addComponentListener(new ComponentAdapter() {
-		    public void componentResized(ComponentEvent componentEvent) {
-		    	PlanningTool.getReporterOverviewPanel().setPresentationSize(getPreferredSize());
-		    }
+			public void componentResized(ComponentEvent componentEvent) {
+				PlanningTool.getReporterOverviewPanel().setPresentationSize(getPreferredSize());
+			}
 		});
-		
+
 		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		setMaximizedBounds(env.getMaximumWindowBounds());
 		setSize(env.getMaximumWindowBounds().width, env.getMaximumWindowBounds().height);
@@ -59,13 +63,22 @@ public class PlanningToolWindow extends JFrame {
 	 * order of the tabs in the window
 	 */
 	public void addPanelAsTab(String title, ImageIcon icon, JPanel panel) {
-		tabbedPane.addTab(null, panel);
-		tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), buildTab(tabbedPane, icon, panel, title));
+		if (tabbedPane.indexOfTab(title) == -1) {
+			tabbedPane.addTab(title, panel);
+			tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), buildTab(tabbedPane, icon, panel, title));
+		}
 	}
 
-	/** Add a panel as a card. */
-	public void addPanelAsCard(String title, Component panel) {
+	public void addMainPanel(String title, Component panel) {
 		getContentPane().add(panel, title);
+	}
+
+	public void showTab(Component c) {
+		tabbedPane.setSelectedComponent(c);
+	}
+
+	public void closeTab(Component c) {
+		tabbedPane.remove(c);
 	}
 
 	/** Return a tab */
@@ -95,14 +108,6 @@ public class PlanningToolWindow extends JFrame {
 		tabPanel.add(closeButton);
 
 		return tabPanel;
-	}
-
-	public Rectangle getInnerBounds() {
-		return innerBounds;
-	}
-
-	public void setInnerBounds(Rectangle innerBounds) {
-		this.innerBounds = innerBounds;
 	}
 
 }

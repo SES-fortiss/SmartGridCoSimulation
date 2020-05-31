@@ -1,13 +1,11 @@
 package fortiss.simulation;
 
-import java.awt.CardLayout;
 import java.awt.Container;
 import java.awt.EventQueue;
 
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.PlanningToolWindow;
 import fortiss.gui.TrackerPanel;
-import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
 import fortiss.results.Reporter;
 import fortiss.results.ReporterOverviewPanel;
@@ -17,6 +15,12 @@ import memap.controller.GuiController;
 
 /** Entry point for the application */
 public class PlanningTool {
+
+	// String constants: They are duplicated in other classes
+	private static final String DESIGNER_PANEL = "Design tool";
+	private static final String TRACKER_PANEL = "Simulation progress";
+	private static final String OVERVIEW_RESULT_PANEL = "Results overview";
+	private static final String DETAILED_RESULT_PANEL = "Detailed results";
 
 	/** Main frame */
 	private static PlanningToolWindow planningToolWindow;
@@ -38,11 +42,9 @@ public class PlanningTool {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				setPlanningToolWindow(new PlanningToolWindow());
-				StyleGenerator.setupStyle();
 				ProgressManager.getInstance().execute();
 			}
 		});
-
 	}
 
 	/**
@@ -55,42 +57,56 @@ public class PlanningTool {
 		setReporterOverviewPanel(new ReporterOverviewPanel());
 		setReporterPanel(new ReporterPanel());
 		setTrackerPanel(new TrackerPanel());
+	}
 
-		getPlanningToolWindow().addPanelAsCard("trackerPanel", getTrackerPanel());
+	/** Add the designer panel as a tab */
+	public static void addDesignerAsTab() {
+		getPlanningToolWindow().addPanelAsTab(DESIGNER_PANEL, Icon.edit, getDesignerPanel());
+	}
+
+	/** Add the results overview panel as a tab */
+	public static void addOverviewResutlsAsTab() {
+		getPlanningToolWindow().addPanelAsTab(OVERVIEW_RESULT_PANEL, Icon.statistics, getReporterOverviewPanel());
+	}
+
+	/** Add the detailed results panel as a tab */
+	public static void addDetailedResultsAsTab() {
+		getPlanningToolWindow().addPanelAsTab(DETAILED_RESULT_PANEL, Icon.series, getReporterPanel());
+	}
+
+	/** Add the tracker panel as a tab */
+	public static void addTrackerAsTab() {
+		getPlanningToolWindow().addPanelAsTab(TRACKER_PANEL, Icon.exclamation, getTrackerPanel());
 	}
 
 	/** Show the designer panel using the information from last session */
 	public static void showDesigner() {
 		getDesignerPanel().initLastSession();
-		getPlanningToolWindow().addPanelAsTab("Design tool", Icon.edit, getDesignerPanel());
+		addDesignerAsTab();
 	}
 
 	/** Show the tracker panel */
 	public static void showTracker() {
-		trackerPanel.restart();
-		showScreen("trackerPanel");
+		addTrackerAsTab();
+		getPlanningToolWindow().showTab(getTrackerPanel());
+		repaintAll();
 	}
 
 	/** Loads the results and show the reporter panel */
 	public static void showReporter() {
 		getReporter().showResults();
 
-		showScreen("tabbedPane");
-		getPlanningToolWindow().addPanelAsTab("Results overview", Icon.statistics, getReporterOverviewPanel());
-		getPlanningToolWindow().addPanelAsTab("Detailed results", Icon.series, getReporterPanel());
+		getPlanningToolWindow().closeTab(getTrackerPanel());
+		addOverviewResutlsAsTab();
+		addDetailedResultsAsTab();
+		getPlanningToolWindow().showTab(getReporterOverviewPanel());
+		repaintAll();
 	}
 
 	/** Revalidates and repaints the main frame's content pane */
 	public static void repaintAll() {
 		getPlanningToolWindow().getContentPane().revalidate();
 		getPlanningToolWindow().getContentPane().repaint();
-	}
-
-	/** Shows a panel that has been added as a card */
-	private static void showScreen(String screenName) {
-		CardLayout cl = (CardLayout) getPlanningToolWindow().getContentPane().getLayout();
-		cl.show(getPlanningToolWindow().getContentPane(), screenName);
-		repaintAll();
 	}
 
 	/** @return designerPanel */
