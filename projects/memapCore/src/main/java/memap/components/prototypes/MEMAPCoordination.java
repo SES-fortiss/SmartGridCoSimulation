@@ -43,7 +43,7 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 	private int currentTimeStep;
 	protected Gson gson = new Gson();
 	private MemapOpcServerStarter mServer;
-	public int port = 7070;
+	public int port = 7013;
 	
 	// some long term values
 	double[] totalEURVector;

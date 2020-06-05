@@ -24,14 +24,18 @@ public abstract class StringToJsonArray extends JsonArray {
 		JsonArray output = new JsonArray();
 		// This part is not any elegant, different solution would be appreciated but
 		// wasnt found.
-		String[] messageArray = input.split("\\}!");
+		System.out.println("Input: " + input);
+		String[] messageArray = input.split("\\]\\}\"\\},");
+		
 		for (int i = 0; i < messageArray.length - 1; i++) {
-			messageArray[i] = messageArray[i] + "}";
+			messageArray[i] = messageArray[i] + "]}\"}";
 		}
 
 		// Transfer Strings in String Array to Jsons.
 		// messageJsonArray is of JsonArray format
+		
 		for (int i = 0; i < messageArray.length; i++) {
+//			System.out.println(messageArray[i]);
 			try {
 				JsonObject messageJson = (JsonObject) Jsoner.deserialize(messageArray[i]);
 				output.add(messageJson);

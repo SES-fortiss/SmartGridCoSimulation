@@ -80,7 +80,7 @@ public class ClientStorage extends Storage {
 			Variant var = value.getValue();
 			if (var.getValue() instanceof Number) {
 				this.stateOfCharge = (Double) value.getValue().getValue();
-				System.out.println("SOC updated");
+//				System.out.println("SOC updated");
 			} else {
 				System.out.println("Value " + value + " is not in Number[] format");
 			}

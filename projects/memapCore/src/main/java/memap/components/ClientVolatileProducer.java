@@ -49,11 +49,11 @@ public class ClientVolatileProducer extends Producer {
 	 * @param costCO2Id           CO2 cost [kg CO2/kWh]
 	 * @param port
 	 */
-	public ClientVolatileProducer(BasicClient client, String name,  NodeId nodeIdSector, NodeId maxPowerId, NodeId effId,
+	public ClientVolatileProducer(BasicClient client, String name,  NodeId nodeIdSector, NodeId maxPowerId,
 			NodeId currentProductionId, NodeId opCostId, NodeId costCO2Id, int port)
 			throws InterruptedException, ExecutionException {
 		super(name, 0.0, client.readFinalDoubleValue(maxPowerId),
-				client.readFinalDoubleValue(effId), port);
+				1.0, port);
 
 		volatileProducerMessage = new VolatileProducerMessage();
 		this.networkType = setNetworkType(client, nodeIdSector);

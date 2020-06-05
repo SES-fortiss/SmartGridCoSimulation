@@ -216,12 +216,13 @@ public class MILPSolver {
 			}
 		}
 
+		double[] optSolutionEffcorrected = milpSolHandler.getEffSolutionForThisTimeStep(localBuildingMessage, names, optSolution, 1);
 		// Request content to send
 		for (int i = 0; i < names.length / nStepsMPC; i++) {
 			double[] values = new double[nStepsMPC];
 
 			for (int j = 0; j < values.length; j++) {
-				values[j] = optSolution[i * nStepsMPC + j];
+				values[j] = optSolutionEffcorrected[i * nStepsMPC + j];
 			}
 
 			// TODO : Improve this work around

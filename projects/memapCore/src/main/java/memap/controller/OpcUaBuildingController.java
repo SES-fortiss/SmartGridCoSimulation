@@ -233,7 +233,7 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId secondarySectId = NodeId.parse((String) coupl.get("SecdSect"));
 							NodeId minPowerId = NodeId.parse((String) coupl.get("MinPower"));
 							NodeId maxPowerId = NodeId.parse((String) coupl.get("MaxPower"));
-							NodeId effHeatId = NodeId.parse((String) coupl.get("ErrPrim"));
+							NodeId effHeatId = NodeId.parse((String) coupl.get("EffPrim"));
 							NodeId effElecId = NodeId.parse((String) coupl.get("EffSec"));
 							NodeId opCostId = NodeId.parse((String) coupl.get("PrimEnCost"));
 							NodeId costCO2Id = NodeId.parse((String) coupl.get("CO2PerKWh"));
@@ -298,14 +298,14 @@ public class OpcUaBuildingController implements BuildingController {
 						try {
 							JsonObject vprod = (JsonObject) vproducers.get(i);
 							NodeId primarySectId = NodeId.parse((String) vprod.get("PrimSect"));
-							NodeId effId = NodeId.parse((String) vprod.get("EffPrim"));
+//							NodeId effId = NodeId.parse((String) vprod.get("EffPrim"));
 //							NodeId minPowerId = NodeId.parse((String) vprod.get("MinPower"));
 							NodeId maxPowerId = NodeId.parse((String) vprod.get("MaxPower"));
 							NodeId productionId = NodeId.parse((String) vprod.get("curPwrPrim"));
 							NodeId opCostId = NodeId.parse((String) vprod.get("PrimEnCost"));
 							NodeId costCO2Id = NodeId.parse((String) vprod.get("CO2PerKWh"));
 							ClientVolatileProducer cvp = new ClientVolatileProducer(client, "VPROD" + String.format("%02d",  i), primarySectId,
-									maxPowerId, effId, productionId, opCostId, costCO2Id, 0);
+									maxPowerId, productionId, opCostId, costCO2Id, 0);
 							attach(cvp);
 							cvp.setTopologyController(topologyController);
 							System.out.println("Added volatile producers to " + name);
