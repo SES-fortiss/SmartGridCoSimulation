@@ -47,7 +47,11 @@ abstract public class Icon {
 	private static String vsvFormatPath = "/resources/csvFormat.png";
 	private static String seriesPath = "/resources/series.png";
 	private static String statisticsPath = "/resources/statistics.png";
+	private static String exclamationPath = "/resources/exclamation.png";
 	private static String editPath = "/resources/edit.png";
+	private static String closedNodePath = "/resources/closedNode.png";
+	private static String openNodePath = "/resources/openNode.png";
+	private static String itemNodePath = "/resources/itemNode.png";
 	
 	public static ImageIcon fortissLogo = new ImageIcon(
 			new ImageIcon(Icon.class.getResource(fortissLogoPath)).getImage().getScaledInstance(180, 60, Image.SCALE_SMOOTH));
@@ -140,8 +144,17 @@ abstract public class Icon {
 			new ImageIcon(Icon.class.getResource(seriesPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 	public static ImageIcon statistics = new ImageIcon(
 			new ImageIcon(Icon.class.getResource(statisticsPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+	public static ImageIcon exclamation = new ImageIcon(
+			new ImageIcon(Icon.class.getResource(exclamationPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 	public static ImageIcon edit = new ImageIcon(
 			new ImageIcon(Icon.class.getResource(editPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+	
+	public static ImageIcon closedNode = new ImageIcon(
+			new ImageIcon(Icon.class.getResource(closedNodePath)).getImage().getScaledInstance(15, 15, Image.SCALE_SMOOTH));
+	public static ImageIcon openNode = new ImageIcon(
+			new ImageIcon(Icon.class.getResource(openNodePath)).getImage().getScaledInstance(15, 15, Image.SCALE_SMOOTH));
+	public static ImageIcon itemNode = new ImageIcon(
+			new ImageIcon(Icon.class.getResource(itemNodePath)).getImage().getScaledInstance(5, 5, Image.SCALE_SMOOTH));
 	
 	@SuppressWarnings("serial")
 	public static ArrayList<ImageIcon> optCriteria = new ArrayList<ImageIcon>() {

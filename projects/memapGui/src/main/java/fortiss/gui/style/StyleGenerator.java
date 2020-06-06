@@ -7,6 +7,8 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.FontUIResource;
 
+import fortiss.media.Icon;
+
 /**
  * Manages the style configuration for the application
  */
@@ -19,7 +21,7 @@ abstract public class StyleGenerator {
 		GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(Fonts.getOswald());
 		
 		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (InstantiationException e) {
@@ -42,17 +44,17 @@ abstract public class StyleGenerator {
 		UIManager.put("Label.font", defaultFont);
 		UIManager.put("List.font", defaultFont);
 		UIManager.put("MenuBar.font", defaultFont);
-		UIManager.put("MenuItem.font", defaultFont);
+		UIManager.put("Menu.font", defaultFont);	
+		UIManager.put("MenuItem.font", defaultFont);	
 		UIManager.put("RadioButtonMenuItem.font", defaultFont);
 		UIManager.put("CheckBoxMenuItem.font", defaultFont);
-		UIManager.put("MenuBar.font", defaultFont);
 		UIManager.put("PopupMenu.font", defaultFont);
 		UIManager.put("OptionPane.font", defaultFont);
 		UIManager.put("Panel.font", defaultFont);
 		UIManager.put("ProgressBar.font", defaultFont);
 		UIManager.put("ScrollPane.font", defaultFont);
 		UIManager.put("Viewport.font", defaultFont);
-		UIManager.put("TabbedPane.font", defaultFont);
+		UIManager.put("TabbedPane.font", defaultFont);		
 		UIManager.put("Table.font", defaultFont);
 		UIManager.put("TableHeader.font", defaultFont);
 		UIManager.put("TextField.font", defaultFont);
@@ -64,6 +66,9 @@ abstract public class StyleGenerator {
 		UIManager.put("ToolBar.font", defaultFont);
 		UIManager.put("ToolTip.font", defaultFont);
 		UIManager.put("Tree.font", defaultFont);
+		UIManager.put("Tree.closedIcon", Icon.closedNode);
+		UIManager.put("Tree.openIcon", Icon.openNode);
+		UIManager.put("Tree.leafIcon", Icon.itemNode);
 		
 	}
 
