@@ -3,7 +3,7 @@ package memap.main;
 import akka.timeManagement.CurrentTimeStepSubscriber;
 
 /**
- * Tracks the progress of the simulation progress, considering both global and
+ * Tracks the simulation progress, considering both global and
  * per building optimization
  */
 public class SimulationProgress implements CurrentTimeStepSubscriber {
@@ -11,7 +11,7 @@ public class SimulationProgress implements CurrentTimeStepSubscriber {
 
 	private double progress = 0;
 	private final int max = (TopologyConfig.getInstance().getNrDays()
-			* TopologyConfig.getInstance().getTimeStepsPerDay()) - 1;
+			* TopologyConfig.getInstance().getTimeStepsPerDay());
 
 	public void restart() {
 		progress = 0;
@@ -22,13 +22,13 @@ public class SimulationProgress implements CurrentTimeStepSubscriber {
 	}
 
 	public double getProgress() {
-		return progress;
+		return progress * 100 / max;
 	}
 
 	@Override
 	public void update(int currentTimeStep) {
 		if (currentTimeStep > progress) {
-			progress = currentTimeStep * 100 / max;
+			progress = currentTimeStep;
 		}
 	}
 
