@@ -43,7 +43,7 @@ public class PlanningToolWindow extends JFrame {
 		menuBar = new MenuBar();
 		getContentPane().add(menuBar, BorderLayout.NORTH);
 
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane = new JTabbedPane(SwingConstants.TOP);
 		getContentPane().add(tabbedPane, BorderLayout.CENTER);
 
 		addComponentListener(new ComponentAdapter() {
