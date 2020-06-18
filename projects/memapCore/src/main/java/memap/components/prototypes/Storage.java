@@ -21,6 +21,8 @@ public abstract class Storage extends Device {
 	public StorageMessage storageMessage = new StorageMessage();
 
 	public double[] linprogStorageInput;
+	public double[] optimizationAdviceInput;
+	public double[] optimizationAdviceOutput;
 	public double[] linprogStorageOutput;
 
 	public Storage(String name, double capacity, double stateOfCharge, double max_charging, double max_discharging,
@@ -33,8 +35,8 @@ public abstract class Storage extends Device {
 		this.effIN = effIN;
 		this.effOUT = effOUT;
 		// Initialization delayed until after topologyConfig initialization
-		linprogStorageInput = new double[topologyConfig.getNrStepsMPC()];
-		linprogStorageOutput = new double[topologyConfig.getNrStepsMPC()];
+		optimizationAdviceInput = new double[topologyConfig.getNrStepsMPC()];
+		optimizationAdviceOutput = new double[topologyConfig.getNrStepsMPC()];
 	}
 
 	@Override

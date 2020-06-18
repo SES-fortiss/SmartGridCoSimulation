@@ -2,6 +2,7 @@ package memap.components;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -23,6 +24,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import memap.components.prototypes.Storage;
 import memap.controller.TopologyController;
 import memap.helperOPCua.BasicClient;
+import memap.main.TopologyConfig;
+import memap.messages.OptimizationResultMessage;
 import memap.messages.extension.NetworkType;
 
 public class ClientStorage extends Storage {
@@ -30,6 +33,9 @@ public class ClientStorage extends Storage {
 	NetworkType networkType;
 	double opCost;
 	double costCO2;
+	public BasicClient client;
+	public List<NodeId> inputSetpointIds = new ArrayList<NodeId>();
+	public List<NodeId> outputSetpointIds = new ArrayList<NodeId>();
 
 	public List<UaMonitoredItem> itemsDemand;
 	
@@ -48,10 +54,13 @@ public class ClientStorage extends Storage {
 	 */
 	public ClientStorage(BasicClient client, String name, NodeId capacityId, NodeId stateOfCharge, NodeId maxChargingId,
 			NodeId maxDischargingId, NodeId effInId, NodeId effOutId, NodeId nodeIdSector, NodeId opCostId,
-			NodeId costCO2Id, int port) throws InterruptedException, ExecutionException {
+			NodeId costCO2Id, List<NodeId> inputSetpointIds, List<NodeId> outputSetpointIds,int port) throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(capacityId), client.readFinalDoubleValue(stateOfCharge),
 				client.readFinalDoubleValue(maxChargingId), client.readFinalDoubleValue(maxDischargingId),
 				client.readFinalDoubleValue(effInId), client.readFinalDoubleValue(effOutId), port);
+		this.client = client;
+		this.inputSetpointIds = inputSetpointIds;
+		this.outputSetpointIds = outputSetpointIds;
 		this.networkType = setNetworkType(client, nodeIdSector);
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
@@ -117,6 +126,30 @@ public class ClientStorage extends Storage {
 		storageMessage.efficiencyCharge = effIN;
 		storageMessage.efficiencyDischarge = effOUT;
 		storageMessage.networkType = networkType;
+	}
+	
+	@Override
+	public void handleRequest() {
+		if (requestContentReceived instanceof OptimizationResultMessage) {
+			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
+			for (String key : optResult.resultMap.keySet()) {
+				if (key.equals(actorName + "Charge")) {
+					optimizationAdviceInput = optResult.resultMap.get(key);
+					for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC(); i++) {
+						DataValue data = new DataValue(new Variant(optimizationAdviceInput[i]), null, null);					
+						client.writeValue(inputSetpointIds.get(i), data);						
+					}			
+				}
+				if (key.equals(actorName + "Discharge")) {
+					optimizationAdviceOutput = optResult.resultMap.get(key);
+					for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC(); i++) {
+						DataValue data = new DataValue(new Variant(optimizationAdviceOutput[i]), null, null);					
+						client.writeValue(outputSetpointIds.get(i), data);						
+					}			
+				}
+				
+			}
+		}
 	}
 	
 	/** Passes a reference of an object of class {@link TopologyController} to the parent class */

@@ -24,7 +24,8 @@ public abstract class StringToJsonArray extends JsonArray {
 		JsonArray output = new JsonArray();
 		// This part is not any elegant, different solution would be appreciated but
 		// wasnt found.
-		System.out.println("Input: " + input);
+		
+		// System.out.println("Input: " + input);
 		String[] messageArray = input.split("\\]\\}\"\\},");
 		
 		for (int i = 0; i < messageArray.length - 1; i++) {

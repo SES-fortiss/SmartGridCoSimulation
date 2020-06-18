@@ -1,5 +1,6 @@
 package memap.helperOPCua;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -12,6 +13,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+
+import com.google.common.collect.ImmutableList;
 
 public class BasicClient {
 	public CompletableFuture<EndpointDescription[]> endpoints;
@@ -64,6 +67,10 @@ public class BasicClient {
 
 	public CompletableFuture<UaClient> connect() {
 		return client.connect();
+	}
+
+	public void writeValue(NodeId setpointsId, DataValue setpoint) {
+		this.client.writeValue(setpointsId, setpoint);
 	}
 
 }
