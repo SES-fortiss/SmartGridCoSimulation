@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GraphicsEnvironment;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -22,7 +20,6 @@ import javax.swing.border.EmptyBorder;
 import fortiss.gui.listeners.window.ExitWindowListener;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
-import fortiss.simulation.PlanningTool;
 
 public class PlanningToolWindow extends JFrame {
 
@@ -45,12 +42,6 @@ public class PlanningToolWindow extends JFrame {
 
 		tabbedPane = new JTabbedPane(SwingConstants.TOP);
 		getContentPane().add(tabbedPane, BorderLayout.CENTER);
-
-		addComponentListener(new ComponentAdapter() {
-			public void componentResized(ComponentEvent componentEvent) {
-				PlanningTool.getReporterOverviewPanel().setPresentationSize(getPreferredSize());
-			}
-		});
 
 		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		setMaximizedBounds(env.getMaximumWindowBounds());

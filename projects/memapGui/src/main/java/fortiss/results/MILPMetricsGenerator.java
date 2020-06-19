@@ -32,7 +32,7 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 	}
 
 	@Override
-	public void populateMetricsPanels(HashMap<String, MetricsPanel> metricsPanelMap) {
+	public void populateMetricsPanels(SummaryPanel summaryPanel, HashMap<String, MetricsPanel> metricsPanelMap) {
 
 		double globalOptimizationCost = 0;
 		double globalOptimizationCo2Emissions = 0;
@@ -59,13 +59,21 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 		// Comparative figures: added to global optimization panel
 		double savedCost = perBuildingOptimizationCost - globalOptimizationCost;
 		String costQualifier = (savedCost > 0) ? "reduction" : "enlargement";
-		metricsPanelMap.get("Global optimization").addTextWidget("Cost " + costQualifier, Double.toString(savedCost),
-				"EUR", null);
+		summaryPanel.addTextWidget(SummaryPanel.PER_BUILDING_OPTIMIZATION, "Cost without MEMAP",
+				Double.toString(perBuildingOptimizationCost), "EUR", null);
+		summaryPanel.addTextWidget(SummaryPanel.GLOBAL_OPTIMIZATION, "Cost with MEMAP",
+				Double.toString(globalOptimizationCost), "EUR", null);
+		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "Cost " + costQualifier, Double.toString(savedCost), "EUR",
+				null);
 
 		double savedCo2 = perBuildingOptimizationCo2Emissions - globalOptimizationCo2Emissions;
 		String co2Qualifier = (savedCo2 > 0) ? "reduction" : "enlargement";
-		metricsPanelMap.get("Global optimization").addTextWidget("CO2 Emissions " + co2Qualifier,
-				Double.toString(savedCo2), "kg CO2/kWh", null);
+		summaryPanel.addTextWidget(SummaryPanel.PER_BUILDING_OPTIMIZATION, "CO2 Emissions without MEMAP ",
+				Double.toString(perBuildingOptimizationCo2Emissions), "kg CO2/kWh", null);
+		summaryPanel.addTextWidget(SummaryPanel.GLOBAL_OPTIMIZATION, "CO2 Emissions with MEMAP",
+				Double.toString(globalOptimizationCo2Emissions), "kg CO2/kWh", null);
+		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "CO2 Emissions " + co2Qualifier, Double.toString(savedCo2),
+				"kg CO2/kWh", null);
 
 		// Add specific metrics
 		for (Entry<String, MetricsPanel> context : metricsPanelMap.entrySet()) {
@@ -75,7 +83,8 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 			// Add optimization-specific metrics
 			if (contextName.equals("Global optimization")) {
 				populateGlobalOptimizationMetrics(contextName, contextPanel);
-			} else {
+			}
+			if (!contextName.equals("Summary")) {
 				populatePerBuildingOptimizationMetrics(contextName, contextPanel);
 			}
 		}

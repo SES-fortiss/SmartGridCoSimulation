@@ -1,7 +1,6 @@
 package fortiss.results;
 
 import java.awt.ComponentOrientation;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +11,7 @@ import org.knowm.xchart.CategorySeries;
 import org.knowm.xchart.CategorySeries.CategorySeriesRenderStyle;
 import org.knowm.xchart.PieSeries.PieSeriesRenderStyle;
 
+import fortiss.gui.WrapLayout;
 import fortiss.gui.style.Colors;
 import fortiss.results.widgets.CategoryPlotWidget;
 import fortiss.results.widgets.PieChartWidget;
@@ -37,11 +37,11 @@ public class MetricsPanel extends JPanel {
 	}
 
 	public void initialize() {
+		
 		setBackground(Colors.background);
-		FlowLayout fl = new FlowLayout(FlowLayout.CENTER, 30, 30);
-		setLayout(fl);
+		setLayout(new WrapLayout());
 	}
-
+	
 	public void addTextWidget(String title, String value, String unit, String toolTip) {
 		TextBoxWidget textBoxWidget = new TextBoxWidget(title, value, unit);
 		if (toolTip != null)

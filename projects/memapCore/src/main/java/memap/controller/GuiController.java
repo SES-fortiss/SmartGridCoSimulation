@@ -84,7 +84,7 @@ public class GuiController {
 			// Configure simulation parameters
 			TopologyConfig topologyConfig = TopologyConfig.getInstance();
 					
-			boolean isFixedPrice = jObject.get("fixedPrice").getAsBoolean();
+			boolean isFixedPrice = jObject.get("hasfixedPrice").getAsBoolean();
 			double fixedPrice = jObject.get("fixedMarketPrice").getAsDouble();
 			int nrStepsMPC = jObject.get("steps").getAsInt();
 			int timeStepsPerDay = jObject.get("length").getAsInt();

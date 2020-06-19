@@ -52,11 +52,11 @@ public class PlanningTool {
 	 * main frame's content pane.
 	 */
 	public static void init() {
-		setReporter(new Reporter());
 		setDesignerPanel(new DesignerPanel());
+		setTrackerPanel(new TrackerPanel());
+		setReporter(new Reporter());
 		setReporterOverviewPanel(new ReporterOverviewPanel());
 		setReporterPanel(new ReporterPanel());
-		setTrackerPanel(new TrackerPanel());
 	}
 
 	/** Add the designer panel as a tab */

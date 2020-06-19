@@ -75,7 +75,7 @@ public class DesignerPanel extends JPanel {
 	 * Create the frame.
 	 */
 	public DesignerPanel() {
-		setSize(new Dimension(1920, 1080));
+		//setSize(new Dimension(1920, 1080));
 		setLayout(new BorderLayout(0, 0));
 
 		// Add dataFlavor class
@@ -134,8 +134,7 @@ public class DesignerPanel extends JPanel {
 		split_main.setBorder(null);
 		split_main.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		split_main.setDividerSize(0);
-		split_main.setLastDividerLocation(400);
-		split_main.setDividerLocation(400);
+		split_main.setResizeWeight(0.5);
 		add(split_main, BorderLayout.CENTER);
 
 		// Add main panel for EMS addition

@@ -7,6 +7,6 @@ public interface MetricsGenerator {
 	/**
 	 * Populates the metrics panels
 	 */
-	public void populateMetricsPanels(HashMap<String, MetricsPanel> metricsPanelMap);
+	public void populateMetricsPanels(SummaryPanel summaryPanel, HashMap<String, MetricsPanel> metricsPanelMap);
 
 }

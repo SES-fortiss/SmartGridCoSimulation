@@ -46,7 +46,7 @@ public class ActionPanel extends JPanel {
 	 * Initializes the contents of the panel.
 	 */
 	private void initialize() {
-		setPreferredSize(new Dimension(1200, 60));
+		setPreferredSize(new Dimension(PlanningToolWindow.WIDTH, 60));
 
 		// Add load button
 		JButton bt_load = new JButton("");

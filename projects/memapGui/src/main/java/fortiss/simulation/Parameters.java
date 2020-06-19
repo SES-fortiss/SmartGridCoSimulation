@@ -52,8 +52,8 @@ public class Parameters {
 	private int steps;
 	/** days Number of days to be simulated */
 	private int days;
-	/** fixedPrice a boolean. Fixed (true)/ variable (false) */
-	private boolean fixedPrice;
+	/** hasfixedPrice a boolean. Fixed (true)/ variable (false) */
+	private boolean hasfixedPrice;
 	/** path to a file that describe variability in market prices */
 	private String marketPriceFile;
 	/** A fixed value for market price */
@@ -121,11 +121,11 @@ public class Parameters {
 	}
 
 	public boolean isFixedPrice() {
-		return fixedPrice;
+		return hasfixedPrice;
 	}
 
 	public void setFixedPrice(boolean price) {
-		this.fixedPrice = price;
+		this.hasfixedPrice = price;
 	}
 
 	public String getOptimizer() {

@@ -19,7 +19,6 @@ import javax.swing.ScrollPaneConstants;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
-import fortiss.simulation.PlanningTool;
 
 public class ReporterOverviewPanel extends JPanel {
 
@@ -32,6 +31,8 @@ public class ReporterOverviewPanel extends JPanel {
 
 	public ReporterOverviewPanel() {
 		StyleGenerator.setupStyle();
+		// Sets panel properties
+		setLayout(new BorderLayout(0, 0));
 		selectionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 		presentationPanel = new JPanel(new CardLayout(0, 0));
 		initialize();
@@ -46,14 +47,9 @@ public class ReporterOverviewPanel extends JPanel {
 
 	public void initialize() {
 
-		// Sets panel properties
-		setLayout(new BorderLayout(0, 0));
-
 		// Important: size configuration
 		int selectionPanelHeight = 40;
 
-		presentationPanel.setPreferredSize(new Dimension(PlanningTool.getPlanningToolWindow().getWidth(),
-				PlanningTool.getPlanningToolWindow().getHeight()));
 		selectionPanel.setPreferredSize(new Dimension(0, selectionPanelHeight));
 		selectionPanel.setMaximumSize(new Dimension(0, selectionPanelHeight));
 
@@ -64,35 +60,21 @@ public class ReporterOverviewPanel extends JPanel {
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		selectionScrollPane.setViewportView(selectionPanel);
 
-		JScrollPane metricsScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		metricsScrollPane.setViewportView(presentationPanel);
-
-		add(metricsScrollPane, BorderLayout.CENTER);
+		add(presentationPanel, BorderLayout.CENTER);
 		add(selectionScrollPane, BorderLayout.SOUTH);
-
 	}
 
 	/**
-	 * Modifies presentation panel size when window is resized
-	 * 
-	 * @param windowDimension preferred size of window
-	 */
-	public void setPresentationSize(Dimension windowDimension) {
-		Dimension ps = presentationPanel.getPreferredSize();
-		presentationPanel
-				.setPreferredSize(new Dimension(windowDimension.width, ps.width * ps.height / windowDimension.width));
-		revalidate();
-	}
-
-	/**
-	 * Add a metrics panel
+	 * Add a sub-panel
 	 * 
 	 * @param panel the panel to be added
 	 * @param name  the name of the panel
 	 */
-	public void addMetricsPanel(JPanel panel, String name) {
-		presentationPanel.add(panel, name.toLowerCase());
+	public void addSubpanel(JPanel panel, String name) {
+		JScrollPane metricsScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		metricsScrollPane.setViewportView(panel);
+		presentationPanel.add(metricsScrollPane, name.toLowerCase());
 		addMetricsPanelIcon(name);
 	}
 
@@ -117,7 +99,6 @@ public class ReporterOverviewPanel extends JPanel {
 			public void mouseClicked(MouseEvent arg0) {
 				CardLayout cl = (CardLayout) presentationPanel.getLayout();
 				cl.show(presentationPanel, label.getText().toLowerCase());
-				revalidate();
 			}
 
 			@Override
@@ -135,4 +116,12 @@ public class ReporterOverviewPanel extends JPanel {
 		selectionPanel.add(Box.createHorizontalGlue());
 	}
 
+	/**
+	 * Remove all sub-panels. Must be called before every simulation in order to
+	 * avoid panel duplicates
+	 */
+	public void reset() {
+		presentationPanel.removeAll();
+		selectionPanel.removeAll();
+	}
 }

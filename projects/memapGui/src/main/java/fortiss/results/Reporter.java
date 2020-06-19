@@ -44,17 +44,22 @@ public class Reporter {
 		getOverviewResult().load();
 
 		ReporterOverviewPanel overviewPanel = PlanningTool.getReporterOverviewPanel();
+		overviewPanel.reset();
 
+		// Add one summary panel
+		SummaryPanel summaryPanel = new SummaryPanel();
+		overviewPanel.addSubpanel(summaryPanel, "Summary");
+		
 		// Add one general metrics panel
-		MetricsPanel generalMetricsPanel = new MetricsPanel();
-		metricsPanelMap.put("Global optimization", generalMetricsPanel);
-		overviewPanel.addMetricsPanel(metricsPanelMap.get("Global optimization"), "Global optimization");
+		MetricsPanel globalMetricsPanel = new MetricsPanel();
+		metricsPanelMap.put("Global optimization", globalMetricsPanel);
+		overviewPanel.addSubpanel(metricsPanelMap.get("Global optimization"), "Optimization with MEMAP");
 
 		// Add one metrics panel per building
 		for (Entry<String, Building> entry : DesignerPanel.buildings.entrySet()) {
 			Building building = entry.getValue();
 			metricsPanelMap.put(building.getName(), new MetricsPanel());
-			overviewPanel.addMetricsPanel(metricsPanelMap.get(building.getName()), building.getName());
+			overviewPanel.addSubpanel(metricsPanelMap.get(building.getName()), "Optimization without MEMAP - " + building.getName());
 		}
 		
 		MetricsGenerator metricsGenerator;
@@ -64,7 +69,7 @@ public class Reporter {
 			metricsGenerator = new MILPMetricsGenerator(getDetailedResult(), getOverviewResult());
 		} 
 		
-		metricsGenerator.populateMetricsPanels(metricsPanelMap);
+		metricsGenerator.populateMetricsPanels(summaryPanel, metricsPanelMap);
 	}
 
 	/**
