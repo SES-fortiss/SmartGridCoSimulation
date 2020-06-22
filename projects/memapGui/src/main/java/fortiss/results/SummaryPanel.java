@@ -1,15 +1,21 @@
 package fortiss.results;
 
+import java.awt.BorderLayout;
+import java.util.HashMap;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
+import fortiss.gui.style.Colors;
+import fortiss.gui.style.Fonts;
+import fortiss.results.widgets.ComponentUsageWidged;
 import fortiss.results.widgets.ParameterWidget;
 import fortiss.results.widgets.TextBoxWidget;
 import fortiss.results.widgets.TitleWidget;
-
-import java.awt.BorderLayout;
-import javax.swing.JSplitPane;
 
 public class SummaryPanel extends JPanel {
 
@@ -31,15 +37,17 @@ public class SummaryPanel extends JPanel {
 		globalOptimizationPanel.setAlignmentX(CENTER_ALIGNMENT);
 		globalOptimizationPanel.setAlignmentY(CENTER_ALIGNMENT);
 		globalOptimizationPanel.setLayout(new BoxLayout(globalOptimizationPanel, BoxLayout.Y_AXIS));
-		globalOptimizationPanel.add(Box.createVerticalStrut(100));
-		globalOptimizationPanel.add(new TitleWidget("With MEMAP"));
+		globalOptimizationPanel.add(Box.createVerticalStrut(50));
+		globalOptimizationPanel.setBorder(new TitledBorder(new EtchedBorder(), "Results with MEMAP", TitledBorder.RIGHT,
+		TitledBorder.TOP, Fonts.getOswald(26), Colors.accent2));
 		
 		perBuildingOptimizationPanel = new JPanel();
 		perBuildingOptimizationPanel.setAlignmentX(CENTER_ALIGNMENT);
 		perBuildingOptimizationPanel.setAlignmentY(CENTER_ALIGNMENT);
 		perBuildingOptimizationPanel.setLayout(new BoxLayout(perBuildingOptimizationPanel, BoxLayout.Y_AXIS));
-		perBuildingOptimizationPanel.add(Box.createVerticalStrut(100));
-		perBuildingOptimizationPanel.add(new TitleWidget("Without MEMAP"));
+		perBuildingOptimizationPanel.add(Box.createVerticalStrut(50));
+		perBuildingOptimizationPanel.setBorder(new TitledBorder(new EtchedBorder(), "Results without MEMAP", TitledBorder.RIGHT,
+				TitledBorder.TOP, Fonts.getOswald(26), Colors.accent2));
 		
 		JSplitPane comparisonPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, globalOptimizationPanel, perBuildingOptimizationPanel);
 		comparisonPane.setDividerSize(0);
@@ -76,6 +84,21 @@ public class SummaryPanel extends JPanel {
 			break;
 		case PERFORMANCE:
 			performancePanel.add(textBoxWidget);
+			break;
+		default:
+			throw new IllegalArgumentException("Summary panel: " + context + " is not a valid context");
+		}	
+	}
+	
+	public void addComponentUsageWidget(String context, String title, HashMap<String, Number> energyProductionBySource, int places) {
+		ComponentUsageWidged componentUsageWidget = new ComponentUsageWidged(title, energyProductionBySource, places);
+		
+		switch (context) {
+		case GLOBAL_OPTIMIZATION:
+			globalOptimizationPanel.add(componentUsageWidget);
+			break;
+		case PER_BUILDING_OPTIMIZATION:
+			perBuildingOptimizationPanel.add(componentUsageWidget);
 			break;
 		default:
 			throw new IllegalArgumentException("Summary panel: " + context + " is not a valid context");

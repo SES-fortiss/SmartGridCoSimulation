@@ -60,20 +60,20 @@ public class LPMetricsGenerator implements MetricsGenerator {
 		double savedCost = perBuildingOptimizationCost - globalOptimizationCost;
 		String costQualifier = (savedCost > 0) ? "reduction" : "enlargement";
 		summaryPanel.addTextWidget(SummaryPanel.PER_BUILDING_OPTIMIZATION, "Cost without MEMAP",
-				Double.toString(perBuildingOptimizationCost), "EUR", null);
+				new DecimalFormat("#.0##").format(perBuildingOptimizationCost), "EUR", null);
 		summaryPanel.addTextWidget(SummaryPanel.GLOBAL_OPTIMIZATION, "Cost with MEMAP",
-				Double.toString(globalOptimizationCost), "EUR", null);
-		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "Cost " + costQualifier, Double.toString(savedCost), "EUR",
-				null);
+				new DecimalFormat("#.0##").format(globalOptimizationCost), "EUR", null);
+		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "Cost " + costQualifier,
+				new DecimalFormat("#.0##").format(savedCost), "EUR", null);
 
 		double savedCo2 = perBuildingOptimizationCo2Emissions - globalOptimizationCo2Emissions;
 		String co2Qualifier = (savedCo2 > 0) ? "reduction" : "enlargement";
 		summaryPanel.addTextWidget(SummaryPanel.PER_BUILDING_OPTIMIZATION, "CO2 Emissions without MEMAP ",
-				Double.toString(perBuildingOptimizationCo2Emissions), "kg CO2/kWh", null);
+				new DecimalFormat("#.0##").format(perBuildingOptimizationCo2Emissions), "kg CO2/kWh", null);
 		summaryPanel.addTextWidget(SummaryPanel.GLOBAL_OPTIMIZATION, "CO2 Emissions with MEMAP",
-				Double.toString(globalOptimizationCo2Emissions), "kg CO2/kWh", null);
-		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "CO2 Emissions " + co2Qualifier, Double.toString(savedCo2),
-				"kg CO2/kWh", null);
+				new DecimalFormat("#.0##").format(globalOptimizationCo2Emissions), "kg CO2/kWh", null);
+		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "CO2 Emissions " + co2Qualifier,
+				new DecimalFormat("#.0##").format(savedCo2), "kg CO2/kWh", null);
 
 		// Add specific metrics
 		for (Entry<String, MetricsPanel> context : metricsPanelMap.entrySet()) {
@@ -82,9 +82,9 @@ public class LPMetricsGenerator implements MetricsGenerator {
 
 			// Add optimization-specific metrics
 			if (contextName.equals("Global optimization")) {
-				populateGlobalOptimizationMetrics(contextName, contextPanel);
+				populateGlobalOptimizationMetrics(summaryPanel, contextName, contextPanel);
 			} else {
-				populatePerBuildingOptimizationMetrics(contextName, contextPanel);
+				populatePerBuildingOptimizationMetrics(summaryPanel, contextName, contextPanel);
 			}
 		}
 	}
@@ -93,10 +93,12 @@ public class LPMetricsGenerator implements MetricsGenerator {
 	 * Populates the global optimization panel with metrics. These include building
 	 * metrics within the global optimization context
 	 * 
+	 * @param summaryPanel
 	 * @param contextName  the name of the metrics panel of the global optimization
 	 * @param contextPanel the metrics panel of the global optimization
 	 */
-	private void populateGlobalOptimizationMetrics(String contextName, MetricsPanel contextPanel) {
+	private void populateGlobalOptimizationMetrics(SummaryPanel summaryPanel, String contextName,
+			MetricsPanel contextPanel) {
 
 		// Time steps
 		ArrayList<Double> time = detailedResult.getDataSeries(contextName, "Time step");
@@ -128,10 +130,8 @@ public class LPMetricsGenerator implements MetricsGenerator {
 			// Energy discharge by storage
 			for (Entry<String, ArrayList<Double>> componentEntry : heatDischargedBySourceInTime.entrySet()) {
 				String componentName = componentEntry.getKey();
-				double heat = sum("G - heat discharge by storage " + componentName + " ",
-						heatDischargedBySourceInTime.get(componentName));
-				double electricity = sum("G - elec discharge by storage" + componentName + " ",
-						electricityDischargedBySourceInTime.get(componentName));
+				double heat = sum(heatDischargedBySourceInTime.get(componentName));
+				double electricity = sum(electricityDischargedBySourceInTime.get(componentName));
 				heatDischargeByStorage.put(componentEntry.getKey(), heat);
 				electricityDischargeByStorage.put(componentEntry.getKey(), electricity);
 			}
@@ -139,9 +139,8 @@ public class LPMetricsGenerator implements MetricsGenerator {
 			// Energy production by source
 			for (Entry<String, ArrayList<Double>> componentEntry : heatProductionBySourceInTime.entrySet()) {
 				String componentName = componentEntry.getKey();
-				double heat = sum("G - heat production by source", heatProductionBySourceInTime.get(componentName));
-				double electricity = sum("G - elec production by source",
-						electricityProductionBySourceInTime.get(componentName));
+				double heat = sum(heatProductionBySourceInTime.get(componentName));
+				double electricity = sum(electricityProductionBySourceInTime.get(componentName));
 				heatProductionBySource.put(componentEntry.getKey(), heat);
 				electricityProductionBySource.put(componentEntry.getKey(), electricity);
 				energyProductionBySource.put(componentEntry.getKey(), heat + electricity);
@@ -168,9 +167,8 @@ public class LPMetricsGenerator implements MetricsGenerator {
 
 			heatProductionByBuildingInTime.put(building.getName(), heatProductionInTime);
 			electricityProductionByBuildingInTime.put(building.getName(), electricityProductionInTime);
-			heatProductionByBuilding.put(building.getName(), sum("G - heat by buiding ", heatProductionInTime));
-			electricityProductionByBuilding.put(building.getName(),
-					sum("G - elec by building", electricityProductionInTime));
+			heatProductionByBuilding.put(building.getName(), sum(heatProductionInTime));
+			electricityProductionByBuilding.put(building.getName(), sum(electricityProductionInTime));
 		}
 
 		// Total energy produced in time
@@ -201,8 +199,8 @@ public class LPMetricsGenerator implements MetricsGenerator {
 		double totalHeatDemand = heatDemandInTime.stream().mapToDouble(Double::doubleValue).sum();
 
 		// Total energy produced
-		double totalHeatProduced = sum("G - TotalHeat", totalHeatProductionInTime);
-		double totalElectricityProduced = sum("G - TotalElec", totalElectricityProductionInTime);
+		double totalHeatProduced = sum(totalHeatProductionInTime);
+		double totalElectricityProduced = sum(totalElectricityProductionInTime);
 
 		// Total cost of entry
 		ArrayList<Double> cost = detailedResult.getDataSeries(contextName, "Total costs [EUR]");
@@ -282,18 +280,22 @@ public class LPMetricsGenerator implements MetricsGenerator {
 						new ArrayList<Number>(heatProductionByBuilding.values()), null, null));
 		contextPanel.addBarPlotWidget("Energy produced by type", "Buildings", "Energy [kWh]", 400, 400,
 				energyByBuilding, "* Storages are not considered energy producers");
+
+		summaryPanel.addComponentUsageWidget(SummaryPanel.GLOBAL_OPTIMIZATION, "MEMAP", energyProductionBySource, 3);
 	}
 
 	/**
 	 * Populates a building panel with metrics. This is in the context of per
 	 * building optimization
 	 * 
+	 * @param summaryPanel
 	 * @param entryName    the context: "Global optimization" or the name of the
 	 *                     building
 	 * @param buildingName the name of the metrics panel of a building
 	 * @param entryPanel   the metrics panel of a building
 	 */
-	private void populatePerBuildingOptimizationMetrics(String contextName, MetricsPanel contextPanel) {
+	private void populatePerBuildingOptimizationMetrics(SummaryPanel summaryPanel, String contextName,
+			MetricsPanel contextPanel) {
 
 		// Time steps
 		ArrayList<Double> time = detailedResult.getDataSeries(contextName, "Time step");
@@ -323,9 +325,8 @@ public class LPMetricsGenerator implements MetricsGenerator {
 			// Energy discharge by storage
 			for (Entry<String, ArrayList<Double>> componentEntry : heatDischargedBySourceInTime.entrySet()) {
 				String componentName = componentEntry.getKey();
-				double heat = sum("B - total H by storage", heatDischargedBySourceInTime.get(componentName));
-				double electricity = sum("B - total elec by storage",
-						electricityDischargedBySourceInTime.get(componentName));
+				double heat = sum(heatDischargedBySourceInTime.get(componentName));
+				double electricity = sum(electricityDischargedBySourceInTime.get(componentName));
 				heatDischargeByStorage.put(componentEntry.getKey(), heat);
 				electricityDischargeByStorage.put(componentEntry.getKey(), electricity);
 			}
@@ -333,9 +334,8 @@ public class LPMetricsGenerator implements MetricsGenerator {
 			// Energy production by source
 			for (Entry<String, ArrayList<Double>> componentEntry : heatProductionBySourceInTime.entrySet()) {
 				String componentName = componentEntry.getKey();
-				double heat = sum("B -Total heat by source", heatProductionBySourceInTime.get(componentName));
-				double electricity = sum("B- Total elec by source",
-						electricityProductionBySourceInTime.get(componentName));
+				double heat = sum(heatProductionBySourceInTime.get(componentName));
+				double electricity = sum(electricityProductionBySourceInTime.get(componentName));
 				heatProductionBySource.put(componentEntry.getKey(), heat);
 				electricityProductionBySource.put(componentEntry.getKey(), electricity);
 				energyProductionBySource.put(componentEntry.getKey(), heat + electricity);
@@ -369,8 +369,8 @@ public class LPMetricsGenerator implements MetricsGenerator {
 			double totalHeatDemand = heatDemandInTime.stream().mapToDouble(Double::doubleValue).sum();
 
 			// Total energy produced
-			double totalHeatProduced = sum("B - Total heat", totalHeatProductionInTime);
-			double totalElectricityProduced = sum("B - Total storage", totalElectricityProductionInTime);
+			double totalHeatProduced = sum(totalHeatProductionInTime);
+			double totalElectricityProduced = sum(totalElectricityProductionInTime);
 
 			// Total cost of entry
 			ArrayList<Double> cost = detailedResult.getDataSeries(contextName, "Total costs [EUR]");
@@ -442,8 +442,10 @@ public class LPMetricsGenerator implements MetricsGenerator {
 			sizeFactor = electricityProductionBySource.size() - 2;
 			contextPanel.addPiePlotWidget("Electricity produced by source", 400, sizeFactor * 20 + 400,
 					electricityProductionBySource, "* Storages are not considered energy producers");
-		}
 
+			summaryPanel.addComponentUsageWidget(SummaryPanel.PER_BUILDING_OPTIMIZATION, contextName,
+					energyProductionBySource, 1);
+		}
 	}
 
 	/**
@@ -516,11 +518,7 @@ public class LPMetricsGenerator implements MetricsGenerator {
 	 * @returns the sum of the elements data
 	 * @param data an ArrayList of Double elements
 	 */
-	private double sum(String dataName, ArrayList<Double> data) {
-		if (data == null) {
-			throw new IllegalArgumentException(
-					"Reporter: The sum can not be calculated because data " + dataName + "is null");
-		}
+	private double sum(ArrayList<Double> data) {
 		return data.stream().mapToDouble(Double::doubleValue).sum();
 	}
 

@@ -60,20 +60,20 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 		double savedCost = perBuildingOptimizationCost - globalOptimizationCost;
 		String costQualifier = (savedCost > 0) ? "reduction" : "enlargement";
 		summaryPanel.addTextWidget(SummaryPanel.PER_BUILDING_OPTIMIZATION, "Cost without MEMAP",
-				Double.toString(perBuildingOptimizationCost), "EUR", null);
+				new DecimalFormat("#.0##").format(perBuildingOptimizationCost), "EUR", null);
 		summaryPanel.addTextWidget(SummaryPanel.GLOBAL_OPTIMIZATION, "Cost with MEMAP",
-				Double.toString(globalOptimizationCost), "EUR", null);
-		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "Cost " + costQualifier, Double.toString(savedCost), "EUR",
-				null);
+				new DecimalFormat("#.0##").format(globalOptimizationCost), "EUR", null);
+		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "Cost " + costQualifier,
+				new DecimalFormat("#.0##").format(savedCost), "EUR", null);
 
 		double savedCo2 = perBuildingOptimizationCo2Emissions - globalOptimizationCo2Emissions;
 		String co2Qualifier = (savedCo2 > 0) ? "reduction" : "enlargement";
 		summaryPanel.addTextWidget(SummaryPanel.PER_BUILDING_OPTIMIZATION, "CO2 Emissions without MEMAP ",
-				Double.toString(perBuildingOptimizationCo2Emissions), "kg CO2/kWh", null);
+				new DecimalFormat("#.0##").format(perBuildingOptimizationCo2Emissions), "kg CO2/kWh", null);
 		summaryPanel.addTextWidget(SummaryPanel.GLOBAL_OPTIMIZATION, "CO2 Emissions with MEMAP",
-				Double.toString(globalOptimizationCo2Emissions), "kg CO2/kWh", null);
-		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "CO2 Emissions " + co2Qualifier, Double.toString(savedCo2),
-				"kg CO2/kWh", null);
+				new DecimalFormat("#.0##").format(globalOptimizationCo2Emissions), "kg CO2/kWh", null);
+		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "CO2 Emissions " + co2Qualifier,
+				new DecimalFormat("#.0##").format(savedCo2), "kg CO2/kWh", null);
 
 		// Add specific metrics
 		for (Entry<String, MetricsPanel> context : metricsPanelMap.entrySet()) {
@@ -82,10 +82,10 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 
 			// Add optimization-specific metrics
 			if (contextName.equals("Global optimization")) {
-				populateGlobalOptimizationMetrics(contextName, contextPanel);
+				populateGlobalOptimizationMetrics(summaryPanel, contextName, contextPanel);
 			}
 			if (!contextName.equals("Summary")) {
-				populatePerBuildingOptimizationMetrics(contextName, contextPanel);
+				populatePerBuildingOptimizationMetrics(summaryPanel, contextName, contextPanel);
 			}
 		}
 	}
@@ -97,7 +97,7 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 	 * @param contextName  the name of the metrics panel of the global optimization
 	 * @param contextPanel the metrics panel of the global optimization
 	 */
-	private void populateGlobalOptimizationMetrics(String contextName, MetricsPanel contextPanel) {
+	private void populateGlobalOptimizationMetrics(SummaryPanel summaryPanel, String contextName, MetricsPanel contextPanel) {
 
 		// Time steps
 		ArrayList<Double> time = detailedResult.getDataSeries(contextName, "Time step");
@@ -278,6 +278,8 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 						new ArrayList<Number>(heatProductionByBuilding.values()), null, null));
 		contextPanel.addBarPlotWidget("Energy produced by type", "Buildings", "Energy [kWh]", 400, 400,
 				energyByBuilding, "* Storages are not considered energy producers");
+		
+		summaryPanel.addComponentUsageWidget(SummaryPanel.GLOBAL_OPTIMIZATION, "MEMAP", energyProductionBySource, 3);
 	}
 
 	/**
@@ -289,7 +291,7 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 	 * @param buildingName the name of the metrics panel of a building
 	 * @param entryPanel   the metrics panel of a building
 	 */
-	private void populatePerBuildingOptimizationMetrics(String contextName, MetricsPanel contextPanel) {
+	private void populatePerBuildingOptimizationMetrics(SummaryPanel summaryPanel, String contextName, MetricsPanel contextPanel) {
 
 		// Time steps
 		ArrayList<Double> time = detailedResult.getDataSeries(contextName, "Time step");
@@ -436,6 +438,9 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 			sizeFactor = electricityProductionBySource.size() - 2;
 			contextPanel.addPiePlotWidget("Electricity produced by source", 400, sizeFactor * 20 + 400,
 					electricityProductionBySource, "* Storages are not considered energy producers");
+			
+			summaryPanel.addComponentUsageWidget(SummaryPanel.PER_BUILDING_OPTIMIZATION, contextName,
+					energyProductionBySource, 1);
 		}
 
 	}
