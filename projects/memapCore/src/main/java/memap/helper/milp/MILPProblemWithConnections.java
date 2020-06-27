@@ -26,11 +26,17 @@ import memap.messages.planning.VolatileProducerMessage;
  */
 public class MILPProblemWithConnections extends MILPProblem {
 	
-	HashMap<BuildingMessage, Integer> mapBuildingMessageToIndex = new HashMap<>();
-	HashMap<ConnectionMessage, Integer> mapConnectionToIndex = new HashMap<>();
+	// TODO: Check removed
+	//HashMap<BuildingMessage, Integer> mapBuildingMessageToIndex = new HashMap<>();
+	HashMap<BuildingMessage, Integer> mapBuildingMessageToIndex;
+	//HashMap<ConnectionMessage, Integer> mapConnectionToIndex = new HashMap<>();
+	HashMap<ConnectionMessage, Integer> mapConnectionToIndex;
 	
 	public MILPProblemWithConnections(TopologyController topologyController, int currentTimeStep, int nStepsMPC, int nCols) {
 		super(topologyController, currentTimeStep, nStepsMPC, nCols);
+		// TODO: Check added
+		mapBuildingMessageToIndex = new HashMap<BuildingMessage, Integer>();
+		mapConnectionToIndex = new HashMap<ConnectionMessage, Integer>();
 	}
 	
 	public LpSolve createNames(LpSolve problem, ArrayList<BuildingMessage> buildingMessages) throws LpSolveException {		

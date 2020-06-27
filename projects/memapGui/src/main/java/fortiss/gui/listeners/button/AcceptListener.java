@@ -5,7 +5,7 @@ import java.awt.event.MouseEvent;
 
 import fortiss.gui.listeners.helper.FileManager;
 import fortiss.simulation.SimulationSetup;
-import fortiss.simulation.listeners.helper.ProgressManager;
+import fortiss.simulation.helper.ProgressManager;
 
 public class AcceptListener extends MouseAdapter {
 

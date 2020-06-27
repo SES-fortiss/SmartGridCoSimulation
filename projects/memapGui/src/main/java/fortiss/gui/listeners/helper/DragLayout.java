@@ -9,6 +9,8 @@ import java.awt.Point;
 
 import javax.swing.JLabel;
 
+import fortiss.simulation.helper.PositionManager;
+
 /**
  * 
  * This class is a modification of {@code DragLayout} by @author Rob Camick
@@ -201,7 +203,8 @@ public class DragLayout implements LayoutManager {
 					Point p = component.getLocation();
 					Dimension d = getActualSize(component);
 					component.setBounds(p.x + x, p.y + y, d.width, d.height);
-					PositionManager.updateBuildingPosition(((JLabel) component).getText(), (JLabel) component);
+					PositionManager pm = PositionManager.getInstance();
+					pm.updateBuildingPosition(((JLabel) component).getText(), (JLabel) component);
 				}
 			}
 		}

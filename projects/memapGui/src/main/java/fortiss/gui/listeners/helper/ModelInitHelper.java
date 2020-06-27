@@ -1,36 +1,45 @@
 package fortiss.gui.listeners.helper;
 
+import java.awt.geom.Point2D;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 
 import fortiss.components.Building;
+import fortiss.components.Connection;
 import fortiss.components.Demand;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.action.ResetListener;
+import fortiss.serialization.Point2DTypeAdapter;
 import fortiss.simulation.Parameters;
 import fortiss.simulation.PlanningTool;
+import fortiss.simulation.helper.ConnectionManager;
+import fortiss.simulation.helper.PositionManager;
 
 public class ModelInitHelper {
 
 	/**
 	 * Load a topology
 	 * 
-	 * @param file a configuration file
+	 * @param configurationFile a configuration file
 	 */
-	public static void loadFromFile(File file) {
+	public static void loadFromFile(File configurationFile) {
 
-		if (file != null) {
+		if (configurationFile != null) {
 			try {
 
 				DesignerPanel.parameterPanel.pars.getDescriptorFiles().clear();
@@ -40,7 +49,7 @@ public class ModelInitHelper {
 				r.mouseClicked(null);
 
 				Gson gson = new Gson(); // Gson parser
-				JsonReader reader = new JsonReader(new FileReader(file));
+				JsonReader reader = new JsonReader(new FileReader(configurationFile));
 
 				DesignerPanel.buildings = new TreeMap<String, Building>();
 				try {
@@ -83,9 +92,10 @@ public class ModelInitHelper {
 				Building building = DesignerPanel.buildings.get(DesignerPanel.selectedBuilding);
 				up.updateEmsData(building.getName(), Integer.toString(building.getPort()));
 
-				PlanningTool.getPlanningToolWindow().setTitle("MEMAP - " + file.getAbsolutePath() + " - DesignerPanel");
-				DesignerPanel.parameterPanel.pars.setLastSavedFile(file.getAbsolutePath());
-				System.out.println(">> Loaded file: " + file.getAbsolutePath());
+				PlanningTool.getPlanningToolWindow()
+						.setTitle("MEMAP - " + configurationFile.getAbsolutePath() + " - DesignerPanel");
+				DesignerPanel.parameterPanel.pars.setLastSavedFile(configurationFile.getAbsolutePath());
+				System.out.println(">> Loaded file: " + configurationFile.getAbsolutePath());
 
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
@@ -110,4 +120,38 @@ public class ModelInitHelper {
 		up.updateParameterData(par);
 	}
 
+	/**
+	 * Read the connections between buildings from the connections file and update
+	 * the list in {@link ConnectionManager}. Connections must be read after
+	 * positions to paint lines properly. Otherwise, connections must be updated
+	 * using {@link ConnectionManager#updateLines()}.
+	 */
+	public static void readConnections() {
+		FileManager fm = new FileManager();
+		BufferedReader br = fm.readConnectionFile();
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		ArrayList<Connection> connectionList = gson.fromJson(br, new TypeToken<ArrayList<Connection>>() {
+		}.getType());
+
+		ConnectionManager cm = ConnectionManager.getInstance();
+		cm.setConnectionList(connectionList);
+	}
+
+	/**
+	 * Read the building positions from the connections file, and update the list in
+	 * {@link PositionManager}.
+	 */
+	public static void readPositions() {
+		FileManager fm = new FileManager();
+		BufferedReader br = fm.readPositionsFile();
+		Type pointListType = new TypeToken<TreeMap<String, Point2D>>() {
+		}.getType();
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Point2D.class, new Point2DTypeAdapter());
+		Gson gson = gsonBuilder.enableComplexMapKeySerialization().excludeFieldsWithoutExposeAnnotation().create();
+		TreeMap<String, Point2D> positionsList = gson.fromJson(br, pointListType);
+
+		PositionManager pm = PositionManager.getInstance();
+		pm.setPositions(positionsList);
+	}
 }

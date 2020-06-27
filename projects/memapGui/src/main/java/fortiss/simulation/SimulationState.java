@@ -1,6 +1,6 @@
 package fortiss.simulation;
 
-import fortiss.simulation.listeners.helper.ProgressManager;
+import fortiss.simulation.helper.ProgressManager;
 
 /** A stage in the simulation */
 public abstract class SimulationState {

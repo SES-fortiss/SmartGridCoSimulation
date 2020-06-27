@@ -8,9 +8,11 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import fortiss.gui.DesignerPanel;
-import fortiss.gui.listeners.helper.PositionManager;
+import fortiss.simulation.helper.PositionManager;
 
 public class PositionListener extends MouseAdapter {
+
+	private PositionManager pm = PositionManager.getInstance();
 
 	/**
 	 * Sets cursor to <code> Cursor.HAND_CURSOR</code> if the left mouse button is
@@ -33,7 +35,7 @@ public class PositionListener extends MouseAdapter {
 			JLabel icon = (JLabel) e.getComponent();
 			icon.setLocation(icon.getX() + e.getX() - icon.getWidth() / 2,
 					icon.getY() + e.getY() - icon.getHeight() / 2);
-			PositionManager.updateBuildingPosition(icon.getText(), icon);
+			pm.updateBuildingPosition(icon.getText(), icon);
 		}
 	}
 
@@ -48,8 +50,8 @@ public class PositionListener extends MouseAdapter {
 			DesignerPanel.pl_ems.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
 			JLabel icon = (JLabel) e.getComponent();
-			if (!PositionManager.getVisibleArea().contains(icon.getX(), icon.getY())) {
-				PositionManager.fixPosition(icon.getText(), icon);
+			if (!pm.getVisibleArea().contains(icon.getX(), icon.getY())) {
+				pm.fixPosition(icon.getText(), icon);
 			}
 		}
 	}

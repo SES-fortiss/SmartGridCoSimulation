@@ -10,7 +10,7 @@ import fortiss.media.Icon;
 import fortiss.results.Reporter;
 import fortiss.results.ReporterOverviewPanel;
 import fortiss.results.ReporterPanel;
-import fortiss.simulation.listeners.helper.ProgressManager;
+import fortiss.simulation.helper.ProgressManager;
 import memap.controller.GuiController;
 
 /** Entry point for the application */

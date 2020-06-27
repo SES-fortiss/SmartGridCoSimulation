@@ -7,19 +7,19 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JTextField;
 
+import fortiss.components.Connection;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.InsertionVerifier;
+import fortiss.simulation.helper.ConnectionManager;
 
-/**
- * Listener for the number of simulation steps
- */
-public class LengthListener extends KeyAdapter implements FocusListener {
+public class ConnectionLossesListener extends KeyAdapter implements FocusListener {
 
 	private static boolean check;
 	private static boolean valid;
 	private static JTextField source;
 	private static String input;
-
+	private static Connection connection;
+	
 	/**
 	 * Initialize variables when the text field gets the focus.
 	 */
@@ -29,19 +29,21 @@ public class LengthListener extends KeyAdapter implements FocusListener {
 		valid = true;
 
 		source = (JTextField) e.getSource();
+		
+		ConnectionManager cm = ConnectionManager.getInstance();
+		int connectionHashCode = Integer.parseInt(source.getName());
+		
+		connection = cm.getConnection(connectionHashCode);
 	}
 
-	/**
-	 * Detects and corrects errors when the text field lose focus.
-	 */
 	@Override
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
-			String currentVal = Integer.toString(DesignerPanel.parameterPanel.pars.getLength());
+			String currentVal = Double.toString(connection.getLosses());
 			source.setText(currentVal);
 		}
 	}
-
+	
 	/**
 	 * Verifies if the input is a non-empty value. In that case, @param valid is set
 	 * to <code>true</code>, and the value is saved to the corresponding object.
@@ -56,7 +58,7 @@ public class LengthListener extends KeyAdapter implements FocusListener {
 				valid = false;
 			} else {
 				valid = true;
-				DesignerPanel.parameterPanel.pars.setLength(Integer.parseUnsignedInt(input));
+				connection.setLosses(Double.valueOf(input));
 			}
 		}
 	}
@@ -73,7 +75,7 @@ public class LengthListener extends KeyAdapter implements FocusListener {
 			check = true;
 		} else {
 			check = false;
-			DesignerPanel.pl_action.getToolkit().beep();
+			DesignerPanel.pl_ems.getToolkit().beep();
 			e.consume();
 		}
 	}

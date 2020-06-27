@@ -2,7 +2,7 @@ package fortiss.simulation;
 
 import javax.swing.SwingUtilities;
 
-import fortiss.simulation.listeners.helper.ProgressManager;
+import fortiss.simulation.helper.ProgressManager;
 import memap.main.SimulationProgress;
 
 public class SimulationDone extends SimulationState {

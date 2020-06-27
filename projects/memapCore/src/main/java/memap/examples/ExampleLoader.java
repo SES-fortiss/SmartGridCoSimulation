@@ -34,7 +34,6 @@ import memap.messages.extension.NetworkType;
 public abstract class ExampleLoader {
 	public static TopologyController OpcUaExample() {
 		
-//		EnergyPrices.getInstance().init("ELECTRICITYPRICEEXAMPLE");
 		TopologyController topologyController = new TopologyController("MemapExample", OptHierarchy.MEMAP,
 				Optimizer.MILP, OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.RESULTS_ONLY);
 		TopologyConfig.getInstance().init(5, 96, 7, 4880, 0);
@@ -46,7 +45,7 @@ public abstract class ExampleLoader {
 			JsonObject jsonNodes1 = (JsonObject) Jsoner.deserialize(nodes1);
 			BuildingController sampleBuilding1 = new OpcUaBuildingController(topologyController, jsonEndpoint1,
 					jsonNodes1);
-			topologyController.attach(sampleBuilding1);
+			topologyController.attach(sampleBuilding1.getName(), sampleBuilding1);
 
 		} catch (JsonException e1) {
 			System.err.println("WARNING: Failed to read JSON config files. Building has not been initalised.");
@@ -67,7 +66,7 @@ public abstract class ExampleLoader {
 			JsonObject jsonNodes2 = (JsonObject) Jsoner.deserialize(nodes2);
 			BuildingController sampleBuilding2 = new OpcUaBuildingController(topologyController, jsonEndpoint2,
 					jsonNodes2);
-			topologyController.attach(sampleBuilding2);
+			topologyController.attach(sampleBuilding2.getName(), sampleBuilding2);
 		} catch (JsonException e1) {
 			System.err.println("WARNING: Failed to read JSON config files. Building has not been initalised.");
 			e1.printStackTrace();
@@ -113,7 +112,7 @@ public abstract class ExampleLoader {
 		building2.attach(battery2);
 		building2.attach(consumer2);
 		// TODO: Test connections with more buildings
-		Connection connection = new Connection(building1.getName(), 100, 0.01, 1000);
+		Connection connection = new Connection(building2.getName(), building1.getName(), 100, 0.01, 1000);
 		building2.attach(connection);
 
 		BuildingController building3 = new CSVBuildingController("Building3");
@@ -145,11 +144,11 @@ public abstract class ExampleLoader {
 		building5.attach(chp5);
 		building5.attach(consumer5);
 
-		topologyController.attach(building1);
-		topologyController.attach(building2);
-		topologyController.attach(building3);
-		topologyController.attach(building4);
-		topologyController.attach(building5);
+		topologyController.attach(building1.getName(), building1);
+		topologyController.attach(building2.getName(), building2);
+		topologyController.attach(building3.getName(), building3);
+		topologyController.attach(building4.getName(), building4);
+		topologyController.attach(building5.getName(), building5);
 
 		return topologyController;
 	}

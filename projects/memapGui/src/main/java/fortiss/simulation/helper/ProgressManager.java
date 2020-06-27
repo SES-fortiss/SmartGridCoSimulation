@@ -1,4 +1,4 @@
-package fortiss.simulation.listeners.helper;
+package fortiss.simulation.helper;
 
 import fortiss.simulation.SimulationInitialize;
 import fortiss.simulation.SimulationState;
@@ -30,6 +30,9 @@ public class ProgressManager {
 		currentState.execute(this);
 	}
 
+	/**
+	 * @return ProgressManager instance
+	 */
 	public static ProgressManager getInstance() {
 		return pm;
 	}

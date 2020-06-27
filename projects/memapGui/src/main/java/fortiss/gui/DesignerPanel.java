@@ -173,6 +173,9 @@ public class DesignerPanel extends JPanel {
 		if (!workingFile.equals("")) {
 			ModelInitHelper.loadFromFile(new File(workingFile));
 			ModelInitHelper.initParameters(par);
+			// Connections must be read or updated after positions!
+			ModelInitHelper.readPositions();
+			ModelInitHelper.readConnections();
 		} else {
 			System.out.println("lastWorkingFile: " + workingFile);
 		}

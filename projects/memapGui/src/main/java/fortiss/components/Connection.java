@@ -1,14 +1,29 @@
-package fortiss.gui.listeners.helper;
+package fortiss.components;
 
+import java.awt.Color;
 import java.awt.geom.Line2D;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.JLabel;
+
+import com.google.gson.annotations.Expose;
+
+import fortiss.simulation.helper.PositionManager;
 
 /**
  * Represents the connection between two labels and its characteristics.
  */
 public class Connection {
 
+	/** Name of the node A. For serialization purposes */
+	@Expose
+	private String nameNodeA;
+	/** Name of the node B. For serialization purposes */
+	@Expose
+	private String nameNodeB;
+
+	/** A color to draw the line (ln) */
+	private Color color;
 	/** Reference to an existing building label */
 	private JLabel nodeA;
 	/** Reference to an existing building label */
@@ -20,8 +35,10 @@ public class Connection {
 	/** Line between nodeA and nodeB */
 	private Line2D ln;
 	/** Length of connection */
+	@Expose
 	private double length;
 	/** Looses of connection */
+	@Expose
 	private double losses;
 
 	/**
@@ -32,7 +49,10 @@ public class Connection {
 	 */
 	public Connection(JLabel nodeA, JLabel nodeB) {
 		setNodeA(nodeA);
+		setNameNodeA(nodeA.getText());
 		setNodeB(nodeB);
+		setNameNodeB(nodeB.getText());
+		setColor();
 		setLn();
 		setLength(DEFAULT_LENGTH);
 		setLosses(DEFAULT_LOSSES);
@@ -122,20 +142,71 @@ public class Connection {
 
 	/**
 	 * Creates a line between the position of nodeA and the position of nodeB and
-	 * sets {@link Connection#ln} to it.
+	 * sets {@link Connection#ln} to it. The instance of {@link PositionManager}
+	 * must be retrieved within the method in order to allow for correct
+	 * deserialization
 	 */
 	public void setLn() {
-		this.ln = new Line2D.Float(PositionManager.getPositionOf(nodeA.getText()), PositionManager.getPositionOf(nodeB.getText()));
+		PositionManager pm = PositionManager.getInstance();
+		this.ln = new Line2D.Float(pm.getPositionOf(nameNodeA), pm.getPositionOf(nameNodeB));
 	}
 
 	/**
-	 * Verifies if the input is a node of the connection
-	 * 
-	 * @return <code>true</code> if input is node of the connection and
-	 *         <code>false</code> otherwise
+	 * @return the name of node A
 	 */
-	public boolean isNode(JLabel icon) {
-		return nodeB.equals(icon) || nodeA.equals(icon);
+	public String getNameNodeA() {
+		return nameNodeA;
+	}
+
+	/**
+	 * Set the name of node A
+	 * @param nameNodeA
+	 */
+	public void setNameNodeA(String nameNodeA) {
+		this.nameNodeA = nameNodeA;
+	}
+
+	/**
+	 * @return the name of node B
+	 */
+	public String getNameNodeB() {
+		return nameNodeB;
+	}
+
+	/**
+	 * Set the name of node B
+	 * @param nameNodeB
+	 */
+	public void setNameNodeB(String nameNodeB) {
+		this.nameNodeB = nameNodeB;
+	}
+	
+	/**
+	 * Set a random color to {@link #color}
+	 */
+	public void setColor() {
+
+		int decision = (int) Math.round(Math.random());
+		int g = ThreadLocalRandom.current().nextInt(27, 247 + 1);
+		int r = 0;
+		int b = 0;
+		if (decision == 0) {
+			r = 27;
+			b = 247;
+		} else {
+			r = 247;
+			b = 27;
+		}
+
+		Color randomColor = new Color(r, g, b);
+		this.color = randomColor;
+	}
+
+	/**
+	 * @return the color used to draw a connection
+	 */
+	public Color getColor() {
+		return color;
 	}
 
 }

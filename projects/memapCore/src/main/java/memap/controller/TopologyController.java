@@ -1,7 +1,6 @@
 package memap.controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 import akka.actor.ActorSystem;
 import akka.timeManagement.CurrentTimeStepSubscriber;
@@ -43,7 +42,7 @@ public class TopologyController implements Runnable {
 	/** Parameter configuration for the topology */
 	private TopologyConfig topologyConfig = TopologyConfig.getInstance();
 	/** List of managed buildings in the topology */
-	public List<BuildingController> managedBuildings = new ArrayList<BuildingController>();
+	public HashMap<String, BuildingController> managedBuildings = new HashMap<String, BuildingController>();
 	/** Actor topology */
 	private ActorTopology top;
 
@@ -56,8 +55,8 @@ public class TopologyController implements Runnable {
 	}
 
 	/** Attach a building to the topology */
-	public void attach(BuildingController buildingController) {
-		managedBuildings.add(buildingController);
+	public void attach(String buildingName, BuildingController buildingController) {
+		managedBuildings.put(buildingName, buildingController);
 	}
 
 	/** Calls creates the topology and starts the simulation */
@@ -82,7 +81,8 @@ public class TopologyController implements Runnable {
 		MEMAPCoordination memapCoordination = new MEMAPCoordination(this);
 		top.addActor(topologyName, ActorFactory.createDevice(memapCoordination));
 
-		for (BuildingController managedBuilding : managedBuildings) {
+		//for (BuildingController managedBuilding : managedBuildings) {
+		for (BuildingController managedBuilding : managedBuildings.values()) {
 			String buildingName = managedBuilding.getName();
 			Building building = new Building(this, topologyConfig.getPortUndefined());
 
@@ -124,7 +124,7 @@ public class TopologyController implements Runnable {
 	public void setSimulationName(String topologyName) {
 		this.topologyName = topologyName;
 	}
-
+	
 	public void setOptimizationHierarchy(OptHierarchy optimizationHierarchy) {
 		memapConfig.setOptimizationHierarchy(optimizationHierarchy);
 	}

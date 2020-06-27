@@ -4,8 +4,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import fortiss.gui.DesignerPanel;
-import fortiss.gui.listeners.helper.PositionManager;
 import fortiss.simulation.PlanningTool;
+import fortiss.simulation.helper.PositionManager;
 
 public class ResetListener extends MouseAdapter {
 
@@ -20,7 +20,8 @@ public class ResetListener extends MouseAdapter {
 		DesignerPanel.pl_comp.repaint();
 
 		// Eliminate positions
-		PositionManager.clearPositions();
+		PositionManager pm = PositionManager.getInstance();
+		pm.clearPositions();
 
 		// Eliminate building icons
 		DesignerPanel.buildingIcons.clear();
@@ -35,7 +36,7 @@ public class ResetListener extends MouseAdapter {
 		// Hide component box
 		DesignerPanel.pl_object.hideComponentBox();
 		PlanningTool.getPlanningToolWindow().setTitle("");
-		
+
 		// Clean lastSavedFile and descriptorFile paths
 		DesignerPanel.parameterPanel.pars.setLastSavedFile("");
 		DesignerPanel.parameterPanel.pars.clearDescriptorFile();

@@ -3,7 +3,7 @@ package fortiss.simulation;
 import javax.swing.SwingUtilities;
 
 import fortiss.gui.TrackerPanel;
-import fortiss.simulation.listeners.helper.ProgressManager;
+import fortiss.simulation.helper.ProgressManager;
 import memap.controller.GuiController;
 import memap.main.SimulationProgress;
 
@@ -68,6 +68,11 @@ public class SimulationOptimize extends SimulationState {
 				GuiController gc = PlanningTool.getGuiController();
 				gc.startSimulation();
 				pm.setState(new SimulationDone());
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 				pm.execute();
 			}
 		}.start();

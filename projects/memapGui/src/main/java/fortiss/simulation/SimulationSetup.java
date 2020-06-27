@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import fortiss.gui.TrackerPanel;
-import fortiss.simulation.listeners.helper.ProgressManager;
+import fortiss.simulation.helper.ProgressManager;
 import memap.controller.GuiController;
 import memap.helper.DirectoryConfiguration;
 

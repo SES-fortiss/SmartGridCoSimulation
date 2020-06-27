@@ -16,7 +16,8 @@ public class ExitWindowListener extends WindowAdapter {
 			FileManager fm = new FileManager();
 			fm.writeMemapModel();
 			fm.writeParameterConfigFile();
-
+			fm.writeConnectionFile();
+			fm.writePositionFile();
 		}
 	}
 }

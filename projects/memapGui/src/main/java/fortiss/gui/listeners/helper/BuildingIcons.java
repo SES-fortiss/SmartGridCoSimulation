@@ -11,6 +11,7 @@ import fortiss.gui.listeners.label.ConnectorListener;
 import fortiss.gui.listeners.label.PositionListener;
 import fortiss.gui.style.Fonts;
 import fortiss.media.Icon;
+import fortiss.simulation.helper.PositionManager;
 
 /**
  * Contains methods to create building icons
@@ -22,7 +23,7 @@ public class BuildingIcons {
 	 * @see fortiss.gui.listeners.action.LoadListener
 	 */
 	public void createBuildingIcons() {
-		
+
 		for (String buildingName : DesignerPanel.buildings.keySet()) {
 			createBuildingIcon(buildingName, new Point(0, 0));
 		}
@@ -30,9 +31,9 @@ public class BuildingIcons {
 
 	/**
 	 * Creates one building icon. Calls
-	 * {@link fortiss.gui.listeners.helper.PositionManager#addPosition(JLabel)}.
+	 * {@link fortiss.simulation.helper.PositionManager#addPosition(JLabel)}.
 	 * Calls
-	 * {@link fortiss.gui.listeners.helper.PositionManager#fixPosition(JLabel)} if
+	 * {@link fortiss.simulation.helper.PositionManager#fixPosition(JLabel)} if
 	 * the icon is outside the visible area.
 	 */
 	public void createBuildingIcon(String buildingName, Point p) {
@@ -48,9 +49,10 @@ public class BuildingIcons {
 		icon.setLocation(p);
 
 		// Create position. Fix position if the icon is outside visible area
-		PositionManager.addPosition(buildingName, icon);
-		if (!PositionManager.getVisibleArea().contains(p)) {
-			PositionManager.fixPosition(buildingName, icon);
+		PositionManager pm = PositionManager.getInstance();
+		pm.addPosition(buildingName, icon);
+		if (!pm.getVisibleArea().contains(p)) {
+			pm.fixPosition(buildingName, icon);
 		}
 
 		// Listeners

@@ -1,6 +1,6 @@
 package fortiss.simulation;
 
-import fortiss.simulation.listeners.helper.ProgressManager;
+import fortiss.simulation.helper.ProgressManager;
 
 public class SimulationDesing extends SimulationState {
 

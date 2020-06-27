@@ -6,7 +6,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JLabel;
 
 import fortiss.gui.DesignerPanel;
-import fortiss.gui.listeners.helper.PositionManager;
+import fortiss.simulation.helper.PositionManager;
 
 public class RemoveListener extends KeyAdapter {
 
@@ -61,21 +61,22 @@ public class RemoveListener extends KeyAdapter {
 	private void removeBuilding() {
 		// Remove currentBuilding from building list
 		DesignerPanel.buildings.remove(buildingName);
-		
-		// RDesignerPanelBuilding icon from panel
+
+		// Remove building icon from panel
 		DesignerPanel.pl_ems.remove(DesignerPanel.buildingIcons.get(buildingName));
 		DesignerPanel.pl_ems.repaint();
-		
+
 		// Remove position
-		PositionManager.removePosition(buildingName);
-		
+		PositionManager pm = PositionManager.getInstance();
+		pm.removePosition(buildingName);
+
 		// Remove component icons of currentBuilding from lists
 		DesignerPanel.demandIcons.remove(buildingName);
 		DesignerPanel.storageIcons.remove(buildingName);
 		DesignerPanel.volatileIcons.remove(buildingName);
 		DesignerPanel.controllableIcons.remove(buildingName);
 		DesignerPanel.couplerIcons.remove(buildingName);
-		
+
 		// Remove EMS detail panel
 		DesignerPanel.cl.show(DesignerPanel.pl_comp_detail, "initial");
 

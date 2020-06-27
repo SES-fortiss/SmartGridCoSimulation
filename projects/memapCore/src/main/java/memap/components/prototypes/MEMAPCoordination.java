@@ -86,10 +86,12 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 
 		if (topologyController.getOptimizationHierarchy() == OptHierarchy.MEMAP) {
 			if (topologyController.getOptimizer() == Optimizer.MILP) {
+				System.err.println("We are using MILP with NOOOO connections now!");
 				useMilpNoConnections();
 			}
 
 			if (topologyController.getOptimizer() == Optimizer.MILPwithConnections) {
+				System.err.println("We are using MILP with connections now!");
 				useMilpWithConnections();
 			}
 
