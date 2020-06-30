@@ -14,6 +14,7 @@ import java.util.Set;
 
 /**
  * Data represents a set of data series of any kind read from a CSV.
+ * It assumes that the data corresponds to a name and an arraylist of doubles.
  */
 public class Data {
 
@@ -42,6 +43,35 @@ public class Data {
 	}
 
 	/**
+	 * Second constructor for the class Data.
+	 * It gets two data sets, one for electricity, one for heat.
+	 * No interpolation is carried out. 
+	 * Maybe we can consider it here as well.
+	 * 
+	 */
+	public Data(TimedData timedData) {
+		
+		// disclaimer, because the timedData includes here only electricity and heat, we hardcode it here as well.
+		
+		String str_electricity = "Electricity";
+		String str_heat = "Heat";
+
+		dataset.put(str_electricity, new ArrayList<Double>());
+		dataset.put(str_heat, new ArrayList<Double>());
+		
+		int length = timedData.getLength();
+		Map<String, ArrayList<TimeDataPoint>> map = timedData.getDataset();
+		
+		ArrayList<TimeDataPoint> electricity = map.get(str_electricity);
+		ArrayList<TimeDataPoint> heat = map.get(str_heat);
+		
+		for (int i = 0; i < length; i++) {
+			dataset.get(str_heat).add(heat.get(i).getValue());
+			dataset.get(str_electricity).add(electricity.get(i).getValue());
+		}		
+	}
+
+	/**
 	 * Reads the column-wise stored series from a CSV file and stores it in the
 	 * corresponding lists.
 	 * 
@@ -53,7 +83,7 @@ public class Data {
 		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
 		String[] br_names = br.readLine().split(";");
 		int nresult = br_names.length;
-
+		
 		if (!hasHeader) {
 			for (int i = 0; i < nresult; i++) {
 				br_names[i] = "Series" + (i + 1);
@@ -87,8 +117,7 @@ public class Data {
 		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
 		String line;
 		while ((line = br.readLine()) != null) {
-
-			// Index 0 is name, index larger than 0 are values
+			
 			List<String> series = Arrays.asList(line.split(";"));
 			dataset.put(series.get(0), new ArrayList<Double>());
 

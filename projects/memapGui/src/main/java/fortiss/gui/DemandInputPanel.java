@@ -20,6 +20,7 @@ import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
 import fortiss.datastructures.Data;
+import fortiss.datastructures.TimedData;
 import fortiss.gui.listeners.button.DBrowseListener;
 import fortiss.gui.listeners.button.DPlotListener;
 import fortiss.gui.listeners.helper.FileManager;
@@ -183,22 +184,50 @@ public class DemandInputPanel extends JPanel {
 	 * and set plotter to <code>false</code>
 	 */
 	public void setData(String location) {
+		
+		String str_electricity = "Series" + 2;
+		String str_heat = "Series" + 1;
+		
 		if (location != null && location.isEmpty()) {
 			loadEmptyData();
 		} else {
 			try {
 				FileManager fm = new FileManager();
 				this.data = new Data(fm.readFromSource(location), false, Data.BYCOLUMN);
+				
+				
 			} catch (IOException | ParseException e) {
-				System.out.println("<INFO> Data for demand at " + location + " could not be read. Using zeros only.");
-				loadEmptyData();
+								
+				//e.printStackTrace();
+				//new implementation of CSV Reader done
+				//TODO time is not considered yet, also not an interpolation / integration
+								
+				try {
+					System.out.println("DataReader first version format style error, trying the new version of the CSVReader instead.");
+					FileManager fm = new FileManager();			
+					TimedData timedData = new TimedData(fm.readFromSource(location));
+					this.data = new Data(timedData);
+					
+					str_electricity = "Electricity";
+					str_heat = "Heat";
+					
+					System.out.println("Data Number of Series: " + data.getNumOfSeries());
+					System.out.println("Data Number of Series: " + data.getSeriesList().toString());
+					
+				} catch (IOException | ParseException e1) {
+					System.out.println("<INFO> Data for demand at " + location + " could not be read. Using zeros only.");
+					e.printStackTrace();
+					e1.printStackTrace();
+					loadEmptyData();
+				}
+				
 			}
 		}
 
 		if (!data.equals(null)) {
 			plotPanel.clearSeries();
-			plotPanel.addSeries("Heat", data.getSeries("Series" + 1));
-			plotPanel.addSeries("Electricity", data.getSeries("Series" + 2));
+			plotPanel.addSeries("Heat", data.getSeries(str_heat));
+			plotPanel.addSeries("Electricity", data.getSeries(str_electricity));
 			plotPanel.setPlotted(false);
 		}
 	}
