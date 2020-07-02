@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import memap.examples.ExampleFiles;
 import simulation.SimulationStarter;
 
 public class FileManager {
@@ -48,6 +49,24 @@ public class FileManager {
 		}
 		return br;
 	}
+	
+	
+	/**
+	 * @return a buffer with the data from CSV filename
+	 * @param filename CSV file
+	 */
+	public BufferedReader getBuffer(String csvFile) {
+		ExampleFiles examples = new ExampleFiles();
+		if (examples.isExample(csvFile)) {
+			System.out.println(">> Reading from resources: " + csvFile);
+			return readFromResources(examples.getFile(csvFile));
+		} else {
+			System.out.println(">> Reading from source: " + csvFile);
+			return readFromSource(csvFile);
+		}
+	}
+	
+	
 
 	/**
 	 * Ensures the necessary directory hierarchy of file exists

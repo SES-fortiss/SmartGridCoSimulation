@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import memap.examples.ExampleFiles;
 import memap.helper.profilehandler.Interpolation;
 import simulation.SimulationStarter;
 
@@ -22,7 +21,7 @@ public class SolarRadiation {
 	public SolarRadiation(String csvFile, int timeStepsPerDay) {
 		this.timeStepsPerDay = timeStepsPerDay;
 		stepLength = (int) (TimeUnit.DAYS.toMinutes(1)/timeStepsPerDay);
-		setSolarProductionPerKWp(csvFile);
+		readSolarProductionPerKWp(csvFile);
 	}
 
 	/**
@@ -37,12 +36,13 @@ public class SolarRadiation {
 	/**
 	 * Assign values to SolarProductionPerKWp
 	 */
-	private void setSolarProductionPerKWp(String csvFile) {
+	private void readSolarProductionPerKWp(String csvFile) {
 		try {
+			FileManager fm = new FileManager();
 			if (csvFile.isEmpty()) {
-				readSolarProduction(getBuffer("SOLARPRODUCTIONEXAMPLE"));
+				readSolarProfileFile(fm.getBuffer("SOLARPRODUCTIONEXAMPLE"));
 			} else {
-				readSolarProduction(getBuffer(csvFile));
+				readSolarProfileFile(fm.getBuffer(csvFile));
 			}
 		} catch (IOException | ParseException e) {
 			System.err.println("Error reading or parsing CSV data from " + csvFile);
@@ -51,28 +51,13 @@ public class SolarRadiation {
 		}
 
 	}
-	
-	/**
-	 * @return a buffer with the data from CSV filename
-	 * @param filename CSV file
-	 */
-	private BufferedReader getBuffer(String csvFile) {
-		FileManager mgr = new FileManager();
-		ExampleFiles examples = new ExampleFiles();
-		if (examples.isExample(csvFile)) {
-			System.out.println(">> Reading from resources: " + csvFile);
-			return mgr.readFromResources(examples.getFile(csvFile));
-		} else {
-			System.out.println(">> Reading from source: " + csvFile);
-			return mgr.readFromSource(csvFile);
-		}
-	}
 
 	/**
 	 * Assign values to solar production {@link #solarProductionPerKWp} from buffer
 	 * @param br buffer
 	 */
-	private void readSolarProduction(BufferedReader br) throws IOException, ParseException {
+	private void readSolarProfileFile(BufferedReader br) throws IOException, ParseException {
+		
 		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
 		ArrayList<Double> originalValues = new ArrayList<Double>();
 		solarProductionPerKWp = new ArrayList<Double>();

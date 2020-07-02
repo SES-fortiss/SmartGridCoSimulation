@@ -9,7 +9,6 @@ import java.util.List;
 import akka.timeManagement.CurrentTimeStepSubscriber;
 import memap.components.prototypes.Consumer;
 import memap.controller.TopologyController;
-import memap.examples.ExampleFiles;
 import memap.helper.FileManager;
 import memap.helper.profilehandler.OriginalCSVHandler;
 import memap.helper.profilehandler.TimedData;
@@ -84,16 +83,18 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 	 */
 	private void setProfiles(String csvFile) {
 		try {
+			
+			FileManager fm = new FileManager();
 			if (csvFile.isEmpty()) {
 				
-				OriginalCSVHandler ocsv = new OriginalCSVHandler(getBuffer("EXAMPLE0"), topologyConfig);
+				OriginalCSVHandler ocsv = new OriginalCSVHandler(fm.getBuffer("EXAMPLE0"), topologyConfig);
 				electricityProfile = ocsv.getElectricityProfile();
 				heatProfile = ocsv.getHeatProfile();
 				
 			} else {
 				
 				// We handle the original way (old data format) first
-				BufferedReader br = getBuffer(csvFile);
+				BufferedReader br = fm.getBuffer(csvFile);
 				OriginalCSVHandler ocsv = new OriginalCSVHandler(br, topologyConfig);				
 				electricityProfile = ocsv.getElectricityProfile();
 				heatProfile = ocsv.getHeatProfile();
@@ -105,7 +106,8 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 			try {
 				// If the first reader does not work, we try a second format style, that is specified as another scenario
 				
-				BufferedReader br = getBuffer(csvFile);
+				FileManager fm = new FileManager();
+				BufferedReader br = fm.getBuffer(csvFile);
 				TimedData timedData = new TimedData(br);
 				TimedDataHandler tdh = new TimedDataHandler(timedData, topologyConfig);
 				electricityProfile = tdh.getElectricityProfile();
@@ -128,22 +130,6 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 		}
 
 	}
-
-	/**
-	 * @return a buffer with the data from csvFile
-	 * @param csvFile consumption profiles CSV file
-	 */
-	private BufferedReader getBuffer(String csvFile) {
-		FileManager mgr = new FileManager();
-		ExampleFiles examples = new ExampleFiles();
-		if (examples.isExample(csvFile)) {
-			System.out.println(">> Consumer construction - reading from resources: " + csvFile);
-			return mgr.readFromResources(examples.getFile(csvFile));
-		} else {
-			System.out.println(">> Consumer construction - reading from source: " + csvFile);
-			return mgr.readFromSource(csvFile);
-		}
-	}	
 
 	@Override
 	public void update(int currentTimeStep) {
