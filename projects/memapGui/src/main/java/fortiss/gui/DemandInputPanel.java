@@ -30,7 +30,7 @@ import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
 import memap.examples.ExampleFiles;
-import memap.helper.profilehandler.TimedData;
+import memap.helper.profilehandler.TimedConsumerData;
 
 /**
  * Input panel for demand parameters.
@@ -201,7 +201,7 @@ public class DemandInputPanel extends JPanel {
 				try {
 					System.out.println("DataReader first version format style error, trying the new version of the CSVReader instead.");
 					FileManager fm = new FileManager();			
-					TimedData timedData = new TimedData(fm.readFromSource(location));
+					TimedConsumerData timedData = new TimedConsumerData(fm.readFromSource(location));
 					this.data = new Data(timedData);
 					
 					str_electricity = "Electricity";

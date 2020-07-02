@@ -21,20 +21,20 @@ import java.util.Map;
  * @param br
  * @return
  */
-public class TimedData {
+public class TimedConsumerData {
 	
 	// disclaimer for code quality, this class uses in some methods some hard coded values.
 	// this can be of course more general, but due to our specification we keep it like that
 	// for the moment
 	
-	private Map<String, ArrayList<TimeDataPoint>> dataset = new LinkedHashMap<String, ArrayList<TimeDataPoint>>();
+	private Map<String, ArrayList<TimeDataPoint>> datasetMap = new LinkedHashMap<String, ArrayList<TimeDataPoint>>();
 	private int length = 0;
 	
 	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
 
-	public TimedData(BufferedReader readFromSource) throws IOException, ParseException {
-		dataset = read(readFromSource);
+	public TimedConsumerData(BufferedReader readFromSource) throws IOException, ParseException {
+		datasetMap = read(readFromSource);
 	}
 
 	private Map<String, ArrayList<TimeDataPoint>> read(BufferedReader br) throws IOException, ParseException {
@@ -43,8 +43,8 @@ public class TimedData {
 		
 		String[] br_names = { "Date", "Time", "Electricity", "Heat" }; // the hard coding part of specifications
 		
-		dataset.put(br_names[2], new ArrayList<TimeDataPoint>());
-		dataset.put(br_names[3], new ArrayList<TimeDataPoint>());
+		datasetMap.put(br_names[2], new ArrayList<TimeDataPoint>());
+		datasetMap.put(br_names[3], new ArrayList<TimeDataPoint>());
 		
 		String line;
 		while ((line = br.readLine()) != null) {
@@ -62,20 +62,20 @@ public class TimedData {
 				TimeDataPoint tdp_electricity = new TimeDataPoint(ldt, electricity);
 				TimeDataPoint tdp_heat = new TimeDataPoint(ldt, heat);
 
-				dataset.get(br_names[2]).add(tdp_electricity);
-				dataset.get(br_names[3]).add(tdp_heat);
+				datasetMap.get(br_names[2]).add(tdp_electricity);
+				datasetMap.get(br_names[3]).add(tdp_heat);
 				
 				length++;
 			}
 		}		
-		return dataset;
+		return datasetMap;
 	}
 	
 	public int getLength() {
 		return length;
 	}
 	
-	public Map<String, ArrayList<TimeDataPoint>> getDataset(){
-		return dataset;
+	public Map<String, ArrayList<TimeDataPoint>> getDatasetMap(){
+		return datasetMap;
 	}	
 }

@@ -6,15 +6,15 @@ import java.util.ArrayList;
 
 import memap.main.TopologyConfig;
 
-public class TimedDataHandler {
+public class TimedConsumerDataHandler {
 
 	private ArrayList<Double> heatProfile;
 	private ArrayList<Double> electricityProfile;
 	
-	public TimedDataHandler(TimedData timedData, TopologyConfig topologyConfig) {		
+	public TimedConsumerDataHandler(TimedConsumerData timedData, TopologyConfig topologyConfig) {		
 		
-		ArrayList<TimeDataPoint> electricalProfile_tmp = timedData.getDataset().get("Electricity");
-		ArrayList<TimeDataPoint> heatProfile_tmp = timedData.getDataset().get("Heat");
+		ArrayList<TimeDataPoint> electricalProfile_tmp = timedData.getDatasetMap().get("Electricity");
+		ArrayList<TimeDataPoint> heatProfile_tmp = timedData.getDatasetMap().get("Heat");
 		
 		double intervalInSeconds = topologyConfig.getStepLengthInSeconds();
 		

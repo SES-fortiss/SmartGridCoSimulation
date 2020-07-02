@@ -11,8 +11,8 @@ import memap.components.prototypes.Consumer;
 import memap.controller.TopologyController;
 import memap.helper.FileManager;
 import memap.helper.profilehandler.OriginalCSVHandler;
-import memap.helper.profilehandler.TimedData;
-import memap.helper.profilehandler.TimedDataHandler;
+import memap.helper.profilehandler.TimedConsumerData;
+import memap.helper.profilehandler.TimedConsumerDataHandler;
 import memap.messages.extension.NetworkType;
 import simulation.SimulationStarter;
 
@@ -108,8 +108,8 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 				
 				FileManager fm = new FileManager();
 				BufferedReader br = fm.getBuffer(csvFile);
-				TimedData timedData = new TimedData(br);
-				TimedDataHandler tdh = new TimedDataHandler(timedData, topologyConfig);
+				TimedConsumerData timedConsumerData = new TimedConsumerData(br);
+				TimedConsumerDataHandler tdh = new TimedConsumerDataHandler(timedConsumerData, topologyConfig);
 				electricityProfile = tdh.getElectricityProfile();
 				heatProfile = tdh.getHeatProfile();
 				
