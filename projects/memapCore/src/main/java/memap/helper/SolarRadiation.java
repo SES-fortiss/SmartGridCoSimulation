@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import memap.examples.ExampleFiles;
+import memap.helper.profilehandler.Interpolation;
 import simulation.SimulationStarter;
 
 public class SolarRadiation {

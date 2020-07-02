@@ -20,7 +20,6 @@ import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
 import fortiss.datastructures.Data;
-import fortiss.datastructures.TimedData;
 import fortiss.gui.listeners.button.DBrowseListener;
 import fortiss.gui.listeners.button.DPlotListener;
 import fortiss.gui.listeners.helper.FileManager;
@@ -31,6 +30,7 @@ import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
 import memap.examples.ExampleFiles;
+import memap.helper.profilehandler.TimedData;
 
 /**
  * Input panel for demand parameters.
@@ -196,11 +196,7 @@ public class DemandInputPanel extends JPanel {
 				this.data = new Data(fm.readFromSource(location), false, Data.BYCOLUMN);
 				
 				
-			} catch (IOException | ParseException e) {
-								
-				//e.printStackTrace();
-				//new implementation of CSV Reader done
-				//TODO time is not considered yet, also not an interpolation / integration
+			} catch (IOException | ParseException e) {								
 								
 				try {
 					System.out.println("DataReader first version format style error, trying the new version of the CSVReader instead.");

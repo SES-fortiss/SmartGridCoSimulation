@@ -1,4 +1,4 @@
-package fortiss.datastructures;
+package memap.helper.profilehandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -77,5 +77,5 @@ public class TimedData {
 	
 	public Map<String, ArrayList<TimeDataPoint>> getDataset(){
 		return dataset;
-	}
+	}	
 }

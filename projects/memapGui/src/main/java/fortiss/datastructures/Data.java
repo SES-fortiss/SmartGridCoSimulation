@@ -12,6 +12,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import memap.helper.profilehandler.TimeDataPoint;
+import memap.helper.profilehandler.TimedData;
+
 /**
  * Data represents a set of data series of any kind read from a CSV.
  * It assumes that the data corresponds to a name and an arraylist of doubles.

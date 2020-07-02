@@ -1,4 +1,4 @@
-package fortiss.datastructures;
+package memap.helper.profilehandler;
 
 import java.time.LocalDateTime;
 
