@@ -20,7 +20,6 @@ import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
 import fortiss.datastructures.Data;
-import fortiss.datastructures.TimedData;
 import fortiss.gui.listeners.button.DBrowseListener;
 import fortiss.gui.listeners.button.DPlotListener;
 import fortiss.gui.listeners.helper.FileManager;
