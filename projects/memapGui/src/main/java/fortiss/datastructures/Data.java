@@ -12,6 +12,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import memap.helper.profilehandler.TimeDataPoint;
+import memap.helper.profilehandler.TimedConsumerData;
+
 /**
  * Data represents a set of data series of any kind read from a CSV.
  * It assumes that the data corresponds to a name and an arraylist of doubles.
@@ -49,7 +52,7 @@ public class Data {
 	 * Maybe we can consider it here as well.
 	 * 
 	 */
-	public Data(TimedData timedData) {
+	public Data(TimedConsumerData timedData) {
 		
 		// disclaimer, because the timedData includes here only electricity and heat, we hardcode it here as well.
 		
@@ -60,7 +63,7 @@ public class Data {
 		dataset.put(str_heat, new ArrayList<Double>());
 		
 		int length = timedData.getLength();
-		Map<String, ArrayList<TimeDataPoint>> map = timedData.getDataset();
+		Map<String, ArrayList<TimeDataPoint>> map = timedData.getDatasetMap();
 		
 		ArrayList<TimeDataPoint> electricity = map.get(str_electricity);
 		ArrayList<TimeDataPoint> heat = map.get(str_heat);

@@ -35,7 +35,7 @@ public class CSVVolatileProducer extends Producer implements CurrentTimeStepSubs
 		this.opCost = opCost;
 		this.costCO2 = costCO2;
 		// Initialization delayed until after topologyConfig initialization
-		solarRadiation = new SolarRadiation(csvFile, topologyConfig.getTimeStepsPerDay());
+		solarRadiation = new SolarRadiation(csvFile, topologyConfig);
 	}
 
 	@Override
@@ -53,8 +53,9 @@ public class CSVVolatileProducer extends Producer implements CurrentTimeStepSubs
 		volatileProducerMessage.forecast = new double[nStepsMPC];
 
 		for (int i = 0; i < nStepsMPC; i++) {
-			volatileProducerMessage.forecast[i] = solarRadiation.getSolarProductionPerKWp(cts + i) * maxPower;
+			volatileProducerMessage.forecast[i] = solarRadiation.getSolarProduction(cts + i) * maxPower;
 		}
+		
 		super.updateDisplay(volatileProducerMessage);
 	}
 

@@ -1,4 +1,4 @@
-package memap.helper;
+package memap.helper.profilehandler;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

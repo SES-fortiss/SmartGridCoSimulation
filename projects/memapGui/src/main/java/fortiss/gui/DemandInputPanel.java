@@ -31,6 +31,7 @@ import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
 import memap.examples.ExampleFiles;
+import memap.helper.profilehandler.TimedConsumerData;
 
 /**
  * Input panel for demand parameters.
@@ -195,24 +196,15 @@ public class DemandInputPanel extends JPanel {
 				FileManager fm = new FileManager();
 				this.data = new Data(fm.readFromSource(location), false, Data.BYCOLUMN);
 				
-				
-			} catch (IOException | ParseException e) {
-								
-				//e.printStackTrace();
-				//new implementation of CSV Reader done
-				//TODO time is not considered yet, also not an interpolation / integration
-								
+			} catch (IOException | ParseException e) {													
 				try {
 					System.out.println("DataReader first version format style error, trying the new version of the CSVReader instead.");
 					FileManager fm = new FileManager();			
-					TimedData timedData = new TimedData(fm.readFromSource(location));
+					TimedConsumerData timedData = new TimedConsumerData(fm.readFromSource(location));
 					this.data = new Data(timedData);
 					
 					str_electricity = "Electricity";
-					str_heat = "Heat";
-					
-					System.out.println("Data Number of Series: " + data.getNumOfSeries());
-					System.out.println("Data Number of Series: " + data.getSeriesList().toString());
+					str_heat = "Heat";					
 					
 				} catch (IOException | ParseException e1) {
 					System.out.println("<INFO> Data for demand at " + location + " could not be read. Using zeros only.");

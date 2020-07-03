@@ -2,18 +2,17 @@ package memap.components;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import akka.timeManagement.CurrentTimeStepSubscriber;
 import memap.components.prototypes.Consumer;
 import memap.controller.TopologyController;
-import memap.examples.ExampleFiles;
 import memap.helper.FileManager;
+import memap.helper.profilehandler.OriginalCSVHandler;
+import memap.helper.profilehandler.TimedConsumerData;
+import memap.helper.profilehandler.TimedConsumerDataHandler;
 import memap.messages.extension.NetworkType;
 import simulation.SimulationStarter;
 
@@ -69,7 +68,6 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 	@Override
 	public List<Double> getHeatProfile(int timeStep, int mpcHorizon) {
 		return heatProfile.subList(timeStep, timeStep + mpcHorizon);
-
 	}
 
 	/**
@@ -81,117 +79,56 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 	}
 
 	/**
-	 * Assign values to heatProfile and electricityProfile
+	 * Assign values to heatProfile and electricityProfile. Maybe this should be replaced into a distinct init helper class.
 	 */
 	private void setProfiles(String csvFile) {
 		try {
+			
+			FileManager fm = new FileManager();
 			if (csvFile.isEmpty()) {
-				interpolate(getBuffer("EXAMPLE0"));
+				
+				OriginalCSVHandler ocsv = new OriginalCSVHandler(fm.getBuffer("EXAMPLE0"), topologyConfig);
+				electricityProfile = ocsv.getElectricityProfile();
+				heatProfile = ocsv.getHeatProfile();
+				
 			} else {
-				BufferedReader br = getBuffer(csvFile);
-				interpolate(br);
+				
+				// We handle the original way (old data format) first
+				BufferedReader br = fm.getBuffer(csvFile);
+				OriginalCSVHandler ocsv = new OriginalCSVHandler(br, topologyConfig);				
+				electricityProfile = ocsv.getElectricityProfile();
+				heatProfile = ocsv.getHeatProfile();
+				
 			}
 		} catch (IOException | ParseException e) {
-			System.err.println("Error reading or parsing CSV data from " + csvFile);
-			SimulationStarter.stopSimulation();
-			e.printStackTrace();
-		}
-
-	}
-
-	/**
-	 * @return a buffer with the data from csvFile
-	 * @param csvFile consumption profiles CSV file
-	 */
-	private BufferedReader getBuffer(String csvFile) {
-		FileManager mgr = new FileManager();
-		ExampleFiles examples = new ExampleFiles();
-		if (examples.isExample(csvFile)) {
-			System.out.println(">> Consumer construction - reading from resources: " + csvFile);
-			return mgr.readFromResources(examples.getFile(csvFile));
-		} else {
-			System.out.println(">> Consumer construction - reading from source: " + csvFile);
-			return mgr.readFromSource(csvFile);
-		}
-	}
-
-	/**
-	 * Interpolates the consumption profiles. The method is called by the
-	 * constructor.
-	 * 
-	 * @param br a buffer reader with the data to be interpolated
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	private void interpolate(BufferedReader br) throws IOException, ParseException {
-		double stepLengthInMinutes = topologyConfig.getStepLengthInMinutes();
-		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
-		
-
-		HashMap<Integer, ArrayList<Double>> profiles = new HashMap<Integer, ArrayList<Double>>();
-		HashMap<Integer, ArrayList<Double>> dailyProfiles = new HashMap<Integer, ArrayList<Double>>();
-
-		profiles.put(0, heatProfile);
-		profiles.put(1, electricityProfile);
-		for (int i = 0; i < 2; i++) {
-			dailyProfiles.put(i, new ArrayList<Double>());
-		}
-
-		String row;
-		String[] buffer;
-		double[] consumptionBuffer = new double[2]; // Heat[0] + Electricity[1]
-
-		int rowIndex = 0;
-		int k = 0;
-
-		/*
-		 * TODO make this more flexible, i.e. the time resolution in the file might not
-		 * be always the one minute resolution.
-		 */
-
-		// Read-in of consumption values for every minute (in the example files)
-		while ((row = br.readLine()) != null) {
-			// get values
-			buffer = row.split(";");
-			consumptionBuffer[0] += nf.parse(buffer[0]).doubleValue() / stepLengthInMinutes;
-			consumptionBuffer[1] += nf.parse(buffer[1]).doubleValue() / stepLengthInMinutes;
-			rowIndex++;
-
-			// Sum up consumption over the number of minutes per time step
-			if ((rowIndex >= (k + 1) * stepLengthInMinutes) && (buffer.length != 0)) {
-				for (int j = 0; j < buffer.length; j++) {
-					/**
-					 * // Necessary if the time step is not exactly one minute. double
-					 * deltaOverMinute = rowIndex - (k + 1) *
-					 * MyTimeUnit.stepLength(TimeUnit.MINUTES); double deduction =
-					 * nf.parse(buffer[j]).doubleValue() * deltaOverMinute; consumptionBuffer[j] =
-					 * consumptionBuffer[j] - deduction; We ignore this for now
-					 */
-					dailyProfiles.get(j).add(consumptionBuffer[j]);
-					consumptionBuffer[j] = 0;
+			
+			System.err.println("Error reading or parsing CSV data from " + csvFile + " - we try a second format now.");			
+			try {
+				// If the first reader does not work, we try a second format style, that is specified as another scenario
+				
+				FileManager fm = new FileManager();
+				BufferedReader br = fm.getBuffer(csvFile);
+				TimedConsumerData timedConsumerData = new TimedConsumerData(br);
+				TimedConsumerDataHandler tdh = new TimedConsumerDataHandler(timedConsumerData, topologyConfig);
+				electricityProfile = tdh.getElectricityProfile();
+				heatProfile = tdh.getHeatProfile();
+				
+				// After the creation of the profiles, we must be sure to consider the MPC Horizon.
+				// We append the first part of the profile again to the end to make sure that MPC data is available.
+				
+				int requiredProfileWithMPC = topologyConfig.getNrSteps() + topologyConfig.getNrStepsMPC() - 1;				
+				if ( electricityProfile.size() < requiredProfileWithMPC) {
+					electricityProfile.addAll(electricityProfile.subList(0, topologyConfig.getNrStepsMPC()));
+					heatProfile.addAll(heatProfile.subList(0, topologyConfig.getNrStepsMPC()));
 				}
-				k++;
+				
+			} catch (Exception e2) {
+				SimulationStarter.stopSimulation();
+				e.printStackTrace();
+				e2.printStackTrace();
 			}
 		}
 
-		br.close();
-
-		// Calculate the consumption for one day longer than necessary because of MPC
-		// horizon
-		// the heat profile of one day is copied for n_days; ( k = N_STEPS/N_Days )
-		int daysToConsider = (int) Math.round(topologyConfig.getNrSteps() / k + 0.5);
-		for (int m = 0; m < daysToConsider; m++) {
-			for (int j = 0; j < 2; j++) {
-				for (int i = 0; i < dailyProfiles.get(1).size(); i++) {
-					profiles.get(j).add(dailyProfiles.get(j).get(i));
-				}
-			}
-		}
-
-		System.out
-				.println("Profiles available. Heat: " + profiles.get(0).size() + " : " + gson.toJson(profiles.get(0)));
-		System.out
-				.println("Profiles available. Elec: " + profiles.get(1).size() + " : " + gson.toJson(profiles.get(1)));
 	}
 
 	@Override

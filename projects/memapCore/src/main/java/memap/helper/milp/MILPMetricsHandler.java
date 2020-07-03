@@ -106,7 +106,6 @@ public class MILPMetricsHandler implements MetricsHandler {
 		double[] efficiency = {0, 0};
 		for (StorageMessage message : buildingMessage.storageList) {
 			if (componentName.equals(message.name + "Discharge")) {
-				System.out.println("The name matches: " + message.name);
 				if(message.networkType.equals(NetworkType.HEAT)) {
 					efficiency[0] = message.efficiencyDischarge;
 				} else {
@@ -116,14 +115,12 @@ public class MILPMetricsHandler implements MetricsHandler {
 		}
 		for (CouplerMessage message : buildingMessage.couplerList) {
 			if (componentName.equals(message.name)) {
-				System.out.println("The name matches: " + message.name);
 				efficiency[0] = message.efficiencyHeat;
 				efficiency[1] = message.efficiencyElec;
  			}
 		}
 		for (ProducerMessage message : buildingMessage.volatileProducerList) {
 			if (componentName.equals(message.name)) {
-				System.out.println("The name matches: " + message.name);
 				if(message.networkType.equals(NetworkType.HEAT)) {
 					efficiency[0] = message.efficiency;
 				} else {
@@ -133,7 +130,6 @@ public class MILPMetricsHandler implements MetricsHandler {
 		}
 		for (ProducerMessage message : buildingMessage.controllableProducerList) {
 			if (componentName.equals(message.name)) {
-				System.out.println("The name matches: " + message.name);
 				if(message.networkType.equals(NetworkType.HEAT)) {
 					efficiency[0] = message.efficiency;
 				} else {

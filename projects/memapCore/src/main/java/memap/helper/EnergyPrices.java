@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import memap.examples.ExampleFiles;
+import memap.helper.profilehandler.Interpolation;
 import memap.main.TopologyConfig;
 import simulation.SimulationStarter;
 

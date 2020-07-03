@@ -8,73 +8,75 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import memap.examples.ExampleFiles;
+import memap.helper.profilehandler.Interpolation;
+import memap.helper.profilehandler.TimedSimpleData;
+import memap.helper.profilehandler.TimedSimpleDataHandler;
+import memap.main.TopologyConfig;
 import simulation.SimulationStarter;
 
 public class SolarRadiation {
 
-	/** Solar production per KWp */
-	private ArrayList<Double> solarProductionPerKWp;
+	private ArrayList<Double> normalizedSolarProductionProfile;
+	private TopologyConfig topologyConfig;
 	private int timeStepsPerDay;
 	private int stepLength;
 	
-	public SolarRadiation(String csvFile, int timeStepsPerDay) {
-		this.timeStepsPerDay = timeStepsPerDay;
+	public SolarRadiation(String csvFile, TopologyConfig topologyConfig) {
+		this.timeStepsPerDay = topologyConfig.getTimeStepsPerDay();
+		this.topologyConfig = topologyConfig;
 		stepLength = (int) (TimeUnit.DAYS.toMinutes(1)/timeStepsPerDay);
-		setSolarProductionPerKWp(csvFile);
-	}
-
-	/**
-	 * @param timestep the time step for which to get the solar production per KWp
-	 * @return solar production per KWp
-	 */
-	public double getSolarProductionPerKWp(int timestep) {
-		// divide through 15 to get the Production per kWp
-		return solarProductionPerKWp.get(timestep % solarProductionPerKWp.size()) / 15.0;
-	}
-
-	/**
-	 * Assign values to SolarProductionPerKWp
-	 */
-	private void setSolarProductionPerKWp(String csvFile) {
-		try {
-			if (csvFile.isEmpty()) {
-				readSolarProduction(getBuffer("SOLARPRODUCTIONEXAMPLE"));
-			} else {
-				readSolarProduction(getBuffer(csvFile));
-			}
-		} catch (IOException | ParseException e) {
-			System.err.println("Error reading or parsing CSV data from " + csvFile);
-			SimulationStarter.stopSimulation();
-			e.printStackTrace();
-		}
-
+		getNormalizedSolarProductionFromFile(csvFile);
 	}
 	
 	/**
-	 * @return a buffer with the data from CSV filename
-	 * @param filename CSV file
+	 * 
+	 * @param timestep - the time step to obtain the current normalized solar production
+	 * @return returns a double value to the normalized solarProduction for that time step
 	 */
-	private BufferedReader getBuffer(String csvFile) {
-		FileManager mgr = new FileManager();
-		ExampleFiles examples = new ExampleFiles();
-		if (examples.isExample(csvFile)) {
-			System.out.println(">> Reading from resources: " + csvFile);
-			return mgr.readFromResources(examples.getFile(csvFile));
-		} else {
-			System.out.println(">> Reading from source: " + csvFile);
-			return mgr.readFromSource(csvFile);
-		}
+	public double getSolarProduction(int timestep) {
+		return normalizedSolarProductionProfile.get(timestep % normalizedSolarProductionProfile.size()); // % ensures that to large indeces leads to a readout as a loop 
 	}
 
 	/**
-	 * Assign values to solar production {@link #solarProductionPerKWp} from buffer
-	 * @param br buffer
+	 * 
+	 * Uses the  <b>csvFile </b> <i>string</i> to read a file and create an normalized profile for volatile production from that.
+	 * 
+	 * @param csvFile
 	 */
-	private void readSolarProduction(BufferedReader br) throws IOException, ParseException {
+	private void getNormalizedSolarProductionFromFile(String csvFile) {
+		try {
+			FileManager fm = new FileManager();
+			if (csvFile.isEmpty()) {
+				normalizedSolarProductionProfile = readOriginalFormat(fm.getBuffer("SOLARPRODUCTIONEXAMPLE"));
+			} else {
+				normalizedSolarProductionProfile = readOriginalFormat(fm.getBuffer(csvFile));
+			}
+		} catch (IOException | ParseException | ArrayIndexOutOfBoundsException  e) {
+			
+			try {
+				FileManager fm = new FileManager();
+				normalizedSolarProductionProfile = readScenarioFormat(fm.getBuffer(csvFile));
+			} catch (Exception e2) {
+				System.err.println("Error reading or parsing CSV data from " + csvFile);
+				SimulationStarter.stopSimulation();
+				e.printStackTrace();
+				e2.printStackTrace();
+			}
+		}
+	}
+
+	private ArrayList<Double> readScenarioFormat(BufferedReader br) throws IOException, ParseException {		
+		TimedSimpleData tsd = new TimedSimpleData(br);
+		TimedSimpleDataHandler tsh = new TimedSimpleDataHandler(tsd, topologyConfig);		
+		ArrayList<Double> result = tsh.getProfile();		
+		return result;
+	}
+
+	private ArrayList<Double> readOriginalFormat(BufferedReader br) throws IOException, ParseException, ArrayIndexOutOfBoundsException  {
 		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
 		ArrayList<Double> originalValues = new ArrayList<Double>();
-		solarProductionPerKWp = new ArrayList<Double>();
+		ArrayList<Double> result = new ArrayList<Double>();
+		
 		String row;
 		String[] buffer;
 
@@ -82,16 +84,17 @@ public class SolarRadiation {
 		while ((row = br.readLine()) != null) {
 			buffer = row.split(",");
 			if (j != 0) { // Skip header
-				try {
-					// write Value in kW
-					originalValues.add(nf.parse(buffer[2]).doubleValue() / 1000);
-				} catch (Exception e) {
-					// do nothing
-				}
+				// write Value in kW, in original format the file has [Watt] as phys. unit
+				originalValues.add(nf.parse(buffer[2]).doubleValue() / 1000);
 			}
 			j++;
 		}
 
+		/*
+		 * Note, it seems here that the method converted the power in energy units 
+		 * and interpolated them afterwards.
+		*/
+		
 		double[] x = new double[originalValues.size()];
 		double[] y = new double[originalValues.size()];
 		for (int i = 0; i < originalValues.size(); i++) {
@@ -114,8 +117,10 @@ public class SolarRadiation {
 		}
 
 		for (int k = 0; k < yi.length; k++) {
-			solarProductionPerKWp.add(yi[k]);
+			result.add(yi[k]);
 		}
 		br.close();
+
+		return result;
 	}
 }
