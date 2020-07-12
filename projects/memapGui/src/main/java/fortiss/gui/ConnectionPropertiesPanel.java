@@ -54,7 +54,7 @@ public class ConnectionPropertiesPanel extends JPanel {
 		lossesTextField.addKeyListener(new ConnectionLossesListener());
 		add(lossesTextField);
 
-		JLabel lblLossesUnit = new JLabel("[kWH/m]");
+		JLabel lblLossesUnit = new JLabel("[%/m]");
 		add(lblLossesUnit);
 
 		JLabel lblEliminate = new JLabel("Eliminate [x]");

@@ -16,6 +16,7 @@ import fortiss.components.Coupler;
 import fortiss.components.Storage;
 import fortiss.components.Volatile;
 import fortiss.gui.DesignerPanel;
+import fortiss.media.Icon;
 
 public class LPMetricsGenerator implements MetricsGenerator {
 
@@ -63,6 +64,7 @@ public class LPMetricsGenerator implements MetricsGenerator {
 				new DecimalFormat("#.0##").format(perBuildingOptimizationCost), "EUR", null);
 		summaryPanel.addTextWidget(SummaryPanel.GLOBAL_OPTIMIZATION, "Cost with MEMAP",
 				new DecimalFormat("#.0##").format(globalOptimizationCost), "EUR", null);
+		summaryPanel.addImageWidget(SummaryPanel.PERFORMANCE, Icon.costReduction);
 		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "Cost " + costQualifier,
 				new DecimalFormat("#.0##").format(savedCost), "EUR", null);
 
@@ -72,6 +74,7 @@ public class LPMetricsGenerator implements MetricsGenerator {
 				new DecimalFormat("#.0##").format(perBuildingOptimizationCo2Emissions), "kg CO2/kWh", null);
 		summaryPanel.addTextWidget(SummaryPanel.GLOBAL_OPTIMIZATION, "CO2 Emissions with MEMAP",
 				new DecimalFormat("#.0##").format(globalOptimizationCo2Emissions), "kg CO2/kWh", null);
+		summaryPanel.addImageWidget(SummaryPanel.PERFORMANCE, Icon.emissionsReduction);
 		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "CO2 Emissions " + co2Qualifier,
 				new DecimalFormat("#.0##").format(savedCo2), "kg CO2/kWh", null);
 
@@ -211,6 +214,9 @@ public class LPMetricsGenerator implements MetricsGenerator {
 		double totalCo2emissions = co2emissions.get(cost.size() - 1);
 
 		// Text widget: Energy demanded
+		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "Heat demanded", new DecimalFormat("#.0##").format(totalHeatDemand), "kWH", null);
+		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "Electricity demanded", new DecimalFormat("#.0##").format(totalElectricityDemand),
+				"kWH", null);
 		contextPanel.addTextWidget("Heat demanded", new DecimalFormat("#.0##").format(totalHeatDemand), "kWH", null);
 		contextPanel.addTextWidget("Electricity demanded", new DecimalFormat("#.0##").format(totalElectricityDemand),
 				"kWH", null);
@@ -242,8 +248,9 @@ public class LPMetricsGenerator implements MetricsGenerator {
 				.add(new CategorySeries("Electricity Production", time, totalElectricityProductionInTime, null, null));
 		energySeries.add(new CategorySeries("Heat Demand ", time, heatDemandInTime, null, null));
 		energySeries.add(new CategorySeries("Heat Production", time, totalHeatProductionInTime, null, null));
+		int sizeFactor = (int) Math.min(4.0, Math.round(time.size() / 20 + 0.5));
 		contextPanel.addBarPlotWidget("Energy produced and demanded", "Forecasted time [time steps]",
-				"Electricity [kWh]", 400, 400, energySeries, "* Storages are not considered energy producers");
+				"Electricity [kWh]", 400 * sizeFactor, 400, energySeries, "* Storages are not considered energy producers");
 
 		// Pie widget: Energy contributed by storage
 		contextPanel.addPiePlotWidget("Heat contributed by storage", 400, 400, heatDischargeByStorage, null);
@@ -258,7 +265,7 @@ public class LPMetricsGenerator implements MetricsGenerator {
 				"* Storages are not considered energy producers");
 
 		// Pie widget: Energy produced by source
-		int sizeFactor = energyProductionBySource.size() - 2;
+		sizeFactor = energyProductionBySource.size() - 2;
 		contextPanel.addPiePlotWidget("Energy produced by source", 400, sizeFactor * 20 + 400, energyProductionBySource,
 				"* Storages are not considered energy producers");
 
@@ -414,8 +421,9 @@ public class LPMetricsGenerator implements MetricsGenerator {
 					new CategorySeries("Electricity Production", time, totalElectricityProductionInTime, null, null));
 			energySeries.add(new CategorySeries("Heat Demand ", time, heatDemandInTime, null, null));
 			energySeries.add(new CategorySeries("Heat Production", time, totalHeatProductionInTime, null, null));
+			int sizeFactor = (int) Math.min(4.0, Math.round(time.size() / 20 + 0.5));
 			contextPanel.addBarPlotWidget("Energy produced and demanded", "Forecasted time [time steps]",
-					"Electricity [kWh]", 400, 400, energySeries, "* Storages are not considered energy producers");
+					"Electricity [kWh]", 400 * sizeFactor, 400, energySeries, "* Storages are not considered energy producers");
 
 			// Pie widget: Energy contributed by storage
 			contextPanel.addPiePlotWidget("Heat contributed by storage", 400, 400, heatDischargeByStorage, null);
@@ -431,7 +439,7 @@ public class LPMetricsGenerator implements MetricsGenerator {
 
 			// Pie widget: Energy produced by source: Volatile producers, controllable
 			// producers and couplers are considered producers
-			int sizeFactor = energyProductionBySource.size() - 2;
+			sizeFactor = energyProductionBySource.size() - 2;
 			contextPanel.addPiePlotWidget("Energy produced by source", 400, sizeFactor * 20 + 400,
 					energyProductionBySource, "* Storages are not considered energy producers");
 

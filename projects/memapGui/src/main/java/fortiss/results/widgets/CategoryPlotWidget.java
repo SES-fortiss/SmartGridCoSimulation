@@ -17,7 +17,7 @@ import fortiss.gui.style.Fonts;
 public class CategoryPlotWidget extends XChartPanel<CategoryChart> {
 
 	private static final long serialVersionUID = 1L;
-
+	private List<CategorySeries> series;
 	/**
 	 * @param title plot title
 	 * @param xAxisTitle title of the x axis
@@ -33,6 +33,7 @@ public class CategoryPlotWidget extends XChartPanel<CategoryChart> {
 		super(new CategoryChartBuilder().width(width).height(height).title(title.toUpperCase()).xAxisTitle(xAxisTitle)
 				.yAxisTitle(yAxisTitle).build());
 
+		this.series = series;
 		getChart().getStyler().setDefaultSeriesRenderStyle(style);
 		// getChart().getStyler().setChartBackgroundColor(Colors.background);
 		getChart().getStyler().setChartBackgroundColor(UIManager.getColor("Panel.background"));
@@ -48,5 +49,13 @@ public class CategoryPlotWidget extends XChartPanel<CategoryChart> {
 
 		series.forEach((serie) -> getChart().addSeries(serie.getName(), (List<?>) serie.getXData(),
 				(List<? extends Number>) serie.getYData()));
+	}
+	
+	public boolean isEmpty() {
+		double sum = 0;
+		for (CategorySeries item : series) {
+			sum = item.getYMax() + item.getYMin();
+		}
+		return sum == 0;
 	}
 }

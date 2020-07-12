@@ -1,10 +1,13 @@
 package fortiss.results;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.util.HashMap;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.EtchedBorder;
@@ -15,7 +18,6 @@ import fortiss.gui.style.Fonts;
 import fortiss.results.widgets.ComponentUsageWidged;
 import fortiss.results.widgets.ParameterWidget;
 import fortiss.results.widgets.TextBoxWidget;
-import fortiss.results.widgets.TitleWidget;
 
 public class SummaryPanel extends JPanel {
 
@@ -26,45 +28,47 @@ public class SummaryPanel extends JPanel {
 	private JPanel performancePanel;
 	private JPanel globalOptimizationPanel;
 	private JPanel perBuildingOptimizationPanel;
-	
+
 	public SummaryPanel() {
 		setLayout(new BorderLayout(0, 0));
-		
+
 		ParameterWidget parameterWidget = new ParameterWidget();
 		add(parameterWidget, BorderLayout.WEST);
-		
+
 		globalOptimizationPanel = new JPanel();
 		globalOptimizationPanel.setAlignmentX(CENTER_ALIGNMENT);
 		globalOptimizationPanel.setAlignmentY(CENTER_ALIGNMENT);
 		globalOptimizationPanel.setLayout(new BoxLayout(globalOptimizationPanel, BoxLayout.Y_AXIS));
 		globalOptimizationPanel.add(Box.createVerticalStrut(50));
 		globalOptimizationPanel.setBorder(new TitledBorder(new EtchedBorder(), "Results with MEMAP", TitledBorder.RIGHT,
-		TitledBorder.TOP, Fonts.getOswald(26), Colors.accent2));
-		
+				TitledBorder.TOP, Fonts.getOswald(26), Colors.accent2));
+
 		perBuildingOptimizationPanel = new JPanel();
 		perBuildingOptimizationPanel.setAlignmentX(CENTER_ALIGNMENT);
 		perBuildingOptimizationPanel.setAlignmentY(CENTER_ALIGNMENT);
 		perBuildingOptimizationPanel.setLayout(new BoxLayout(perBuildingOptimizationPanel, BoxLayout.Y_AXIS));
 		perBuildingOptimizationPanel.add(Box.createVerticalStrut(50));
-		perBuildingOptimizationPanel.setBorder(new TitledBorder(new EtchedBorder(), "Results without MEMAP", TitledBorder.RIGHT,
-				TitledBorder.TOP, Fonts.getOswald(26), Colors.accent2));
-		
-		JSplitPane comparisonPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, globalOptimizationPanel, perBuildingOptimizationPanel);
+		perBuildingOptimizationPanel.setBorder(new TitledBorder(new EtchedBorder(), "Results without MEMAP",
+				TitledBorder.RIGHT, TitledBorder.TOP, Fonts.getOswald(26), Colors.accent2));
+
+		JSplitPane comparisonPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, globalOptimizationPanel,
+				perBuildingOptimizationPanel);
 		comparisonPane.setDividerSize(0);
 		comparisonPane.setResizeWeight(0.5);
 		add(comparisonPane, BorderLayout.CENTER);
-		
+
 		performancePanel = new JPanel();
-		performancePanel.setAlignmentX(CENTER_ALIGNMENT);
-		performancePanel.setAlignmentY(CENTER_ALIGNMENT);
-		performancePanel.setLayout(new BoxLayout(performancePanel, BoxLayout.Y_AXIS));
-		performancePanel.add(Box.createVerticalStrut(100));
-		performancePanel.add(new TitleWidget("COMPARISON"));
-		add(performancePanel, BorderLayout.EAST);
+		performancePanel.add(Box.createHorizontalStrut(200));
+		performancePanel.setLayout(new BoxLayout(performancePanel, BoxLayout.X_AXIS));
+		performancePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		performancePanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+		add(performancePanel, BorderLayout.NORTH);
 	}
 
 	/**
-	 * @param context {@link #GLOBAL_OPTIMIZATION}, {@link #PER_BUILDING_OPTIMIZATION} or {@link #performancePanel}
+	 * @param context {@link #GLOBAL_OPTIMIZATION},
+	 *                {@link #PER_BUILDING_OPTIMIZATION} or
+	 *                {@link #performancePanel}
 	 * @param title
 	 * @param value
 	 * @param unit
@@ -74,7 +78,7 @@ public class SummaryPanel extends JPanel {
 		TextBoxWidget textBoxWidget = new TextBoxWidget(title, value, unit);
 		if (toolTip != null)
 			textBoxWidget.setToolTipText(toolTip);
-		
+
 		switch (context) {
 		case GLOBAL_OPTIMIZATION:
 			globalOptimizationPanel.add(textBoxWidget);
@@ -87,12 +91,31 @@ public class SummaryPanel extends JPanel {
 			break;
 		default:
 			throw new IllegalArgumentException("Summary panel: " + context + " is not a valid context");
-		}	
+		}
 	}
-	
-	public void addComponentUsageWidget(String context, String title, HashMap<String, Number> energyProductionBySource, int places) {
+
+	public void addImageWidget(String context, ImageIcon icon) {
+		JLabel iconLabel = new JLabel(icon);
+		iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		switch (context) {
+		case GLOBAL_OPTIMIZATION:
+			globalOptimizationPanel.add(iconLabel);
+			break;
+		case PER_BUILDING_OPTIMIZATION:
+			perBuildingOptimizationPanel.add(iconLabel);
+			break;
+		case PERFORMANCE:
+			performancePanel.add(iconLabel);
+			break;
+		default:
+			throw new IllegalArgumentException("Summary panel: " + context + " is not a valid context");
+		}
+	}
+
+	public void addComponentUsageWidget(String context, String title, HashMap<String, Number> energyProductionBySource,
+			int places) {
 		ComponentUsageWidged componentUsageWidget = new ComponentUsageWidged(title, energyProductionBySource, places);
-		
+
 		switch (context) {
 		case GLOBAL_OPTIMIZATION:
 			globalOptimizationPanel.add(componentUsageWidget);
@@ -102,6 +125,6 @@ public class SummaryPanel extends JPanel {
 			break;
 		default:
 			throw new IllegalArgumentException("Summary panel: " + context + " is not a valid context");
-		}	
+		}
 	}
 }

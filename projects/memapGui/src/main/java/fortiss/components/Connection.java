@@ -31,13 +31,13 @@ public class Connection {
 	/** Default length of connection */
 	private static final double DEFAULT_LENGTH = 10.0;
 	/** Default looses value of connection */
-	private static final double DEFAULT_LOSSES = 10.0;
+	private static final double DEFAULT_LOSSES = 0.1;
 	/** Line between nodeA and nodeB */
 	private Line2D ln;
-	/** Length of connection */
+	/** Length of connection [m] */
 	@Expose
 	private double length;
-	/** Looses of connection */
+	/** Looses of connection [%] */
 	@Expose
 	private double losses;
 

@@ -69,7 +69,7 @@ public class SimulationOptimize extends SimulationState {
 				gc.startSimulation();
 				pm.setState(new SimulationDone());
 				try {
-					Thread.sleep(10000);
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

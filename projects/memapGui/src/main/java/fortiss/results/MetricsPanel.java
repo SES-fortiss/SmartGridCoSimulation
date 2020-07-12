@@ -53,33 +53,46 @@ public class MetricsPanel extends JPanel {
 			List<CategorySeries> series, String toolTip) {
 		CategoryPlotWidget barPlotWidget = new CategoryPlotWidget(title, xAxisTitle, yAxisTitle, width, height, series,
 				CategorySeriesRenderStyle.Bar);
-		if (toolTip != null)
+		if (toolTip != null) {
 			barPlotWidget.setToolTipText(toolTip);
-		add(barPlotWidget);
+		}
+		if (!barPlotWidget.isEmpty()) {
+			add(barPlotWidget);
+		}
 	}
 
 	public void addLinePlotWidget(String title, String xAxisTitle, String yAxisTitle, int width, int height,
 			List<CategorySeries> series, String toolTip) {
 		CategoryPlotWidget linePlotWidget = new CategoryPlotWidget(title, xAxisTitle, yAxisTitle, width, height, series,
 				CategorySeriesRenderStyle.Line);
-		if (toolTip != null)
+		if (toolTip != null) {
 			linePlotWidget.setToolTipText(toolTip);
-		add(linePlotWidget);
+		}
+		if (!linePlotWidget.isEmpty()) {
+			add(linePlotWidget);
+		}
 	}
 
 	public void addPiePlotWidget(String title, int width, int height, HashMap<String, Number> series, String toolTip) {
 		PieChartWidget piePlotWidget = new PieChartWidget(title, width, height, series, PieSeriesRenderStyle.Pie);
-		if (toolTip != null)
+		if (toolTip != null) {
 			piePlotWidget.setToolTipText(toolTip);
-		add(piePlotWidget);
+		}
+		if (!piePlotWidget.isEmpty()) {
+			add(piePlotWidget);
+		}
 	}
 
 	public void addDonutPlotWidget(String title, int width, int height, HashMap<String, Number> series,
 			String toolTip) {
 		PieChartWidget donutPlotWidget = new PieChartWidget(title, width, height, series, PieSeriesRenderStyle.Donut);
-		if (toolTip != null)
+		if (toolTip != null) {
 			donutPlotWidget.setToolTipText(toolTip);
-		add(donutPlotWidget);
+		}
+		if (!donutPlotWidget.isEmpty()) {
+			add(donutPlotWidget);
+		}
+		
 	}
 
 }

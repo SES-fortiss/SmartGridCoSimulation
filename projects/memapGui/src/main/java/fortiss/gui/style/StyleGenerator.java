@@ -2,6 +2,7 @@ package fortiss.gui.style;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
+import java.awt.Insets;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -54,7 +55,9 @@ abstract public class StyleGenerator {
 		UIManager.put("ProgressBar.font", defaultFont);
 		UIManager.put("ScrollPane.font", defaultFont);
 		UIManager.put("Viewport.font", defaultFont);
-		UIManager.put("TabbedPane.font", defaultFont);		
+		UIManager.put("TabbedPane.font", defaultFont);
+		UIManager.put("TabbedPane.contentBorderInsets", new Insets(0,0,0,0));
+		UIManager.put("TabbedPane.tabsOverlapBorder", true);
 		UIManager.put("Table.font", defaultFont);
 		UIManager.put("TableHeader.font", defaultFont);
 		UIManager.put("TextField.font", defaultFont);

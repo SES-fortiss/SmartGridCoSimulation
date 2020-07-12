@@ -6,8 +6,11 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -19,11 +22,16 @@ import javax.swing.ScrollPaneConstants;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
+import fortiss.simulation.PlanningTool;
 
 public class ReporterOverviewPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
+	/** Panel that is currently visible */
+	String visiblePanel = null;
+	/** Labels used to select a panel */
+	HashMap<String, JLabel> panelLabels = new HashMap<String, JLabel>();
 	/** JPanel that holds all the labels of the metrics panels */
 	private JPanel selectionPanel;
 	/** JPanel that holds all metrics panels */
@@ -50,18 +58,20 @@ public class ReporterOverviewPanel extends JPanel {
 		// Important: size configuration
 		int selectionPanelHeight = 40;
 
-		selectionPanel.setPreferredSize(new Dimension(0, selectionPanelHeight));
-		selectionPanel.setMaximumSize(new Dimension(0, selectionPanelHeight));
-
-		selectionPanel.setOpaque(true);
-		selectionPanel.setAlignmentY(CENTER_ALIGNMENT);
-
+		Rectangle bounds = PlanningTool.getPlanningToolWindow().getBounds();
+		Insets insets = PlanningTool.getPlanningToolWindow().getInsets();
+		
+		selectionPanel.setPreferredSize(new Dimension(bounds.width  - insets.left - insets.right, selectionPanelHeight));
+		selectionPanel.setMaximumSize(new Dimension(bounds.width  - insets.left - insets.right, selectionPanelHeight));
+		
 		JScrollPane selectionScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		selectionScrollPane.setViewportView(selectionPanel);
-
-		add(presentationPanel, BorderLayout.CENTER);
+		selectionScrollPane.setAlignmentY(CENTER_ALIGNMENT);
+		selectionScrollPane.setPreferredSize(new Dimension(bounds.width  - insets.left - insets.right, selectionPanelHeight + 20));
+		
 		add(selectionScrollPane, BorderLayout.SOUTH);
+		add(presentationPanel, BorderLayout.CENTER);
 	}
 
 	/**
@@ -97,8 +107,17 @@ public class ReporterOverviewPanel extends JPanel {
 		label.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				CardLayout cl = (CardLayout) presentationPanel.getLayout();
-				cl.show(presentationPanel, label.getText().toLowerCase());
+				// Change focus
+				JLabel activeLabel = panelLabels.get(visiblePanel);
+				if (activeLabel != null) {
+					activeLabel.setForeground(Colors.accent2);
+					activeLabel.setBorder(null);
+				}
+				label.setForeground(Colors.accent1);
+				label.setBorder(BorderFactory.createLineBorder(Colors.accent1, 1, true));
+				
+				// Show panel
+				showPanel(label.getText());
 			}
 
 			@Override
@@ -112,10 +131,18 @@ public class ReporterOverviewPanel extends JPanel {
 			}
 		});
 
+		panelLabels.put(label.getText().toLowerCase(), label);
 		selectionPanel.add(label);
 		selectionPanel.add(Box.createHorizontalGlue());
 	}
 
+	public void showPanel(String panelName) {
+		panelName = panelName.toLowerCase();
+		CardLayout cl = (CardLayout) presentationPanel.getLayout();
+		cl.show(presentationPanel, panelName);
+		visiblePanel = panelName;
+	}
+	
 	/**
 	 * Remove all sub-panels. Must be called before every simulation in order to
 	 * avoid panel duplicates

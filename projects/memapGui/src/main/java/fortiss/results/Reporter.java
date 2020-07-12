@@ -70,6 +70,8 @@ public class Reporter {
 		} 
 		
 		metricsGenerator.populateMetricsPanels(summaryPanel, metricsPanelMap);
+		
+		overviewPanel.showPanel("Summary");
 	}
 
 	/**

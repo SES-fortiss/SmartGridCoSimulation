@@ -13,6 +13,8 @@ abstract public class Icon {
 	private static String fortissLogoPath = "/resources/fortissLogo.png";
 	private static String memapLogoPath = "/resources/memap.png";
 	
+	private static String costReductionPath = "/resources/costReduction.png";
+	private static String emissionsReductionPath = "/resources/emissionsReduction.png";
 	private static String loadingPath = "/resources/loading.gif";
 	private static String openPath = "/resources/open.png";
 	private static String resetPath = "/resources/reset.png";
@@ -61,6 +63,11 @@ abstract public class Icon {
 	
 	public static ImageIcon smallMemapLogo = new ImageIcon(
 			new ImageIcon(Icon.class.getResource(memapLogoPath)).getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH));
+	
+	public static ImageIcon costReduction = new ImageIcon(new ImageIcon(Icon.class.getResource(costReductionPath)).getImage()
+			.getScaledInstance(150, 100, Image.SCALE_SMOOTH));
+	public static ImageIcon emissionsReduction = new ImageIcon(new ImageIcon(Icon.class.getResource(emissionsReductionPath)).getImage()
+			.getScaledInstance(150, 100, Image.SCALE_SMOOTH));
 	
 	public static ImageIcon loading = new ImageIcon(
 			new ImageIcon(Icon.class.getResource(loadingPath)).getImage().getScaledInstance(1150, 450, Image.SCALE_DEFAULT));
