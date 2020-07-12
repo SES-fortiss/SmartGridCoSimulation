@@ -77,13 +77,16 @@ public class MILPProblemWithConnections extends MILPProblem {
         
         MILPHelper.addMarkets(problem, mihelper);
         
+        /* moved to another method further below
         for (BuildingMessage bm : buildingMessages) {			
+         
 			int indexBuilding = mapBuildingMessageToIndex.get(bm)-1;
 			updateLambdaEURbuilding(bm, indexBuilding);
 			updateLambdaCO2building(bm, indexBuilding);			
 		}        
         updateLambdaEURMarket();
 		updateLambdaCO2Market();
+        */
         
 		return problem;
 	}	
@@ -273,6 +276,16 @@ public class MILPProblemWithConnections extends MILPProblem {
         		System.out.println("Adding markets --> rowELEC: " + Arrays.toString(rowELEC) + " EQ: " + demandELEC[i]);
 			}       	     	        	
 		}
+        
+        for (BuildingMessage bm : buildingMessages) {			
+            
+			int indexBuilding = mapBuildingMessageToIndex.get(bm)-1;
+			updateLambdaEURbuilding(bm, indexBuilding);
+			updateLambdaCO2building(bm, indexBuilding);			
+		}        
+        updateLambdaEURMarket();
+		updateLambdaCO2Market();
+		
 		return problem;
 	}
 
