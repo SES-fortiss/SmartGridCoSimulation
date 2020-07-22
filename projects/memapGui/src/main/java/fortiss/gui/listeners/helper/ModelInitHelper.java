@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
+
+import javax.swing.JLabel;
+
 import java.util.TreeMap;
 
 import com.google.gson.Gson;
@@ -87,9 +90,9 @@ public class ModelInitHelper {
 				createComponentIcons();
 
 				DesignerPanel.buildingCount = DesignerPanel.buildings.size();
-				DesignerPanel.selectedBuilding = DesignerPanel.buildings.firstKey();
+				DesignerPanel.selectedBuilding = DesignerPanel.buildings.get(DesignerPanel.buildings.firstKey());
 				DataUpdater up = new DataUpdater();
-				Building building = DesignerPanel.buildings.get(DesignerPanel.selectedBuilding);
+				Building building = DesignerPanel.selectedBuilding;
 				up.updateEmsData(building.getName(), Integer.toString(building.getPort()));
 
 				PlanningTool.getPlanningToolWindow()
@@ -108,9 +111,10 @@ public class ModelInitHelper {
 	 * Create component icons for all existing buildings
 	 */
 	private static void createComponentIcons() {
-		for (String buildingName : DesignerPanel.buildings.keySet()) {
+		for (String buildingName : DesignerPanel.buildings.keySet()) {			
+			Building building = DesignerPanel.buildings.get(buildingName);			
 			ComponentIcons components = new ComponentIcons();
-			components.createIcons(buildingName);
+			components.createIcons(building);
 		}
 	}
 
@@ -143,15 +147,27 @@ public class ModelInitHelper {
 	 */
 	public static void readPositions() {
 		FileManager fm = new FileManager();
-		BufferedReader br = fm.readPositionsFile();
-		Type pointListType = new TypeToken<TreeMap<String, Point2D>>() {
-		}.getType();
+		BufferedReader br = fm.readPositionsFile();		
+		Type pointListType = new TypeToken<TreeMap<String, Point2D>>() {}.getType();		
 		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Point2D.class, new Point2DTypeAdapter());
+		gsonBuilder.registerTypeAdapter(Point2D.class, new Point2DTypeAdapter());		
 		Gson gson = gsonBuilder.enableComplexMapKeySerialization().excludeFieldsWithoutExposeAnnotation().create();
 		TreeMap<String, Point2D> positionsList = gson.fromJson(br, pointListType);
-
 		PositionManager pm = PositionManager.getInstance();
-		pm.setPositions(positionsList);
+		
+		try {
+			pm.setPositions(positionsList);
+		} catch (Exception e) {
+			e.printStackTrace();
+			pm.clearPositions();			
+			// System.out.println("Clearing positions!");
+			
+			for (Entry<Building, JLabel> entry : DesignerPanel.buildingIcons.entrySet()) {				
+				Building building = entry.getKey();		
+				JLabel icon = entry.getValue();				
+				pm.addPosition(building.getName(), icon);
+			}
+		}
+		
 	}
 }

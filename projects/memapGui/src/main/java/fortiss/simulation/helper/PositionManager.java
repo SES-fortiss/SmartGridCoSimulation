@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 
 import com.google.gson.annotations.Expose;
 
+import fortiss.components.Building;
 import fortiss.gui.DesignerPanel;
 import fortiss.media.Icon;
 
@@ -17,7 +18,7 @@ import fortiss.media.Icon;
  */
 public class PositionManager {
 
-	private final static PositionManager pm = new PositionManager();
+	private static PositionManager pm = new PositionManager();
 	private ConnectionManager cm = ConnectionManager.getInstance();
 
 	@Expose
@@ -71,6 +72,19 @@ public class PositionManager {
 		cm.updateLines();
 		DesignerPanel.pl_ems.repaint();
 	}
+	
+	/**
+	 * Updates positions of a building label. Calls
+	 * {@link fortiss.simulation.helper.ConnectionManager#updateLines()}
+	 * 
+	 * @param buildingName the name of a building
+	 * @param icon         a building icon
+	 */
+	public void updateBuildingsName(String oldName, String newName) {
+		Point2D point = this.positions.get(oldName);
+		positions.remove(oldName);
+		positions.put(newName, point);
+	}
 
 	/**
 	 * Assign a position to a building icon. Intended for the deserialization
@@ -79,19 +93,19 @@ public class PositionManager {
 	 * @param buildingName the name of a building
 	 * @param icon         the icon of a building
 	 */
-	private void assignPosition(String buildingName, JLabel icon) {
+	private void assignPosition(String buildingName, JLabel icon) {	
 		Point2D position = getUpperLeftPoint(icon, getPositionOf(buildingName));
 		icon.setLocation((int) position.getX(), (int) position.getY());
 	}
 
 	/**
 	 * Assign {@link #getPositions()} to all the building icons. Calls
-	 * {@link #assignPosition(String, JLabel)}. Intended for the deserialization
+	 * {@link #updatePositions(String, JLabel)}. Intended for the deserialization
 	 * process, only.
 	 */
-	private void assignPositions() {
-		for (Entry<String, JLabel> entry : DesignerPanel.buildingIcons.entrySet()) {
-			String buildingName = entry.getKey();
+	public void updatePositions() {
+		for (Entry<Building, JLabel> entry : DesignerPanel.buildingIcons.entrySet()) {
+			String buildingName = entry.getKey().getName();
 			JLabel icon = entry.getValue();
 			assignPosition(buildingName, icon);
 		}
@@ -158,8 +172,8 @@ public class PositionManager {
 	 * panel is resized. Calls {@link PositionManager#fixPosition(JLabel)}
 	 */
 	public void fixPositions() {
-		for (Entry<String, JLabel> entry : DesignerPanel.buildingIcons.entrySet()) {
-			String buildingName = entry.getKey();
+		for (Entry<Building, JLabel> entry : DesignerPanel.buildingIcons.entrySet()) {
+			String buildingName = entry.getKey().getName();
 			JLabel icon = entry.getValue();
 			fixPosition(buildingName, icon);
 		}
@@ -187,14 +201,13 @@ public class PositionManager {
 
 	/**
 	 * Set the positions map to the value passed. Calls
-	 * {@link PositionManager#assignPositions()} and repaints the panel
+	 * {@link PositionManager#updatePositions()} and repaints the panel
 	 * 
 	 * @param positions
 	 */
 	public void setPositions(TreeMap<String, Point2D> positions) {
 		this.positions = positions;
-		assignPositions();
+		updatePositions();
 		DesignerPanel.pl_ems.repaint();
 	}
-
 }

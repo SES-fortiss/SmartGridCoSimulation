@@ -194,7 +194,7 @@ public class FileManager {
 	public void writePositionFile() {
 			String location = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir
 					+ File.separator + "positions.json";
-			System.out.println(">> Writing connections file in " + location);	
+			System.out.println(">> Writing position file in " + location);	
 	
 			File file = new File(location);
 
@@ -205,7 +205,7 @@ public class FileManager {
 			Gson gson = gsonBuilder.enableComplexMapKeySerialization().excludeFieldsWithoutExposeAnnotation().create();
 			
 			PositionManager pm = PositionManager.getInstance();
-			String str = gson.toJson(pm.getPositions(), pointListType);
+			String str = gson.toJson(pm.getPositions(), pointListType);			
 			writeFile(str, file);
 	}
 
@@ -246,7 +246,7 @@ public class FileManager {
 
 		String str = gson.toJson(mySet);
 		writeFile(str, file);
-		System.out.println(">> Writing memap model file in " + str);
+		System.out.println(">> Writing memap model file in " + file);
 	}
 
 	/** Writes one descriptor file per building with its configuration. */

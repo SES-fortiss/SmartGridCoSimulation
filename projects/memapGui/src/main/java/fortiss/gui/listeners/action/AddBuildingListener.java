@@ -26,7 +26,7 @@ public class AddBuildingListener extends MouseAdapter {
 		Building building = new Building(buildingName, 0);
 
 		DesignerPanel.buildings.put(buildingName, building);
-		DesignerPanel.selectedBuilding = buildingName;
+		DesignerPanel.selectedBuilding = building;
 
 		// Create building icon
 		BuildingIcons bi = new BuildingIcons();
@@ -34,7 +34,7 @@ public class AddBuildingListener extends MouseAdapter {
 
 		// Create component icons
 		ComponentIcons components = new ComponentIcons();
-		components.createComponentLists(buildingName);
+		components.createComponentLists(building);
 
 		// Show information in pl_ems_details
 		DataUpdater du = new DataUpdater();

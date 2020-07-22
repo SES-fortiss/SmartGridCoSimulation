@@ -18,9 +18,9 @@ public class AddVolatileListener extends MouseAdapter {
 		DesignerPanel.currentComponent = DesignerPanel.volatileIcons.get(DesignerPanel.selectedBuilding).size();
 
 		// Create Volatile
-		DesignerPanel.buildings.get(DesignerPanel.selectedBuilding)
+		DesignerPanel.selectedBuilding
 				.addVolProduction(new Volatile("Volatile" + DesignerPanel.currentComponent, "Heat", 0.0, 0.0, "", 0.0, 0.0));
-		Volatile v = DesignerPanel.buildings.get(DesignerPanel.selectedBuilding).getVolatile().get(DesignerPanel.currentComponent);
+		Volatile v = DesignerPanel.selectedBuilding.getVolatile().get(DesignerPanel.currentComponent);
 
 		// Create label
 		ComponentIcons components = new ComponentIcons();

@@ -41,7 +41,7 @@ public class BuildingIcons {
 		JLabel icon = new JLabel(buildingName);
 		icon.setName("building");
 		icon.setFont(Fonts.getOpenSans());
-		DesignerPanel.buildingIcons.put(buildingName, icon);
+		DesignerPanel.buildingIcons.put(  DesignerPanel.buildings.get(buildingName), icon);
 		icon.setVerticalTextPosition(JLabel.BOTTOM);
 		icon.setHorizontalTextPosition(JLabel.CENTER);
 		icon.setToolTipText(buildingName);

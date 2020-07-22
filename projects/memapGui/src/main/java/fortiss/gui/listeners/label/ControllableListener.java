@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
 
+import fortiss.components.Building;
 import fortiss.components.Controllable;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.DataUpdater;
@@ -14,20 +15,20 @@ import fortiss.gui.listeners.helper.FocusManager;
 
 public class ControllableListener extends MouseAdapter implements FocusListener {
 
-	private static String buildingName;
+	private static Building building;
 
 	/**
 	 * Manages the actions performed when the label is selected: Panels, data shown.
 	 */
 	@Override
 	public void mousePressed(MouseEvent e) {
-		buildingName = DesignerPanel.selectedBuilding;
+		building = DesignerPanel.selectedBuilding;
 
 		JLabel lb = (JLabel) e.getSource();
 		lb.requestFocus(); // Required for removing components
 
-		DesignerPanel.currentComponent = DesignerPanel.controllableIcons.get(buildingName).indexOf(lb);
-		Controllable cp = DesignerPanel.buildings.get(buildingName).getControllable().get(DesignerPanel.currentComponent);
+		DesignerPanel.currentComponent = DesignerPanel.controllableIcons.get(building).indexOf(lb);
+		Controllable cp = building.getControllable().get(DesignerPanel.currentComponent);
 
 		DataUpdater up = new DataUpdater();
 		up.updateContProductionData(cp.getName(), cp.getNetworkType(), cp.getMinimumPower(), cp.getMaximumPower(),
@@ -39,9 +40,9 @@ public class ControllableListener extends MouseAdapter implements FocusListener 
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		buildingName = DesignerPanel.selectedBuilding;
+		building = DesignerPanel.selectedBuilding;
 		JLabel lb = (JLabel) e.getSource();
-		FocusManager.focusControllable(buildingName, lb);
+		FocusManager.focusControllable(building, lb);
 	}
 
 	/**
@@ -50,7 +51,7 @@ public class ControllableListener extends MouseAdapter implements FocusListener 
 	@Override
 	public void focusLost(FocusEvent e) {
 		JLabel lb = (JLabel) e.getSource();
-		FocusManager.focusLostControllable(buildingName, lb);
+		FocusManager.focusLostControllable(building, lb);
 	}
 
 }

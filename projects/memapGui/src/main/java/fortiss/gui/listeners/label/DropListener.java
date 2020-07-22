@@ -47,7 +47,7 @@ public class DropListener extends DropTargetAdapter implements DropTargetListene
 				String buildingName = "building" + DesignerPanel.buildingCount;
 				Building building = new Building(buildingName, 0);
 				DesignerPanel.buildings.put(buildingName, building);
-				DesignerPanel.selectedBuilding = buildingName;
+				DesignerPanel.selectedBuilding = building;
 
 				// Create building icon
 				BuildingIcons bi = new BuildingIcons();
@@ -55,7 +55,7 @@ public class DropListener extends DropTargetAdapter implements DropTargetListene
 
 				// Create component icons
 				ComponentIcons components = new ComponentIcons();
-				components.createComponentLists(buildingName);
+				components.createComponentLists(building);
 
 				// Show information in pl_ems_details
 				DataUpdater du = new DataUpdater();

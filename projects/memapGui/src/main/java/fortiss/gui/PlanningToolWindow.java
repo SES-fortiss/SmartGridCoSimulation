@@ -46,6 +46,7 @@ public class PlanningToolWindow extends JFrame {
 		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		setMaximizedBounds(env.getMaximumWindowBounds());
 		setSize(env.getMaximumWindowBounds().width, env.getMaximumWindowBounds().height);
+		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 

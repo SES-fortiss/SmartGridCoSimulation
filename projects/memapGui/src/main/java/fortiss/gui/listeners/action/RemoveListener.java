@@ -5,12 +5,13 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JLabel;
 
+import fortiss.components.Building;
 import fortiss.gui.DesignerPanel;
 import fortiss.simulation.helper.PositionManager;
 
 public class RemoveListener extends KeyAdapter {
 
-	private static String buildingName;
+	private static Building selectedBuilding;
 	private static int component;
 
 	/**
@@ -18,7 +19,7 @@ public class RemoveListener extends KeyAdapter {
 	 * or back space.
 	 */
 	public void keyPressed(KeyEvent e) {
-		buildingName = DesignerPanel.selectedBuilding;
+		selectedBuilding = DesignerPanel.selectedBuilding;
 		component = DesignerPanel.currentComponent;
 
 		JLabel source = (JLabel) e.getSource();
@@ -60,22 +61,22 @@ public class RemoveListener extends KeyAdapter {
 	 */
 	private void removeBuilding() {
 		// Remove currentBuilding from building list
-		DesignerPanel.buildings.remove(buildingName);
+		DesignerPanel.buildings.remove(selectedBuilding.getName());
 
 		// Remove building icon from panel
-		DesignerPanel.pl_ems.remove(DesignerPanel.buildingIcons.get(buildingName));
+		DesignerPanel.pl_ems.remove(DesignerPanel.buildingIcons.get(selectedBuilding));
 		DesignerPanel.pl_ems.repaint();
 
 		// Remove position
 		PositionManager pm = PositionManager.getInstance();
-		pm.removePosition(buildingName);
+		pm.removePosition(selectedBuilding.getName());
 
 		// Remove component icons of currentBuilding from lists
-		DesignerPanel.demandIcons.remove(buildingName);
-		DesignerPanel.storageIcons.remove(buildingName);
-		DesignerPanel.volatileIcons.remove(buildingName);
-		DesignerPanel.controllableIcons.remove(buildingName);
-		DesignerPanel.couplerIcons.remove(buildingName);
+		DesignerPanel.demandIcons.remove(selectedBuilding);
+		DesignerPanel.storageIcons.remove(selectedBuilding);
+		DesignerPanel.volatileIcons.remove(selectedBuilding);
+		DesignerPanel.controllableIcons.remove(selectedBuilding);
+		DesignerPanel.couplerIcons.remove(selectedBuilding);
 
 		// Remove EMS detail panel
 		DesignerPanel.cl.show(DesignerPanel.pl_comp_detail, "initial");
@@ -85,7 +86,7 @@ public class RemoveListener extends KeyAdapter {
 		DesignerPanel.pl_comp.revalidate();
 
 		// Remove currentBuilding icon from icon list
-		DesignerPanel.buildingIcons.remove(buildingName);
+		DesignerPanel.buildingIcons.remove(selectedBuilding);
 		DesignerPanel.buildingCount = DesignerPanel.buildingCount - 1;
 
 		hidePanels();
@@ -95,8 +96,8 @@ public class RemoveListener extends KeyAdapter {
 	 * Removes demand icon and data.
 	 */
 	private void removeDemand(JLabel source) {
-		DesignerPanel.buildings.get(buildingName).getDemand().remove(component);
-		DesignerPanel.demandIcons.get(buildingName).remove(source);
+		DesignerPanel.selectedBuilding.getDemand().remove(component);
+		DesignerPanel.demandIcons.get(selectedBuilding).remove(source);
 		removeIcon(source);
 		hidePanels();
 	}
@@ -105,8 +106,8 @@ public class RemoveListener extends KeyAdapter {
 	 * Removes storage icon and data.
 	 */
 	private void removeStorage(JLabel source) {
-		DesignerPanel.buildings.get(buildingName).getStorage().remove(component);
-		DesignerPanel.storageIcons.get(buildingName).remove(source);
+		DesignerPanel.selectedBuilding.getStorage().remove(component);
+		DesignerPanel.storageIcons.get(selectedBuilding).remove(source);
 		removeIcon(source);
 		hidePanels();
 	}
@@ -115,8 +116,8 @@ public class RemoveListener extends KeyAdapter {
 	 * Removes volatile icon and data.
 	 */
 	private void removeVolatile(JLabel source) {
-		DesignerPanel.buildings.get(buildingName).getVolatile().remove(component);
-		DesignerPanel.volatileIcons.get(buildingName).remove(source);
+		DesignerPanel.selectedBuilding.getVolatile().remove(component);
+		DesignerPanel.volatileIcons.get(selectedBuilding).remove(source);
 		removeIcon(source);
 		hidePanels();
 	}
@@ -125,8 +126,8 @@ public class RemoveListener extends KeyAdapter {
 	 * Removes controllable icon and data.
 	 */
 	private void removeControllable(JLabel source) {
-		DesignerPanel.buildings.get(buildingName).getControllable().remove(component);
-		DesignerPanel.controllableIcons.get(buildingName).remove(source);
+		DesignerPanel.selectedBuilding.getControllable().remove(component);
+		DesignerPanel.controllableIcons.get(selectedBuilding).remove(source);
 		removeIcon(source);
 		hidePanels();
 	}
@@ -135,8 +136,8 @@ public class RemoveListener extends KeyAdapter {
 	 * Removes coupler icon and data.
 	 */
 	private void removeCoupler(JLabel source) {
-		DesignerPanel.buildings.get(buildingName).getCoupler().remove(component);
-		DesignerPanel.couplerIcons.get(buildingName).remove(source);
+		DesignerPanel.selectedBuilding.getCoupler().remove(component);
+		DesignerPanel.couplerIcons.get(selectedBuilding).remove(source);
 		removeIcon(source);
 		hidePanels();
 	}

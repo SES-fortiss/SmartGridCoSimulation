@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import fortiss.components.Building;
 import fortiss.components.Storage;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FocusManager;
@@ -17,7 +18,7 @@ import fortiss.simulation.PlanningTool;
 
 public class SNameListener extends KeyAdapter implements FocusListener {
 
-	private static String buildingName;
+	private static Building building;
 	private static int component;
 	private static boolean check;
 	private static boolean valid;
@@ -31,15 +32,15 @@ public class SNameListener extends KeyAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		buildingName = DesignerPanel.selectedBuilding;
+		building = DesignerPanel.selectedBuilding;
 		component = DesignerPanel.currentComponent;
-		o = DesignerPanel.buildings.get(buildingName).getStorage().get(component);
+		o = building.getStorage().get(component);
 		check = false;
 		valid = true;
 
 		source = (JTextField) e.getSource();
 		message = "An unidentified error has occurred.";
-		FocusManager.focusStorage(buildingName, component);
+		FocusManager.focusStorage(building, component);
 	}
 
 	/**
@@ -53,7 +54,7 @@ public class SNameListener extends KeyAdapter implements FocusListener {
 			JOptionPane.showMessageDialog(PlanningTool.getMainContentPane(), message);
 			source.setText(currentVal);
 		}
-		FocusManager.focusLostStorage(buildingName, component);
+		FocusManager.focusLostStorage(building, component);
 	}
 
 	/**
@@ -73,7 +74,7 @@ public class SNameListener extends KeyAdapter implements FocusListener {
 				valid = true;
 				o.setName(input);
 				LabelUpdater lu = new LabelUpdater();
-				lu.updateLabel(DesignerPanel.storageIcons.get(buildingName).get(component), input);
+				lu.updateLabel(DesignerPanel.storageIcons.get(building).get(component), input);
 			}
 		}
 	}

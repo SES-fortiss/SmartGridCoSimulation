@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import fortiss.components.Building;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FocusManager;
 import fortiss.gui.listeners.helper.InsertionVerifier;
@@ -15,7 +16,7 @@ import fortiss.simulation.PlanningTool;
 
 public class BPortListener extends KeyAdapter implements FocusListener {
 
-	private static String buildingName;
+	private static Building building;
 	private static boolean check;
 	private static boolean valid;
 	private static JTextField source;
@@ -27,13 +28,13 @@ public class BPortListener extends KeyAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		buildingName = DesignerPanel.selectedBuilding;
+		building = DesignerPanel.selectedBuilding;
 		check = false;
 		valid = true;
 
 		source = (JTextField) e.getSource();
 		message = "An unidentified error has occurred.";
-		FocusManager.focusBuilding(buildingName);
+		FocusManager.focusBuilding(building);
 	}
 
 	/**
@@ -43,11 +44,11 @@ public class BPortListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
-			String currentVal = Integer.toString(DesignerPanel.buildings.get(buildingName).getPort());
+			String currentVal = Integer.toString(building.getPort());
 			JOptionPane.showMessageDialog(PlanningTool.getMainContentPane(), message);
 			source.setText(currentVal);
 		}
-		FocusManager.focusLostBuilding(buildingName);
+		FocusManager.focusLostBuilding(building);
 	}
 
 	/**
@@ -70,7 +71,7 @@ public class BPortListener extends KeyAdapter implements FocusListener {
 					message = "Error. Invalid port number. Only numbers between 1024 and 49151, and 0 are valid.";
 				} else {
 					valid = true;
-					DesignerPanel.buildings.get(buildingName).setPort(Integer.parseUnsignedInt(input));
+					building.setPort(Integer.parseUnsignedInt(input));
 				}
 			}
 		}

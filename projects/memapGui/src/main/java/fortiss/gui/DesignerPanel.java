@@ -8,6 +8,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.TreeMap;
 
 import javax.swing.JLabel;
@@ -29,16 +30,21 @@ public class DesignerPanel extends JPanel {
 
 	// Object arrays
 	public static TreeMap<String, Building> buildings = new TreeMap<String, Building>();
-	public static TreeMap<String, JLabel> buildingIcons = new TreeMap<String, JLabel>();
-	public static TreeMap<String, ArrayList<JLabel>> demandIcons = new TreeMap<String, ArrayList<JLabel>>();
-	public static TreeMap<String, ArrayList<JLabel>> storageIcons = new TreeMap<String, ArrayList<JLabel>>();
-	public static TreeMap<String, ArrayList<JLabel>> volatileIcons = new TreeMap<String, ArrayList<JLabel>>();
-	public static TreeMap<String, ArrayList<JLabel>> controllableIcons = new TreeMap<String, ArrayList<JLabel>>();
-	public static TreeMap<String, ArrayList<JLabel>> couplerIcons = new TreeMap<String, ArrayList<JLabel>>();
+	
+	public static HashMap<Building, JLabel> buildingIcons = new HashMap<Building, JLabel>();
+	public static HashMap<Building, ArrayList<JLabel>> demandIcons = new HashMap<Building, ArrayList<JLabel>>();
+	public static HashMap<Building, ArrayList<JLabel>> storageIcons = new HashMap<Building, ArrayList<JLabel>>();
+	public static HashMap<Building, ArrayList<JLabel>> volatileIcons = new HashMap<Building, ArrayList<JLabel>>();
+	public static HashMap<Building, ArrayList<JLabel>> controllableIcons = new HashMap<Building, ArrayList<JLabel>>();
+	public static HashMap<Building, ArrayList<JLabel>> couplerIcons = new HashMap<Building, ArrayList<JLabel>>();
+	
+	// TODO this structure  might help to remove the bug with building names
+	// Reason: Building names might change, however, it does not change to often
+	//public static TreeMap<Building, String> buildingToBuildingID = new TreeMap<Building, String>();
 	
 	// Flags
 	public static int buildingCount = buildings.size();
-	public static String selectedBuilding = "";
+	public static Building selectedBuilding = null;
 	public static int currentComponent;
 	
 	// Panels

@@ -19,9 +19,9 @@ public class AddDemandListener extends MouseAdapter {
 		DesignerPanel.currentComponent = DesignerPanel.demandIcons.get(DesignerPanel.selectedBuilding).size();
 
 		// Create demand
-		DesignerPanel.buildings.get(DesignerPanel.selectedBuilding)
+		DesignerPanel.selectedBuilding
 				.addDemand(new Demand("Demand" + DesignerPanel.currentComponent, ""));
-		Demand d = DesignerPanel.buildings.get(DesignerPanel.selectedBuilding).getDemand().get(DesignerPanel.currentComponent);
+		Demand d = DesignerPanel.selectedBuilding.getDemand().get(DesignerPanel.currentComponent);
 
 		// Create label
 		ComponentIcons components = new ComponentIcons();

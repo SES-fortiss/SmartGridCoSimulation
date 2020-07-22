@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
 
+import fortiss.components.Building;
 import fortiss.components.Storage;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.DataUpdater;
@@ -14,20 +15,20 @@ import fortiss.gui.listeners.helper.FocusManager;
 
 public class StorageListener extends MouseAdapter implements FocusListener {
 
-	private static String buildingName;
+	private static Building building;
 
 	/**
 	 * Manages the actions performed when the label is selected: Panels, data shown.
 	 */
 	@Override
 	public void mousePressed(MouseEvent e) {
-		buildingName = DesignerPanel.selectedBuilding;
+		building = DesignerPanel.selectedBuilding;
 
 		JLabel lb = (JLabel) e.getSource();
 		lb.requestFocus(); // Required for removing components
 
-		DesignerPanel.currentComponent = DesignerPanel.storageIcons.get(buildingName).indexOf(lb);
-		Storage s = DesignerPanel.buildings.get(buildingName).getStorage().get(DesignerPanel.currentComponent);
+		DesignerPanel.currentComponent = DesignerPanel.storageIcons.get(building).indexOf(lb);
+		Storage s = building.getStorage().get(DesignerPanel.currentComponent);
 
 		DataUpdater up = new DataUpdater();
 		up.updateStorageData(s.getName(), s.getNetworkType(), s.getCapacity(), s.getSoc(), s.getMaxCharging(),
@@ -39,9 +40,9 @@ public class StorageListener extends MouseAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		buildingName = DesignerPanel.selectedBuilding;
+		building = DesignerPanel.selectedBuilding;
 		JLabel lb = (JLabel) e.getSource();
-		FocusManager.focusStorage(buildingName, lb);
+		FocusManager.focusStorage(building, lb);
 	}
 
 	/**
@@ -50,7 +51,7 @@ public class StorageListener extends MouseAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		JLabel lb = (JLabel) e.getSource();
-		FocusManager.focusLostStorage(buildingName, lb);
+		FocusManager.focusLostStorage(building, lb);
 	}
 
 }

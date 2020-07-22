@@ -235,7 +235,7 @@ public class DemandInputPanel extends JPanel {
 			e1.printStackTrace();
 		}
 		txtDConsumption.setText("");
-		DesignerPanel.buildings.get(DesignerPanel.selectedBuilding).getDemand().get(DesignerPanel.currentComponent)
+		DesignerPanel.selectedBuilding.getDemand().get(DesignerPanel.currentComponent)
 				.setConsumptionProfile("");
 	}
 }

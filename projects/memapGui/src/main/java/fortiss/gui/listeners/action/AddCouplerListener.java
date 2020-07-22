@@ -18,9 +18,9 @@ public class AddCouplerListener extends MouseAdapter {
 		DesignerPanel.currentComponent = DesignerPanel.couplerIcons.get(DesignerPanel.selectedBuilding).size();
 
 		// Create coupler
-		DesignerPanel.buildings.get(DesignerPanel.selectedBuilding).addCoupler(new Coupler("Coupler" + DesignerPanel.currentComponent,
+		DesignerPanel.selectedBuilding.addCoupler(new Coupler("Coupler" + DesignerPanel.currentComponent,
 				"Heat", "Electricity", 0.0, 0.0, 1.0, 1.0, 0.0, 0.0));
-		Coupler c = DesignerPanel.buildings.get(DesignerPanel.selectedBuilding).getCoupler().get(DesignerPanel.currentComponent);
+		Coupler c = DesignerPanel.selectedBuilding.getCoupler().get(DesignerPanel.currentComponent);
 
 		// Create label
 		ComponentIcons components = new ComponentIcons();

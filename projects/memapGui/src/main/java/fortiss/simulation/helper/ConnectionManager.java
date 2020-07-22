@@ -191,8 +191,8 @@ public class ConnectionManager {
 			c.setColor();
 			String nameNodeA = c.getNameNodeA();
 			String nameNodeB = c.getNameNodeB();
-			JLabel nodeA = DesignerPanel.buildingIcons.get(nameNodeA);
-			JLabel nodeB = DesignerPanel.buildingIcons.get(nameNodeB);
+			JLabel nodeA = DesignerPanel.buildingIcons.get( DesignerPanel.buildings.get(nameNodeA) );
+			JLabel nodeB = DesignerPanel.buildingIcons.get( DesignerPanel.buildings.get(nameNodeB) );
 			c.setNodeA(nodeA);
 			c.setNodeB(nodeB);
 		}

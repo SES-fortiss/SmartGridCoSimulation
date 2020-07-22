@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import fortiss.components.Building;
 import fortiss.components.Coupler;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FocusManager;
@@ -17,7 +18,7 @@ import fortiss.simulation.PlanningTool;
 
 public class CCostListener extends KeyAdapter implements FocusListener {
 
-	private static String buildingName;
+	private static Building building;
 	private static int component;
 	private static boolean check;
 	private static boolean valid;
@@ -32,9 +33,9 @@ public class CCostListener extends KeyAdapter implements FocusListener {
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		buildingName = DesignerPanel.selectedBuilding;
+		building = DesignerPanel.selectedBuilding;
 		component = DesignerPanel.currentComponent;
-		o = DesignerPanel.buildings.get(buildingName).getCoupler().get(component);
+		o = building.getCoupler().get(component);
 		check = false;
 		valid = true;
 
@@ -42,7 +43,7 @@ public class CCostListener extends KeyAdapter implements FocusListener {
 		message = "An unidentified error has occurred.";
 		v = new InsertionVerifier();
 
-		FocusManager.focusCoupler(buildingName, component);
+		FocusManager.focusCoupler(building, component);
 	}
 
 	/**
@@ -56,7 +57,7 @@ public class CCostListener extends KeyAdapter implements FocusListener {
 			JOptionPane.showMessageDialog(PlanningTool.getMainContentPane(), message);
 			source.setText(currentVal);
 		}
-		FocusManager.focusLostCoupler(buildingName, component);
+		FocusManager.focusLostCoupler(building, component);
 	}
 
 	/**

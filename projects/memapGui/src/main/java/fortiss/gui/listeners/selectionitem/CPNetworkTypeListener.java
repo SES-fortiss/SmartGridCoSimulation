@@ -43,7 +43,7 @@ public class CPNetworkTypeListener extends MouseAdapter implements ItemListener 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		userSelection = true;
-		buildingName = DesignerPanel.selectedBuilding;
+		buildingName = DesignerPanel.selectedBuilding.getName();
 		component = DesignerPanel.currentComponent;
 	}
 

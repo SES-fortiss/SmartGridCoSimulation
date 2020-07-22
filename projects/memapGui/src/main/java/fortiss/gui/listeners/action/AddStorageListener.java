@@ -18,9 +18,9 @@ public class AddStorageListener extends MouseAdapter {
 		DesignerPanel.currentComponent = DesignerPanel.storageIcons.get(DesignerPanel.selectedBuilding).size();
 
 		// Create storage
-		DesignerPanel.buildings.get(DesignerPanel.selectedBuilding)
+		DesignerPanel.selectedBuilding
 				.addStorage(new Storage("Storage" + DesignerPanel.currentComponent, "Heat", 0.0, 0.0, 0.0, 0.0, 1.0, 1.0));
-		Storage s = DesignerPanel.buildings.get(DesignerPanel.selectedBuilding).getStorage().get(DesignerPanel.currentComponent);
+		Storage s = DesignerPanel.selectedBuilding.getStorage().get(DesignerPanel.currentComponent);
 
 		// Create label
 		ComponentIcons components = new ComponentIcons();

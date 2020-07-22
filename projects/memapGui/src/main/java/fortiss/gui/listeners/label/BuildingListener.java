@@ -25,7 +25,7 @@ public class BuildingListener extends MouseAdapter implements FocusListener {
 			lb.requestFocus(); // Required for removing buildings
 
 			String buildingName = lb.getText();
-			DesignerPanel.selectedBuilding = buildingName;
+			DesignerPanel.selectedBuilding = DesignerPanel.buildings.get(buildingName);
 			ComponentUpdater so = new ComponentUpdater();
 			so.showComponents(e);
 			DataUpdater up = new DataUpdater();

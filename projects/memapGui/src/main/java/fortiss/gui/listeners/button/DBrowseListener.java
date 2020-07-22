@@ -11,9 +11,8 @@ public class DBrowseListener extends MouseAdapter {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		String buildingName = DesignerPanel.selectedBuilding;
 		int component = DesignerPanel.currentComponent;
-		Demand d = DesignerPanel.buildings.get(buildingName).getDemand().get(component);
+		Demand d = DesignerPanel.selectedBuilding.getDemand().get(component);
 
 		// Update selection in text field
 		Chooser c = new Chooser();
