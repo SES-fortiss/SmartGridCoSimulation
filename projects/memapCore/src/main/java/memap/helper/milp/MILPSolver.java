@@ -189,11 +189,12 @@ public class MILPSolver {
 				currentSOCNames, energyPrice, totalCosts, co2emissions);
 		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC,
 				currentEnergyPrice, totalCostsEUR, totalCO2emissions);
-		
+
 		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
 			ConnectionDB.addResults(topologyController.getOptimizationHierarchy(), namesResult, currentStep, currentDemand, currentOptVector, currentSOC,
 				currentEnergyPrice, totalCostsEUR, totalCO2emissions);
 		}
+		
 
 		// Format results vector for printing
 		String[] vectorResultStr = new String[vectorResult.length];
@@ -236,8 +237,6 @@ public class MILPSolver {
 		// Clean up such that all used memory by lp-solve is freed
 		if (problem.getLp() != 0)
 			problem.deleteLp();
-		
-
 
 	}
 

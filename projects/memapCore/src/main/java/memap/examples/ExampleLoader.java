@@ -41,7 +41,7 @@ public abstract class ExampleLoader {
 		EnergyPrices.getInstance().init(0.285);
 		try {
 			FileReader endpoint1 = new FileReader(("src/main/java/resources/examples/FortissBuilding1Endpoint.json"));
-			FileReader nodes1 = new FileReader(("src/main/java/resources/examples/FortissBuilding1Nodes.json"));
+			FileReader nodes1 = new FileReader(("src/main/java/resources/examples/FortissBuilding1Nodes_NewDatamodel.json"));
 			JsonObject jsonEndpoint1 = (JsonObject) Jsoner.deserialize(endpoint1);
 			JsonObject jsonNodes1 = (JsonObject) Jsoner.deserialize(nodes1);
 			BuildingController sampleBuilding1 = new OpcUaBuildingController(topologyController, jsonEndpoint1,
@@ -62,7 +62,7 @@ public abstract class ExampleLoader {
 
 		try {
 			FileReader endpoint2 = new FileReader(("src/main/java/resources/examples/FortissBuilding2Endpoint.json"));
-			FileReader nodes2 = new FileReader(("src/main/java/resources/examples/FortissBuilding2Nodes.json"));
+			FileReader nodes2 = new FileReader(("src/main/java/resources/examples/FortissBuilding2Nodes_NewDatamodel.json"));
 			JsonObject jsonEndpoint2 = (JsonObject) Jsoner.deserialize(endpoint2);
 			JsonObject jsonNodes2 = (JsonObject) Jsoner.deserialize(nodes2);
 			BuildingController sampleBuilding2 = new OpcUaBuildingController(topologyController, jsonEndpoint2,

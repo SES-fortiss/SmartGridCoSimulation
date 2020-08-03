@@ -15,16 +15,19 @@ import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 import memap.helper.configurationOptions.OptHierarchy;
+import memap.main.JettyStart;
+import memap.controller.OpcUaBuildingController;
 
 
 public class ConnectionDB {
-	private static String tableName;
-
+	private static String memap;
+	//private static String tablename;
 	public static Connection connectToDB() throws SQLException {
 		String url = "jdbc:postgresql://localhost:5432/testdb";
 		String user = "postgres";
-		String password = "MEMAP_DB";
+		String password = "abc1234";
 		Connection con = DriverManager.getConnection(url, user, password);
 		System.out.println("Connection to database: Successfull");
 		return con;
@@ -33,11 +36,12 @@ public class ConnectionDB {
 	public static void addResults(OptHierarchy Hierarchy, String[] namesResult, double[] currentStep, double[] currentDemand, double[] currentOptVector, double[] currentSOC,
 			double[] currentEnergyPrice, double[] totalCostsEUR, double[] totalCO2emissions)
 	{
+		int num = JettyStart.getNumofBuildings();
 		List<String> names = new ArrayList<String>(namesResult.length);
 		Collections.addAll(names, namesResult);
 		ListIterator<String> itr = names.listIterator();
 		while (itr.hasNext()) {
-		  itr.set(itr.next().replaceAll("\\s", ""));
+			itr.set(itr.next().replaceAll("\\s", ""));
 		}
 		long step;
 		double heatdemand;
@@ -48,42 +52,50 @@ public class ConnectionDB {
 //		step = currentStep[0];
 		step = System.currentTimeMillis() / 1000L;
 		heatdemand = currentDemand[0];
+		//System.out.println("Number of Buildings:" + num);
+		//System.out.println("Heat demand:" + heatdemand);
 		elecdemand = currentDemand[1];
+		//System.out.println("Elec demand:" + elecdemand);
 		price = currentEnergyPrice[0];
 		cost = totalCostsEUR[0];
 		CO2 = totalCO2emissions[0];
 		
-		if (Hierarchy ==  OptHierarchy.MEMAP) {
-			tableName = "MemapON";
-		} else {
-			// which building?
-			tableName = "MemapOFF";
-		}
 		
-		String createtable = "CREATE TABLE IF NOT EXISTS " + tableName + "(";
-		String columns = "";
-		String list = "";
-		
-		for(int i=0 ; i < names.size()-3 ; i++)
+		for(int b = num; b > 0; b--)
 		{
-			columns += names.get(i) + " DOUBLE PRECISION NULL" + ", ";
-			list += names.get(i) + ", ";
+			if (Hierarchy ==  OptHierarchy.MEMAP) {
+				memap = "MemapON";
+			} else {
+				// which building?
+				memap = "MemapOFF";
+			}
+			String createtable = "CREATE TABLE IF NOT EXISTS " + "Building" + b + memap + "(";
+			String columns = "";
+			String list = "";
+			
+			for(int i=0 ; i < names.size()-3 ; i++)
+			{
+				columns += names.get(i) + " DOUBLE PRECISION NULL" + ", ";
+				list += names.get(i) + ", ";
+			}
+			String sql1 = createtable + columns;
+			sql1 = sql1 + "EnergyPrice_EUR DOUBLE PRECISION NULL, TotalCostsEUR DOUBLE PRECISION NULL, TotalCO2emissions DOUBLE PRECISION NULL, timestamp TIMESTAMPTZ NULL);";
+			list = "INSERT INTO " + "Building" + b + memap + "(" + list + "EnergyPrice_EUR, TotalCostsEUR, TotalCO2emissions, timestamp) VALUES('" + step + "','" + heatdemand + "','" + elecdemand;
+			for(double i : currentOptVector) {
+				list += "','" + i;
+			}	
+			for(double j : currentSOC) {
+				list += "','" + j;
+			}
+			list += "','" + price + "','" + cost + "','" + CO2 + "', NOW());";
+			sql1 += list;
+			try (Connection conn = connectToDB();
+					PreparedStatement pst = conn.prepareStatement(sql1);
+					ResultSet rs = pst.executeQuery()){}
+			catch (SQLException ex) {
+	            System.out.println("DB-Message: " + ex.getMessage());
+	        }
 		}
-		String sql1 = createtable + columns;
-		sql1 = sql1 + "EnergyPrice_EUR DOUBLE PRECISION NULL, TotalCostsEUR DOUBLE PRECISION NULL, TotalCO2emissions DOUBLE PRECISION NULL, timestamp TIMESTAMPTZ NULL);";
-		list = "INSERT INTO " + tableName + "(" + list + "EnergyPrice_EUR, TotalCostsEUR, TotalCO2emissions, timestamp) VALUES('" + step + "','" + heatdemand + "','" + elecdemand;
-		for(double i : currentOptVector) 
-			list += "','" + i;
-		for(double j : currentSOC)
-			list += "','" + j;
-		list += "','" + price + "','" + cost + "','" + CO2 + "', NOW());";
-		sql1 += list;
-		try (Connection conn = connectToDB();
-				PreparedStatement pst = conn.prepareStatement(sql1);
-				ResultSet rs = pst.executeQuery()){}
-		catch (SQLException ex) {
-            System.out.println("DB-Message: " + ex.getMessage());
-        }
 	}
 }
 

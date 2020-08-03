@@ -36,7 +36,7 @@ public class EchoSocket extends WebSocketAdapter {
     private static final Logger LOG = Log.getLogger(EchoSocket.class);
     JettyStart js = new JettyStart();
     ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
-
+    public JsonArray messageJsonArray;
     public void onWebSocketClose(int statusCode, String reason) {
 	super.onWebSocketClose(statusCode, reason);
 	LOG.info("WebSocket Close: {} - {}", statusCode, reason);
@@ -74,7 +74,7 @@ public class EchoSocket extends WebSocketAdapter {
 		messageAsJsonArray = StringToJsonArray.convertStringToJsonArray(message);
 	    }
 
-	    JsonArray messageJsonArray = messageAsJsonArray;
+	    messageJsonArray = messageAsJsonArray;
 	    // Regular Update (every 10 sec) of current Building data.
 	    // Every Building is iterated through
 	    // Every Device in every Building is iterated through

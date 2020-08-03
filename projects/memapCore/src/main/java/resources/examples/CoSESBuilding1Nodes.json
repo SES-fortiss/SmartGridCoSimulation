@@ -1,35 +1,46 @@
 {
-  "battery": [
-    { 
-      "capacityId" : "ns=2;i=43",
-      "maxChargingId": "ns=2;i=45",
-      "maxDischargingId": "ns=2;i=46",
-      "effInId": "ns=2;i=42",
-      "effOutId": "ns=2;i=42"
-    }
-  ],
-  "chp": [],
-  "consumer": [
+  "EMS": [ 
     {
-      "heatConsumptionId": "ns=2;i=10",
-      "powerConsumptionId": "ns=2;i=14"
+      "nameId": "ns=2;i=106"
     }
   ],
-  "gasboiler": [],
-  "heatpump": [
+  "COUPL": [],
+  "DEMND": [
+    {
+      "PrimSect": "ns=2;i=10",
+      "DemandFC": "ns=2;i=19",
+	  "currentDem": "ns=2;i=17",
+      "DemndSetPt": "ns=2;i=27"
+    },
+	{
+      "PrimSect": "ns=2;i=28",
+      "DemandFC": "ns=2;i=37",
+	  "currentDem": "ns=2;i=35",
+      "DemndSetPt": "ns=2;i=39"
+	}
+  ],
+  "CPROD": [
     { 
-      "installedPowerId": "ns=2;i=35",
-      "effHeatId": "ns=2;i=32",
-      "effElecId": "ns=2;i=33"
+      "PrimSect": "ns=2;i=46",
+      "MinPower": "ns=2;i=48",
+      "MaxPower": "ns=2;i=49",
+      "EffPrim": "ns=2;i=47",
+      "PrimEnCost": "ns=2;i=52",
+      "CO2PerKWh": "ns=2;i=54"
     }
   ],
-  "pv": [
+  "VPROD": [],
+  "STRGE": [
     { 
-      "installedPowerId" : "ns=2;i=25",
-      "effId": "ns=2;i=23",
-      "productionId": "ns=2;i=27"
+      "PrimSect": "ns=2;i=65",
+	  "EffPrim": "ns=2;i=66",
+      "DisEffPrim": "ns=2;i=67",
+      "MaxPowerIn": "ns=2;i=69",
+      "MaxPower": "ns=2;i=68",
+      "Capacity" : "ns=2;i=70",
+      "curSOC": "ns=2;i=81",
+      "PrimEnCost": "ns=2;i=75",
+      "CO2PerKWh": "ns=2;i=77"
     }
-  ],
-  "solarthermic": [],
-  "thermalstorage": []
+  ]
 }
