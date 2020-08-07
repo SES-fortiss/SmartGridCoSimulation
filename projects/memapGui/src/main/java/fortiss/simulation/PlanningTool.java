@@ -1,5 +1,6 @@
 package fortiss.simulation;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.EventQueue;
 
@@ -9,7 +10,7 @@ import fortiss.gui.TrackerPanel;
 import fortiss.media.Icon;
 import fortiss.results.Reporter;
 import fortiss.results.ReporterOverviewPanel;
-import fortiss.results.ReporterPanel;
+import fortiss.results.ReporterDetailedResultPanel;
 import fortiss.simulation.helper.ProgressManager;
 import memap.controller.GuiController;
 
@@ -31,7 +32,7 @@ public class PlanningTool {
 	/** Reporter */
 	private static Reporter reporter;
 	/** Reporter panel */
-	private static ReporterPanel reporterPanel;
+	private static ReporterDetailedResultPanel reporterDetailedResultPanel;
 	/** Reporter overview panel */
 	private static ReporterOverviewPanel overviewPanel;
 	/** GUI controller */
@@ -54,9 +55,11 @@ public class PlanningTool {
 	public static void init() {
 		setDesignerPanel(new DesignerPanel());
 		setTrackerPanel(new TrackerPanel());
+		
+		// TODO clarify what a reporter does
 		setReporter(new Reporter());
 		setReporterOverviewPanel(new ReporterOverviewPanel());
-		setReporterPanel(new ReporterPanel());
+		setReporterPanel(new ReporterDetailedResultPanel());
 	}
 
 	/** Add the designer panel as a tab */
@@ -138,8 +141,8 @@ public class PlanningTool {
 	}
 
 	/** @return reporterPanel */
-	public static ReporterPanel getReporterPanel() {
-		return reporterPanel;
+	public static ReporterDetailedResultPanel getReporterPanel() {
+		return reporterDetailedResultPanel;
 	}
 
 	/**
@@ -159,10 +162,10 @@ public class PlanningTool {
 	/**
 	 * Set the reporterPanel
 	 * 
-	 * @param reporterPanel an object of type {@link ReporterPanel}}
+	 * @param reporterDetailedResultPanel an object of type {@link ReporterDetailedResultPanel}}
 	 */
-	public static void setReporterPanel(ReporterPanel reporter) {
-		PlanningTool.reporterPanel = reporter;
+	public static void setReporterPanel(ReporterDetailedResultPanel reporter) {
+		PlanningTool.reporterDetailedResultPanel = reporter;
 	}
 
 	/** @return guiController */

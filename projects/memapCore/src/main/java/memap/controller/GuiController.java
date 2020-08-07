@@ -173,7 +173,7 @@ public class GuiController {
 			}
 
 			// create connections
-			for (Connection connection : connections) {
+			for (Connection connection : connections) {		
 				BuildingController sourceBuilding = top.managedBuildings.get(connection.sourceBuilding);
 				sourceBuilding.attach(connection);
 			}

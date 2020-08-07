@@ -1,23 +1,24 @@
 package fortiss.results;
 
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import fortiss.components.Building;
 import fortiss.gui.DesignerPanel;
+import fortiss.gui.style.Colors;
 import fortiss.simulation.PlanningTool;
+import net.miginfocom.swing.MigLayout;
 
 /**
- * Populates the result panels
+ * Populates the panels of the result overview tab
  */
 public class Reporter {
 
 	private ResultsLibrary detailedResult;
 	private ResultsLibrary overviewResult;
 	/** Maps the metrics panels to their name */
-	private HashMap<String, MetricsPanel> metricsPanelMap = new HashMap<String, MetricsPanel>();
-
-	
+	private HashMap<String, MetricsPanel> metricsPanelMap = new HashMap<String, MetricsPanel>();	
 
 	/**
 	 * Create the application.
@@ -27,6 +28,9 @@ public class Reporter {
 		setOverviewResult(new OverviewResults());
 	}
 
+	/**
+	 * This method create the result views. It is called only once after simulation.
+	 */
 	public void showResults() {
 		showDetailedResults();
 		showOverviewResults();
@@ -43,23 +47,37 @@ public class Reporter {
 	private void showOverviewResults() {
 		getOverviewResult().load();
 
-		ReporterOverviewPanel overviewPanel = PlanningTool.getReporterOverviewPanel();
-		overviewPanel.reset();
-
-		// Add one summary panel
-		SummaryPanel summaryPanel = new SummaryPanel();
-		overviewPanel.addSubpanel(summaryPanel, "Summary");
+		ReporterOverviewPanel reporterOverviewPanel = PlanningTool.getReporterOverviewPanel();
+		reporterOverviewPanel.reset();
 		
-		// Add one general metrics panel
-		MetricsPanel globalMetricsPanel = new MetricsPanel();
-		metricsPanelMap.put("Global optimization", globalMetricsPanel);
-		overviewPanel.addSubpanel(metricsPanelMap.get("Global optimization"), "Optimization with MEMAP");
+		// reporterOverviewPanel consists of selectionPanel on the left and presentationPanel on the right
+		// reporterOverviewPanel has a MigLayout()
+		
+		// --> the presentationPanel (CardLayout) includes panels like comparison/summaryPanel and all the metricspanels
 
+		// Add a summary panel
+		SummaryPanel summaryPanel = new SummaryPanel();
+				
+		reporterOverviewPanel.addTitleToSelectionPanel("MEMAP views");	
+		reporterOverviewPanel.addSubpanel(summaryPanel, "Comparison results", true);
+		
+		// Add general metric panels - this is just the memap result panel!
+		MetricsPanel globalMetricsPanel = new MetricsPanel();
+		globalMetricsPanel.setBackground(Colors.memapGreen);		
+		metricsPanelMap.put("Global optimization", globalMetricsPanel);
+		reporterOverviewPanel.addSubpanel(metricsPanelMap.get("Global optimization"), "Global optimization");
+
+		// These are the building views
+		reporterOverviewPanel.addEmptyCell();
+		reporterOverviewPanel.addTitleToSelectionPanel("Single building views");		
 		// Add one metrics panel per building
 		for (Entry<String, Building> entry : DesignerPanel.buildings.entrySet()) {
 			Building building = entry.getValue();
-			metricsPanelMap.put(building.getName(), new MetricsPanel());
-			overviewPanel.addSubpanel(metricsPanelMap.get(building.getName()), "Optimization without MEMAP - " + building.getName());
+			
+			MetricsPanel buildingPanel = new MetricsPanel();
+			buildingPanel.setBackground(Colors.memapGreen);
+			metricsPanelMap.put(building.getName(), buildingPanel);
+			reporterOverviewPanel.addSubpanel(metricsPanelMap.get(building.getName()), building.getName() + " (opt.)");
 		}
 		
 		MetricsGenerator metricsGenerator;
@@ -67,11 +85,15 @@ public class Reporter {
 			metricsGenerator = new LPMetricsGenerator(getDetailedResult(), getOverviewResult());
 		} else {
 			metricsGenerator = new MILPMetricsGenerator(getDetailedResult(), getOverviewResult());
-		} 
+		}
+		
+		// TODO
+		System.out.println("summaryPanel: " + summaryPanel.getName());
+		System.out.println("metricsPanelMap: " + metricsPanelMap.keySet().toString());
 		
 		metricsGenerator.populateMetricsPanels(summaryPanel, metricsPanelMap);
 		
-		overviewPanel.showPanel("Summary");
+		reporterOverviewPanel.showPanel("Comparison results");
 	}
 
 	/**

@@ -38,10 +38,6 @@ public class DesignerPanel extends JPanel {
 	public static HashMap<Building, ArrayList<JLabel>> controllableIcons = new HashMap<Building, ArrayList<JLabel>>();
 	public static HashMap<Building, ArrayList<JLabel>> couplerIcons = new HashMap<Building, ArrayList<JLabel>>();
 	
-	// TODO this structure  might help to remove the bug with building names
-	// Reason: Building names might change, however, it does not change to often
-	//public static TreeMap<Building, String> buildingToBuildingID = new TreeMap<Building, String>();
-	
 	// Flags
 	public static int buildingCount = buildings.size();
 	public static Building selectedBuilding = null;
@@ -155,7 +151,7 @@ public class DesignerPanel extends JPanel {
 		add(pl_object, BorderLayout.WEST);
 
 		lblFortissMemap = new JLabel(
-				"© 2019 FORTISS GMBH - AN INSTITUTE AFFILIATED TO THE TECHNICAL UNIVERSITY OF MUNICH");
+				"© 2020 FORTISS GMBH - AN INSTITUTE AFFILIATED TO THE TECHNICAL UNIVERSITY OF MUNICH");
 		lblFortissMemap.setHorizontalAlignment(SwingConstants.CENTER);
 		add(lblFortissMemap, BorderLayout.SOUTH);
 	}

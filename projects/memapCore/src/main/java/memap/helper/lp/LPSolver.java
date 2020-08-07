@@ -101,12 +101,12 @@ public class LPSolver {
 			double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep) };
 
 			String[] timeStep = { "Time step" };
-			String[] currentDemandNames = solHandler.getNamesForDemand();
+			String[] currentDemandNames = solHandler.getNamesForDemandSingleBuilding();
 			String[] currentOptVectorNames = solHandler.getVectorNamesForThisTimeStep(problem.namesUB, nStepsMPC);
 			String[] currentSOCNames = solHandler.getNamesForSOC(buildingMessage.storageList);
 			String[] energyPrice = { "Energy price [EUR]" };
 			String[] totalCosts = { "Total costs [EUR]" };
-			String[] co2emissions = { "CO2 emissions [kg CO2/kWh]" };
+			String[] co2emissions = { "CO2 emissions [kg CO2]" };
 
 			String[] namesResult = HelperConcat.concatAllObjects(timeStep, currentDemandNames, currentOptVectorNames,
 					currentSOCNames, energyPrice, totalCosts, co2emissions);

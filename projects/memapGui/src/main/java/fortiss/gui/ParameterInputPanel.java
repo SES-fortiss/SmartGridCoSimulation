@@ -187,7 +187,7 @@ public class ParameterInputPanel extends JPanel {
 
 		txtLength = new JTextField();
 		txtLength.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		txtLength.setText(Integer.toString(pars.getLength()));
+		txtLength.setText(Integer.toString(pars.getStepsPerDay()));
 		txtLength.addKeyListener(new LengthListener());
 		txtLength.addFocusListener(new LengthListener());
 		add(txtLength, "7, 10, 2, 1, fill, center");
@@ -198,7 +198,7 @@ public class ParameterInputPanel extends JPanel {
 
 		txtSteps = new JTextField();
 		txtSteps.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		txtSteps.setText(Integer.toString(pars.getSteps()));
+		txtSteps.setText(Integer.toString(pars.getMPCHorizon()));
 		txtSteps.addKeyListener(new StepsListener());
 		txtSteps.addFocusListener(new StepsListener());
 		add(txtSteps, "7, 12, 2, 1, fill, center");
@@ -215,7 +215,7 @@ public class ParameterInputPanel extends JPanel {
 		sDays.addItemListener(new DaysListener());
 		add(sDays, "6, 14, 3, 1, fill, default");
 
-		lbPrice = new JLabel("Market price [EUR]");
+		lbPrice = new JLabel("<html>Market electricity<br>price [EUR/kWh]</html>");
 		add(lbPrice, "2, 16");
 
 		JButton btAccept = new JButton("Start simulation");
@@ -309,8 +309,8 @@ public class ParameterInputPanel extends JPanel {
 	 * Updates all the fields of the panel according to the parameters
 	 */
 	public void update() {
-		txtSteps.setText(Integer.toString(pars.getSteps()));
-		txtLength.setText(Integer.toString(pars.getLength()));
+		txtSteps.setText(Integer.toString(pars.getMPCHorizon()));
+		txtLength.setText(Integer.toString(pars.getStepsPerDay()));
 		txtSimulationName.setText(pars.getSimulationName());
 
 		updateMarketPriceOptions();

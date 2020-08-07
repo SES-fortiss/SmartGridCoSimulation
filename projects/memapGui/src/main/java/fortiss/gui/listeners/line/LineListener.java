@@ -24,11 +24,17 @@ public class LineListener extends MouseAdapter {
 		Point clickLocation = e.getPoint();
 		Point screenLocation = e.getLocationOnScreen();
 
-		Line2D clickedLine = getClickedLine(clickLocation);
-		if (clickedLine != null && SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
-			createPopUp(screenLocation, clickedLine);
-			popup.show();
-		} else {
+		// requires double click
+		if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
+			
+			Line2D clickedLine = getClickedLine(clickLocation);
+			
+			if (clickedLine != null) {				
+				createPopUp(screenLocation, clickedLine);
+				popup.show();
+			}			
+		}
+		else {
 			if (popup != null) {
 				popup.hide();
 			}
@@ -42,14 +48,19 @@ public class LineListener extends MouseAdapter {
 	 */
 	private Line2D getClickedLine(Point clickLocation) {
 		Line2D clickedLine = null;
-
+		
 		ConnectionManager cm = ConnectionManager.getInstance();
 		for (Line2D line : cm.getLines()) {
+			
 			if (line.intersects(clickLocation.getX() - 2, clickLocation.getY() - 2, 4, 4)) {
 				clickedLine = line;
 				break;
 			}
 		}
+		
+
+		
+		
 		return clickedLine;
 	}
 

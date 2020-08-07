@@ -26,15 +26,11 @@ import memap.messages.planning.VolatileProducerMessage;
  */
 public class MILPProblemWithConnections extends MILPProblem {
 	
-	// TODO: Check removed
-	//HashMap<BuildingMessage, Integer> mapBuildingMessageToIndex = new HashMap<>();
 	HashMap<BuildingMessage, Integer> mapBuildingMessageToIndex;
-	//HashMap<ConnectionMessage, Integer> mapConnectionToIndex = new HashMap<>();
 	HashMap<ConnectionMessage, Integer> mapConnectionToIndex;
 	
 	public MILPProblemWithConnections(TopologyController topologyController, int currentTimeStep, int nStepsMPC, int nCols) {
 		super(topologyController, currentTimeStep, nStepsMPC, nCols);
-		// TODO: Check added
 		mapBuildingMessageToIndex = new HashMap<BuildingMessage, Integer>();
 		mapConnectionToIndex = new HashMap<ConnectionMessage, Integer>();
 	}
@@ -77,17 +73,6 @@ public class MILPProblemWithConnections extends MILPProblem {
         
         MILPHelper.addMarkets(problem, mihelper);
         
-        /* moved to another method further below
-        for (BuildingMessage bm : buildingMessages) {			
-         
-			int indexBuilding = mapBuildingMessageToIndex.get(bm)-1;
-			updateLambdaEURbuilding(bm, indexBuilding);
-			updateLambdaCO2building(bm, indexBuilding);			
-		}        
-        updateLambdaEURMarket();
-		updateLambdaCO2Market();
-        */
-        
 		return problem;
 	}	
 	
@@ -110,7 +95,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 
 			for (int i = 0; i < demand.length / 2; i++) {	
 				demandHEAT[i + b_counter*nStepsMPC] = demand[i];
-				demandELEC[i] = demand[i + nStepsMPC];
+				demandELEC[i] += demand[i + nStepsMPC];
 			}
 			
 			b_counter++;

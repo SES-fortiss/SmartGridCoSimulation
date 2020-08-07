@@ -156,7 +156,7 @@ public class MILPSolverWithConnections extends MILPSolver {
 		workWithResults(optSolution, names, lambda, lambdaCO2, buildingMessages);
 
 		// METRICS FOR RESULTS OVERVIEW
-		MetricsHandler mc = new MILPWithConnectionsMetricsHandler(topologyController, buildingMessages, optResult, optSolution, problem,
+		MetricsHandler metricsHandler = new MILPWithConnectionsMetricsHandler(topologyController, buildingMessages, optResult, optSolution, problem,
 				milpSolHandler, currentTimeStep, nStepsMPC);
 
 		// filename to be created
@@ -164,7 +164,7 @@ public class MILPSolverWithConnections extends MILPSolver {
 		filename += actorName + "_MPC" + nStepsMPC + "_MILP_Overview.csv";
 
 		try {
-			mc.calculateOverviewMetrics(filename);
+			metricsHandler.calculateOverviewMetrics(filename);
 		} catch (IOException e) {
 			System.err.println("There was an error in the metrics calculation");
 			e.printStackTrace();

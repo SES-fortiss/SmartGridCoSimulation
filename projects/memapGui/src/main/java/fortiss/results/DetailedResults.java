@@ -30,9 +30,9 @@ public class DetailedResults extends ResultsLibrary {
 		String location = System.getProperty("user.dir");
 		String fs = File.separator;
 		String source = fs + DirectoryConfiguration.mainDir + fs + "results" + fs + pars.getSimulationName() + fs
-				+ "MPC" + pars.getSteps() + "_" + pars.getOptimizer().toUpperCase() + fs;
+				+ "MPC" + pars.getMPCHorizon() + "_" + pars.getOptimizer().toUpperCase() + fs;
 
-		String qualifier = "_MPC" + pars.getSteps() + "_" + pars.getOptimizer().toUpperCase() + typeQualifier;
+		String qualifier = "_MPC" + pars.getMPCHorizon() + "_" + pars.getOptimizer().toUpperCase() + typeQualifier;
 
 		// Read global optimization results
 		String filename = pars.getSimulationName() + qualifier;

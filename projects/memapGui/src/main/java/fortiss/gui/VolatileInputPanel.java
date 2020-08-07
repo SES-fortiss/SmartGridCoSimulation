@@ -185,7 +185,7 @@ public class VolatileInputPanel extends JPanel {
 		btVBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
 		add(btVBrowse, "6, 16, right, center");
 
-		lbVCost = new JLabel("Cost [cent EUR/kWh]");
+		lbVCost = new JLabel("Fuel cost [EUR/kWh]");
 		add(lbVCost, "2, 18");
 
 		txtVCost = new JTextField();

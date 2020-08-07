@@ -41,8 +41,8 @@ public class MILPSolver {
 
 	protected String actorName;
 	protected OptimizationResultMessage optResult;
-	private BuildingMessage localBuildingMessage;
-	private ArrayList<BuildingMessage> localBuildingMessages = new ArrayList<>();
+	private BuildingMessage singleBuildingMessage;
+	private ArrayList<BuildingMessage> multipleBuildingMessages = new ArrayList<>();
 
 	public MILPSolver(TopologyController topologyController, int currentTimeStep, SolutionHandler milpSolHandler,
 			double[] buildingsTotalCostsMILP, double[] buildingsTotalCO2MILP,
@@ -106,15 +106,15 @@ public class MILPSolver {
 
 	protected void workWithResults(double[] optSolution, String[] names, double[] lambda, double[] lambdaCO2,
 			BuildingMessage buildingMessage) {
-		this.localBuildingMessage = buildingMessage;
-		this.localBuildingMessages = null;
+		this.singleBuildingMessage = buildingMessage;
+		this.multipleBuildingMessages = null;
 		workWithResults(optSolution, names, lambda, lambdaCO2);
 	}
 
 	protected void workWithResults(double[] optSolution, String[] names, double[] lambda, double[] lambdaCO2,
 			ArrayList<BuildingMessage> buildingMessages) {
-		this.localBuildingMessage = null;
-		this.localBuildingMessages = buildingMessages;
+		this.singleBuildingMessage = null;
+		this.multipleBuildingMessages = buildingMessages;
 		workWithResults(optSolution, names, lambda, lambdaCO2);
 	}
 
@@ -129,7 +129,13 @@ public class MILPSolver {
 		buildingStepCostsMILP[currentTimeStep] = buildingCostPerTimestep;
 		buildingStepCO2MILP[currentTimeStep] = buildingCO2PerTimestep;
 
-		// to calculate the total costs
+		// to calculate the total costs --> what does that say?
+		
+		System.out.println("buildingCostPerTimestep: " + buildingCostPerTimestep);
+		
+		// is that the total costs of the planned schedule?
+		// is that the cost
+		
 		double costTotal = 0;
 		double CO2Total = 0;
 
@@ -137,6 +143,8 @@ public class MILPSolver {
 			costTotal += buildingStepCostsMILP[i];
 			CO2Total += buildingStepCO2MILP[i];
 		}
+		
+		System.out.println("costTotal: " + costTotal);
 
 		// Creation of the result vector
 		double[] currentStep = { currentTimeStep };
@@ -149,27 +157,37 @@ public class MILPSolver {
 		String[] currentOptVectorNames = milpSolHandler.getVectorNamesForThisTimeStep(names, nStepsMPC);
 		String[] energyPrice = { "Energy price [EUR]" };
 		String[] totalCosts = { "Total costs [EUR]" };
-		String[] co2emissions = { "CO2 emissions [kg CO2/kWh]" };
+		String[] co2emissions = { "CO2 emissions [kg CO2]" };
 
 		double[] currentDemand = null;
 		double[] currentSOC = null;
 		String[] currentSOCNames = null;
 		String[] currentDemandNames = null;
 
-		if (localBuildingMessage != null) {
+		if (singleBuildingMessage != null) {
 			// Without connections
-			currentDemand = milpSolHandler.getDemandForThisTimestep(localBuildingMessage.getCombinedDemandVector(),
-					nStepsMPC);
-			currentSOC = milpSolHandler.getCurrentSOC(localBuildingMessage.storageList);
-			currentDemandNames = milpSolHandler.getNamesForDemand();
-			currentSOCNames = milpSolHandler.getNamesForSOC(localBuildingMessage.storageList);
+			currentDemand = milpSolHandler.getDemandForThisTimestep(singleBuildingMessage.getCombinedDemandVector(),
+					nStepsMPC); 			
+			currentSOC = milpSolHandler.getCurrentSOC(singleBuildingMessage.storageList);
+			currentDemandNames = milpSolHandler.getNamesForDemandSingleBuilding();
+			currentSOCNames = milpSolHandler.getNamesForSOC(singleBuildingMessage.storageList);
 		} else {
 			// With connections
-			double[] demandVector = buildingMessageHandler.getCombinedDemandVector(localBuildingMessages, nStepsMPC);
-			currentDemand = milpSolHandler.getDemandForThisTimestep(demandVector, nStepsMPC);
-			currentSOC = milpSolHandler.getCurrentSOCs(localBuildingMessages);
-			currentDemandNames = milpSolHandler.getNamesForDemand(localBuildingMessages, nStepsMPC);
-			currentSOCNames = milpSolHandler.getNamesForSOCs(localBuildingMessages);
+			double[] demandVector = buildingMessageHandler.getCombinedDemandVector(multipleBuildingMessages, nStepsMPC);
+			currentDemand = milpSolHandler.getDemandForThisTimestep(demandVector, nStepsMPC);			
+			currentSOC = milpSolHandler.getCurrentSOCs(multipleBuildingMessages);
+			currentDemandNames = milpSolHandler.getNamesForDemand(multipleBuildingMessages, nStepsMPC);
+			currentSOCNames = milpSolHandler.getNamesForSOCs(multipleBuildingMessages);
+			
+			
+			//Small modification to calculate the aggregated demand of the buildings.
+			double[] resultWithTotalHeatDemand = new double[currentDemand.length+1];			
+			for (int i = 0; i < currentDemand.length -1; i++) {
+				resultWithTotalHeatDemand[0] += currentDemand[i];
+				resultWithTotalHeatDemand[i+1] = currentDemand[i];
+			}			
+			resultWithTotalHeatDemand[currentDemand.length] = currentDemand[currentDemand.length-1];			
+			currentDemand = resultWithTotalHeatDemand;
 		}
 
 		String[] namesResult = HelperConcat.concatAllObjects(timeStep, currentDemandNames, currentOptVectorNames,
@@ -183,9 +201,6 @@ public class MILPSolver {
 		for (int i = 1; i < vectorResultStr.length; i++) {
 			vectorResultStr[i] = df.format(vectorResult[i]);
 		}
-
-		System.out.println("MILP: " + this.actorName + " Names: " + Arrays.toString(namesResult));
-		System.out.println("MILP: " + this.actorName + " Result: " + Arrays.toString(vectorResult));
 
 		// Save
 		buildingsSolutionPerTimeStepMILP[currentTimeStep] = vectorResult;

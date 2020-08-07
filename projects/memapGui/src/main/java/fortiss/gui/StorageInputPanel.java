@@ -161,7 +161,7 @@ public class StorageInputPanel extends JPanel {
 		txtSCapacity.addFocusListener(new SCapacityListener());
 		add(txtSCapacity, "4, 12");
 		
-		lbSStateOfCharge = new JLabel("State of charge [0-1]");
+		lbSStateOfCharge = new JLabel("State of charge [0-capacity]");
 		add(lbSStateOfCharge, "2, 14");
 		
 		txtSStateOfCharge = new JTextField();

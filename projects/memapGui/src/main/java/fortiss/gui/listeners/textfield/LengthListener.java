@@ -37,7 +37,7 @@ public class LengthListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
-			String currentVal = Integer.toString(DesignerPanel.parameterPanel.pars.getLength());
+			String currentVal = Integer.toString(DesignerPanel.parameterPanel.pars.getStepsPerDay());
 			source.setText(currentVal);
 		}
 	}

@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.OptionalDouble;
 
 import org.knowm.xchart.CategorySeries;
 
@@ -26,7 +27,8 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 	private final static String ELECTRICITY_PRODUCTION_BY_SOURCE_IN_TIME = "Electricity production by source in time";
 	private final static String HEAT_DISCHARGE_BY_SOURCE_IN_TIME = "Heat discharge by source in time";
 	private final static String ELECTRICITY_DISCHARGE_BY_SOURCE_IN_TIME = "Electricity discharge by source in time";
-
+	private final static DecimalFormat D_FORMAT = new DecimalFormat("0.0"); 
+	
 	public MILPMetricsGenerator(ResultsLibrary detailedResult, ResultsLibrary overviewResult) {
 		this.detailedResult = detailedResult;
 		this.overviewResult = overviewResult;
@@ -45,7 +47,7 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 			String contextName = context.getKey();
 
 			ArrayList<Double> cost = detailedResult.getDataSeries(contextName, "Total costs [EUR]");
-			ArrayList<Double> co2emissions = detailedResult.getDataSeries(contextName, "CO2 emissions [kg CO2/kWh]");
+			ArrayList<Double> co2emissions = detailedResult.getDataSeries(contextName, "CO2 emissions [kg CO2]");
 
 			// Add optimization-specific metrics
 			if (contextName.equals("Global optimization")) {
@@ -61,33 +63,37 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 		double savedCost = perBuildingOptimizationCost - globalOptimizationCost;
 		String costQualifier = (savedCost > 0) ? "reduction" : "enlargement";
 		summaryPanel.addTextWidget(SummaryPanel.PER_BUILDING_OPTIMIZATION, "Cost without MEMAP",
-				new DecimalFormat("#.0##").format(perBuildingOptimizationCost), "EUR", null);
+				D_FORMAT.format(perBuildingOptimizationCost), "EUR", null);
 		summaryPanel.addTextWidget(SummaryPanel.GLOBAL_OPTIMIZATION, "Cost with MEMAP",
-				new DecimalFormat("#.0##").format(globalOptimizationCost), "EUR", null);
+				D_FORMAT.format(globalOptimizationCost), "EUR", null);
 		summaryPanel.addImageWidget(SummaryPanel.PERFORMANCE, Icon.costReduction);
 		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "Cost " + costQualifier,
-				new DecimalFormat("#.0##").format(savedCost), "EUR", null);
+				D_FORMAT.format(savedCost), "EUR", null);
 
 		double savedCo2 = perBuildingOptimizationCo2Emissions - globalOptimizationCo2Emissions;
 		String co2Qualifier = (savedCo2 > 0) ? "reduction" : "enlargement";
 		summaryPanel.addTextWidget(SummaryPanel.PER_BUILDING_OPTIMIZATION, "CO2 Emissions without MEMAP ",
-				new DecimalFormat("#.0##").format(perBuildingOptimizationCo2Emissions), "kg CO2/kWh", null);
+				D_FORMAT.format(perBuildingOptimizationCo2Emissions), "kg CO2", null);
 		summaryPanel.addTextWidget(SummaryPanel.GLOBAL_OPTIMIZATION, "CO2 Emissions with MEMAP",
-				new DecimalFormat("#.0##").format(globalOptimizationCo2Emissions), "kg CO2/kWh", null);
+				D_FORMAT.format(globalOptimizationCo2Emissions), "kg CO2", null);
 		summaryPanel.addImageWidget(SummaryPanel.PERFORMANCE, Icon.emissionsReduction);
 		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "CO2 Emissions " + co2Qualifier,
-				new DecimalFormat("#.0##").format(savedCo2), "kg CO2/kWh", null);
-
+				D_FORMAT.format(savedCo2), "kg CO2", null);
+		
 		// Add specific metrics
 		for (Entry<String, MetricsPanel> context : metricsPanelMap.entrySet()) {
 			String contextName = context.getKey();
 			MetricsPanel contextPanel = metricsPanelMap.get(context.getKey());
+			
+			System.out.println("contextName: " + contextName);
+			
+			// TODO we should try to simplify that. The global and the metrics per building should be the same.			
 
 			// Add optimization-specific metrics
 			if (contextName.equals("Global optimization")) {
 				populateGlobalOptimizationMetrics(summaryPanel, contextName, contextPanel);
 			}
-			if (!contextName.equals("Summary")) {
+			if (!contextName.equals("Global optimization")) {
 				populatePerBuildingOptimizationMetrics(summaryPanel, contextName, contextPanel);
 			}
 		}
@@ -192,52 +198,66 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 						totalElectricityProductionInTime.get(i) + electricityProduced.get(i));
 			}
 		}
-
-		// Total energy demanded
-		ArrayList<Double> electricityDemandInTime = detailedResult.getDataSeries(contextName, "Electricity demand");
-		double totalElectricityDemand = electricityDemandInTime.stream().mapToDouble(Double::doubleValue).sum();
-
-		ArrayList<Double> heatDemandInTime = detailedResult.getDataSeries(contextName, "Heat demand");
-		double totalHeatDemand = heatDemandInTime.stream().mapToDouble(Double::doubleValue).sum();
-
+		
 		// Total energy produced
 		double totalHeatProduced = sum(totalHeatProductionInTime);
 		double totalElectricityProduced = sum(totalElectricityProductionInTime);
+
+		// ContextName: Global optimization ; label: Electricity demand;
+		ArrayList<Double> electricityDemandInTime = detailedResult.getDataSeries(contextName, "System electricity demand");		
+		double totalElectricityDemand = electricityDemandInTime.stream().mapToDouble(Double::doubleValue).sum();
+		
+		ArrayList<Double> heatDemandInTime = detailedResult.getDataSeries(contextName, "System heat demand");
+		double totalHeatDemand = heatDemandInTime.stream().mapToDouble(Double::doubleValue).sum();
+		
+		// NOTE: a conversion from POWER to ENERGY is required here (kW --> kWh)
+		int days = DesignerPanel.parameterPanel.pars.getDays();		
+		OptionalDouble averageHeatDemand = heatDemandInTime.stream().mapToDouble(Double::doubleValue).average();
+		OptionalDouble averageElecDemand = electricityDemandInTime.stream().mapToDouble(Double::doubleValue).average();
+		OptionalDouble averageHeatProduction = totalHeatProductionInTime.stream().mapToDouble(Double::doubleValue).average();
+		OptionalDouble averageElecProduction = totalElectricityProductionInTime.stream().mapToDouble(Double::doubleValue).average();
+		
+		totalHeatDemand = averageHeatDemand.getAsDouble() * days * 24.0; // works, since the time steps are equidistant
+		totalElectricityDemand = averageElecDemand.getAsDouble() * days * 24.0; // s.a.
+		totalHeatProduced = averageHeatProduction.getAsDouble() * days * 24.0; // s.a.
+		totalElectricityProduced = averageElecProduction.getAsDouble() * days * 24.0; // s.a.
+		// converstion done
+		
 
 		// Total cost of entry
 		ArrayList<Double> cost = detailedResult.getDataSeries(contextName, "Total costs [EUR]");
 		double totalCost = cost.get(cost.size() - 1);
 
 		// Total CO2 emissions of entry
-		ArrayList<Double> co2emissions = detailedResult.getDataSeries(contextName, "CO2 emissions [kg CO2/kWh]");
+		ArrayList<Double> co2emissions = detailedResult.getDataSeries(contextName, "CO2 emissions [kg CO2]");
 		double totalCo2emissions = co2emissions.get(cost.size() - 1);
 
 		// Text widget: Energy demanded
-		contextPanel.addTextWidget("Heat demanded", new DecimalFormat("#.0##").format(totalHeatDemand), "kWH", null);
-		contextPanel.addTextWidget("Electricity demanded", new DecimalFormat("#.0##").format(totalElectricityDemand),
+		contextPanel.addTextWidget("Heat demanded", D_FORMAT.format(totalHeatDemand), "kWH", null);
+		contextPanel.addTextWidget("Electricity demanded", D_FORMAT.format(totalElectricityDemand),
 				"kWH", null);
 
 		// Text widget: Energy produced
-		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "Heat demanded", new DecimalFormat("#.0##").format(totalHeatDemand), "kWH", null);
-		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "Electricity demanded", new DecimalFormat("#.0##").format(totalElectricityDemand),
+		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "Heat demanded", D_FORMAT.format(totalHeatDemand), "kWH", null);
+		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "Electricity demanded", D_FORMAT.format(totalElectricityDemand),
 				"kWH", null);
-		contextPanel.addTextWidget("Heat produced", new DecimalFormat("#.0##").format(totalHeatProduced), "kWH",
+		contextPanel.addTextWidget("Heat produced", D_FORMAT.format(totalHeatProduced), "kWH",
 				"* Storages are not considered energy producers");
-		contextPanel.addTextWidget("Electricity produced", new DecimalFormat("#.0##").format(totalElectricityProduced),
+		contextPanel.addTextWidget("Electricity produced", D_FORMAT.format(totalElectricityProduced),
 				"kWH", "* Storages are not considered energy producers");
 
 		// Text widget: Energy contributed: includes storage discharged energy
 		contextPanel.addTextWidget("Heat contributed",
-				new DecimalFormat("#.0##").format(totalHeatProduced + sum(heatDischargeByStorage.values())), "kWH",
+				D_FORMAT.format(totalHeatProduced + sum(heatDischargeByStorage.values())), "kWH",
 				"* Storage contributions are included");
 		contextPanel.addTextWidget("Electricity contributed",
-				new DecimalFormat("#.0##").format(totalElectricityProduced), "kWH",
+				D_FORMAT.format(totalElectricityProduced), "kWH",
 				"* Storage contributions are included");
 
 		// Text widget: Total cost (EUR and CO2)
-		contextPanel.addTextWidget("Total cost", new DecimalFormat("#.0##").format(totalCost), "EUR", null);
-		contextPanel.addTextWidget("Total CO2 Emissions", new DecimalFormat("#.0##").format(totalCo2emissions),
-				"kg CO2/kWh", null);
+		contextPanel.addTextWidget("Total cost", D_FORMAT.format(totalCost), "EUR", null);
+		contextPanel.addTextWidget("Total CO2 Emissions", D_FORMAT.format(totalCo2emissions),
+				"kg CO2", null);
 
 		// Bar widget: Energy produced vs demanded per time step
 		List<CategorySeries> energySeries = new ArrayList<CategorySeries>();
@@ -246,9 +266,13 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 				.add(new CategorySeries("Electricity Production", time, totalElectricityProductionInTime, null, null));
 		energySeries.add(new CategorySeries("Heat Demand ", time, heatDemandInTime, null, null));
 		energySeries.add(new CategorySeries("Heat Production", time, totalHeatProductionInTime, null, null));
+		
 		int sizeFactor = (int) Math.min(4.0, Math.round(time.size() / 20 + 0.5));
-		contextPanel.addBarPlotWidget("Energy produced and demanded", "Forecasted time [time steps]",
-				"Electricity [kWh]", 400 * sizeFactor, 400, energySeries, "* Storages are not considered energy producers");
+		// TODO + NOTE change for visual testing
+		
+		//sizeFactor = 4;
+		contextPanel.addBarPlotWidget("Energy produced and demanded", "Time steps",
+				"Power [kWh]", 1600, 400, energySeries, "* Storages are not considered energy producers");
 
 		// Pie widget: Energy contributed by storage
 		contextPanel.addPiePlotWidget("Heat contributed by storage", 400, 400, heatDischargeByStorage, null);
@@ -286,7 +310,7 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 		contextPanel.addBarPlotWidget("Energy produced by type", "Buildings", "Energy [kWh]", 400, 400,
 				energyByBuilding, "* Storages are not considered energy producers");
 		
-		summaryPanel.addComponentUsageWidget(SummaryPanel.GLOBAL_OPTIMIZATION, "MEMAP", energyProductionBySource, 3);
+		summaryPanel.addComponentUsageWidget(SummaryPanel.GLOBAL_OPTIMIZATION, "MEMAP", energyProductionBySource, 3);		
 	}
 
 	/**
@@ -365,50 +389,62 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 			}
 
 			// Total energy demanded
-			ArrayList<Double> electricityDemandInTime = detailedResult.getDataSeries(contextName, "Electricity demand");
+			ArrayList<Double> electricityDemandInTime = detailedResult.getDataSeries(contextName, "System electricity demand");
 			double totalElectricityDemand = electricityDemandInTime.stream().mapToDouble(Double::doubleValue).sum();
 
-			ArrayList<Double> heatDemandInTime = detailedResult.getDataSeries(contextName, "Heat demand");
+			ArrayList<Double> heatDemandInTime = detailedResult.getDataSeries(contextName, "System heat demand");
 			double totalHeatDemand = heatDemandInTime.stream().mapToDouble(Double::doubleValue).sum();
 
 			// Total energy produced
 			double totalHeatProduced = sum(totalHeatProductionInTime);
 			double totalElectricityProduced = sum(totalElectricityProductionInTime);
+			
+			// NOTE: a conversion from POWER to ENERGY is required here (kW --> kWh) --> this is a clone from above!!! be carefull here.
+			int days = DesignerPanel.parameterPanel.pars.getDays();		
+			OptionalDouble averageHeatDemand = heatDemandInTime.stream().mapToDouble(Double::doubleValue).average();
+			OptionalDouble averageElecDemand = electricityDemandInTime.stream().mapToDouble(Double::doubleValue).average();
+			OptionalDouble averageHeatProduction = totalHeatProductionInTime.stream().mapToDouble(Double::doubleValue).average();
+			OptionalDouble averageElecProduction = totalElectricityProductionInTime.stream().mapToDouble(Double::doubleValue).average();
+			
+			totalHeatDemand = averageHeatDemand.getAsDouble() * days * 24.0; // works, since the time steps are equidistant
+			totalElectricityDemand = averageElecDemand.getAsDouble() * days * 24.0; // s.a.
+			totalHeatProduced = averageHeatProduction.getAsDouble() * days * 24.0; // s.a.
+			totalElectricityProduced = averageElecProduction.getAsDouble() * days * 24.0; // s.a.
+			// converstion done
 
 			// Total cost of entry
 			ArrayList<Double> cost = detailedResult.getDataSeries(contextName, "Total costs [EUR]");
 			double totalCost = cost.get(cost.size() - 1);
 
 			// Total CO2 emissions of entry
-			ArrayList<Double> co2emissions = detailedResult.getDataSeries(contextName, "CO2 emissions [kg CO2/kWh]");
-			double totalCo2emissions = co2emissions.get(cost.size() - 1);
+			ArrayList<Double> co2emissions = detailedResult.getDataSeries(contextName, "CO2 emissions [kg CO2]");
+			double totalCo2emissions = co2emissions.get(co2emissions.size() - 1);
 
 			// Text widget: Energy demanded
-			contextPanel.addTextWidget("Heat demanded", new DecimalFormat("#.0##").format(totalHeatDemand), "kWH",
+			contextPanel.addTextWidget("Heat demanded", D_FORMAT.format(totalHeatDemand), "kWH",
 					null);
 			contextPanel.addTextWidget("Electricity demanded",
-					new DecimalFormat("#.0##").format(totalElectricityDemand), "kWH", null);
+					D_FORMAT.format(totalElectricityDemand), "kWH", null);
 
 			// Text widget: Energy produced
-			contextPanel.addTextWidget("Heat produced", new DecimalFormat("#.0##").format(totalHeatProduced), "kWH",
+			contextPanel.addTextWidget("Heat produced", D_FORMAT.format(totalHeatProduced), "kWH",
 					"* Storages are not considered energy producers");
 			contextPanel.addTextWidget("Electricity produced",
-					new DecimalFormat("#.0##").format(totalElectricityProduced), "kWH",
+					D_FORMAT.format(totalElectricityProduced), "kWH",
 					"* Storages are not considered energy producers");
 
 			// Text widget: Energy contributed: includes storage discharged energy
 			contextPanel.addTextWidget("Heat contributed",
-					new DecimalFormat("#.0##").format(totalHeatProduced + sum(heatDischargeByStorage.values())), "kWH",
+					D_FORMAT.format(totalHeatProduced + sum(heatDischargeByStorage.values())), "kWH",
 					"* Storage contributions are included");
 			contextPanel.addTextWidget("Electricity contributed",
-					new DecimalFormat("#.0##")
-							.format(totalElectricityProduced + sum(electricityDischargeByStorage.values())),
+					D_FORMAT.format(totalElectricityProduced + sum(electricityDischargeByStorage.values())),
 					"kWH", "* Storage contributions are included");
 
 			// Text widget: Total cost (EUR and CO2)
-			contextPanel.addTextWidget("Total cost", new DecimalFormat("#.0##").format(totalCost), "EUR", null);
-			contextPanel.addTextWidget("Total CO2 Emissions", new DecimalFormat("#.0##").format(totalCo2emissions),
-					"kg CO2/kWh", null);
+			contextPanel.addTextWidget("Total cost", D_FORMAT.format(totalCost), "EUR", null);
+			contextPanel.addTextWidget("Total CO2 Emissions", D_FORMAT.format(totalCo2emissions),
+					"kg CO2", null);
 
 			// Bar widget: Energy produced vs demanded per time step
 			List<CategorySeries> energySeries = new ArrayList<CategorySeries>();
@@ -418,8 +454,12 @@ public class MILPMetricsGenerator implements MetricsGenerator {
 			energySeries.add(new CategorySeries("Heat Demand ", time, heatDemandInTime, null, null));
 			energySeries.add(new CategorySeries("Heat Production", time, totalHeatProductionInTime, null, null));
 			int sizeFactor = (int) Math.min(4.0, Math.round(time.size() / 20 + 0.5));
-			contextPanel.addBarPlotWidget("Energy produced and demanded", "Forecasted time [time steps]",
-					"Electricity [kWh]", 400 * sizeFactor, 400, energySeries, "* Storages are not considered energy producers");
+
+			// TODO + NOTE change for visual testing
+			sizeFactor = 4;
+			
+			contextPanel.addBarPlotWidget("Energy produced and demanded", "Time steps",
+					"Power [kWh]", 1600, 400, energySeries, "* Storages are not considered energy producers");
 
 			// Pie widget: Energy contributed by storage
 			contextPanel.addPiePlotWidget("Heat contributed by storage", 400, 400, heatDischargeByStorage, null);

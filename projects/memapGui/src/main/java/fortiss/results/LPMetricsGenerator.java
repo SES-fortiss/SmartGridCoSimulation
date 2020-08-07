@@ -27,6 +27,9 @@ public class LPMetricsGenerator implements MetricsGenerator {
 	private final static String HEAT_DISCHARGE_BY_SOURCE_IN_TIME = "Heat discharge by source in time";
 	private final static String ELECTRICITY_DISCHARGE_BY_SOURCE_IN_TIME = "Electricity discharge by source in time";
 
+	// TODO adapt that to the MILP Metrics Generator, which was changed in many parts.
+	// NOTE: Clones are not good, we should avoid them as much as possible!	
+	
 	public LPMetricsGenerator(ResultsLibrary detailedResult, ResultsLibrary overviewResult) {
 		this.detailedResult = detailedResult;
 		this.overviewResult = overviewResult;
@@ -71,12 +74,12 @@ public class LPMetricsGenerator implements MetricsGenerator {
 		double savedCo2 = perBuildingOptimizationCo2Emissions - globalOptimizationCo2Emissions;
 		String co2Qualifier = (savedCo2 > 0) ? "reduction" : "enlargement";
 		summaryPanel.addTextWidget(SummaryPanel.PER_BUILDING_OPTIMIZATION, "CO2 Emissions without MEMAP ",
-				new DecimalFormat("#.0##").format(perBuildingOptimizationCo2Emissions), "kg CO2/kWh", null);
+				new DecimalFormat("#.0##").format(perBuildingOptimizationCo2Emissions), "kg CO2", null);
 		summaryPanel.addTextWidget(SummaryPanel.GLOBAL_OPTIMIZATION, "CO2 Emissions with MEMAP",
-				new DecimalFormat("#.0##").format(globalOptimizationCo2Emissions), "kg CO2/kWh", null);
+				new DecimalFormat("#.0##").format(globalOptimizationCo2Emissions), "kg CO2", null);
 		summaryPanel.addImageWidget(SummaryPanel.PERFORMANCE, Icon.emissionsReduction);
 		summaryPanel.addTextWidget(SummaryPanel.PERFORMANCE, "CO2 Emissions " + co2Qualifier,
-				new DecimalFormat("#.0##").format(savedCo2), "kg CO2/kWh", null);
+				new DecimalFormat("#.0##").format(savedCo2), "kg CO2", null);
 
 		// Add specific metrics
 		for (Entry<String, MetricsPanel> context : metricsPanelMap.entrySet()) {

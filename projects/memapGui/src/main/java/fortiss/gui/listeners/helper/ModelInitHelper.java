@@ -153,15 +153,24 @@ public class ModelInitHelper {
 		gsonBuilder.registerTypeAdapter(Point2D.class, new Point2DTypeAdapter());		
 		Gson gson = gsonBuilder.enableComplexMapKeySerialization().excludeFieldsWithoutExposeAnnotation().create();
 		TreeMap<String, Point2D> positionsList = gson.fromJson(br, pointListType);
+
+		// the following is a validation, to ignore potentially false positions in th  positions.json file
+		TreeMap<String, Point2D> validatedList = new TreeMap<>();
+		
+		for (Entry<String, Point2D> ie : positionsList.entrySet()) {
+			String key = ie.getKey();			
+			if ( DesignerPanel.buildings.get(key) != null) {
+				validatedList.put(ie.getKey(), ie.getValue());
+			}
+		}
+		
 		PositionManager pm = PositionManager.getInstance();
 		
 		try {
-			pm.setPositions(positionsList);
+			pm.setPositions(validatedList);
 		} catch (Exception e) {
 			e.printStackTrace();
 			pm.clearPositions();			
-			// System.out.println("Clearing positions!");
-			
 			for (Entry<Building, JLabel> entry : DesignerPanel.buildingIcons.entrySet()) {				
 				Building building = entry.getKey();		
 				JLabel icon = entry.getValue();				

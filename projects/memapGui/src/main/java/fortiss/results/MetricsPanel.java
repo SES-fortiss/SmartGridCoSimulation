@@ -52,7 +52,7 @@ public class MetricsPanel extends JPanel {
 	public void addBarPlotWidget(String title, String xAxisTitle, String yAxisTitle, int width, int height,
 			List<CategorySeries> series, String toolTip) {
 		CategoryPlotWidget barPlotWidget = new CategoryPlotWidget(title, xAxisTitle, yAxisTitle, width, height, series,
-				CategorySeriesRenderStyle.Bar);
+				CategorySeriesRenderStyle.Line);
 		if (toolTip != null) {
 			barPlotWidget.setToolTipText(toolTip);
 		}

@@ -204,7 +204,7 @@ public class CouplerInputPanel extends JPanel {
 		add(txtCEfficiencySecondary, "4, 20, fill, default");
 		txtCEfficiencySecondary.setColumns(10);
 
-		lbCCost = new JLabel("Cost [cent EUR/kWh]");
+		lbCCost = new JLabel("Fuel cost [EUR/kWh]");
 		add(lbCCost, "2, 22");
 
 		txtCCost = new JTextField();

@@ -1,10 +1,9 @@
-package fortiss.results;
+package fortiss.results; 
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.HashMap;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -18,6 +17,7 @@ import fortiss.gui.style.Fonts;
 import fortiss.results.widgets.ComponentUsageWidged;
 import fortiss.results.widgets.ParameterWidget;
 import fortiss.results.widgets.TextBoxWidget;
+import net.miginfocom.swing.MigLayout;
 
 public class SummaryPanel extends JPanel {
 
@@ -30,16 +30,18 @@ public class SummaryPanel extends JPanel {
 	private JPanel perBuildingOptimizationPanel;
 
 	public SummaryPanel() {
-		setLayout(new BorderLayout(0, 0));
-
-		ParameterWidget parameterWidget = new ParameterWidget();
-		add(parameterWidget, BorderLayout.WEST);
-
-		globalOptimizationPanel = new JPanel();
+		
+		// TODO change that to MigLayout?
+		//setLayout(new BorderLayout(0, 0));
+		//setBackground(Colors.memapGreen);
+		
+		setLayout(new MigLayout());
+		
+		globalOptimizationPanel = new JPanel();		
 		globalOptimizationPanel.setAlignmentX(CENTER_ALIGNMENT);
 		globalOptimizationPanel.setAlignmentY(CENTER_ALIGNMENT);
 		globalOptimizationPanel.setLayout(new BoxLayout(globalOptimizationPanel, BoxLayout.Y_AXIS));
-		globalOptimizationPanel.add(Box.createVerticalStrut(50));
+		//globalOptimizationPanel.add(Box.createVerticalStrut(50));
 		globalOptimizationPanel.setBorder(new TitledBorder(new EtchedBorder(), "Results with MEMAP", TitledBorder.RIGHT,
 				TitledBorder.TOP, Fonts.getOswald(26), Colors.accent2));
 
@@ -47,22 +49,33 @@ public class SummaryPanel extends JPanel {
 		perBuildingOptimizationPanel.setAlignmentX(CENTER_ALIGNMENT);
 		perBuildingOptimizationPanel.setAlignmentY(CENTER_ALIGNMENT);
 		perBuildingOptimizationPanel.setLayout(new BoxLayout(perBuildingOptimizationPanel, BoxLayout.Y_AXIS));
-		perBuildingOptimizationPanel.add(Box.createVerticalStrut(50));
+		//perBuildingOptimizationPanel.add(Box.createVerticalStrut(50));
 		perBuildingOptimizationPanel.setBorder(new TitledBorder(new EtchedBorder(), "Results without MEMAP",
 				TitledBorder.RIGHT, TitledBorder.TOP, Fonts.getOswald(26), Colors.accent2));
 
-		JSplitPane comparisonPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, globalOptimizationPanel,
-				perBuildingOptimizationPanel);
-		comparisonPane.setDividerSize(0);
-		comparisonPane.setResizeWeight(0.5);
-		add(comparisonPane, BorderLayout.CENTER);
-
 		performancePanel = new JPanel();
-		performancePanel.add(Box.createHorizontalStrut(200));
-		performancePanel.setLayout(new BoxLayout(performancePanel, BoxLayout.X_AXIS));
-		performancePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		performancePanel.setAlignmentY(Component.CENTER_ALIGNMENT);
-		add(performancePanel, BorderLayout.NORTH);
+		
+		ParameterWidget parameterWidget = new ParameterWidget();
+		
+		//add(comparisonPane, BorderLayout.CENTER); //Comparison is with and without MEMAP
+		//add(performancePanel, BorderLayout.NORTH); // performance shows the numbers of MEMAPs improvement
+		//add(parameterWidget, BorderLayout.SOUTH); // parameter represents Simulation parameters
+		
+		add(parameterWidget, "wrap, growx");
+		add(globalOptimizationPanel, "split 2");
+		add(perBuildingOptimizationPanel, "wrap");
+		add(performancePanel, "growx");
+		
+		//globalOptimizationPanel.add(parameterWidget);
+		//perBuildingOptimizationPanel.add(parameterWidget);
+		//performancePanel.add(parameterWidget);
+		
+		globalOptimizationPanel.setBackground(Colors.memapGreen);
+		perBuildingOptimizationPanel.setBackground(Colors.memapGreen);
+		performancePanel.setBackground(Colors.memapGreen);
+		parameterWidget.setBackground(Colors.memapGreen);
+		
+		
 	}
 
 	/**
@@ -99,7 +112,7 @@ public class SummaryPanel extends JPanel {
 		iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		switch (context) {
 		case GLOBAL_OPTIMIZATION:
-			globalOptimizationPanel.add(iconLabel);
+			globalOptimizationPanel.add(iconLabel); 
 			break;
 		case PER_BUILDING_OPTIMIZATION:
 			perBuildingOptimizationPanel.add(iconLabel);

@@ -102,7 +102,7 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 			}
 		} catch (IOException | ParseException e) {
 			
-			System.err.println("Error reading or parsing CSV data from " + csvFile + " - we try a second format now.");			
+			System.out.println("Reading new format of " + csvFile);			
 			try {
 				// If the first reader does not work, we try a second format style, that is specified as another scenario
 				

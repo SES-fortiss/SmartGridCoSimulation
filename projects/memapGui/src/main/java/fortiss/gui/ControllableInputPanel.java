@@ -159,7 +159,7 @@ public class ControllableInputPanel extends JPanel {
 		add(txtCPEfficiency, "4, 16, fill, default");
 		txtCPEfficiency.setColumns(10);
 
-		lbCPCost = new JLabel("Cost [cent EUR/kWh]");
+		lbCPCost = new JLabel("Fuel cost [EUR/kWh]");
 		add(lbCPCost, "2, 18");
 
 		txtCPCost = new JTextField();

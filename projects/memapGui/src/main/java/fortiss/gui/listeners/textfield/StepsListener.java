@@ -34,7 +34,7 @@ public class StepsListener extends KeyAdapter implements FocusListener {
 	@Override
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
-			String currentVal = Integer.toString(DesignerPanel.parameterPanel.pars.getSteps());
+			String currentVal = Integer.toString(DesignerPanel.parameterPanel.pars.getMPCHorizon());
 			source.setText(currentVal);
 		}
 	}

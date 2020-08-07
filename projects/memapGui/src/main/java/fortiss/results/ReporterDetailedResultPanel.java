@@ -24,12 +24,12 @@ import fortiss.gui.style.StyleGenerator;
 import fortiss.results.listeners.label.MenuListener;
 
 /**
- * Report panel: shows results list and plots
+ * Report panel: shows results list and plots for the detailed view.
  */
 @SuppressWarnings("serial")
-public class ReporterPanel extends JPanel {
+public class ReporterDetailedResultPanel extends JPanel {
 
-	public static ReporterPanel results;
+	public static ReporterDetailedResultPanel results;
 	public static JPanel plPlot;
 	public PlotPanel plotPanel;
 	private Menu treeResults;
@@ -58,9 +58,9 @@ public class ReporterPanel extends JPanel {
 	}
 
 	/**
-	 * Create the application.
+	 * Creates the panel for detailed results - at least the left hand side
 	 */
-	public ReporterPanel() {
+	public ReporterDetailedResultPanel() {
 		StyleGenerator.setupStyle();
 		initialize();
 	}

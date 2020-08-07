@@ -15,6 +15,9 @@ abstract public class Colors {
 	public static Color accent2 = new Color(190, 145, 18); // dark yellow
 	/** Color for user input fields name and component box icon names */
 	public static Color normal = new Color(0, 0, 0); // black
+	/** MEMAP Style Color */
+	public static Color memapGreen = Color.decode("#006664"); // the dark green of memap
+	
 	/**
 	 * Color for icons in the layout and added-components area, and for instructions
 	 */

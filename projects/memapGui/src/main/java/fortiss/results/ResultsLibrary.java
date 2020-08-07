@@ -42,7 +42,7 @@ public abstract class ResultsLibrary {
 	 * @param label      the label of a series in a data set
 	 * @return a series in the data set of a building
 	 */
-	public ArrayList<Double> getDataSeries(String resultName, String label) {
+	public ArrayList<Double> getDataSeries(String resultName, String label) {		
 		return resultsLibrary.get(resultName).getSeries(label);
 	}
 

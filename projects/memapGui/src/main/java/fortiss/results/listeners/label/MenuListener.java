@@ -8,7 +8,7 @@ import javax.swing.tree.TreePath;
 
 import fortiss.results.Menu;
 import fortiss.results.Reporter;
-import fortiss.results.ReporterPanel;
+import fortiss.results.ReporterDetailedResultPanel;
 import fortiss.results.ResultsLibrary;
 import fortiss.simulation.PlanningTool;
 
@@ -17,7 +17,7 @@ public class MenuListener implements TreeSelectionListener {
 	/** A reference to the reporter */
 	Reporter reporter;
 	/** A reference to the reporter panel */
-	ReporterPanel reporterPanel;
+	ReporterDetailedResultPanel reporterPanel;
 	
 	int previouslySelected = 0;
 	

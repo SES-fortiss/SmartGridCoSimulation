@@ -30,9 +30,9 @@ public class OverviewResults extends ResultsLibrary {
 		String location = System.getProperty("user.dir");
 		String fs = File.separator;
 		String source = fs + DirectoryConfiguration.mainDir + fs + "results" + fs + pars.getSimulationName() + fs
-				+ "MPC" + pars.getSteps() + "_" + pars.getOptimizer().toUpperCase() + fs;
+				+ "MPC" + pars.getMPCHorizon() + "_" + pars.getOptimizer().toUpperCase() + fs;
 
-		String qualifier = "_MPC" + pars.getSteps() + "_" + pars.getOptimizer().toUpperCase() + typeQualifier;
+		String qualifier = "_MPC" + pars.getMPCHorizon() + "_" + pars.getOptimizer().toUpperCase() + typeQualifier;
 
 		// Read global optimization results
 		String filename = pars.getSimulationName() + qualifier;
@@ -40,13 +40,16 @@ public class OverviewResults extends ResultsLibrary {
 
 		try {
 			resultsLibrary.put("Global optimization", new Data(fm.readFromSource(filename), true, Data.BYROW));
+			
+			System.out.println("File name for reading overview results: " + filename);
+			
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 		}
 
 		// Read building optimization results
 		for (Entry<String, Building> entry : DesignerPanel.buildings.entrySet()) {
-			Building building = entry.getValue();
+			Building building = (Building) entry.getValue();
 			filename = building.getName() + qualifier;
 			filename = location + source + filename;
 			try {

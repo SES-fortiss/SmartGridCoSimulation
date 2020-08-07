@@ -21,7 +21,7 @@ public class Connection extends Device {
 	public double[] linprogConnectionOutput;
 
 	public Connection(String sourceBuilding, String connectedBuilding, double pipeLengthInMeter, double lossesPer100m, double q_max) {
-		super("connection", 0);
+		super("connection_From" + sourceBuilding + "_To"+connectedBuilding, 0);
 
 		this.sourceBuilding = sourceBuilding;
 		this.connectedBuilding = connectedBuilding;

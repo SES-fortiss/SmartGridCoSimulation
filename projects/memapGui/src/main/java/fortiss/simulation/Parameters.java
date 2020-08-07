@@ -96,7 +96,7 @@ public class Parameters {
 		this.simulationName = simulationName;
 	}
 	
-	public int getLength() {
+	public int getStepsPerDay() {
 		return length;
 	}
 
@@ -104,7 +104,7 @@ public class Parameters {
 		this.length = length;
 	}
 
-	public int getSteps() {
+	public int getMPCHorizon() {
 		return steps;
 	}
 

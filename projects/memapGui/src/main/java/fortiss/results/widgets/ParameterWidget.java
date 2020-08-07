@@ -13,14 +13,14 @@ public class ParameterWidget extends JPanel {
 
 	public ParameterWidget(){
 		
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		Parameters pars = DesignerPanel.parameterPanel.pars;
 		
 		add(new TextBoxWidget(pars.getSimulationName(), "", "Simulation parameters"));
 		add(new TextBoxWidget("", Double.toString(pars.getDays()), "DAYS"));
-		add(new TextBoxWidget("", Double.toString(pars.getLength()), "STEPS PER DAY"));
-		add(new TextBoxWidget("", Double.toString(pars.getSteps()), "MPC HORIZON"));
+		add(new TextBoxWidget("", Double.toString(pars.getStepsPerDay()), "STEPS PER DAY"));
+		add(new TextBoxWidget("", Double.toString(pars.getMPCHorizon()), "MPC HORIZON"));
 		if(pars.isFixedPrice()) {
 			add(new TextBoxWidget("", "FIXED", "MARKED PRICE"));
 		} else {

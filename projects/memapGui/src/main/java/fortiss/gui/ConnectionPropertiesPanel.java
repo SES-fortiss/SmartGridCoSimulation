@@ -31,31 +31,26 @@ public class ConnectionPropertiesPanel extends JPanel {
 		setPreferredSize(new Dimension(170, 80));
 		setMaximumSize(new Dimension(300, 60));
 
-		JLabel lblLength = new JLabel("Length: ");
-		add(lblLength);
-
+		
 		lengthTextField = new JTextField(String.valueOf(connection.getLength()));
 		lengthTextField.setColumns(4);
 		lengthTextField.setName(String.valueOf(connection.hashCode()));
 		lengthTextField.addFocusListener(new ConnectionLengthListener());
 		lengthTextField.addKeyListener(new ConnectionLengthListener());
 		add(lengthTextField);
+		
+		JLabel lblLength = new JLabel("Thermal-Line [m]");
+		add(lblLength);
 
-		JLabel lblLengthUnit = new JLabel("[m]");
-		add(lblLengthUnit);
-
-		JLabel lblLosses = new JLabel("Losses: ");
-		add(lblLosses);
-
-		lossesTextField = new JTextField(String.valueOf(connection.getLosses()));
+		lossesTextField = new JTextField(String.valueOf(connection.getLosses() * 100));
 		lossesTextField.setColumns(4);
 		lossesTextField.setName(String.valueOf(connection.hashCode()));
 		lossesTextField.addFocusListener(new ConnectionLossesListener());
 		lossesTextField.addKeyListener(new ConnectionLossesListener());
 		add(lossesTextField);
 
-		JLabel lblLossesUnit = new JLabel("[%/m]");
-		add(lblLossesUnit);
+		JLabel lblLosses = new JLabel("Losses [% /100m]");
+		add(lblLosses);
 
 		JLabel lblEliminate = new JLabel("Eliminate [x]");
 		lblEliminate.setForeground(Colors.accent1);

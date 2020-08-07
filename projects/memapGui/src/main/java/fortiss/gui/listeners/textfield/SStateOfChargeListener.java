@@ -78,6 +78,9 @@ public class SStateOfChargeListener extends KeyAdapter implements FocusListener 
 				valid = false;
 				message = "Error. Invalid input or empty field.";
 			} else {
+				valid = true;
+				o.setSoc(Double.parseDouble(input));
+				/*
 				double num = Double.parseDouble(input);
 				if (num > 1) {
 					valid = false;
@@ -86,6 +89,7 @@ public class SStateOfChargeListener extends KeyAdapter implements FocusListener 
 					valid = true;
 					o.setSoc(Double.parseDouble(input));
 				}
+				*/
 			}
 		}
 	}

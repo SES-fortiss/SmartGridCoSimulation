@@ -33,7 +33,7 @@ public class ConnectionLossesListener extends KeyAdapter implements FocusListene
 		check = false;
 		valid = true;
 
-		source = (JTextField) e.getSource();		
+		source = (JTextField) e.getSource();
 		ConnectionManager cm = ConnectionManager.getInstance();
 		int connectionHashCode = Integer.parseInt(source.getName());
 		connection = cm.getConnection(connectionHashCode);
@@ -71,12 +71,12 @@ public class ConnectionLossesListener extends KeyAdapter implements FocusListene
 				message = "Error. Invalid input or empty field.";
 			} else {
 				double num = Double.parseDouble(input);
-				if (num > 1) {
+				if (num > 100 && num < 0) {
 					valid = false;
-					message = "Error. Invalid efficiency. Only values between 0 and 1 are valid.";
+					message = "Error. Invalid efficiency. Only values between 0 and 100 % are valid.";
 				} else {
 					valid = true;
-					connection.setLosses(Double.valueOf(input));
+					connection.setLosses(Double.valueOf(input) / 100.0);
 				}
 			}
 		}
