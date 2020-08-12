@@ -37,14 +37,21 @@ public class BuildingIcons {
 	 * the icon is outside the visible area.
 	 */
 	public void createBuildingIcon(String buildingName, Point p) {
-
+		
 		JLabel icon = new JLabel(buildingName);
 		icon.setName("building");
 		icon.setFont(Fonts.getOpenSans());
 		DesignerPanel.buildingIcons.put(  DesignerPanel.buildings.get(buildingName), icon);
 		icon.setVerticalTextPosition(JLabel.BOTTOM);
 		icon.setHorizontalTextPosition(JLabel.CENTER);
-		icon.setToolTipText(buildingName);
+		
+		String toolTip = "<html>" + buildingName
+				+ "<br>- click to select building"
+				+ "<br>- press DEL to delete selected building"
+				+ "<br>- right click and drag to create a connection "
+				+ "<br>- double click on connection to modify it parameters </html>";
+		
+		icon.setToolTipText(toolTip);
 		icon.setIcon(Icon.uBuilding);
 		icon.setLocation(p);
 

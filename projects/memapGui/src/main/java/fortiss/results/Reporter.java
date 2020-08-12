@@ -1,6 +1,5 @@
 package fortiss.results;
 
-import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -8,7 +7,6 @@ import fortiss.components.Building;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.style.Colors;
 import fortiss.simulation.PlanningTool;
-import net.miginfocom.swing.MigLayout;
 
 /**
  * Populates the panels of the result overview tab

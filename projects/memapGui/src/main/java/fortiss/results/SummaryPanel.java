@@ -1,14 +1,15 @@
 package fortiss.results; 
 
-import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.util.HashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSplitPane;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
@@ -38,44 +39,37 @@ public class SummaryPanel extends JPanel {
 		setLayout(new MigLayout());
 		
 		globalOptimizationPanel = new JPanel();		
-		globalOptimizationPanel.setAlignmentX(CENTER_ALIGNMENT);
-		globalOptimizationPanel.setAlignmentY(CENTER_ALIGNMENT);
 		globalOptimizationPanel.setLayout(new BoxLayout(globalOptimizationPanel, BoxLayout.Y_AXIS));
-		//globalOptimizationPanel.add(Box.createVerticalStrut(50));
 		globalOptimizationPanel.setBorder(new TitledBorder(new EtchedBorder(), "Results with MEMAP", TitledBorder.RIGHT,
 				TitledBorder.TOP, Fonts.getOswald(26), Colors.accent2));
 
 		perBuildingOptimizationPanel = new JPanel();
-		perBuildingOptimizationPanel.setAlignmentX(CENTER_ALIGNMENT);
-		perBuildingOptimizationPanel.setAlignmentY(CENTER_ALIGNMENT);
 		perBuildingOptimizationPanel.setLayout(new BoxLayout(perBuildingOptimizationPanel, BoxLayout.Y_AXIS));
-		//perBuildingOptimizationPanel.add(Box.createVerticalStrut(50));
 		perBuildingOptimizationPanel.setBorder(new TitledBorder(new EtchedBorder(), "Results without MEMAP",
 				TitledBorder.RIGHT, TitledBorder.TOP, Fonts.getOswald(26), Colors.accent2));
-
-		performancePanel = new JPanel();
 		
 		ParameterWidget parameterWidget = new ParameterWidget();
+		performancePanel = new JPanel();
 		
-		//add(comparisonPane, BorderLayout.CENTER); //Comparison is with and without MEMAP
-		//add(performancePanel, BorderLayout.NORTH); // performance shows the numbers of MEMAPs improvement
-		//add(parameterWidget, BorderLayout.SOUTH); // parameter represents Simulation parameters
+		JLabel titleLabel = new JLabel("Comparison results: MEMAP vs. Single Buildings");
+		titleLabel.setFont(  new Font("Verdana", Font.PLAIN, 24)  );
+		titleLabel.setBackground(Colors.memapGreen);
+		titleLabel.setForeground(Color.WHITE);
+		titleLabel.setAlignmentX(CENTER_ALIGNMENT);
+		titleLabel.setOpaque(true);
+		titleLabel.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
 		
-		add(parameterWidget, "wrap, growx");
-		add(globalOptimizationPanel, "split 2");
-		add(perBuildingOptimizationPanel, "wrap");
-		add(performancePanel, "growx");
+		add(titleLabel, "width 99%, align center, wrap");
+		add(parameterWidget, "grow, wrap");
+		add(performancePanel, "grow, wrap");
+		add(globalOptimizationPanel, "grow, split 2");
+		add(perBuildingOptimizationPanel, "grow");
 		
-		//globalOptimizationPanel.add(parameterWidget);
-		//perBuildingOptimizationPanel.add(parameterWidget);
-		//performancePanel.add(parameterWidget);
 		
 		globalOptimizationPanel.setBackground(Colors.memapGreen);
 		perBuildingOptimizationPanel.setBackground(Colors.memapGreen);
 		performancePanel.setBackground(Colors.memapGreen);
-		parameterWidget.setBackground(Colors.memapGreen);
-		
-		
+		parameterWidget.setBackground(Colors.memapGreen);		
 	}
 
 	/**

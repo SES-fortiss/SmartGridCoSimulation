@@ -31,4 +31,5 @@ public class AddStorageListener extends MouseAdapter {
 		up.updateStorageData(s.getName(), s.getNetworkType(), s.getCapacity(), s.getSoc(), s.getMaxCharging(),
 				s.getMaxDischarging(), s.getEffIN(), s.getEffOUT());
 	}
+
 }

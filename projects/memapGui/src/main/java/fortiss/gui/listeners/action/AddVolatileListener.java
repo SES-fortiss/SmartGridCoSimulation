@@ -31,4 +31,5 @@ public class AddVolatileListener extends MouseAdapter {
 		up.updateVolProductionData(v.getName(), v.getNetworkType(), v.getMinimumPower(), v.getMaximumPower(),
 				v.getForecastFile(), v.getCost(), v.getCOEmission());
 	}
+
 }

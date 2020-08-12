@@ -79,7 +79,7 @@ public class ReporterOverviewPanel extends JPanel {
 		
 		JScrollPane metricsScrollPane = new JScrollPane(
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		metricsScrollPane.setViewportView(panel);
 		
 		presentationPanel.add(metricsScrollPane, name.toLowerCase());		

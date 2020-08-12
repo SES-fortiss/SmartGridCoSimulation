@@ -1,6 +1,5 @@
 package fortiss.simulation;
 
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.EventQueue;
 
@@ -9,8 +8,8 @@ import fortiss.gui.PlanningToolWindow;
 import fortiss.gui.TrackerPanel;
 import fortiss.media.Icon;
 import fortiss.results.Reporter;
-import fortiss.results.ReporterOverviewPanel;
 import fortiss.results.ReporterDetailedResultPanel;
+import fortiss.results.ReporterOverviewPanel;
 import fortiss.simulation.helper.ProgressManager;
 import memap.controller.GuiController;
 

@@ -35,4 +35,5 @@ public class AddControllableListener extends MouseAdapter {
 		up.updateContProductionData(cp.getName(), cp.getNetworkType(), cp.getMinimumPower(), cp.getMaximumPower(),
 				cp.getEfficiency(), cp.getCost(), cp.getCOEmission());
 	}
+
 }

@@ -16,6 +16,7 @@ import fortiss.gui.listeners.action.AddCouplerListener;
 import fortiss.gui.listeners.action.AddDemandListener;
 import fortiss.gui.listeners.action.AddStorageListener;
 import fortiss.gui.listeners.action.AddVolatileListener;
+import fortiss.gui.listeners.label.HooverMouseListner;
 import fortiss.gui.style.Colors;
 import fortiss.media.Icon;
 
@@ -58,9 +59,10 @@ public class ComponentBox extends Box {
 	 * Initializes the contents of the component box.
 	 */
 	public void initialize() {
-		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "COMPONENTS", TitledBorder.CENTER,
+		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "EMS COMPONENTS", TitledBorder.CENTER,
 				TitledBorder.TOP, null, Colors.accent1));
-		setToolTipText("Clic on a component to add it to the building devices.");
+		
+		String toolTip = "Click on a component to add it to the building devices.";
 
 		Component verticalStrut = Box.createVerticalStrut(2);
 		verticalStrut.setPreferredSize(new Dimension(0, 10));
@@ -74,8 +76,10 @@ public class ComponentBox extends Box {
 		lb_add_demand.setMaximumSize(new Dimension(156, 100));
 		lb_add_demand.setVerticalTextPosition(JLabel.BOTTOM);
 		lb_add_demand.setHorizontalTextPosition(JLabel.CENTER);
-		lb_add_demand.setIcon(Icon.uDemandMenu);
+		lb_add_demand.setIcon(Icon.uDemandMenu);		
 		lb_add_demand.addMouseListener(new AddDemandListener());
+		lb_add_demand.addMouseListener(new HooverMouseListner());
+		lb_add_demand.setToolTipText(toolTip);
 		add(lb_add_demand);
 
 		Component verticalStrut_1 = Box.createVerticalStrut(2);
@@ -92,6 +96,8 @@ public class ComponentBox extends Box {
 		lb_add_storage.setHorizontalTextPosition(JLabel.CENTER);
 		lb_add_storage.setIcon(Icon.uStorageMenu);
 		lb_add_storage.addMouseListener(new AddStorageListener());
+		lb_add_storage.addMouseListener(new HooverMouseListner());
+		lb_add_storage.setToolTipText(toolTip);
 		add(lb_add_storage);
 
 		Component verticalStrut_2 = Box.createVerticalStrut(2);
@@ -108,6 +114,8 @@ public class ComponentBox extends Box {
 		lb_add_volatile.setHorizontalTextPosition(JLabel.CENTER);
 		lb_add_volatile.setIcon(Icon.uVolatileMenu);
 		lb_add_volatile.addMouseListener(new AddVolatileListener());
+		lb_add_volatile.addMouseListener(new HooverMouseListner());
+		lb_add_volatile.setToolTipText(toolTip);
 		add(lb_add_volatile);
 
 		Component verticalStrut_3 = Box.createVerticalStrut(2);
@@ -124,6 +132,8 @@ public class ComponentBox extends Box {
 		lb_add_controllable.setHorizontalTextPosition(JLabel.CENTER);
 		lb_add_controllable.setIcon(Icon.uControllableMenu);
 		lb_add_controllable.addMouseListener(new AddControllableListener());
+		lb_add_controllable.addMouseListener(new HooverMouseListner());
+		lb_add_controllable.setToolTipText(toolTip);
 		add(lb_add_controllable);
 
 		Component verticalStrut_4 = Box.createVerticalStrut(2);
@@ -139,6 +149,8 @@ public class ComponentBox extends Box {
 		lb_add_coupler.setHorizontalTextPosition(JLabel.CENTER);
 		lb_add_coupler.setIcon(Icon.uCouplerMenu);
 		lb_add_coupler.addMouseListener(new AddCouplerListener());
+		lb_add_coupler.addMouseListener(new HooverMouseListner());
+		lb_add_coupler.setToolTipText(toolTip);
 		add(lb_add_coupler);
 	}
 

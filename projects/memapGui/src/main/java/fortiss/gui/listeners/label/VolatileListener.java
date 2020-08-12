@@ -1,10 +1,12 @@
 package fortiss.gui.listeners.label;
 
+import java.awt.Cursor;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 import fortiss.components.Building;
@@ -12,6 +14,7 @@ import fortiss.components.Volatile;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.DataUpdater;
 import fortiss.gui.listeners.helper.FocusManager;
+import fortiss.gui.style.Colors;
 
 public class VolatileListener extends MouseAdapter implements FocusListener {
 
@@ -53,4 +56,18 @@ public class VolatileListener extends MouseAdapter implements FocusListener {
 		JLabel lb = (JLabel) e.getSource();
 		FocusManager.focusLostVolatile(building, lb);
 	}
+	
+	// TODO - sorry but the following two methods are a clones taken from BuildingListner	
+	public void mouseEntered(java.awt.event.MouseEvent e) {
+		JLabel lb = (JLabel) e.getSource();
+		lb.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		lb.setBorder(BorderFactory.createLineBorder(Colors.accent1, 1, true));
+    }
+
+    public void mouseExited(java.awt.event.MouseEvent e) {
+		JLabel lb = (JLabel) e.getSource();
+    	lb.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    	lb.setBorder(BorderFactory.createEmptyBorder());
+    }
+
 }
