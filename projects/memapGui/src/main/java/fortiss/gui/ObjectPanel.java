@@ -16,7 +16,7 @@ import com.jgoodies.forms.layout.RowSpec;
 
 import fortiss.gui.listeners.label.DragListener;
 import fortiss.gui.listeners.label.DropListener;
-import fortiss.gui.listeners.label.HooverMouseListner;
+import fortiss.gui.listeners.label.HoverMouseListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
@@ -93,7 +93,7 @@ public class ObjectPanel extends JPanel {
 		new DropListener(DesignerPanel.pl_ems);
 		
 		// Add visual effect to guide user interactions
-		lb_new_ems.addMouseListener(new HooverMouseListner());
+		lb_new_ems.addMouseListener(new HoverMouseListener());
 	}
 
 	public void showComponentBox() {

@@ -16,7 +16,7 @@ import fortiss.gui.listeners.action.AddCouplerListener;
 import fortiss.gui.listeners.action.AddDemandListener;
 import fortiss.gui.listeners.action.AddStorageListener;
 import fortiss.gui.listeners.action.AddVolatileListener;
-import fortiss.gui.listeners.label.HooverMouseListner;
+import fortiss.gui.listeners.label.HoverMouseListener;
 import fortiss.gui.style.Colors;
 import fortiss.media.Icon;
 
@@ -78,7 +78,7 @@ public class ComponentBox extends Box {
 		lb_add_demand.setHorizontalTextPosition(JLabel.CENTER);
 		lb_add_demand.setIcon(Icon.uDemandMenu);		
 		lb_add_demand.addMouseListener(new AddDemandListener());
-		lb_add_demand.addMouseListener(new HooverMouseListner());
+		lb_add_demand.addMouseListener(new HoverMouseListener());
 		lb_add_demand.setToolTipText(toolTip);
 		add(lb_add_demand);
 
@@ -96,7 +96,7 @@ public class ComponentBox extends Box {
 		lb_add_storage.setHorizontalTextPosition(JLabel.CENTER);
 		lb_add_storage.setIcon(Icon.uStorageMenu);
 		lb_add_storage.addMouseListener(new AddStorageListener());
-		lb_add_storage.addMouseListener(new HooverMouseListner());
+		lb_add_storage.addMouseListener(new HoverMouseListener());
 		lb_add_storage.setToolTipText(toolTip);
 		add(lb_add_storage);
 
@@ -114,7 +114,7 @@ public class ComponentBox extends Box {
 		lb_add_volatile.setHorizontalTextPosition(JLabel.CENTER);
 		lb_add_volatile.setIcon(Icon.uVolatileMenu);
 		lb_add_volatile.addMouseListener(new AddVolatileListener());
-		lb_add_volatile.addMouseListener(new HooverMouseListner());
+		lb_add_volatile.addMouseListener(new HoverMouseListener());
 		lb_add_volatile.setToolTipText(toolTip);
 		add(lb_add_volatile);
 
@@ -132,7 +132,7 @@ public class ComponentBox extends Box {
 		lb_add_controllable.setHorizontalTextPosition(JLabel.CENTER);
 		lb_add_controllable.setIcon(Icon.uControllableMenu);
 		lb_add_controllable.addMouseListener(new AddControllableListener());
-		lb_add_controllable.addMouseListener(new HooverMouseListner());
+		lb_add_controllable.addMouseListener(new HoverMouseListener());
 		lb_add_controllable.setToolTipText(toolTip);
 		add(lb_add_controllable);
 
@@ -149,7 +149,7 @@ public class ComponentBox extends Box {
 		lb_add_coupler.setHorizontalTextPosition(JLabel.CENTER);
 		lb_add_coupler.setIcon(Icon.uCouplerMenu);
 		lb_add_coupler.addMouseListener(new AddCouplerListener());
-		lb_add_coupler.addMouseListener(new HooverMouseListner());
+		lb_add_coupler.addMouseListener(new HoverMouseListener());
 		lb_add_coupler.setToolTipText(toolTip);
 		add(lb_add_coupler);
 	}
