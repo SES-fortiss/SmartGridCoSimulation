@@ -11,10 +11,11 @@ import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FileManager;
 import fortiss.simulation.Parameters;
 import memap.helper.DirectoryConfiguration;
+import memap.media.Strings;
 
 public class OverviewResults extends ResultsLibrary {
 
-	private static final String typeQualifier = "_Overview.csv";
+	private static final String typeQualifier = Strings.overviewFileSuffix;
 
 	/**
 	 * Constructor for the class OverviewResults.
@@ -39,10 +40,11 @@ public class OverviewResults extends ResultsLibrary {
 		filename = location + source + filename;
 
 		try {
-			resultsLibrary.put("Global optimization", new Data(fm.readFromSource(filename), true, Data.BYROW));
-			
+			resultsLibrary.put(Strings.memapOnModeName,
+					new Data(fm.readFromSource(filename), true, Data.BYROW));
+
 			System.out.println("File name for reading overview results: " + filename);
-			
+
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 		}

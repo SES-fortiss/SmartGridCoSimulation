@@ -7,6 +7,7 @@ import fortiss.components.Building;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.style.Colors;
 import fortiss.simulation.PlanningTool;
+import memap.media.Strings;
 
 /**
  * Populates the panels of the result overview tab
@@ -48,11 +49,6 @@ public class Reporter {
 		ReporterOverviewPanel reporterOverviewPanel = PlanningTool.getReporterOverviewPanel();
 		reporterOverviewPanel.reset();
 		
-		// reporterOverviewPanel consists of selectionPanel on the left and presentationPanel on the right
-		// reporterOverviewPanel has a MigLayout()
-		
-		// --> the presentationPanel (CardLayout) includes panels like comparison/summaryPanel and all the metricspanels
-
 		// Add a summary panel
 		SummaryPanel summaryPanel = new SummaryPanel();
 				
@@ -61,9 +57,9 @@ public class Reporter {
 		
 		// Add general metric panels - this is just the memap result panel!
 		MetricsPanel globalMetricsPanel = new MetricsPanel();
-		globalMetricsPanel.setBackground(Colors.memapGreen);		
-		metricsPanelMap.put("Global optimization", globalMetricsPanel);
-		reporterOverviewPanel.addSubpanel(metricsPanelMap.get("Global optimization"), "Global optimization");
+		globalMetricsPanel.setBackground(Colors.white);		
+		metricsPanelMap.put(Strings.memapOnModeName, globalMetricsPanel);
+		reporterOverviewPanel.addSubpanel(metricsPanelMap.get(Strings.memapOnModeName), Strings.memapOnModeName);
 
 		// These are the building views
 		reporterOverviewPanel.addEmptyCell();
@@ -73,22 +69,14 @@ public class Reporter {
 			Building building = entry.getValue();
 			
 			MetricsPanel buildingPanel = new MetricsPanel();
-			buildingPanel.setBackground(Colors.memapGreen);
+			buildingPanel.setBackground(Colors.white);
 			metricsPanelMap.put(building.getName(), buildingPanel);
 			reporterOverviewPanel.addSubpanel(metricsPanelMap.get(building.getName()), building.getName() + " (opt.)");
 		}
 		
 		MetricsGenerator metricsGenerator;
-		if (DesignerPanel.parameterPanel.pars.getOptimizer().equals("lp")) {
-			metricsGenerator = new LPMetricsGenerator(getDetailedResult(), getOverviewResult());
-		} else {
-			metricsGenerator = new MILPMetricsGenerator(getDetailedResult(), getOverviewResult());
-		}
 		
-		// TODO
-		System.out.println("summaryPanel: " + summaryPanel.getName());
-		System.out.println("metricsPanelMap: " + metricsPanelMap.keySet().toString());
-		
+		metricsGenerator = new MetricsGenerator(getDetailedResult(), getOverviewResult());
 		metricsGenerator.populateMetricsPanels(summaryPanel, metricsPanelMap);
 		
 		reporterOverviewPanel.showPanel("Comparison results");

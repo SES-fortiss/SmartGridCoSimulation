@@ -1,5 +1,6 @@
 package fortiss.results.widgets;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.text.DecimalFormat;
 
@@ -17,12 +18,14 @@ import com.jgoodies.forms.layout.RowSpec;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.FontSize;
 import fortiss.gui.style.Fonts;
+import fortiss.results.Comparator;
 
-public class TextBoxWidget extends JPanel {
+public class ComparisonWidget extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public TextBoxWidget(String title, double value, String unit) {
+	public ComparisonWidget(String title, double memapOnValue, double memapOffValue, String unit) {
+		
 		setPreferredSize(new Dimension(250, 100));
 		setBackground(Colors.white);
 		setBorder(new LineBorder(Colors.green));
@@ -36,6 +39,19 @@ public class TextBoxWidget extends JPanel {
 				FormSpecs.DEFAULT_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC,
 				FormSpecs.UNRELATED_GAP_ROWSPEC,}));
+		
+		// Computations
+		String memapOn = new DecimalFormat("#.0##").format(memapOnValue);
+		
+		Comparator c = new Comparator();
+		double gainValue = c.getGain(memapOnValue, memapOffValue);
+		String gain = new DecimalFormat("#.0##").format(gainValue);
+		String percentualGain = new DecimalFormat("#.0##").format(c.getPercentualGain(memapOnValue, memapOffValue));
+		
+		if (gainValue > 0) {
+			gain = "+" + gain;
+			percentualGain = "+" + percentualGain;
+		}
 
 		JLabel titleLabel = new JLabel("    " + title.toUpperCase(), SwingConstants.LEFT);
 		titleLabel.setFont(Fonts.getOswald(FontSize.SMALL));
@@ -47,14 +63,31 @@ public class TextBoxWidget extends JPanel {
 		separator.setForeground(Colors.green);
 		separator.setPreferredSize(new Dimension(400, 1));
 
-		JLabel metricLabel = new JLabel(new DecimalFormat("#.0##").format(value).toUpperCase() + " " + unit.toUpperCase(), SwingConstants.CENTER);
+		JLabel metricLabel = new JLabel(memapOn.toUpperCase() + " " + unit.toUpperCase(), SwingConstants.CENTER);
 		metricLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 		metricLabel.setFont(Fonts.getOpenSans(FontSize.LARGE));
 		metricLabel.setForeground(Colors.normal);
+		
+		JLabel comparisonLabel = new JLabel(gain.toUpperCase() + " " + unit + " / " + percentualGain.toUpperCase() + " %", SwingConstants.LEFT);
+		comparisonLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+		comparisonLabel.setFont(Fonts.getOswald(FontSize.SMALL));
+		comparisonLabel.setForeground(getColor(memapOnValue, memapOffValue));
 
 		add(titleLabel, "1, 1, 3, 1, fill, default");
 		add(separator, "1, 2, 3, 1, fill, top");
-		add(metricLabel, "2, 4, center, center");
-
+		add(metricLabel, "2, 3, center, center");
+		add(comparisonLabel, "2, 4, right, center");
+	}
+	
+	private Color getColor(double memapOnValue, double memapOffValue) {
+		// Values are equal
+		Color color = Colors.darkGray;
+		
+		if(memapOnValue > memapOffValue) {
+			color = Colors.red;
+		} else {
+			color = Colors.green;
+		}
+		return color;
 	}
 }

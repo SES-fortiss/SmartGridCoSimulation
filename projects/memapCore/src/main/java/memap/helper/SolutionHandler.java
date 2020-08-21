@@ -9,6 +9,7 @@ import java.util.Locale;
 
 import memap.helper.lp.LPOptimizationProblem;
 import memap.main.TopologyConfig;
+import memap.media.Strings;
 import memap.messages.BuildingMessage;
 import memap.messages.planning.StorageMessage;
 
@@ -213,13 +214,13 @@ public class SolutionHandler {
 		// following structure is intended: result["System heat demand", "Heat demand - building 1", ..., "System electricity demand"]
 		String[] result = new String[2 + buildingMessageList.size()];
 
-		result[0] = "System heat demand";
+		result[0] = Strings.heatDemand;
 		
 		for (int i = 1; i <= buildingMessageList.size(); i++) {
 			result[i] = "Heat demand - " + buildingMessageList.get(i-1).name;
 		}
 		
-		result[result.length - 1] = "System electricity demand";
+		result[result.length - 1] = Strings.electricityDemand;
 		return result;
 	}
 
@@ -227,7 +228,7 @@ public class SolutionHandler {
 	 * @return an array with the demand names
 	 */
 	public String[] getNamesForDemandSingleBuilding() {
-		String[] result = { "System heat demand", "System electricity demand" };
+		String[] result = { Strings.heatDemand, Strings.electricityDemand };
 		return result;
 	}
 

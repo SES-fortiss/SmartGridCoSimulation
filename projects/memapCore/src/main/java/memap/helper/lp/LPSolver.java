@@ -13,6 +13,7 @@ import memap.helper.MetricsHandler;
 import memap.helper.SolutionHandler;
 import memap.helper.configurationOptions.Optimizer;
 import memap.main.TopologyConfig;
+import memap.media.Strings;
 import memap.messages.BuildingMessage;
 import memap.messages.OptimizationResultMessage;
 
@@ -100,13 +101,13 @@ public class LPSolver {
 			double[] co2emissionsValue = { CO2Total };
 			double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep) };
 
-			String[] timeStep = { "Time step" };
+			String[] timeStep = { Strings.timeStep };
 			String[] currentDemandNames = solHandler.getNamesForDemandSingleBuilding();
 			String[] currentOptVectorNames = solHandler.getVectorNamesForThisTimeStep(problem.namesUB, nStepsMPC);
 			String[] currentSOCNames = solHandler.getNamesForSOC(buildingMessage.storageList);
-			String[] energyPrice = { "Energy price [EUR]" };
-			String[] totalCosts = { "Total costs [EUR]" };
-			String[] co2emissions = { "CO2 emissions [kg CO2]" };
+			String[] energyPrice = { Strings.energyPriceAndUnit};
+			String[] totalCosts = { Strings.totalCostAndUnit };
+			String[] co2emissions = { Strings.co2EmissionsAndUnit };
 
 			String[] namesResult = HelperConcat.concatAllObjects(timeStep, currentDemandNames, currentOptVectorNames,
 					currentSOCNames, energyPrice, totalCosts, co2emissions);
@@ -129,7 +130,7 @@ public class LPSolver {
 			buildingsSolutionPerTimeStep[currentTimeStep] = vectorResult;
 
 			String saveString = topologyController.getSimulationName() + "/MPC" + nStepsMPC + "_LP/";
-			saveString += actorName + "_MPC" + nStepsMPC + "_LP_Solutions.csv";
+			saveString += actorName + "_MPC" + nStepsMPC +Strings.lpSolutionFileSuffix;
 
 			if (currentTimeStep == (topologyConfig.getNrOfIterations() - 1)) {
 				solHandler.exportMatrix(buildingsSolutionPerTimeStep, saveString, namesResult);
@@ -153,7 +154,7 @@ public class LPSolver {
 
 			// filename to be created
 			String filename = topologyController.getSimulationName() + "/MPC" + nStepsMPC + "_LP/";
-			filename += actorName + "_MPC" + nStepsMPC + "_LP_Overview.csv";
+			filename += actorName + "_MPC" + nStepsMPC +Strings.lpOverviewFileSuffix;
 
 			mc.calculateOverviewMetrics(filename);
 

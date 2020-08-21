@@ -37,7 +37,7 @@ public abstract class ResultsLibrary {
 	}
 
 	/**
-	 * @param resultName a building name or "Global optimization" for global
+	 * @param resultName a building name or {@link Strings#memapOnModeName} for global
 	 *                   optimization results
 	 * @param label      the label of a series in a data set
 	 * @return a series in the data set of a building
@@ -47,7 +47,7 @@ public abstract class ResultsLibrary {
 	}
 
 	/**
-	 * @param resultName a building name or "Global optimization" for global
+	 * @param resultName a building name or {@link Strings#memapOnModeName} for global
 	 *                   optimization results
 	 * @return number of series in a data set
 	 */
@@ -68,7 +68,7 @@ public abstract class ResultsLibrary {
 	}
 
 	/**
-	 * @param resultName a building name or "Global optimization" for global
+	 * @param resultName a building name or {@link Strings#memapOnModeName} for global
 	 *                   optimization results
 	 * @return a set of series names in the data set of a building
 	 */
@@ -77,7 +77,7 @@ public abstract class ResultsLibrary {
 	}
 
 	/**
-	 * @param resultName a building name or "Global optimization" for global
+	 * @param resultName a building name or {@link Strings#memapOnModeName} for global
 	 *                   optimization results
 	 * @return <code>true</code> if there are results for a given building name
 	 */

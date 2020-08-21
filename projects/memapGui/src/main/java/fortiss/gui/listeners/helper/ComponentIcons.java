@@ -15,7 +15,6 @@ import fortiss.gui.listeners.action.RemoveListener;
 import fortiss.gui.listeners.label.ControllableListener;
 import fortiss.gui.listeners.label.CouplerListener;
 import fortiss.gui.listeners.label.DemandListener;
-import fortiss.gui.listeners.label.HoverMouseListener;
 import fortiss.gui.listeners.label.StorageListener;
 import fortiss.gui.listeners.label.VolatileListener;
 import fortiss.gui.style.Fonts;

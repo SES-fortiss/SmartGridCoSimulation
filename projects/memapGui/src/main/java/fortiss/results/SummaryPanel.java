@@ -1,136 +1,119 @@
 package fortiss.results; 
 
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
+import java.awt.FlowLayout;
 import java.util.HashMap;
 
-import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
 
 import fortiss.gui.style.Colors;
-import fortiss.gui.style.Fonts;
-import fortiss.results.widgets.ComponentUsageWidged;
+import fortiss.results.widgets.ComparisonWidget;
+import fortiss.results.widgets.ComponentUsageWidget;
+import fortiss.results.widgets.ListWidget;
 import fortiss.results.widgets.ParameterWidget;
 import fortiss.results.widgets.TextBoxWidget;
+import fortiss.results.widgets.TitleWidget;
+import memap.media.Strings;
 import net.miginfocom.swing.MigLayout;
 
 public class SummaryPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	public static final String GLOBAL_OPTIMIZATION = "Global optimization";
-	public static final String PER_BUILDING_OPTIMIZATION = "Per building optimization";
-	public static final String PERFORMANCE = "Performance";
 	private JPanel performancePanel;
 	private JPanel globalOptimizationPanel;
 	private JPanel perBuildingOptimizationPanel;
 
 	public SummaryPanel() {
+		setLayout(new MigLayout("insets 4 4 4 4, center, width 99%", 
+				"[center, 45%]30[center,45%]", 
+				"[top]30[top]30[top]30[top]30[top]"));
 		
-		// TODO change that to MigLayout?
-		//setLayout(new BorderLayout(0, 0));
-		//setBackground(Colors.memapGreen);
-		
-		setLayout(new MigLayout());
-		
-		globalOptimizationPanel = new JPanel();		
+		globalOptimizationPanel = new JPanel();
 		globalOptimizationPanel.setLayout(new BoxLayout(globalOptimizationPanel, BoxLayout.Y_AXIS));
-		globalOptimizationPanel.setBorder(new TitledBorder(new EtchedBorder(), "Results with MEMAP", TitledBorder.RIGHT,
-				TitledBorder.TOP, Fonts.getOswald(26), Colors.accent2));
-
 		perBuildingOptimizationPanel = new JPanel();
 		perBuildingOptimizationPanel.setLayout(new BoxLayout(perBuildingOptimizationPanel, BoxLayout.Y_AXIS));
-		perBuildingOptimizationPanel.setBorder(new TitledBorder(new EtchedBorder(), "Results without MEMAP",
-				TitledBorder.RIGHT, TitledBorder.TOP, Fonts.getOswald(26), Colors.accent2));
 		
 		ParameterWidget parameterWidget = new ParameterWidget();
-		performancePanel = new JPanel();
+		performancePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
-		JLabel titleLabel = new JLabel("Comparison results: MEMAP vs. Single Buildings");
-		titleLabel.setFont(  new Font("Verdana", Font.PLAIN, 24)  );
-		titleLabel.setBackground(Colors.memapGreen);
-		titleLabel.setForeground(Color.WHITE);
-		titleLabel.setAlignmentX(CENTER_ALIGNMENT);
-		titleLabel.setOpaque(true);
-		titleLabel.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
+		TitleWidget sectionTitle = new TitleWidget("Comparison results: MEMAP vs. Single Buildings");
+		TitleWidget subSectionTitle1 = new TitleWidget("Results with MEMAP");
+		TitleWidget subSectionTitle2 = new TitleWidget("Results without MEMAP");
 		
-		add(titleLabel, "width 99%, align center, wrap");
-		add(parameterWidget, "grow, wrap");
-		add(performancePanel, "grow, wrap");
-		add(globalOptimizationPanel, "grow, split 2");
-		add(perBuildingOptimizationPanel, "grow");
+		add(sectionTitle, "width 99%, align left, span 2, wrap");
+		add(performancePanel, "align center, span 2, growx, wrap");
+		add(subSectionTitle1, "growx");
+		add(subSectionTitle2, "growx, wrap");
+		add(globalOptimizationPanel, "align center, growx, sizegroupx 1");
+		add(perBuildingOptimizationPanel, "align center, growx, sizegroupx 1, wrap");
+		add(parameterWidget, "align center, growx, span");
 		
-		
-		globalOptimizationPanel.setBackground(Colors.memapGreen);
-		perBuildingOptimizationPanel.setBackground(Colors.memapGreen);
-		performancePanel.setBackground(Colors.memapGreen);
-		parameterWidget.setBackground(Colors.memapGreen);		
+		globalOptimizationPanel.setBackground(Colors.gray);
+		perBuildingOptimizationPanel.setBackground(Colors.gray);
+		performancePanel.setBackground(Colors.gray);
+		parameterWidget.setBackground(Colors.gray);		
 	}
 
 	/**
-	 * @param context {@link #GLOBAL_OPTIMIZATION},
-	 *                {@link #PER_BUILDING_OPTIMIZATION} or
-	 *                {@link #performancePanel}
+	 * 
+	 * TODO
+	 * @param context
 	 * @param title
 	 * @param value
 	 * @param unit
 	 * @param toolTip
 	 */
-	public void addTextWidget(String context, String title, String value, String unit, String toolTip) {
+	
+	public void addComparisonWidget(String context, String title, double valueMemapOn, double valueMemapOff, String unit, String toolTip) {
+		ComparisonWidget comparisonWidget = new ComparisonWidget(title, valueMemapOn, valueMemapOff, unit);
+		if (toolTip != null)
+			comparisonWidget.setToolTipText(toolTip);
+		addToContext(context, comparisonWidget);
+	}
+	
+	public ListWidget addListWidget(String context, String title, String toolTip) {
+		ListWidget listWidget = new ListWidget(title);
+		if (toolTip != null)
+			listWidget.setToolTipText(toolTip);
+		addToContext(context, listWidget);
+		return listWidget;
+	}
+	
+	public void addTextWidget(String context, String title, double value, String unit, String toolTip) {
 		TextBoxWidget textBoxWidget = new TextBoxWidget(title, value, unit);
 		if (toolTip != null)
 			textBoxWidget.setToolTipText(toolTip);
-
-		switch (context) {
-		case GLOBAL_OPTIMIZATION:
-			globalOptimizationPanel.add(textBoxWidget);
-			break;
-		case PER_BUILDING_OPTIMIZATION:
-			perBuildingOptimizationPanel.add(textBoxWidget);
-			break;
-		case PERFORMANCE:
-			performancePanel.add(textBoxWidget);
-			break;
-		default:
-			throw new IllegalArgumentException("Summary panel: " + context + " is not a valid context");
-		}
+		addToContext(context, textBoxWidget);
 	}
 
 	public void addImageWidget(String context, ImageIcon icon) {
 		JLabel iconLabel = new JLabel(icon);
 		iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		switch (context) {
-		case GLOBAL_OPTIMIZATION:
-			globalOptimizationPanel.add(iconLabel); 
-			break;
-		case PER_BUILDING_OPTIMIZATION:
-			perBuildingOptimizationPanel.add(iconLabel);
-			break;
-		case PERFORMANCE:
-			performancePanel.add(iconLabel);
-			break;
-		default:
-			throw new IllegalArgumentException("Summary panel: " + context + " is not a valid context");
-		}
+		addToContext(context, iconLabel);
 	}
 
 	public void addComponentUsageWidget(String context, String title, HashMap<String, Number> energyProductionBySource,
 			int places) {
-		ComponentUsageWidged componentUsageWidget = new ComponentUsageWidged(title, energyProductionBySource, places);
-
-		switch (context) {
-		case GLOBAL_OPTIMIZATION:
-			globalOptimizationPanel.add(componentUsageWidget);
-			break;
-		case PER_BUILDING_OPTIMIZATION:
-			perBuildingOptimizationPanel.add(componentUsageWidget);
-			break;
-		default:
+		ComponentUsageWidget componentUsageWidget = new ComponentUsageWidget(title, energyProductionBySource, places);
+		addToContext(context, componentUsageWidget);
+	}
+	
+	private void addToContext(String context, Component object) {
+		if(context.contentEquals(Strings.memapOnModeName)) {
+			globalOptimizationPanel.add(object);
+			globalOptimizationPanel.add(Box.createVerticalStrut(10));
+		} else if(context.contentEquals(Strings.memapOffModeName)) {
+			perBuildingOptimizationPanel.add(object);
+			perBuildingOptimizationPanel.add(Box.createVerticalStrut(10));
+		} else if (context.contentEquals(Strings.performancePanelName)) {
+			// Performance panel
+			performancePanel.add(object);
+			performancePanel.add(Box.createHorizontalStrut(10));
+		} else {
 			throw new IllegalArgumentException("Summary panel: " + context + " is not a valid context");
 		}
 	}

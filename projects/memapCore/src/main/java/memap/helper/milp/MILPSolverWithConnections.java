@@ -14,6 +14,7 @@ import memap.helper.DirectoryConfiguration;
 import memap.helper.MEMAPLogging;
 import memap.helper.MetricsHandler;
 import memap.helper.SolutionHandler;
+import memap.media.Strings;
 import memap.messages.BuildingMessage;
 import memap.messages.OptimizationResultMessage;
 
@@ -161,7 +162,7 @@ public class MILPSolverWithConnections extends MILPSolver {
 
 		// filename to be created
 		String filename = topologyController.getSimulationName() + "/MPC" + nStepsMPC + "_MILP/";
-		filename += actorName + "_MPC" + nStepsMPC + "_MILP_Overview.csv";
+		filename += actorName + "_MPC" + nStepsMPC + Strings.milpOverviewFileSuffix;
 
 		try {
 			metricsHandler.calculateOverviewMetrics(filename);

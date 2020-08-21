@@ -28,6 +28,7 @@ import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
+import fortiss.media.DesignerMessages;
 
 /**
  * Input panel for volatile parameters.
@@ -94,45 +95,25 @@ public class VolatileInputPanel extends JPanel {
 	private void initialize() {
 		setBorder(new TitledBorder(null, "Component information", TitledBorder.RIGHT, TitledBorder.TOP, null,
 				Colors.accent2));
-		setLayout(new FormLayout(new ColumnSpec[] {
-				ColumnSpec.decode("15dlu"),
-				ColumnSpec.decode("left:120dlu"),
-				ColumnSpec.decode("15dlu"),
-				ColumnSpec.decode("75dlu:grow"),
-				FormSpecs.RELATED_GAP_COLSPEC,
-				FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("15dlu"),
-				FormSpecs.RELATED_GAP_COLSPEC,},
-			new RowSpec[] {
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("default:grow"),}));
+		setLayout(new FormLayout(
+				new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("left:120dlu"),
+						ColumnSpec.decode("15dlu"), ColumnSpec.decode("75dlu:grow"), FormSpecs.RELATED_GAP_COLSPEC,
+						FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("15dlu"),
+						FormSpecs.RELATED_GAP_COLSPEC, },
+				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
+						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
+						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
+						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
+						RowSpec.decode("default:grow"), }));
 
 		lblVolatileProduction = new JLabel("VOLATILE PRODUCTION");
 		lblVolatileProduction.setFont(Fonts.getOswald());
 		add(lblVolatileProduction, "2, 4, 3, 1, center, center");
 
-		lbVName = new JLabel("Name");
+		lbVName = new JLabel(DesignerMessages.getString("nameLabel")); //$NON-NLS-1$
 		add(lbVName, "2, 8");
 
 		txtVName = new JTextField();
@@ -141,18 +122,19 @@ public class VolatileInputPanel extends JPanel {
 		add(txtVName, "4, 8, 3, 1, fill, default");
 		txtVName.setColumns(10);
 
-		lbVNetworkType = new JLabel("Network type");
+		lbVNetworkType = new JLabel(DesignerMessages.getString("networkTypeLabel")); //$NON-NLS-1$
 		add(lbVNetworkType, "2, 10");
 
 		sVNetworkType = new JComboBox<>();
 		sVNetworkType.setFocusable(false);
 		sVNetworkType.setFocusTraversalKeysEnabled(false);
-		sVNetworkType.setModel(new DefaultComboBoxModel<String>(new String[] { "Heat", "Electricity" }));
+		sVNetworkType.setModel(new DefaultComboBoxModel<String>(
+				new String[] { DesignerMessages.getString("heatNetworkType"), DesignerMessages.getString("electricityNetworkType") }));
 		sVNetworkType.addItemListener(new VNetworkTypeListener());
 		sVNetworkType.addMouseListener(new VNetworkTypeListener());
 		add(sVNetworkType, "4, 10, 3, 1, fill, default");
 
-		lbVMinimumPower = new JLabel("Minimum power [kW]");
+		lbVMinimumPower = new JLabel(DesignerMessages.getString("networkTypeLabel")); //$NON-NLS-1$
 		add(lbVMinimumPower, "2, 12");
 
 		txtVMinimumPower = new JTextField();
@@ -161,7 +143,7 @@ public class VolatileInputPanel extends JPanel {
 		add(txtVMinimumPower, "4, 12, 3, 1, fill, default");
 		txtVMinimumPower.setColumns(10);
 
-		lbVMaximumPower = new JLabel("Maximum power [kW]");
+		lbVMaximumPower = new JLabel(DesignerMessages.getString("maximumPowerLabel")); //$NON-NLS-1$
 		add(lbVMaximumPower, "2, 14");
 
 		txtVMaximumPower = new JTextField();
@@ -170,7 +152,7 @@ public class VolatileInputPanel extends JPanel {
 		add(txtVMaximumPower, "4, 14, 3, 1, fill, default");
 		txtVMaximumPower.setColumns(10);
 
-		lbVForecastFile = new JLabel("Forecast file");
+		lbVForecastFile = new JLabel(DesignerMessages.getString("forecastFile")); //$NON-NLS-1$
 		add(lbVForecastFile, "2, 16");
 
 		txtVForecastFile = new JTextField();
@@ -185,7 +167,7 @@ public class VolatileInputPanel extends JPanel {
 		btVBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
 		add(btVBrowse, "6, 16, right, center");
 
-		lbVCost = new JLabel("Fuel cost [EUR/kWh]");
+		lbVCost = new JLabel(DesignerMessages.getString("fuelCost")); //$NON-NLS-1$
 		add(lbVCost, "2, 18");
 
 		txtVCost = new JTextField();
@@ -194,7 +176,7 @@ public class VolatileInputPanel extends JPanel {
 		add(txtVCost, "4, 18, 3, 1, fill, default");
 		txtVCost.setColumns(10);
 
-		lbVCOEmission = new JLabel("CO2 Emissions [kg/kWh]");
+		lbVCOEmission = new JLabel(DesignerMessages.getString("co2Emissions")); //$NON-NLS-1$
 		add(lbVCOEmission, "2, 20");
 
 		txtVCOEmission = new JTextField();

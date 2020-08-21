@@ -10,6 +10,7 @@ import javax.swing.tree.DefaultTreeModel;
 
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
+import memap.media.Strings;
 
 /**
  * Shows the available results
@@ -55,7 +56,7 @@ public class Menu extends JTree {
 
 			int j = 1;
 			for (String key : outcome.getSeriesList(building)) {
-				if (!key.equals("Time step")) {
+				if (!key.equals(Strings.timeStep)) {
 					subs[j] = key;
 					j++;
 				}

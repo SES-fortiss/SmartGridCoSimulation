@@ -4,6 +4,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import fortiss.gui.listeners.helper.FileManager;
+import fortiss.gui.listeners.helper.WindowSnipper;
 import fortiss.simulation.SimulationSetup;
 import fortiss.simulation.helper.ProgressManager;
 
@@ -21,6 +22,9 @@ public class AcceptListener extends MouseAdapter {
 		fm.writeMemapModel();
 		fm.writeBuildingDescriptorFiles();
 		fm.writeParameterConfigFile(); // Should be called after writeDescriptorFiles()
+		
+		WindowSnipper ws = new WindowSnipper();
+		ws.createTopologySnip();
 
 		ProgressManager pm = ProgressManager.getInstance();
 		pm.setState(new SimulationSetup());

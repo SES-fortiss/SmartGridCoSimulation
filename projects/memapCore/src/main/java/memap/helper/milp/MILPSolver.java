@@ -14,6 +14,7 @@ import memap.helper.HelperConcat;
 import memap.helper.MEMAPLogging;
 import memap.helper.SolutionHandler;
 import memap.main.TopologyConfig;
+import memap.media.Strings;
 import memap.messages.BuildingMessage;
 import memap.messages.BuildingMessageHandler;
 import memap.messages.OptimizationResultMessage;
@@ -153,11 +154,11 @@ public class MILPSolver {
 		double[] totalCostsEUR = { costTotal };
 		double[] totalCO2emissions = { CO2Total };
 
-		String[] timeStep = { "Time step" };
+		String[] timeStep = { Strings.timeStep };
 		String[] currentOptVectorNames = milpSolHandler.getVectorNamesForThisTimeStep(names, nStepsMPC);
-		String[] energyPrice = { "Energy price [EUR]" };
-		String[] totalCosts = { "Total costs [EUR]" };
-		String[] co2emissions = { "CO2 emissions [kg CO2]" };
+		String[] energyPrice = { Strings.energyPriceAndUnit };
+		String[] totalCosts = { Strings.totalCostAndUnit };
+		String[] co2emissions = { Strings.co2EmissionsAndUnit };
 
 		double[] currentDemand = null;
 		double[] currentSOC = null;
@@ -206,7 +207,7 @@ public class MILPSolver {
 		buildingsSolutionPerTimeStepMILP[currentTimeStep] = vectorResult;
 
 		String saveString = topologyController.getSimulationName() + "/MPC" + topologyConfig.getNrStepsMPC() + "_MILP/";
-		saveString += actorName + "_MPC" + nStepsMPC + "_MILP_Solutions.csv";
+		saveString += actorName + "_MPC" + nStepsMPC + Strings.milpSolutionFileSuffix;
 		if (currentTimeStep == (topologyConfig.getNrOfIterations() - 1)) {
 			milpSolHandler.exportMatrix(buildingsSolutionPerTimeStepMILP, saveString, namesResult);
 		}

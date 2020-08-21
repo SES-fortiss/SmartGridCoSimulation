@@ -83,13 +83,18 @@
 			<artifactId>memapCore</artifactId>
 			<version>0.1</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/com.miglayout/miglayout -->
+		<!-- dependency> <groupId>com.miglayout</groupId> <artifactId>miglayout</artifactId> 
+			<version>3.7.4</version> </dependency -->
+
+		<!-- https://mvnrepository.com/artifact/com.miglayout/miglayout-swing -->
 		<dependency>
-		    <groupId>com.miglayout</groupId>
-		    <artifactId>miglayout</artifactId>
-		    <version>3.7.4</version>
+			<groupId>com.miglayout</groupId>
+			<artifactId>miglayout-swing</artifactId>
+			<version>5.2</version>
 		</dependency>
+
 
 		<dependency>
 			<groupId>com.jgoodies</groupId>
