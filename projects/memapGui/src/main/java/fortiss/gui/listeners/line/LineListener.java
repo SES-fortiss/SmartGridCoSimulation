@@ -1,6 +1,7 @@
 package fortiss.gui.listeners.line;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
@@ -26,17 +27,11 @@ public class LineListener extends MouseAdapter {
 
 		// requires double click
 		if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
-			
+
 			Line2D clickedLine = getClickedLine(clickLocation);
-			
-			if (clickedLine != null) {				
+			if (clickedLine != null) {
 				createPopUp(screenLocation, clickedLine);
 				popup.show();
-			}			
-		}
-		else {
-			if (popup != null) {
-				popup.hide();
 			}
 		}
 	}
@@ -48,19 +43,15 @@ public class LineListener extends MouseAdapter {
 	 */
 	private Line2D getClickedLine(Point clickLocation) {
 		Line2D clickedLine = null;
-		
+
 		ConnectionManager cm = ConnectionManager.getInstance();
 		for (Line2D line : cm.getLines()) {
-			
+
 			if (line.intersects(clickLocation.getX() - 2, clickLocation.getY() - 2, 4, 4)) {
 				clickedLine = line;
 				break;
 			}
 		}
-		
-
-		
-		
 		return clickedLine;
 	}
 
@@ -77,9 +68,21 @@ public class LineListener extends MouseAdapter {
 
 		PopupFactory pf = PopupFactory.getSharedInstance();
 		connectionPropertiesPanel = new ConnectionPropertiesPanel(clickedConnection);
-		popup = pf.getPopup(DesignerPanel.pl_ems, connectionPropertiesPanel, screenLocation.x, screenLocation.y);
+		popup = pf.getPopup(DesignerPanel.pl_ems, connectionPropertiesPanel, screenLocation.x - 10,
+				screenLocation.y - 10);
 		// Important! to close pop-up when connection is eliminated
 		connectionPropertiesPanel.setPopup(popup);
+
+		connectionPropertiesPanel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseExited(MouseEvent e) {
+				Rectangle r = connectionPropertiesPanel.getBounds();
+				Point clickLocation = e.getPoint();
+				if (!r.contains(clickLocation)) {
+					popup.hide();
+				}
+			}
+		});
 	}
 
 	/**
@@ -97,4 +100,5 @@ public class LineListener extends MouseAdapter {
 		}
 		return clickedConnection;
 	}
+
 }
