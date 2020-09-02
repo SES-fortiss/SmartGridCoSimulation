@@ -1,10 +1,14 @@
 package fortiss.components;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Demand is the class for representing Consumers.
  */
 public class Demand {
+	@Expose
 	private String name;
+	@Expose
 	private String consumptionProfile;
 
 	/**

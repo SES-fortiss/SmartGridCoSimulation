@@ -100,46 +100,39 @@ public class FileManager {
 	 *
 	 * @param location the absolute path to the file to be read
 	 * @return a buffer with the data in the file read
+	 * 
+	 *         public BufferedReader readConnectionFile() { BufferedReader br =
+	 *         null;
+	 * 
+	 *         String source = System.getProperty("user.dir") + File.separator +
+	 *         mainDir + File.separator + configDir + File.separator +
+	 *         "connections.json";
+	 * 
+	 *         try { InputStream is = new FileInputStream(source); br = new
+	 *         BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+	 * 
+	 *         } catch (FileNotFoundException e) { System.out.println("<INFO> -
+	 *         FileManager file not found: " + source); return null; } return br; }
 	 */
-	public BufferedReader readConnectionFile() {
-		BufferedReader br = null;
-
-		String source = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir
-				+ File.separator + "connections.json";
-
-		try {
-			InputStream is = new FileInputStream(source);
-			br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-
-		} catch (FileNotFoundException e) {
-			System.out.println("<INFO> - FileManager file not found: " + source);
-			return null;
-		}
-		return br;
-	}
 
 	/**
 	 * Reads a file from location specified.
 	 *
 	 * @param location the absolute path to the file to be read
 	 * @return a buffer with the data in the file read
+	 * 
+	 *         public BufferedReader readPositionsFile() { BufferedReader br = null;
+	 * 
+	 *         String source = System.getProperty("user.dir") + File.separator +
+	 *         mainDir + File.separator + configDir + File.separator +
+	 *         "positions.json";
+	 * 
+	 *         try { InputStream is = new FileInputStream(source); br = new
+	 *         BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+	 * 
+	 *         } catch (FileNotFoundException e) { System.out.println("<INFO> -
+	 *         FileManager file not found: " + source); return null; } return br; }
 	 */
-	public BufferedReader readPositionsFile() {
-		BufferedReader br = null;
-
-		String source = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir
-				+ File.separator + "positions.json";
-
-		try {
-			InputStream is = new FileInputStream(source);
-			br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-
-		} catch (FileNotFoundException e) {
-			System.out.println("<INFO> - FileManager file not found: " + source);
-			return null;
-		}
-		return br;
-	}
 
 	/**
 	 * Writes a file.
@@ -170,46 +163,6 @@ public class FileManager {
 	}
 
 	/**
-	 * Writes the connections between buildings according to the list in
-	 * {@link fortiss.simulation.helper.ConnectionManager}.
-	 */
-	public void writeConnectionFile() {
-		String location = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir
-				+ File.separator + "connections.json";
-		System.out.println(">> Writing connections file in " + location);
-
-		File file = new File(location);
-
-		// Create JSON string
-		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-		ConnectionManager cm = ConnectionManager.getInstance();
-		String str = gson.toJson(cm.getConnectionList());
-		writeFile(str, file);
-	}
-
-	/**
-	 * Writes the connections between buildings according to the list in
-	 * {@link fortiss.simulation.helper.ConnectionManager}.
-	 */
-	public void writePositionFile() {
-			String location = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir
-					+ File.separator + "positions.json";
-			System.out.println(">> Writing position file in " + location);	
-	
-			File file = new File(location);
-
-			// Create JSON string
-			Type pointListType = new TypeToken<TreeMap<String, Point2D>>() {}.getType();  
-			GsonBuilder gsonBuilder = new GsonBuilder();
-			gsonBuilder.registerTypeAdapter(Point2D.class, new Point2DTypeAdapter());
-			Gson gson = gsonBuilder.enableComplexMapKeySerialization().excludeFieldsWithoutExposeAnnotation().create();
-			
-			PositionManager pm = PositionManager.getInstance();
-			String str = gson.toJson(pm.getPositions(), pointListType);			
-			writeFile(str, file);
-	}
-
-	/**
 	 * Writes one parameter configuration file that includes the parameters
 	 * registered in {@link fortiss.simulation.Parameters}.
 	 */
@@ -227,25 +180,43 @@ public class FileManager {
 	}
 
 	/**
-	 * Writes the model that includes the configuration of all the buildings
-	 * created.
+	 * Writes the model, which includes the configuration of all the buildings
+	 * created, its position (calls {@link PositionManager#getPositions()}), and the
+	 * connections between buildings (calls
+	 * {@link fortiss.simulation.helper.ConnectionManager#getConnectionList()}).
 	 *
 	 * @param file path to file
 	 */
 	public void writeMemapModel(File file) {
 
-		// Create JSON string
-		Gson gson = new Gson();
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Point2D.class, new Point2DTypeAdapter());
+		Gson gson = gsonBuilder.enableComplexMapKeySerialization().excludeFieldsWithoutExposeAnnotation().create();
 
+		// Export topology
 		Set<Building> mySet = new HashSet<Building>();
-
 		for (Entry<String, Building> entry : DesignerPanel.buildings.entrySet()) {
 			Building building = entry.getValue();
 			mySet.add(building);
 		}
-
 		String str = gson.toJson(mySet);
+
+		str += System.getProperty("line.separator");
+
+		// Export positions
+		Type pointListType = new TypeToken<TreeMap<String, Point2D>>() {
+		}.getType();
+		PositionManager pm = PositionManager.getInstance();
+		str += gson.toJson(pm.getPositions(), pointListType);
+
+		str += System.getProperty("line.separator");
+
+		// Export connections
+		ConnectionManager cm = ConnectionManager.getInstance();
+		str += gson.toJson(cm.getConnectionList());
+
 		writeFile(str, file);
+
 		System.out.println(">> Writing memap model file in " + file);
 	}
 

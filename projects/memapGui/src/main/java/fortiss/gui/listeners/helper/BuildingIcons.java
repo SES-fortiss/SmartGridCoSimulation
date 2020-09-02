@@ -1,6 +1,7 @@
 package fortiss.gui.listeners.helper;
 
-import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.util.TreeMap;
 
 import javax.swing.JLabel;
 
@@ -22,10 +23,10 @@ public class BuildingIcons {
 	 * 
 	 * @see fortiss.gui.listeners.action.LoadListener
 	 */
-	public void createBuildingIcons() {
+	public void createBuildingIcons(TreeMap<String, Point2D> positionsList) {
 
 		for (String buildingName : DesignerPanel.buildings.keySet()) {
-			createBuildingIcon(buildingName, new Point(0, 0));
+			createBuildingIcon(buildingName, positionsList.get(buildingName));
 		}
 	}
 
@@ -36,7 +37,7 @@ public class BuildingIcons {
 	 * {@link fortiss.simulation.helper.PositionManager#fixPosition(JLabel)} if
 	 * the icon is outside the visible area.
 	 */
-	public void createBuildingIcon(String buildingName, Point p) {
+	public void createBuildingIcon(String buildingName, Point2D p) {
 		
 		JLabel icon = new JLabel(buildingName);
 		icon.setName("building");
@@ -53,7 +54,7 @@ public class BuildingIcons {
 		
 		icon.setToolTipText(toolTip);
 		icon.setIcon(Icon.uBuilding);
-		icon.setLocation(p);
+		icon.setLocation((int) p.getX(), (int) p.getY());
 
 		// Create position. Fix position if the icon is outside visible area
 		PositionManager pm = PositionManager.getInstance();

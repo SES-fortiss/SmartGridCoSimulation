@@ -72,19 +72,6 @@ public class PositionManager {
 		cm.updateLines();
 		DesignerPanel.pl_ems.repaint();
 	}
-	
-	/**
-	 * Updates positions of a building label. Calls
-	 * {@link fortiss.simulation.helper.ConnectionManager#updateLines()}
-	 * 
-	 * @param buildingName the name of a building
-	 * @param icon         a building icon
-	 */
-	public void updateBuildingsName(String oldName, String newName) {
-		Point2D point = this.positions.get(oldName);
-		positions.remove(oldName);
-		positions.put(newName, point);
-	}
 
 	/**
 	 * Assign a position to a building icon. Intended for the deserialization
@@ -93,7 +80,7 @@ public class PositionManager {
 	 * @param buildingName the name of a building
 	 * @param icon         the icon of a building
 	 */
-	private void assignPosition(String buildingName, JLabel icon) {	
+	private void assignPosition(String buildingName, JLabel icon) {
 		Point2D position = getUpperLeftPoint(icon, getPositionOf(buildingName));
 		icon.setLocation((int) position.getX(), (int) position.getY());
 	}
@@ -120,15 +107,17 @@ public class PositionManager {
 		Point2D p = new Point2D.Float(icon.getX() + icon.getWidth() / 2, icon.getY() + icon.getHeight() / 2);
 		return p;
 	}
-	
+
 	/**
-	 * Returns the upper left point of an icon. Intended for the deserialization process
+	 * Returns the upper left point of an icon. Intended for the deserialization
+	 * process
 	 * 
-	 * @param icon a building icon
+	 * @param icon         a building icon
 	 * @param centralPoint the central point where the icon is to be located.
 	 */
 	private Point2D getUpperLeftPoint(JLabel icon, Point2D centralPoint) {
-		Point2D p = new Point2D.Float((int) centralPoint.getX() - icon.getWidth() / 2, (int) centralPoint.getY() - icon.getHeight() / 2);
+		Point2D p = new Point2D.Float((int) centralPoint.getX() - icon.getWidth() / 2,
+				(int) centralPoint.getY() - icon.getHeight() / 2);
 		return p;
 	}
 
@@ -209,5 +198,18 @@ public class PositionManager {
 		this.positions = positions;
 		updatePositions();
 		DesignerPanel.pl_ems.repaint();
+	}
+
+	/**
+	 * Update a building name. Calls {@link ConnectionManager#updateBuildingsName(String, String)}
+	 * 
+	 * @param oldName
+	 * @param newName
+	 */
+	public void updateBuildingsName(String oldName, String newName) {
+		Point2D point = positions.get(oldName);
+		positions.remove(oldName);
+		positions.put(newName, point);
+		cm.updateBuildingsName(oldName, newName);
 	}
 }

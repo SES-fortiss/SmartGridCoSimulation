@@ -1,16 +1,25 @@
 package fortiss.components;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Volatile is the class for representing volatile Producer objects. Example:
  * PV, SolarThermic
  */
 public class Volatile {
+	@Expose
 	private String name;
+	@Expose
 	private String networkType; // Values: Heat or Electricity
+	@Expose
 	private double minimumPower;
+	@Expose
 	private double maximumPower;
+	@Expose
 	private String forecastFile;
+	@Expose
 	private double cost;
+	@Expose
 	private double coEmission;
 
 	/**

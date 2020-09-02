@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.datatransfer.DataFlavor;
 import java.io.BufferedReader;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -166,6 +165,7 @@ public class DesignerPanel extends JPanel {
 
 		if (br != null) {
 			par = gson.fromJson(br, Parameters.class);
+			// TODO Why clearing it here?
 			par.clearDescriptorFile();
 			workingFile = par.getLastSavedFile();
 
@@ -173,11 +173,8 @@ public class DesignerPanel extends JPanel {
 		}
 
 		if (!workingFile.equals("")) {
-			ModelInitHelper.loadFromFile(new File(workingFile));
+			ModelInitHelper.loadFromFile(workingFile);
 			ModelInitHelper.initParameters(par);
-			// Connections must be read or updated after positions!
-			ModelInitHelper.readPositions();
-			ModelInitHelper.readConnections();
 		} else {
 			System.out.println("lastWorkingFile: " + workingFile);
 		}

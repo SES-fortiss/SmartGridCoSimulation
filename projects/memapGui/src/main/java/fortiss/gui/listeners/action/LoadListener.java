@@ -38,7 +38,7 @@ public class LoadListener extends MouseAdapter {
 		int rVal = chooser.showOpenDialog(chooser);
 		if (rVal == JFileChooser.APPROVE_OPTION) {
 			File file = chooser.getSelectedFile();
-			ModelInitHelper.loadFromFile(file);
+			ModelInitHelper.loadFromFile(file.getAbsolutePath());
 		}
 	}
 }

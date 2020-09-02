@@ -197,5 +197,32 @@ public class ConnectionManager {
 			c.setNodeB(nodeB);
 		}
 	}
+	
+	
+	public ArrayList<Connection> getConnectionsOf(String buildingName) {
+		ArrayList<Connection> connections = new ArrayList<Connection>();
+		for (Connection c : getConnectionList()) {
+			if (c.getNameNodeA().equals(buildingName) || c.getNameNodeB().equals(buildingName)) {
+				connections.add(c);
+			}
+		}
+		return connections;
+	}
+	
+	/**
+	 * Update the name of a building
+	 * 
+	 * @param oldName
+	 * @param newName
+	 */
+	public void updateBuildingsName(String oldName, String newName) {
+		for (Connection c : getConnectionsOf(oldName)) {
+			if(c.getNameNodeA().equals(oldName)) {
+				c.setNameNodeA(newName);
+			} else if(c.getNameNodeB().equals(oldName)) {
+				c.setNameNodeB(newName);
+			}
+		}
+	}
 
 }

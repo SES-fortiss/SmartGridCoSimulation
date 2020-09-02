@@ -2,16 +2,25 @@ package fortiss.components;
 
 import java.util.ArrayList;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Building is the class for representing Energy Management Systems (EMS).
  */
 public class Building {
+	@Expose
 	private String name;
+	@Expose
 	private int port;
+	@Expose
 	private ArrayList<Demand> demand_list;
+	@Expose
 	private ArrayList<Coupler> coupler_list;
+	@Expose
 	private ArrayList<Controllable> controllable_list;
+	@Expose
 	private ArrayList<Volatile> volatile_list;
+	@Expose
 	private ArrayList<Storage> storage_list;
 
 	/**
@@ -19,10 +28,7 @@ public class Building {
 	 * 
 	 * @param name                an alphanumeric string
 	 * @param port                an integer between 1024 and 49151, or 0
-	 * @param ldHeating           long distance heating supply
-	 * @param heatTransportLength length of long distance transport
 	 * 
-	 * TODO Create input option for length and losses through GUI Task#94
 	 */
 	public Building(String name, int port) {
 		this.setName(name);

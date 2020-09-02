@@ -1,17 +1,27 @@
 package fortiss.components;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Storage is the class for representing Storage objects. Example: Battery,
  * ThermalStorage.
  */
 public class Storage {
+	@Expose
 	private String name;
+	@Expose
 	private String networkType;
+	@Expose
 	private double capacity;
+	@Expose
 	private double soc;
+	@Expose
 	private double maxCharging;
+	@Expose
 	private double maxDischarging;
+	@Expose
 	private double effIN;
+	@Expose
 	private double effOUT;
 
 	/**

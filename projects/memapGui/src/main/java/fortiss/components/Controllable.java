@@ -1,16 +1,25 @@
 package fortiss.components;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Controllable is the class for representing controllable Producer objects.
  * Example: Gas Boiler
  */
 public class Controllable {
+	@Expose
 	private String name;
+	@Expose
 	private String networkType; // Values: Heat or Electricity
+	@Expose
 	private double minimumPower;
+	@Expose
 	private double maximumPower;
+	@Expose
 	private double efficiency;
+	@Expose
 	private double cost;
+	@Expose
 	private double coEmission;
 
 	/**

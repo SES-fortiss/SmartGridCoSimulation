@@ -1,17 +1,28 @@
 package fortiss.components;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Coupler is the class for representing Coupler objects. Example: CHP, HeatPump
  */
 public class Coupler {
+	@Expose
 	private String name;
+	@Expose
 	private String networkTypeP; // Primary, Values: Heat or Electricity
+	@Expose
 	private String networkTypeS; // Secondary, Values: Heat or Electricity
+	@Expose
 	private double minimumPower;
+	@Expose
 	private double maximumPower;
+	@Expose
 	private double efficiencyPrimary;
+	@Expose
 	private double efficiencySecondary;
+	@Expose
 	private double cost;
+	@Expose
 	private double coEmission;
 
 	/**
