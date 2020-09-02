@@ -35,7 +35,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>src/</classpathPrefix>
-							<mainClass>fortiss.gui.Designer</mainClass>
+							<mainClass>fortiss.gui.PlanningTool</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
