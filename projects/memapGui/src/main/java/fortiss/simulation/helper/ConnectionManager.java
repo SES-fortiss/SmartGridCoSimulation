@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import com.google.gson.annotations.Expose;
 
 import fortiss.components.Connection;
+import fortiss.gui.BuildingIcon;
 import fortiss.gui.DesignerPanel;
 
 /**
@@ -36,9 +37,9 @@ public class ConnectionManager {
 	 * Add a non-existing connection between two buildings to
 	 * {@value ConnectionManager#connectionList}. Increases the value of
 	 * {@value ConnectionManager#connectionNumber}. Call
-	 * {@link ConnectionManager#isConnection(JLabel, JLabel)}.
+	 * {@link ConnectionManager#isConnection(BuildingIcon, BuildingIcon)}.
 	 */
-	public void addConnection(JLabel nodeA, JLabel nodeB) {
+	public void addConnection(BuildingIcon nodeA, BuildingIcon nodeB) {
 		if (!isConnection(nodeA, nodeB)) {
 			Connection c = new Connection(nodeA, nodeB);
 			getConnectionList().add(c);
@@ -191,8 +192,8 @@ public class ConnectionManager {
 			c.setColor();
 			String nameNodeA = c.getNameNodeA();
 			String nameNodeB = c.getNameNodeB();
-			JLabel nodeA = DesignerPanel.buildingIcons.get( DesignerPanel.buildings.get(nameNodeA) );
-			JLabel nodeB = DesignerPanel.buildingIcons.get( DesignerPanel.buildings.get(nameNodeB) );
+			BuildingIcon nodeA = DesignerPanel.buildingIcons.get(DesignerPanel.buildings.get(nameNodeA));
+			BuildingIcon nodeB = DesignerPanel.buildingIcons.get(DesignerPanel.buildings.get(nameNodeB));
 			c.setNodeA(nodeA);
 			c.setNodeB(nodeB);
 		}

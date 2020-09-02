@@ -20,7 +20,7 @@ public class HoverMouseListener extends MouseAdapter {
     public void mouseExited(MouseEvent e) {
 		JLabel lb = (JLabel) e.getSource();
     	lb.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-    	lb.setBorder(BorderFactory.createEmptyBorder());
+    	lb.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
     }
     
 }

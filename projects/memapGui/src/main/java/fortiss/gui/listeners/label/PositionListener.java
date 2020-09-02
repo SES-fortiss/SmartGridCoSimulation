@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
+import fortiss.gui.BuildingIcon;
 import fortiss.gui.DesignerPanel;
 import fortiss.simulation.helper.PositionManager;
 
@@ -32,10 +33,10 @@ public class PositionListener extends MouseAdapter {
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if (SwingUtilities.isLeftMouseButton(e)) {
-			JLabel icon = (JLabel) e.getComponent();
+			BuildingIcon icon = (BuildingIcon) e.getComponent();
 			icon.setLocation(icon.getX() + e.getX() - icon.getWidth() / 2,
 					icon.getY() + e.getY() - icon.getHeight() / 2);
-			pm.updateBuildingPosition(icon.getText(), icon);
+			pm.updateCenterPositionOf(icon.getText(), icon);
 		}
 	}
 
@@ -49,7 +50,7 @@ public class PositionListener extends MouseAdapter {
 		if (SwingUtilities.isLeftMouseButton(e)) {
 			DesignerPanel.pl_ems.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
-			JLabel icon = (JLabel) e.getComponent();
+			BuildingIcon icon = (BuildingIcon) e.getComponent();
 			if (!pm.getVisibleArea().contains(icon.getX(), icon.getY())) {
 				pm.fixPosition(icon.getText(), icon);
 			}

@@ -1,7 +1,6 @@
 package fortiss.gui.listeners.helper;
 
 import java.awt.geom.Point2D;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,8 +13,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-
-import javax.swing.JLabel;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -35,7 +32,6 @@ import fortiss.serialization.Point2DTypeAdapter;
 import fortiss.simulation.Parameters;
 import fortiss.simulation.PlanningTool;
 import fortiss.simulation.helper.ConnectionManager;
-import fortiss.simulation.helper.PositionManager;
 
 public class ModelInitHelper {
 
@@ -50,7 +46,7 @@ public class ModelInitHelper {
 		if (configurationFile != null) {
 			try {
 				// TODO: Reset has a descriptor file clearance, why do we need this line?
-				DesignerPanel.parameterPanel.pars.getDescriptorFiles().clear();
+				//DesignerPanel.parameterPanel.pars.getDescriptorFiles().clear();
 
 				// Reset simulation
 				ResetListener r = new ResetListener();
@@ -171,61 +167,4 @@ public class ModelInitHelper {
 		up.updateParameterData(par);
 	}
 
-	/**
-	 * Read the connections between buildings from the connections file and update
-	 * the list in {@link ConnectionManager}. Connections must be read after
-	 * positions to paint lines properly. Otherwise, connections must be updated
-	 * using {@link ConnectionManager#updateLines()}.
-	 */
-	public static void readConnections(BufferedReader br) {
-		// FileManager fm = new FileManager();
-		// BufferedReader br = fm.readConnectionFile();
-		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-		ArrayList<Connection> connectionList = gson.fromJson(br, new TypeToken<ArrayList<Connection>>() {
-		}.getType());
-
-		ConnectionManager cm = ConnectionManager.getInstance();
-		cm.setConnectionList(connectionList);
-	}
-
-	/**
-	 * Read the building positions from the connections file, and update the list in
-	 * {@link PositionManager}.
-	 */
-	public static void readPositions(BufferedReader br) {
-		// FileManager fm = new FileManager();
-		// BufferedReader br = fm.readPositionsFile();
-		Type pointListType = new TypeToken<TreeMap<String, Point2D>>() {
-		}.getType();
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(Point2D.class, new Point2DTypeAdapter());
-		Gson gson = gsonBuilder.enableComplexMapKeySerialization().excludeFieldsWithoutExposeAnnotation().create();
-		TreeMap<String, Point2D> positionsList = gson.fromJson(br, pointListType);
-
-		// the following is a validation, to ignore potentially false positions in th
-		// positions.json file
-		TreeMap<String, Point2D> validatedList = new TreeMap<>();
-
-		for (Entry<String, Point2D> ie : positionsList.entrySet()) {
-			String key = ie.getKey();
-			if (DesignerPanel.buildings.get(key) != null) {
-				validatedList.put(ie.getKey(), ie.getValue());
-			}
-		}
-
-		PositionManager pm = PositionManager.getInstance();
-
-		try {
-			pm.setPositions(validatedList);
-		} catch (Exception e) {
-			e.printStackTrace();
-			pm.clearPositions();
-			for (Entry<Building, JLabel> entry : DesignerPanel.buildingIcons.entrySet()) {
-				Building building = entry.getKey();
-				JLabel icon = entry.getValue();
-				pm.addPosition(building.getName(), icon);
-			}
-		}
-
-	}
 }

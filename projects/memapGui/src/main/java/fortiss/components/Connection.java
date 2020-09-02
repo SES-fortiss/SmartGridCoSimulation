@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 
 import com.google.gson.annotations.Expose;
 
+import fortiss.gui.BuildingIcon;
 import fortiss.simulation.helper.PositionManager;
 
 /**
@@ -25,9 +26,9 @@ public class Connection {
 	/** A color to draw the line (ln) */
 	private Color color;
 	/** Reference to an existing building label */
-	private JLabel nodeA;
+	private BuildingIcon nodeA;
 	/** Reference to an existing building label */
-	private JLabel nodeB;
+	private BuildingIcon nodeB;
 	/** Default length of connection */
 	private static final double DEFAULT_LENGTH = 10.0;
 	/** Default looses value of connection */
@@ -47,7 +48,7 @@ public class Connection {
 	 * @param nodeA a building label
 	 * @param nodeB a building label
 	 */
-	public Connection(JLabel nodeA, JLabel nodeB) {
+	public Connection(BuildingIcon nodeA, BuildingIcon nodeB) {
 		setNodeA(nodeA);
 		setNameNodeA(nodeA.getText());
 		setNodeB(nodeB);
@@ -70,7 +71,7 @@ public class Connection {
 	/**
 	 * Set {@link Connection#nodeA} to a building label.
 	 */
-	public void setNodeA(JLabel nodeA) {
+	public void setNodeA(BuildingIcon nodeA) {
 		this.nodeA = nodeA;
 	}
 
@@ -86,7 +87,7 @@ public class Connection {
 	/**
 	 * Set {@link Connection#nodeB} to a building label.
 	 */
-	public void setNodeB(JLabel nodeB) {
+	public void setNodeB(BuildingIcon nodeB) {
 		this.nodeB = nodeB;
 	}
 

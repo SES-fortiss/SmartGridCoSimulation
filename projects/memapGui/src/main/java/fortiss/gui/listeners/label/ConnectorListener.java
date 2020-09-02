@@ -12,6 +12,7 @@ import java.awt.geom.Point2D;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
+import fortiss.gui.BuildingIcon;
 import fortiss.gui.DesignerPanel;
 import fortiss.simulation.helper.ConnectionManager;
 import fortiss.simulation.helper.PositionManager;
@@ -65,8 +66,8 @@ public class ConnectorListener extends MouseAdapter implements MouseMotionListen
 					p2 = pm.getCentralPoint((JLabel) iconf);
 
 					// Add connection to structure
-					JLabel icon = (JLabel) e.getSource();
-					cm.addConnection(icon, (JLabel) iconf);
+					BuildingIcon icon = (BuildingIcon) e.getSource();
+					cm.addConnection(icon, (BuildingIcon) iconf);
 				}
 			}
 			DesignerPanel.pl_ems.repaint();

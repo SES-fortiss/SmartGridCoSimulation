@@ -207,7 +207,7 @@ public class FileManager {
 		Type pointListType = new TypeToken<TreeMap<String, Point2D>>() {
 		}.getType();
 		PositionManager pm = PositionManager.getInstance();
-		str += gson.toJson(pm.getPositions(), pointListType);
+		str += gson.toJson(pm.getCenterPositions(), pointListType);
 
 		str += System.getProperty("line.separator");
 

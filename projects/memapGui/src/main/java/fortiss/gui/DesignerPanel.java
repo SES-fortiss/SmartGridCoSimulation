@@ -30,7 +30,7 @@ public class DesignerPanel extends JPanel {
 	// Object arrays
 	public static TreeMap<String, Building> buildings = new TreeMap<String, Building>();
 	
-	public static HashMap<Building, JLabel> buildingIcons = new HashMap<Building, JLabel>();
+	public static HashMap<Building, BuildingIcon> buildingIcons = new HashMap<Building, BuildingIcon>();
 	public static HashMap<Building, ArrayList<JLabel>> demandIcons = new HashMap<Building, ArrayList<JLabel>>();
 	public static HashMap<Building, ArrayList<JLabel>> storageIcons = new HashMap<Building, ArrayList<JLabel>>();
 	public static HashMap<Building, ArrayList<JLabel>> volatileIcons = new HashMap<Building, ArrayList<JLabel>>();
