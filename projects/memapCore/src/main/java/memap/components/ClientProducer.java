@@ -26,6 +26,7 @@ public class ClientProducer extends Producer {
 	public BasicClient client;
 	public List<NodeId> setpointIds = new ArrayList<NodeId>();
 	
+	
 	/**
 	 * @param client
 	 * @param name        producer name

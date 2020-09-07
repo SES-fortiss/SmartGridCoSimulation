@@ -3,6 +3,7 @@ package memap.components;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
@@ -24,8 +25,11 @@ import akka.basicMessages.AnswerContent;
 import memap.components.prototypes.Producer;
 import memap.controller.TopologyController;
 import memap.helperOPCua.BasicClient;
+import memap.main.TopologyConfig;
+import memap.messages.OptimizationResultMessage;
 import memap.messages.extension.NetworkType;
 import memap.messages.planning.VolatileProducerMessage;
+
 
 public class ClientVolatileProducer extends Producer {
 	
@@ -34,6 +38,8 @@ public class ClientVolatileProducer extends Producer {
 	public NetworkType networkType;
 	double opCost;
 	double costCO2;
+	public BasicClient client;
+	public List<NodeId> setpointIds = new ArrayList<NodeId>();
 
 	VolatileProducerMessage volatileProducerMessage;
 
@@ -50,12 +56,14 @@ public class ClientVolatileProducer extends Producer {
 	 * @param port
 	 */
 	public ClientVolatileProducer(BasicClient client, String name,  NodeId nodeIdSector, NodeId maxPowerId,
-			NodeId currentProductionId, NodeId opCostId, NodeId costCO2Id, int port)
+			NodeId currentProductionId, NodeId opCostId, NodeId costCO2Id, List<NodeId> setpointIds, int port)
 			throws InterruptedException, ExecutionException {
 		super(name, 0.0, client.readFinalDoubleValue(maxPowerId),
 				1.0, port);
 
 		volatileProducerMessage = new VolatileProducerMessage();
+		this.client = client;
+		this.setpointIds = setpointIds;
 		this.networkType = setNetworkType(client, nodeIdSector);
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
@@ -118,6 +126,23 @@ public class ClientVolatileProducer extends Producer {
 		volatileProducerMessage.efficiency = efficiency;
 		volatileProducerMessage.networkType = networkType;
 		volatileProducerMessage.forecast = productionProfile;
+	}
+	
+	@Override
+	public void handleRequest() {
+		if (requestContentReceived instanceof OptimizationResultMessage) {
+			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
+			for (String key : optResult.resultMap.keySet()) {
+				if (key.equals(actorName)) {
+					optimizationAdvice = optResult.resultMap.get(key);
+					for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC(); i++) {
+						DataValue data = new DataValue(new Variant(optimizationAdvice[i]), null, null);					
+						client.writeValue(setpointIds.get(i), data);						
+					}			
+				}
+
+			}
+		}
 	}
 
 	@Override

@@ -242,8 +242,13 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId effElecId = NodeId.parse((String) coupl.get("EffSec"));
 							NodeId opCostId = NodeId.parse((String) coupl.get("PrimEnCost"));
 							NodeId costCO2Id = NodeId.parse((String) coupl.get("CO2PerKWh"));
+							List<NodeId> setpointIds = new ArrayList<NodeId>();
+							for (int j = 0; j < TopologyConfig.getInstance().getNrStepsMPC(); j++) { 
+								String SPname = "SPdevPwr" + Integer.toString(j+1);
+								setpointIds.add(j, NodeId.parse((String) coupl.get(SPname)));
+							}
 							ClientCoupler cc = new ClientCoupler(client, "COUPL" + String.format("%02d",  i),primarySectId, secondarySectId, minPowerId, maxPowerId, effHeatId,
-									effElecId, opCostId, costCO2Id, 0);
+									effElecId, opCostId, costCO2Id, setpointIds, 0);
 							attach(cc);
 							cc.setTopologyController(topologyController);
 							System.out.println("Added coupler to " + name);
@@ -315,8 +320,13 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId productionId = NodeId.parse((String) vprod.get("curPwrPrim"));
 							NodeId opCostId = NodeId.parse((String) vprod.get("PrimEnCost"));
 							NodeId costCO2Id = NodeId.parse((String) vprod.get("CO2PerKWh"));
+							List<NodeId> setpointsId = new ArrayList<NodeId>();
+							for (int j = 0; j < TopologyConfig.getInstance().getNrStepsMPC(); j++) { 
+								String SPname = "SPdevPwr" + Integer.toString(j+1);
+								setpointsId.add(j, NodeId.parse((String) vprod.get(SPname)));
+							}
 							ClientVolatileProducer cvp = new ClientVolatileProducer(client, "VPROD" + String.format("%02d",  i), primarySectId,
-									maxPowerId, productionId, opCostId, costCO2Id, 0);
+									maxPowerId, productionId, opCostId, costCO2Id, setpointsId, 0);
 							attach(cvp);
 							cvp.setTopologyController(topologyController);
 							System.out.println("Added volatile producers to " + name);
