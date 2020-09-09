@@ -1,19 +1,13 @@
-package fortiss.gui.listeners.action;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+package fortiss.gui.commands;
 
 import fortiss.gui.DesignerPanel;
 import fortiss.simulation.PlanningTool;
 import fortiss.simulation.helper.PositionManager;
 
-public class ResetListener extends MouseAdapter {
+public class ResetCommand implements Command {
 
-	/**
-	 * Deletes all created objects and icons.
-	 */
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void execute() {
 		DesignerPanel.pl_ems.removeAll();
 		DesignerPanel.pl_ems.repaint();
 		DesignerPanel.pl_comp.removeAll();
@@ -40,6 +34,6 @@ public class ResetListener extends MouseAdapter {
 		// Clean lastSavedFile and descriptorFile paths
 		DesignerPanel.parameterPanel.pars.setLastSavedFile("");
 		DesignerPanel.parameterPanel.pars.clearDescriptorFile();
-
 	}
+
 }

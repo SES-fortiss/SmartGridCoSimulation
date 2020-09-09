@@ -20,8 +20,10 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
+import com.jgoodies.forms.layout.Sizes;
 
-import fortiss.gui.listeners.button.AcceptListener;
+import fortiss.gui.commands.RunCommand;
+import fortiss.gui.listeners.action.ButtonListener;
 import fortiss.gui.listeners.button.BrowseListener;
 import fortiss.gui.listeners.label.LoggingModeListener;
 import fortiss.gui.listeners.label.MarketPriceListener;
@@ -38,7 +40,6 @@ import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
 import fortiss.simulation.Parameters;
-import com.jgoodies.forms.layout.Sizes;
 
 /**
  * Parameter input panel
@@ -223,7 +224,7 @@ public class ParameterInputPanel extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 			}
 		});
-		btAccept.addMouseListener(new AcceptListener());
+		btAccept.addMouseListener(new ButtonListener(new RunCommand()));
 
 		lbMarketPrice = new JLabel("");
 		lbMarketPrice.addMouseListener(new MarketPriceListener());

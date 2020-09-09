@@ -27,7 +27,7 @@ import fortiss.components.Connection;
 import fortiss.components.Demand;
 import fortiss.components.Volatile;
 import fortiss.gui.DesignerPanel;
-import fortiss.gui.listeners.action.ResetListener;
+import fortiss.gui.commands.ResetCommand;
 import fortiss.serialization.Point2DTypeAdapter;
 import fortiss.simulation.Parameters;
 import fortiss.simulation.PlanningTool;
@@ -49,8 +49,7 @@ public class ModelInitHelper {
 				//DesignerPanel.parameterPanel.pars.getDescriptorFiles().clear();
 
 				// Reset simulation
-				ResetListener r = new ResetListener();
-				r.mouseClicked(null);
+				new ResetCommand().execute();
 
 				InputStream is = new FileInputStream(configurationFile);
 				Reader reader = new InputStreamReader(is);

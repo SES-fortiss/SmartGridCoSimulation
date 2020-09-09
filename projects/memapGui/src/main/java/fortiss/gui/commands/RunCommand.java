@@ -1,28 +1,25 @@
-package fortiss.gui.listeners.button;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+package fortiss.gui.commands;
 
 import fortiss.gui.listeners.helper.FileManager;
 import fortiss.gui.listeners.helper.WindowSnipper;
 import fortiss.simulation.SimulationSetup;
 import fortiss.simulation.helper.ProgressManager;
 
-public class AcceptListener extends MouseAdapter {
+/**
+ * Creates a descriptor file for every building and a configuration file for the
+ * simulation parameters, calls
+ * {@link ProgressManager#setState(fortiss.simulation.SimulationState)} and
+ * {@link ProgressManager#execute()}
+ */
+public class RunCommand implements Command {
 
-	/**
-	 * Creates a descriptor file for every building and a configuration file for the
-	 * simulation parameters, calls
-	 * {@link ProgressManager#setState(fortiss.simulation.SimulationState)} and
-	 * {@link ProgressManager#execute()}
-	 */
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void execute() {
 		FileManager fm = new FileManager();
 		fm.writeMemapModel();
 		fm.writeBuildingDescriptorFiles();
 		fm.writeParameterConfigFile(); // Should be called after writeDescriptorFiles()
-		
+
 		WindowSnipper ws = new WindowSnipper();
 		ws.createTopologySnip();
 
@@ -30,4 +27,5 @@ public class AcceptListener extends MouseAdapter {
 		pm.setState(new SimulationSetup());
 		pm.execute();
 	}
+
 }

@@ -17,7 +17,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import fortiss.gui.listeners.window.ExitWindowListener;
+import fortiss.gui.listeners.action.ExitWindowListener;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.Icon;
 

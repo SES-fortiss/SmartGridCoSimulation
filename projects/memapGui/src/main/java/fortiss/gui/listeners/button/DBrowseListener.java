@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import fortiss.components.Demand;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.Chooser;
+import fortiss.gui.listeners.helper.FileType;
 
 public class DBrowseListener extends MouseAdapter {
 
@@ -15,8 +16,8 @@ public class DBrowseListener extends MouseAdapter {
 		Demand d = DesignerPanel.selectedBuilding.getDemand().get(component);
 
 		// Update selection in text field
-		Chooser c = new Chooser();
-		String path = c.choosePath();
+		Chooser c = new Chooser(FileType.CSV);
+		String path = c.showOpenDialog().getPath();
 
 		if (path != null) {
 			DesignerPanel.demandPanel.txtDConsumption.setText(path);

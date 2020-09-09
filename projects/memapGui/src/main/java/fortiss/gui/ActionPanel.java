@@ -12,11 +12,12 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
+import fortiss.gui.commands.ConfigureParameters;
+import fortiss.gui.commands.LoadCommand;
+import fortiss.gui.commands.ResetCommand;
+import fortiss.gui.commands.SaveCommand;
+import fortiss.gui.listeners.action.ButtonListener;
 import fortiss.gui.listeners.action.DarkModeListener;
-import fortiss.gui.listeners.action.LoadListener;
-import fortiss.gui.listeners.action.ResetListener;
-import fortiss.gui.listeners.action.RunListener;
-import fortiss.gui.listeners.action.SaveListener;
 import fortiss.gui.listeners.label.HoverMouseListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.StyleGenerator;
@@ -53,7 +54,7 @@ public class ActionPanel extends JPanel {
 		lblLoad.setBorder(new EmptyBorder(3, 3, 3, 3));
 		lblLoad.setIcon(Icon.open);
 		lblLoad.setToolTipText("Load from Json File");
-		lblLoad.addMouseListener(new LoadListener());
+		lblLoad.addMouseListener(new ButtonListener(new LoadCommand()));
 		lblLoad.addMouseListener(new HoverMouseListener());
 
 		setLayout(new FormLayout(new ColumnSpec[] {
@@ -79,7 +80,7 @@ public class ActionPanel extends JPanel {
 		lblRun.setBorder(new EmptyBorder(3, 3, 3, 3));
 		lblRun.setIcon(Icon.run);
 		lblRun.setToolTipText("Start simulation");
-		lblRun.addMouseListener(new RunListener());
+		lblRun.addMouseListener(new ButtonListener(new ConfigureParameters()));
 		lblRun.addMouseListener(new HoverMouseListener());
 		add(lblRun, "5, 2, left, top");
 
@@ -88,7 +89,7 @@ public class ActionPanel extends JPanel {
 		lblSave.setBorder(new EmptyBorder(3, 3, 3, 3));
 		lblSave.setIcon(Icon.saveAs);
 		lblSave.setToolTipText("Save as");
-		lblSave.addMouseListener(new SaveListener());
+		lblSave.addMouseListener(new ButtonListener(new SaveCommand()));
 		lblSave.addMouseListener(new HoverMouseListener());
 		add(lblSave, "7, 2, left, top");
 
@@ -97,7 +98,7 @@ public class ActionPanel extends JPanel {
 		lblReset.setBorder(new EmptyBorder(3, 3, 3, 3));
 		lblReset.setIcon(Icon.reset);
 		lblReset.setToolTipText("Reset");
-		lblReset.addMouseListener(new ResetListener());
+		lblReset.addMouseListener(new ButtonListener(new ResetCommand()));
 		lblReset.addMouseListener(new HoverMouseListener());
 		add(lblReset, "9, 2, left, top");
 
