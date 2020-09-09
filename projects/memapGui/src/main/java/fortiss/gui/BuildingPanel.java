@@ -8,11 +8,11 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.Line2D;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 
+import fortiss.components.Building;
 import fortiss.components.Connection;
 import fortiss.gui.listeners.helper.DragLayout;
 import fortiss.gui.listeners.label.ConnectorListener;
@@ -58,8 +58,8 @@ public class BuildingPanel extends JPanel {
 		/** Necessary for dark mode on/off implementation */
 		setBackground(Colors.background);
 
-		for (JLabel icon : DesignerPanel.buildingIcons.values()) {
-			icon.setForeground(Colors.defaultCol);
+		for (Building building : DesignerPanel.buildings.values()) {
+			building.getIcon().setForeground(Colors.defaultCol);
 		}
 
 		Graphics2D g2 = (Graphics2D) g;
@@ -92,6 +92,12 @@ public class BuildingPanel extends JPanel {
 	 */
 	public void setDrawing(boolean drawing) {
 		this.drawing = drawing;
+	}
+	
+	public void reset() {
+		removeAll();
+		revalidate();
+		repaint();
 	}
 
 }

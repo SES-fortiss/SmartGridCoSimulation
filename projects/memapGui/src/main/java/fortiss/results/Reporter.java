@@ -14,6 +14,7 @@ import memap.media.Strings;
  */
 public class Reporter {
 
+	PlanningTool planningTool;
 	private ResultsLibrary detailedResult;
 	private ResultsLibrary overviewResult;
 	/** Maps the metrics panels to their name */
@@ -23,6 +24,7 @@ public class Reporter {
 	 * Create the application.
 	 */
 	public Reporter() {
+		planningTool = PlanningTool.getInstance();
 		setDetailedResult(new DetailedResults());
 		setOverviewResult(new OverviewResults());
 	}
@@ -37,7 +39,7 @@ public class Reporter {
 	
 	private void showDetailedResults() {
 		getDetailedResult().load();
-		PlanningTool.getReporterPanel().populateMenu(getDetailedResult());
+		planningTool.getReporterPanel().populateMenu(getDetailedResult());
 	}
 
 	/**
@@ -46,7 +48,7 @@ public class Reporter {
 	private void showOverviewResults() {
 		getOverviewResult().load();
 
-		ReporterOverviewPanel reporterOverviewPanel = PlanningTool.getReporterOverviewPanel();
+		ReporterOverviewPanel reporterOverviewPanel = planningTool.getReporterOverviewPanel();
 		reporterOverviewPanel.reset();
 		
 		// Add a summary panel

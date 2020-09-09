@@ -54,6 +54,8 @@ public class MenuBar extends JMenuBar implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String selection = e.getActionCommand();
+		PlanningTool planningTool = PlanningTool.getInstance();
+		
 		switch (selection) {
 		case LOAD:
 			new LoadCommand().execute();
@@ -68,16 +70,16 @@ public class MenuBar extends JMenuBar implements ActionListener {
 			new CloseCommand().execute();
 			break;
 		case DESIGNER_PANEL:
-			PlanningTool.addDesignerAsTab();
-			PlanningTool.getPlanningToolWindow().showTab(PlanningTool.getDesignerPanel());
+			planningTool.addDesignerAsTab();
+			planningTool.getPlanningToolWindow().showTab(planningTool.getDesignerPanel());
 			break;
 		case OVERVIEW_RESULT_PANEL:
-			PlanningTool.addOverviewResutlsAsTab();
-			PlanningTool.getPlanningToolWindow().showTab(PlanningTool.getReporterOverviewPanel());
+			planningTool.addOverviewResutlsAsTab();
+			planningTool.getPlanningToolWindow().showTab(planningTool.getReporterOverviewPanel());
 			break;
 		case DETAILED_RESULT_PANEL:
-			PlanningTool.addDetailedResultsAsTab();
-			PlanningTool.getPlanningToolWindow().showTab(PlanningTool.getReporterPanel());
+			planningTool.addDetailedResultsAsTab();
+			planningTool.getPlanningToolWindow().showTab(planningTool.getReporterPanel());
 			break;
 		case START_SIMULATION:
 			new RunCommand().execute();

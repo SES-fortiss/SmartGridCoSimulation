@@ -7,7 +7,7 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Point;
 
-import fortiss.gui.BuildingIcon;
+import fortiss.gui.icons.BuildingIcon;
 import fortiss.simulation.helper.PositionManager;
 
 /**

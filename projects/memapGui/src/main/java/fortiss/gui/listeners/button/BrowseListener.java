@@ -6,6 +6,8 @@ import java.awt.event.MouseEvent;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.Chooser;
 import fortiss.gui.listeners.helper.FileType;
+import fortiss.simulation.Parameters;
+import fortiss.simulation.PlanningTool;
 
 public class BrowseListener extends MouseAdapter {
 
@@ -20,8 +22,9 @@ public class BrowseListener extends MouseAdapter {
 		String path = c.showOpenDialog().getPath();
 		
 		if (path != null) {
+			Parameters pars = PlanningTool.getInstance().getParameters();
 			DesignerPanel.parameterPanel.txtMarketPriceFile.setText(path);
-			DesignerPanel.parameterPanel.pars.setMarketPriceFile(path);
+			pars.setMarketPriceFile(path);
 		}
 	}
 }

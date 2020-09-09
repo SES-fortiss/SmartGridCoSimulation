@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
@@ -15,14 +14,15 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
+import fortiss.components.Coupler;
 import fortiss.gui.listeners.selectionitem.CNewtworkTypePListener;
 import fortiss.gui.listeners.textfield.CCOEmissionListener;
 import fortiss.gui.listeners.textfield.CCostListener;
 import fortiss.gui.listeners.textfield.CEfficiencyPrimaryListener;
 import fortiss.gui.listeners.textfield.CEfficiencySecondaryListener;
-import fortiss.gui.listeners.textfield.CNameListener;
 import fortiss.gui.listeners.textfield.CMaxPowerListener;
 import fortiss.gui.listeners.textfield.CMinPowerListener;
+import fortiss.gui.listeners.textfield.CNameListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
@@ -30,7 +30,7 @@ import fortiss.gui.style.StyleGenerator;
 /**
  * Input panel for coupler parameters.
  */
-public class CouplerInputPanel extends JPanel {
+public class CouplerInputPanel extends InformationPanel{
 
 	/** Coupler name */
 	public JTextField txtCName;
@@ -221,5 +221,19 @@ public class CouplerInputPanel extends JPanel {
 		txtCCOEmission.addFocusListener(new CCOEmissionListener());
 		add(txtCCOEmission, "4, 24, fill, default");
 		txtCCOEmission.setColumns(10);
+	}
+
+	@Override
+	public void update() {
+		Coupler coupler = (Coupler) DesignerPanel.selectedComponent;
+		txtCName.setText(coupler.getName());
+		sCPrimaryNetworkType.setSelectedItem(coupler.getNetworkTypeP());
+		txtCSecondaryNetworkType.setText(coupler.getNetworkTypeS());
+		txtCMinimumPower.setText(Double.toString(coupler.getMinimumPower()));
+		txtCMaximumPower.setText(Double.toString(coupler.getMaximumPower()));
+		txtCEfficiencyPrimary.setText(Double.toString(coupler.getEfficiencyPrimary()));
+		txtCEfficiencySecondary.setText(Double.toString(coupler.getEfficiencySecondary()));
+		txtCCost.setText(Double.toString(coupler.getCost()));
+		txtCCOEmission.setText(Double.toString(coupler.getCOEmission()));
 	}
 }

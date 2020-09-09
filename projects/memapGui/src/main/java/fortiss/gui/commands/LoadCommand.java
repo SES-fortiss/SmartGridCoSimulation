@@ -12,7 +12,8 @@ public class LoadCommand implements Command {
 	public void execute() {
 		Chooser chooser = new Chooser(FileType.JSON);
 		File file = chooser.showOpenDialog();
-		ModelInitHelper.loadFromFile(file.getAbsolutePath());
+		if (file != null) {
+			ModelInitHelper.loadFromFile(file.getAbsolutePath());
+		}
 	}
-
 }

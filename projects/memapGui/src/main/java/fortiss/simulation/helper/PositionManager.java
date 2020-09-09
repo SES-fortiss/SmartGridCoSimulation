@@ -2,7 +2,6 @@ package fortiss.simulation.helper;
 
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javax.swing.JLabel;
@@ -10,9 +9,9 @@ import javax.swing.JLabel;
 import com.google.gson.annotations.Expose;
 
 import fortiss.components.Building;
-import fortiss.gui.BuildingIcon;
 import fortiss.gui.DesignerPanel;
-import fortiss.media.Icon;
+import fortiss.gui.icons.BuildingIcon;
+import fortiss.media.IconStore;
 
 /**
  * Manages the centerPositions of building icons.
@@ -80,7 +79,7 @@ public class PositionManager {
 	 * @param icon a building icon
 	 */
 	public Point2D getCentralPoint(JLabel icon) {
-		Point2D p = new Point2D.Float(icon.getX() + Icon.sBuilding.getIconWidth() / 2, icon.getY() + Icon.sBuilding.getIconHeight() / 2);
+		Point2D p = new Point2D.Float(icon.getX() + IconStore.sBuilding.getIconWidth() / 2, icon.getY() + IconStore.sBuilding.getIconHeight() / 2);
 		return p;
 	}
 
@@ -92,8 +91,8 @@ public class PositionManager {
 	 * @param centralPoint the central point where the icon is to be located.
 	 */
 	public Point2D getUpperLeftPoint(Point2D centralPoint) {
-		Point2D p = new Point2D.Float((int) centralPoint.getX() - Icon.sBuilding.getIconWidth() / 2,
-				(int) centralPoint.getY() - Icon.sBuilding.getIconHeight() / 2);
+		Point2D p = new Point2D.Float((int) centralPoint.getX() - IconStore.sBuilding.getIconWidth() / 2,
+				(int) centralPoint.getY() - IconStore.sBuilding.getIconHeight() / 2);
 		return p;
 	}
 
@@ -138,9 +137,9 @@ public class PositionManager {
 	 * panel is resized. Calls {@link PositionManager#fixPosition(JLabel)}
 	 */
 	public void fixPositions() {
-		for (Entry<Building, BuildingIcon> entry : DesignerPanel.buildingIcons.entrySet()) {
-			String buildingName = entry.getKey().getName();
-			BuildingIcon icon = entry.getValue();
+		for (Building building : DesignerPanel.buildings.values()) {
+			String buildingName = building.getName();
+			BuildingIcon icon = building.getIcon();
 			fixPosition(buildingName, icon);
 		}
 	}
@@ -153,10 +152,10 @@ public class PositionManager {
 	 */
 	public Rectangle getVisibleArea() {
 		Rectangle visibleRec = DesignerPanel.pl_ems.getVisibleRect();
-		visibleRec.x += Icon.sBuilding.getIconWidth() / 3;
-		visibleRec.y += Icon.sBuilding.getIconHeight() / 3 ;
-		visibleRec.width -= Icon.sBuilding.getIconWidth() * 1.5;
-		visibleRec.height -= Icon.sBuilding.getIconHeight() * 1.5;
+		visibleRec.x += IconStore.sBuilding.getIconWidth() / 3;
+		visibleRec.y += IconStore.sBuilding.getIconHeight() / 3 ;
+		visibleRec.width -= IconStore.sBuilding.getIconWidth() * 1.5;
+		visibleRec.height -= IconStore.sBuilding.getIconHeight() * 1.5;
 		return visibleRec;
 	}
 

@@ -14,13 +14,13 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
+import fortiss.gui.icons.BuildingIcon;
 import fortiss.gui.listeners.label.DragListener;
 import fortiss.gui.listeners.label.DropListener;
-import fortiss.gui.listeners.label.HoverMouseListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
-import fortiss.media.Icon;;
+import fortiss.media.IconStore;;
 
 /**
  * Contains objects that can added to a topology.
@@ -31,7 +31,6 @@ public class ObjectPanel extends JPanel {
 
 	private JLabel lblInstructions = new JLabel();
 	private JLabel lbInstructions2 = new JLabel();
-	public JLabel lb_new_ems = new JLabel("EMS");
 	public ComponentBox comp_box = new ComponentBox();
 	private final JPanel panel = new JPanel();
 
@@ -78,22 +77,16 @@ public class ObjectPanel extends JPanel {
 		panel.add(lbInstructions2, "2, 4, center, center");
 
 		// Add "Add New EMS" icon
-		lb_new_ems.setVerticalTextPosition(JLabel.BOTTOM);
-		lb_new_ems.setHorizontalTextPosition(JLabel.CENTER);
-		lb_new_ems.setIcon(Icon.uBuilding);
-		lb_new_ems.setToolTipText("Drag to create a new EMS");
-		panel.add(lb_new_ems, "2, 6, center, center");
+		BuildingIcon buildingIcon = new BuildingIcon("EMS", IconStore.uBuilding, "Drag to create a new EMS");
+		panel.add(buildingIcon, "2, 6, center, center");
 
 		add(comp_box);
 		comp_box.setVisible(false);
 
 		// Enable dragging label
 		DragSource ds = new DragSource();
-		ds.createDefaultDragGestureRecognizer(lb_new_ems, DnDConstants.ACTION_COPY, new DragListener());
+		ds.createDefaultDragGestureRecognizer(buildingIcon, DnDConstants.ACTION_COPY, new DragListener());
 		new DropListener(DesignerPanel.pl_ems);
-		
-		// Add visual effect to guide user interactions
-		lb_new_ems.addMouseListener(new HoverMouseListener());
 	}
 
 	public void showComponentBox() {

@@ -8,32 +8,28 @@ public class ResetCommand implements Command {
 
 	@Override
 	public void execute() {
-		DesignerPanel.pl_ems.removeAll();
-		DesignerPanel.pl_ems.repaint();
-		DesignerPanel.pl_comp.removeAll();
-		DesignerPanel.pl_comp.repaint();
+		DesignerPanel.pl_ems.reset();
+		DesignerPanel.pl_comp.reset();
 
 		// Eliminate positions
 		PositionManager pm = PositionManager.getInstance();
 		pm.clearPositions();
-
-		// Eliminate building icons
-		DesignerPanel.buildingIcons.clear();
 
 		// Eliminate buildings
 		DesignerPanel.buildings.clear();
 		DesignerPanel.buildingCount = DesignerPanel.buildings.size();
 
 		// Hide details
-		DesignerPanel.cl.show(DesignerPanel.pl_comp_detail, "initial");
+		DesignerPanel.showInformationPanel("initial");
 
 		// Hide component box
 		DesignerPanel.pl_object.hideComponentBox();
-		PlanningTool.getPlanningToolWindow().setTitle("");
+		PlanningTool planningTool = PlanningTool.getInstance();
+		planningTool.getPlanningToolWindow().setTitle("");
 
 		// Clean lastSavedFile and descriptorFile paths
-		DesignerPanel.parameterPanel.pars.setLastSavedFile("");
-		DesignerPanel.parameterPanel.pars.clearDescriptorFile();
+		planningTool.getParameters().setLastSavedFile("");
+		planningTool.getParameters().clearDescriptorFiles();
 	}
 
 }

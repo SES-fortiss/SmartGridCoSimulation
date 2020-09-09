@@ -6,45 +6,26 @@ import java.awt.Graphics;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 
-import fortiss.gui.listeners.action.AddControllableListener;
-import fortiss.gui.listeners.action.AddCouplerListener;
-import fortiss.gui.listeners.action.AddDemandListener;
-import fortiss.gui.listeners.action.AddStorageListener;
-import fortiss.gui.listeners.action.AddVolatileListener;
-import fortiss.gui.listeners.label.HoverMouseListener;
+import fortiss.gui.icons.ComponentIcon;
 import fortiss.gui.style.Colors;
-import fortiss.media.Icon;
+import fortiss.media.IconStore;
 
 /**
  * Holds the icons of the components that can be added to a building.
  */
 public class ComponentBox extends Box {
 
-	private JLabel lb_add_demand;
-	private JLabel lb_add_storage;
-	private JLabel lb_add_volatile;
-	private JLabel lb_add_controllable;
-	private JLabel lb_add_coupler;
-
 	/** Necessary for dark mode on/off implementation */
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		lb_add_demand.setForeground(Colors.normal);
-		;
-		lb_add_storage.setForeground(Colors.normal);
-		;
-		lb_add_volatile.setForeground(Colors.normal);
-		;
-		lb_add_controllable.setForeground(Colors.normal);
-		;
-		lb_add_coupler.setForeground(Colors.normal);
-		;
+		for(Component component : getComponents()) {
+			component.setForeground(Colors.normal);
+		}
+		
 		setForeground(Colors.normal);
 		setBackground(Colors.background);
 		
@@ -68,90 +49,36 @@ public class ComponentBox extends Box {
 		verticalStrut.setPreferredSize(new Dimension(0, 10));
 		add(verticalStrut);
 
-		// Add "Add New Demand" icon
-		lb_add_demand = new JLabel("Demand");
-		lb_add_demand.setVerticalAlignment(SwingConstants.TOP);
-		lb_add_demand.setHorizontalAlignment(SwingConstants.CENTER);
-		lb_add_demand.setMinimumSize(new Dimension(156, 80));
-		lb_add_demand.setMaximumSize(new Dimension(156, 100));
-		lb_add_demand.setVerticalTextPosition(JLabel.BOTTOM);
-		lb_add_demand.setHorizontalTextPosition(JLabel.CENTER);
-		lb_add_demand.setIcon(Icon.uDemandMenu);		
-		lb_add_demand.addMouseListener(new AddDemandListener());
-		lb_add_demand.addMouseListener(new HoverMouseListener());
-		lb_add_demand.setToolTipText(toolTip);
-		add(lb_add_demand);
-
+		ComponentIcon demandIcon = new ComponentIcon("Demand", IconStore.uDemandMenu, toolTip);
+		add(demandIcon);
+		
 		Component verticalStrut_1 = Box.createVerticalStrut(2);
 		verticalStrut_1.setPreferredSize(new Dimension(0, 10));
 		add(verticalStrut_1);
-
-		// Add "Add New Storage" icon
-		lb_add_storage = new JLabel("Storage");
-		lb_add_storage.setVerticalAlignment(SwingConstants.TOP);
-		lb_add_storage.setMinimumSize(new Dimension(156, 80));
-		lb_add_storage.setMaximumSize(new Dimension(156, 100));
-		lb_add_storage.setHorizontalAlignment(SwingConstants.CENTER);
-		lb_add_storage.setVerticalTextPosition(JLabel.BOTTOM);
-		lb_add_storage.setHorizontalTextPosition(JLabel.CENTER);
-		lb_add_storage.setIcon(Icon.uStorageMenu);
-		lb_add_storage.addMouseListener(new AddStorageListener());
-		lb_add_storage.addMouseListener(new HoverMouseListener());
-		lb_add_storage.setToolTipText(toolTip);
-		add(lb_add_storage);
+		
+		ComponentIcon storageIcon = new ComponentIcon("Storage", IconStore.uStorageMenu, toolTip);
+		add(storageIcon);
 
 		Component verticalStrut_2 = Box.createVerticalStrut(2);
 		verticalStrut_2.setPreferredSize(new Dimension(0, 10));
 		add(verticalStrut_2);
 
-		// Add "Add New Volatile" icon
-		lb_add_volatile = new JLabel("Volatile production");
-		lb_add_volatile.setVerticalAlignment(SwingConstants.TOP);
-		lb_add_volatile.setHorizontalAlignment(SwingConstants.CENTER);
-		lb_add_volatile.setMinimumSize(new Dimension(156, 80));
-		lb_add_volatile.setMaximumSize(new Dimension(156, 100));
-		lb_add_volatile.setVerticalTextPosition(JLabel.BOTTOM);
-		lb_add_volatile.setHorizontalTextPosition(JLabel.CENTER);
-		lb_add_volatile.setIcon(Icon.uVolatileMenu);
-		lb_add_volatile.addMouseListener(new AddVolatileListener());
-		lb_add_volatile.addMouseListener(new HoverMouseListener());
-		lb_add_volatile.setToolTipText(toolTip);
-		add(lb_add_volatile);
+		ComponentIcon volatileIcon = new ComponentIcon("Volatile", IconStore.uVolatileMenu, toolTip);
+		add(volatileIcon);
 
 		Component verticalStrut_3 = Box.createVerticalStrut(2);
 		verticalStrut_3.setPreferredSize(new Dimension(0, 10));
 		add(verticalStrut_3);
 
-		// Add "Add New Controllable" icon
-		lb_add_controllable = new JLabel("Controllable production");
-		lb_add_controllable.setHorizontalAlignment(SwingConstants.CENTER);
-		lb_add_controllable.setMaximumSize(new Dimension(156, 80));
-		lb_add_controllable.setMinimumSize(new Dimension(156, 80));
-		lb_add_controllable.setVerticalAlignment(SwingConstants.TOP);
-		lb_add_controllable.setVerticalTextPosition(JLabel.BOTTOM);
-		lb_add_controllable.setHorizontalTextPosition(JLabel.CENTER);
-		lb_add_controllable.setIcon(Icon.uControllableMenu);
-		lb_add_controllable.addMouseListener(new AddControllableListener());
-		lb_add_controllable.addMouseListener(new HoverMouseListener());
-		lb_add_controllable.setToolTipText(toolTip);
-		add(lb_add_controllable);
+		ComponentIcon controllableIcon = new ComponentIcon("Controllable", IconStore.uControllableMenu, toolTip);
+		add(controllableIcon);
 
 		Component verticalStrut_4 = Box.createVerticalStrut(2);
 		verticalStrut_4.setPreferredSize(new Dimension(0, 10));
 		add(verticalStrut_4);
 
-		// Add "Add New Coupler" icon
-		lb_add_coupler = new JLabel("Coupler");
-		lb_add_coupler.setMaximumSize(new Dimension(156, 80));
-		lb_add_coupler.setMinimumSize(new Dimension(156, 80));
-		lb_add_coupler.setHorizontalAlignment(SwingConstants.CENTER);
-		lb_add_coupler.setVerticalTextPosition(JLabel.BOTTOM);
-		lb_add_coupler.setHorizontalTextPosition(JLabel.CENTER);
-		lb_add_coupler.setIcon(Icon.uCouplerMenu);
-		lb_add_coupler.addMouseListener(new AddCouplerListener());
-		lb_add_coupler.addMouseListener(new HoverMouseListener());
-		lb_add_coupler.setToolTipText(toolTip);
-		add(lb_add_coupler);
+		ComponentIcon couplerIcon = new ComponentIcon("Coupler", IconStore.uCouplerMenu, toolTip);
+		add(couplerIcon);
 	}
 
 	private static final long serialVersionUID = 1L;

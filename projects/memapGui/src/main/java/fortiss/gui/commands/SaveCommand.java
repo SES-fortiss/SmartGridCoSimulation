@@ -2,8 +2,9 @@ package fortiss.gui.commands;
 
 import java.io.File;
 
-import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FileManager;
+import fortiss.simulation.Parameters;
+import fortiss.simulation.PlanningTool;
 
 /**
  * Save a topology to an EXISTENT file. If the file does not exist, the a dialog
@@ -13,7 +14,8 @@ public class SaveCommand implements Command {
 
 	@Override
 	public void execute() {
-		String activeFilePath = DesignerPanel.parameterPanel.pars.getLastSavedFile();
+		Parameters pars = PlanningTool.getInstance().getParameters();
+		String activeFilePath = pars.getLastSavedFile();
 
 		if (activeFilePath != null && !activeFilePath.isEmpty()) {
 			FileManager fm = new FileManager();

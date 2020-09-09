@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import fortiss.gui.DesignerPanel;
-import fortiss.media.Icon;
+import fortiss.media.IconStore;
 
 /**
  * Stores the parameter configuration selected by the user and the default
@@ -85,7 +85,7 @@ public class Parameters {
 		setOptCriteria(criteriaOptions.get(0));
 		setLoggingMode(loggingOptions.get(0));
 		setLastSavedFile("");
-		clearDescriptorFile();
+		clearDescriptorFiles();
 	}
 
 	public String getSimulationName() {
@@ -141,10 +141,10 @@ public class Parameters {
 
 		if (index == optimizerOptions.size() - 1) {
 			setOptimizer(optimizerOptions.get(0));
-			DesignerPanel.parameterPanel.lbOptimizer2.setIcon(Icon.optimizer.get(0));
+			DesignerPanel.parameterPanel.lbOptimizer2.setIcon(IconStore.optimizer.get(0));
 		} else {
 			setOptimizer(optimizerOptions.get(index + 1));
-			DesignerPanel.parameterPanel.lbOptimizer2.setIcon(Icon.optimizer.get(index + 1));
+			DesignerPanel.parameterPanel.lbOptimizer2.setIcon(IconStore.optimizer.get(index + 1));
 		}
 	}
 
@@ -169,10 +169,10 @@ public class Parameters {
 
 		if (index == criteriaOptions.size() - 1) {
 			setOptCriteria(criteriaOptions.get(0));
-			DesignerPanel.parameterPanel.lbOptCriteria2.setIcon(Icon.optCriteria.get(0));
+			DesignerPanel.parameterPanel.lbOptCriteria2.setIcon(IconStore.optCriteria.get(0));
 		} else {
 			setOptCriteria(criteriaOptions.get(index + 1));
-			DesignerPanel.parameterPanel.lbOptCriteria2.setIcon(Icon.optCriteria.get(index + 1));
+			DesignerPanel.parameterPanel.lbOptCriteria2.setIcon(IconStore.optCriteria.get(index + 1));
 		}
 	}
 
@@ -184,7 +184,7 @@ public class Parameters {
 		descriptorFiles.add(descriptorFile);
 	}
 	
-	public void clearDescriptorFile() {
+	public void clearDescriptorFiles() {
 		descriptorFiles.clear();
 	}
 
@@ -217,10 +217,10 @@ public class Parameters {
 
 		if (index == loggingOptions.size() - 1) {
 			setLoggingMode(loggingOptions.get(0));
-			DesignerPanel.parameterPanel.lbLoggingMode2.setIcon(Icon.loggingMode.get(0));
+			DesignerPanel.parameterPanel.lbLoggingMode2.setIcon(IconStore.loggingMode.get(0));
 		} else {
 			setLoggingMode(loggingOptions.get(index + 1));
-			DesignerPanel.parameterPanel.lbLoggingMode2.setIcon(Icon.loggingMode.get(index + 1));
+			DesignerPanel.parameterPanel.lbLoggingMode2.setIcon(IconStore.loggingMode.get(index + 1));
 		}
 	}
 

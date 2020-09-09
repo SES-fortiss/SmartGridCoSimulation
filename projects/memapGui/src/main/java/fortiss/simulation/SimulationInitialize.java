@@ -11,7 +11,7 @@ public class SimulationInitialize extends SimulationState {
 	 */
 	@Override
 	public void execute(ProgressManager pm) {
-		PlanningTool.init();
+		PlanningTool.getInstance().init();
 		pm.setState(new SimulationDesing());
 		pm.execute();
 	}

@@ -9,14 +9,8 @@ public class Comparator {
 	}
 	
 	public double getPercentualGain(double memapOnValue, double memapOffValue) {
-		double gain = 0;
-		if(memapOnValue > memapOffValue) {
-			// value increased with memap ON
-			gain = memapOnValue * 100 / memapOffValue - 100;
-		} else {
-			gain = -(memapOnValue * 100 / memapOffValue);
-		}
-		return gain;
+		double gain = getGain(memapOnValue, memapOffValue);
+		return gain / Math.abs(memapOffValue) * 100;
 	}
 	
 }

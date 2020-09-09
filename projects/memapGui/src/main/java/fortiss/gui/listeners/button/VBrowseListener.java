@@ -12,8 +12,8 @@ public class VBrowseListener extends MouseAdapter {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		int component = DesignerPanel.currentComponent;
-		Volatile v = DesignerPanel.selectedBuilding.getVolatile().get(component);
+		
+		Volatile v = (Volatile) DesignerPanel.selectedComponent;
 
 		// Update selection in text field
 		Chooser c = new Chooser(FileType.CSV);

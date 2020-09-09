@@ -19,7 +19,7 @@ import javax.swing.border.EmptyBorder;
 
 import fortiss.gui.listeners.action.ExitWindowListener;
 import fortiss.gui.style.StyleGenerator;
-import fortiss.media.Icon;
+import fortiss.media.IconStore;
 
 public class PlanningToolWindow extends JFrame {
 
@@ -33,7 +33,7 @@ public class PlanningToolWindow extends JFrame {
 
 		addWindowListener(new ExitWindowListener());
 		setLocationRelativeTo(null);
-		setIconImage(Icon.smallMemapLogo.getImage());
+		setIconImage(IconStore.smallMemapLogo.getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(new BorderLayout());
 

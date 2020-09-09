@@ -5,7 +5,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-
 import fortiss.results.Menu;
 import fortiss.results.Reporter;
 import fortiss.results.ReporterDetailedResultPanel;
@@ -27,9 +26,10 @@ public class MenuListener implements TreeSelectionListener {
 	 */
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
-		reporter = PlanningTool.getReporter();
+		PlanningTool planningTool = PlanningTool.getInstance();
+		reporter = planningTool.getReporter();
 		ResultsLibrary detailedResult = reporter.getDetailedResult();
-		reporterPanel = PlanningTool.getReporterPanel();
+		reporterPanel = planningTool.getReporterPanel();
 		
 		Menu h = (Menu) e.getSource();
 		

@@ -8,8 +8,8 @@ import javax.swing.JLabel;
 import com.google.gson.annotations.Expose;
 
 import fortiss.components.Connection;
-import fortiss.gui.BuildingIcon;
 import fortiss.gui.DesignerPanel;
+import fortiss.gui.icons.BuildingIcon;
 
 /**
  * Manager of connections between building icons/labels
@@ -192,8 +192,8 @@ public class ConnectionManager {
 			c.setColor();
 			String nameNodeA = c.getNameNodeA();
 			String nameNodeB = c.getNameNodeB();
-			BuildingIcon nodeA = DesignerPanel.buildingIcons.get(DesignerPanel.buildings.get(nameNodeA));
-			BuildingIcon nodeB = DesignerPanel.buildingIcons.get(DesignerPanel.buildings.get(nameNodeB));
+			BuildingIcon nodeA = DesignerPanel.buildings.get(nameNodeA).getIcon();
+			BuildingIcon nodeB = DesignerPanel.buildings.get(nameNodeB).getIcon();
 			c.setNodeA(nodeA);
 			c.setNodeB(nodeB);
 		}

@@ -8,7 +8,7 @@ import javax.swing.JLabel;
 
 import com.google.gson.annotations.Expose;
 
-import fortiss.gui.BuildingIcon;
+import fortiss.gui.icons.BuildingIcon;
 import fortiss.simulation.helper.PositionManager;
 
 /**

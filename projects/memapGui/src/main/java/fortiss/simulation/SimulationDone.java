@@ -14,10 +14,11 @@ public class SimulationDone extends SimulationState {
 	public void execute(ProgressManager pm) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				PlanningTool.showReporter();
+				PlanningTool planningTool = PlanningTool.getInstance();
+				planningTool.showReporter();
 				// Restart progress counters
 				SimulationProgress.getInstance().restart();
-				PlanningTool.getTrackerPanel().restart();
+				planningTool.getTrackerPanel().restart();
 			}
 		});
 	}

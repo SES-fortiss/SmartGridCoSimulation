@@ -1,9 +1,7 @@
 package fortiss.gui;
 
 import java.awt.Graphics;
-import java.util.ArrayList;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
@@ -23,37 +21,6 @@ public class AddedComponentPanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		setBackground(Colors.background);
-
-		for (ArrayList<JLabel> iconList : DesignerPanel.demandIcons.values()) {
-			for (JLabel icon : iconList) {
-				icon.setForeground(Colors.defaultCol);
-			}
-		}
-		
-		for (ArrayList<JLabel> iconList : DesignerPanel.storageIcons.values()) {
-			for (JLabel icon : iconList) {
-				icon.setForeground(Colors.defaultCol);
-			}
-		}
-		
-		for (ArrayList<JLabel> iconList : DesignerPanel.volatileIcons.values()) {
-			for (JLabel icon : iconList) {
-				icon.setForeground(Colors.defaultCol);
-			}
-		}
-		
-		for (ArrayList<JLabel> iconList : DesignerPanel.controllableIcons.values()) {
-			for (JLabel icon : iconList) {
-				icon.setForeground(Colors.defaultCol);
-			}
-		}
-		
-		for (ArrayList<JLabel> iconList : DesignerPanel.couplerIcons.values()) {
-			for (JLabel icon : iconList) {
-				icon.setForeground(Colors.defaultCol);
-			}
-		}
-
 	}
 
 	public AddedComponentPanel() {
@@ -67,6 +34,12 @@ public class AddedComponentPanel extends JPanel {
 	private void initialize() {
 		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Added components", TitledBorder.LEFT,
 				TitledBorder.TOP, null, Colors.accent2));
+	}
+	
+	public void reset() {
+		removeAll();
+		revalidate();
+		repaint();
 	}
 
 }

@@ -7,14 +7,12 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.geom.Point2D;
 
 import javax.swing.JPanel;
 
 import fortiss.components.Building;
 import fortiss.gui.DesignerPanel;
-import fortiss.gui.listeners.helper.BuildingIcons;
-import fortiss.gui.listeners.helper.ComponentIcons;
-import fortiss.gui.listeners.helper.DataUpdater;
 
 public class DropListener extends DropTargetAdapter implements DropTargetListener {
 
@@ -43,23 +41,16 @@ public class DropListener extends DropTargetAdapter implements DropTargetListene
 				Point p = event.getLocation();
 				event.acceptDrop(DnDConstants.ACTION_COPY);
 
-				// Create building
+				// Create building an icon
 				String buildingName = "building" + DesignerPanel.buildingCount;
-				Building building = new Building(buildingName, 0);
-				DesignerPanel.buildings.put(buildingName, building);
+				Building building = new Building(buildingName, 0, new Point2D.Float(p.x, p.y));
+				building.showComponents();
+				
 				DesignerPanel.selectedBuilding = building;
-
-				// Create building icon
-				BuildingIcons bi = new BuildingIcons();
-				bi.createBuildingIcon(buildingName, p);
-
-				// Create component icons
-				ComponentIcons components = new ComponentIcons();
-				components.createComponentLists(building);
+				DesignerPanel.buildings.put(buildingName, building);
 
 				// Show information in pl_ems_details
-				DataUpdater du = new DataUpdater();
-				du.updateEmsData(building.getName(), Integer.toString(building.getPort()));
+				DesignerPanel.showInformationPanel("building");
 				DesignerPanel.buildingCount = DesignerPanel.buildingCount + 1;
 
 				event.dropComplete(true);

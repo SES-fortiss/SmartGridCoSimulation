@@ -3,11 +3,6 @@ package fortiss.gui.listeners.helper;
 import java.awt.geom.Point2D;
 import java.util.TreeMap;
 
-import javax.swing.JLabel;
-
-import fortiss.gui.BuildingIcon;
-import fortiss.gui.DesignerPanel;
-
 /**	
  * Contains methods to create building icons
  */
@@ -19,9 +14,9 @@ public class BuildingIcons {
 	 */
 	public void createBuildingIcons(TreeMap<String, Point2D> positionsList) {
 
-		for (String buildingName : DesignerPanel.buildings.keySet()) {
-			createBuildingIcon(buildingName, positionsList.get(buildingName));
-		}
+		//for (String buildingName : DesignerPanel.buildings.keySet()) {
+			//createBuildingIcon(buildingName, positionsList.get(buildingName));
+	//	}
 	}
 
 	/**
@@ -31,18 +26,19 @@ public class BuildingIcons {
 	 * {@link fortiss.simulation.helper.PositionManager#fixPosition(JLabel)} if
 	 * the icon is outside the visible area.
 	 */
-	public void createBuildingIcon(String buildingName, Point2D p) {
+	//public void createBuildingIcon(String buildingName, Point2D p) {
 		
-		BuildingIcon icon = new BuildingIcon(buildingName, p);
-		DesignerPanel.buildingIcons.put(DesignerPanel.buildings.get(buildingName), icon);
+		//BuildingIcon icon = new BuildingIcon(buildingName, p);
+		//DesignerPanel.buildingIcons.put(DesignerPanel.buildings.get(buildingName), icon);
 		
-		DesignerPanel.pl_ems.add(icon);
+		//DesignerPanel.pl_ems.add(icon);
 		
 		//DesignerPanel.pl_ems.doLayout();
 
-		icon.requestFocus();
+		//icon.requestFocus();
 
 		// Clear component panel
-		DesignerPanel.pl_comp.removeAll();
-	}
+		
+		
+	//}
 }

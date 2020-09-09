@@ -9,20 +9,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import fortiss.components.Building;
 import fortiss.gui.DesignerPanel;
+import fortiss.serialization.BuildingTypeAdapter;
 import fortiss.serialization.Point2DTypeAdapter;
+import fortiss.simulation.Parameters;
+import fortiss.simulation.PlanningTool;
 import fortiss.simulation.helper.ConnectionManager;
 import fortiss.simulation.helper.PositionManager;
 import memap.helper.DirectoryConfiguration;
@@ -96,45 +96,6 @@ public class FileManager {
 	}
 
 	/**
-	 * Reads a file from location specified.
-	 *
-	 * @param location the absolute path to the file to be read
-	 * @return a buffer with the data in the file read
-	 * 
-	 *         public BufferedReader readConnectionFile() { BufferedReader br =
-	 *         null;
-	 * 
-	 *         String source = System.getProperty("user.dir") + File.separator +
-	 *         mainDir + File.separator + configDir + File.separator +
-	 *         "connections.json";
-	 * 
-	 *         try { InputStream is = new FileInputStream(source); br = new
-	 *         BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-	 * 
-	 *         } catch (FileNotFoundException e) { System.out.println("<INFO> -
-	 *         FileManager file not found: " + source); return null; } return br; }
-	 */
-
-	/**
-	 * Reads a file from location specified.
-	 *
-	 * @param location the absolute path to the file to be read
-	 * @return a buffer with the data in the file read
-	 * 
-	 *         public BufferedReader readPositionsFile() { BufferedReader br = null;
-	 * 
-	 *         String source = System.getProperty("user.dir") + File.separator +
-	 *         mainDir + File.separator + configDir + File.separator +
-	 *         "positions.json";
-	 * 
-	 *         try { InputStream is = new FileInputStream(source); br = new
-	 *         BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-	 * 
-	 *         } catch (FileNotFoundException e) { System.out.println("<INFO> -
-	 *         FileManager file not found: " + source); return null; } return br; }
-	 */
-
-	/**
 	 * Writes a file.
 	 *
 	 * @param str  text to be written in file
@@ -167,6 +128,7 @@ public class FileManager {
 	 * registered in {@link fortiss.simulation.Parameters}.
 	 */
 	public void writeParameterConfigFile() {
+		Parameters pars = PlanningTool.getInstance().getParameters();
 		String location = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir
 				+ File.separator + "parameterConfig.json";
 		System.out.println(">> Writing parameter configuration file in " + location);
@@ -175,7 +137,7 @@ public class FileManager {
 
 		// Create JSON string
 		Gson gson = new Gson();
-		String str = gson.toJson(DesignerPanel.parameterPanel.pars);
+		String str = gson.toJson(pars);
 		writeFile(str, file);
 	}
 
@@ -191,6 +153,7 @@ public class FileManager {
 
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Point2D.class, new Point2DTypeAdapter());
+		gsonBuilder.registerTypeAdapter(Building.class, new BuildingTypeAdapter());
 		Gson gson = gsonBuilder.enableComplexMapKeySerialization().excludeFieldsWithoutExposeAnnotation().create();
 
 		// Export topology
@@ -200,14 +163,6 @@ public class FileManager {
 			mySet.add(building);
 		}
 		String str = gson.toJson(mySet);
-
-		str += System.getProperty("line.separator");
-
-		// Export positions
-		Type pointListType = new TypeToken<TreeMap<String, Point2D>>() {
-		}.getType();
-		PositionManager pm = PositionManager.getInstance();
-		str += gson.toJson(pm.getCenterPositions(), pointListType);
 
 		str += System.getProperty("line.separator");
 
@@ -222,7 +177,6 @@ public class FileManager {
 
 	/** Writes one descriptor file per building with its configuration. */
 	public void writeBuildingDescriptorFiles() {
-
 		/**
 		 * Note: location is the project directory from which the simulation was
 		 * started.
@@ -230,6 +184,11 @@ public class FileManager {
 		String location = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir
 				+ File.separator;
 
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Point2D.class, new Point2DTypeAdapter());
+		gsonBuilder.registerTypeAdapter(Building.class, new BuildingTypeAdapter());
+		Gson gson = gsonBuilder.enableComplexMapKeySerialization().excludeFieldsWithoutExposeAnnotation().create();
+		
 		for (Entry<String, Building> entry : DesignerPanel.buildings.entrySet()) {
 			Building building = entry.getValue();
 			System.out.println(">> Writing descriptor " + building.getName() + " in " + location);
@@ -237,15 +196,16 @@ public class FileManager {
 			String filename = location + building.getName() + ".json";
 			File file = new File(filename);
 
-			Gson gson = new Gson();
 			String str = gson.toJson(building);
-			DesignerPanel.parameterPanel.pars.addDescriptorFile(file);
+			Parameters pars = PlanningTool.getInstance().getParameters();
+			pars.addDescriptorFile(file);
 			writeFile(str, file);
 		}
 	}
 
 	public void writeMemapModel() {
-		File file = new File(DesignerPanel.parameterPanel.pars.getLastSavedFile());
+		Parameters pars = PlanningTool.getInstance().getParameters();
+		File file = new File(pars.getLastSavedFile());
 		writeMemapModel(file);
 	}
 

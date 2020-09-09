@@ -22,7 +22,8 @@ public class SimulationOptimize extends SimulationState {
 	 */
 	@Override
 	public void execute(ProgressManager pm) {
-		trackerPanel = PlanningTool.getTrackerPanel();
+		PlanningTool planningTool = PlanningTool.getInstance();
+		trackerPanel = planningTool.getTrackerPanel();
 		sp = SimulationProgress.getInstance();
 		trackerPanel.setMessage("Optimization in progress");
 		trackerPanel.setIndeterminate(false);
@@ -65,7 +66,8 @@ public class SimulationOptimize extends SimulationState {
 		new Thread() {
 			@Override
 			public void run() {
-				GuiController gc = PlanningTool.getGuiController();
+				PlanningTool planningTool = PlanningTool.getInstance();
+				GuiController gc = planningTool.getGuiController();
 				gc.startSimulation();
 				pm.setState(new SimulationDone());
 				try {

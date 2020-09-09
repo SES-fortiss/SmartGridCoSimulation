@@ -7,12 +7,12 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JComboBox;
 
+import fortiss.components.Component;
+import fortiss.components.Coupler;
 import fortiss.gui.DesignerPanel;
 
 public class CNewtworkTypePListener extends MouseAdapter implements ItemListener {
 
-	private static String buildingName;
-	private static int component;
 	private static boolean userSelection;
 
 	/**
@@ -21,7 +21,8 @@ public class CNewtworkTypePListener extends MouseAdapter implements ItemListener
 	 */
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-
+		Component component = DesignerPanel.selectedComponent;
+		
 		// Event fired once: When SELECTED. (Not fired when DESELECTED)
 		if (e.getStateChange() == ItemEvent.SELECTED) {
 			// Event fired only when change occurs in the GUI (Not programmatically)
@@ -30,12 +31,12 @@ public class CNewtworkTypePListener extends MouseAdapter implements ItemListener
 				String sel = (String) o.getSelectedItem();
 				String opt = "Electricity";
 
-				DesignerPanel.buildings.get(buildingName).getCoupler().get(component).setNetworkTypeP(sel);
+				((Coupler) component).setNetworkTypeP(sel);
 				if (sel == "Heat") {
-					DesignerPanel.buildings.get(buildingName).getCoupler().get(component).setNetworkTypeS(opt);
+					((Coupler) component).setNetworkTypeS(opt);
 				} else {
 					opt = "Heat";
-					DesignerPanel.buildings.get(buildingName).getCoupler().get(component).setNetworkTypeS(opt);
+					((Coupler) component).setNetworkTypeS(opt);
 				}
 				DesignerPanel.couplerPanel.txtCSecondaryNetworkType.setText(opt);
 			}
@@ -54,8 +55,6 @@ public class CNewtworkTypePListener extends MouseAdapter implements ItemListener
 	@Override
 	public void mousePressed(MouseEvent e) {
 		userSelection = true;
-		buildingName = DesignerPanel.selectedBuilding.getName();
-		component = DesignerPanel.currentComponent;
 	}
 
 }

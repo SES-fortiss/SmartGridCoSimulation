@@ -17,9 +17,10 @@ public class SimulationSetup extends SimulationState {
 	 */
 	@Override
 	public void execute(ProgressManager pm) {
-		PlanningTool.showTracker();
+		PlanningTool planningTool = PlanningTool.getInstance();
+		planningTool.showTracker();
 
-		TrackerPanel loadingScreen = PlanningTool.getTrackerPanel();
+		TrackerPanel loadingScreen = planningTool.getTrackerPanel();
 		loadingScreen.setIndeterminate(true);
 		loadingScreen.setMessage("Setting up the topology");
 		loadingScreen.repaint();
@@ -28,7 +29,7 @@ public class SimulationSetup extends SimulationState {
 		String location = System.getProperty("user.dir") + fs + DirectoryConfiguration.mainDir + fs
 				+ DirectoryConfiguration.configDir + fs + "parameterConfig.json";
 		GuiController gc = new GuiController(location);
-		PlanningTool.setGuiController(gc);
+		planningTool.setGuiController(gc);
 
 		try {
 			gc.setUp();

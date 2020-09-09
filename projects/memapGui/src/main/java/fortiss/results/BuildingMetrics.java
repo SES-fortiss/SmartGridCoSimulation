@@ -15,7 +15,7 @@ public class BuildingMetrics extends Metrics {
 
 	@Override
 	public void setHeatDischargedBySourceInTime() {
-		heatDischargedByStorageInTime = calculateHeatProductionBySourceInTime(context, DesignerPanel.buildings.get(context));
+		heatDischargedByStorageInTime = calculateHeatDischargeByStorageInTime(context, DesignerPanel.buildings.get(context));
 	}
 
 	@Override

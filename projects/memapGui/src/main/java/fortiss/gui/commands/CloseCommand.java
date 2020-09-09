@@ -6,7 +6,8 @@ public class CloseCommand implements Command {
 
 	@Override
 	public void execute() {
-		PlanningTool.getPlanningToolWindow().dispose();
+		PlanningTool planningTool = PlanningTool.getInstance();
+		planningTool.getPlanningToolWindow().dispose();
 		new SaveCommand().execute();
 	}
 

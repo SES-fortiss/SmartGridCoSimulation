@@ -12,8 +12,7 @@ public class DBrowseListener extends MouseAdapter {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		int component = DesignerPanel.currentComponent;
-		Demand d = DesignerPanel.selectedBuilding.getDemand().get(component);
+		Demand d = (Demand) DesignerPanel.selectedComponent;
 
 		// Update selection in text field
 		Chooser c = new Chooser(FileType.CSV);

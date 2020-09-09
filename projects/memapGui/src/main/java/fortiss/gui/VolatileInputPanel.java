@@ -6,7 +6,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -16,24 +15,25 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
+import fortiss.components.Volatile;
 import fortiss.gui.listeners.button.VBrowseListener;
 import fortiss.gui.listeners.selectionitem.VNetworkTypeListener;
 import fortiss.gui.listeners.textfield.VCOEmissionListener;
 import fortiss.gui.listeners.textfield.VCostListener;
 import fortiss.gui.listeners.textfield.VForecastFileListener;
-import fortiss.gui.listeners.textfield.VNameListener;
 import fortiss.gui.listeners.textfield.VMaxPowerListener;
 import fortiss.gui.listeners.textfield.VMinPowerListener;
+import fortiss.gui.listeners.textfield.VNameListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
-import fortiss.media.Icon;
 import fortiss.media.DesignerMessages;
+import fortiss.media.IconStore;
 
 /**
  * Input panel for volatile parameters.
  */
-public class VolatileInputPanel extends JPanel {
+public class VolatileInputPanel extends InformationPanel {
 
 	/** Volatile name */
 	public JTextField txtVName;
@@ -134,7 +134,7 @@ public class VolatileInputPanel extends JPanel {
 		sVNetworkType.addMouseListener(new VNetworkTypeListener());
 		add(sVNetworkType, "4, 10, 3, 1, fill, default");
 
-		lbVMinimumPower = new JLabel(DesignerMessages.getString("networkTypeLabel")); //$NON-NLS-1$
+		lbVMinimumPower = new JLabel(DesignerMessages.getString("minimumPowerLabel")); //$NON-NLS-1$
 		add(lbVMinimumPower, "2, 12");
 
 		txtVMinimumPower = new JTextField();
@@ -163,7 +163,7 @@ public class VolatileInputPanel extends JPanel {
 
 		JButton btVBrowse = new JButton("");
 		btVBrowse.addMouseListener(new VBrowseListener());
-		btVBrowse.setIcon(Icon.open);
+		btVBrowse.setIcon(IconStore.open);
 		btVBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
 		add(btVBrowse, "6, 16, right, center");
 
@@ -184,5 +184,17 @@ public class VolatileInputPanel extends JPanel {
 		txtVCOEmission.addFocusListener(new VCOEmissionListener());
 		add(txtVCOEmission, "4, 20, 3, 1, fill, default");
 		txtVCOEmission.setColumns(10);
+	}
+
+	@Override
+	public void update() {
+		Volatile volatileProd = (Volatile) DesignerPanel.selectedComponent;
+		txtVName.setText(volatileProd.getName());
+		sVNetworkType.setSelectedItem(volatileProd.getNetworkType());
+		txtVMinimumPower.setText(Double.toString(volatileProd.getMinimumPower()));
+		txtVMaximumPower.setText(Double.toString(volatileProd.getMaximumPower()));
+		txtVForecastFile.setText(volatileProd.getForecastFile());
+		txtVCost.setText(Double.toString(volatileProd.getCost()));
+		txtVCOEmission.setText(Double.toString(volatileProd.getCOEmission()));
 	}
 }

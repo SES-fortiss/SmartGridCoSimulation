@@ -1,4 +1,4 @@
-package fortiss.gui.listeners.label;
+package fortiss.gui.listeners.action;
 
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;

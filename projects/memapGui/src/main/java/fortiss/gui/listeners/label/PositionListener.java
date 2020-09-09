@@ -7,8 +7,8 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
-import fortiss.gui.BuildingIcon;
 import fortiss.gui.DesignerPanel;
+import fortiss.gui.icons.BuildingIcon;
 import fortiss.simulation.helper.PositionManager;
 
 public class PositionListener extends MouseAdapter {

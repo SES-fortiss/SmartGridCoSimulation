@@ -11,6 +11,7 @@ public class SimulationDesing extends SimulationState {
 	 */
 	@Override
 	public void execute(ProgressManager pm) {
-		PlanningTool.showDesigner();
+		PlanningTool planningTool = PlanningTool.getInstance();
+		planningTool.showDesigner();
 	}
 }

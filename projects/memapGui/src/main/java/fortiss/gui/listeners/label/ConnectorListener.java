@@ -12,8 +12,8 @@ import java.awt.geom.Point2D;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
-import fortiss.gui.BuildingIcon;
 import fortiss.gui.DesignerPanel;
+import fortiss.gui.icons.BuildingIcon;
 import fortiss.simulation.helper.ConnectionManager;
 import fortiss.simulation.helper.PositionManager;
 

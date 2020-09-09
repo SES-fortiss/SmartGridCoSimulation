@@ -74,7 +74,7 @@ public class MemapOnMetrics extends Metrics {
 		HashMap<String, Double> electricityProductionByBuilding = new HashMap<String, Double>();
 		for (Entry<String, Building> buildingEntry : DesignerPanel.buildings.entrySet()) {
 			Building building = buildingEntry.getValue();
-			electricityProductionByBuilding.put(buildingEntry.getKey(), sum(getTotalsByTimeStep(calculateHeatProductionBySourceInTime(context, building), nTimeSteps)));
+			electricityProductionByBuilding.put(buildingEntry.getKey(), sum(getTotalsByTimeStep(calculateElectricityProductionBySourceInTime(context, building), nTimeSteps)));
 		}
 		return electricityProductionByBuilding;
 	}

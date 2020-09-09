@@ -29,7 +29,7 @@ public class SimulationNameListener extends KeyAdapter implements FocusListener 
 	public void focusGained(FocusEvent e) {
 		check = false;
 		valid = true;
-		o = DesignerPanel.parameterPanel.pars;
+		o = PlanningTool.getInstance().getParameters();
 		source = (JTextField) e.getSource();
 		message = "An unidentified error has occurred.";
 	}
@@ -42,7 +42,7 @@ public class SimulationNameListener extends KeyAdapter implements FocusListener 
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
 			String currentVal = o.getSimulationName();
-			JOptionPane.showMessageDialog(PlanningTool.getMainContentPane(), message);
+			JOptionPane.showMessageDialog(PlanningTool.getInstance().getMainContentPane(), message);
 			source.setText(currentVal);
 		}
 	}

@@ -5,7 +5,8 @@ import java.awt.event.ItemListener;
 
 import javax.swing.JComboBox;
 
-import fortiss.gui.DesignerPanel;
+import fortiss.simulation.Parameters;
+import fortiss.simulation.PlanningTool;
 
 public class DaysListener implements ItemListener{
 
@@ -16,7 +17,8 @@ public class DaysListener implements ItemListener{
 	public void itemStateChanged(ItemEvent e) {
 		JComboBox<?> o = (JComboBox<?>) e.getSource();
 		Integer sel = (Integer) o.getSelectedItem();
-		DesignerPanel.parameterPanel.pars.setDays(sel);
+		Parameters pars = PlanningTool.getInstance().getParameters();
+		pars.setDays(sel);
 	}
 
 }

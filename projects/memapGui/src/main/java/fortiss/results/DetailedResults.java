@@ -10,6 +10,7 @@ import fortiss.datastructures.Data;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FileManager;
 import fortiss.simulation.Parameters;
+import fortiss.simulation.PlanningTool;
 import memap.helper.DirectoryConfiguration;
 import memap.media.Strings;
 
@@ -27,7 +28,7 @@ public class DetailedResults extends ResultsLibrary {
 	@Override
 	public void load() {
 		FileManager fm = new FileManager();
-		Parameters pars = DesignerPanel.parameterPanel.pars;
+		Parameters pars = PlanningTool.getInstance().getParameters();
 		String location = System.getProperty("user.dir");
 		String fs = File.separator;
 		String source = fs + DirectoryConfiguration.mainDir + fs + "results" + fs + pars.getSimulationName() + fs

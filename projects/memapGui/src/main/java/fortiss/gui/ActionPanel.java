@@ -18,10 +18,10 @@ import fortiss.gui.commands.ResetCommand;
 import fortiss.gui.commands.SaveCommand;
 import fortiss.gui.listeners.action.ButtonListener;
 import fortiss.gui.listeners.action.DarkModeListener;
-import fortiss.gui.listeners.label.HoverMouseListener;
+import fortiss.gui.listeners.action.HoverMouseListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.StyleGenerator;
-import fortiss.media.Icon;
+import fortiss.media.IconStore;
 
 /**
  * Panel for action buttons
@@ -52,7 +52,7 @@ public class ActionPanel extends JPanel {
 		// Add load button
 		JLabel lblLoad = new JLabel("");
 		lblLoad.setBorder(new EmptyBorder(3, 3, 3, 3));
-		lblLoad.setIcon(Icon.open);
+		lblLoad.setIcon(IconStore.open);
 		lblLoad.setToolTipText("Load from Json File");
 		lblLoad.addMouseListener(new ButtonListener(new LoadCommand()));
 		lblLoad.addMouseListener(new HoverMouseListener());
@@ -78,7 +78,7 @@ public class ActionPanel extends JPanel {
 		// Add run button
 		JLabel lblRun = new JLabel("");
 		lblRun.setBorder(new EmptyBorder(3, 3, 3, 3));
-		lblRun.setIcon(Icon.run);
+		lblRun.setIcon(IconStore.run);
 		lblRun.setToolTipText("Start simulation");
 		lblRun.addMouseListener(new ButtonListener(new ConfigureParameters()));
 		lblRun.addMouseListener(new HoverMouseListener());
@@ -87,7 +87,7 @@ public class ActionPanel extends JPanel {
 		// Add save button
 		JLabel lblSave = new JLabel("");
 		lblSave.setBorder(new EmptyBorder(3, 3, 3, 3));
-		lblSave.setIcon(Icon.saveAs);
+		lblSave.setIcon(IconStore.saveAs);
 		lblSave.setToolTipText("Save as");
 		lblSave.addMouseListener(new ButtonListener(new SaveCommand()));
 		lblSave.addMouseListener(new HoverMouseListener());
@@ -96,7 +96,7 @@ public class ActionPanel extends JPanel {
 		// Add reset button
 		JLabel lblReset = new JLabel("");
 		lblReset.setBorder(new EmptyBorder(3, 3, 3, 3));
-		lblReset.setIcon(Icon.reset);
+		lblReset.setIcon(IconStore.reset);
 		lblReset.setToolTipText("Reset");
 		lblReset.addMouseListener(new ButtonListener(new ResetCommand()));
 		lblReset.addMouseListener(new HoverMouseListener());
@@ -104,7 +104,7 @@ public class ActionPanel extends JPanel {
 
 		JLabel lblDarkmode = new JLabel("");
 		lblDarkmode.setToolTipText("Select to turn dark mode on/off");
-		lblDarkmode.setIcon(Icon.offDarkMode);
+		lblDarkmode.setIcon(IconStore.offDarkMode);
 		lblDarkmode.addMouseListener(new DarkModeListener());
 		lblDarkmode.addMouseListener(new HoverMouseListener());
 		add(lblDarkmode, "11, 2, right, center");

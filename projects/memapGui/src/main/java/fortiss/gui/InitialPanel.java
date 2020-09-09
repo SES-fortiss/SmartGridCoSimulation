@@ -3,7 +3,6 @@ package fortiss.gui;
 import java.awt.Graphics;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
@@ -12,13 +11,13 @@ import com.jgoodies.forms.layout.RowSpec;
 
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
-import fortiss.media.Icon;
+import fortiss.media.IconStore;
 
 /**
  * Shows project name and company logo
  */
 
-public class InitialPanel extends JPanel {
+public class InitialPanel extends InformationPanel {
 	/** Initial screen area title label */
 	private JLabel lblMemap_1;
 
@@ -42,7 +41,7 @@ public class InitialPanel extends JPanel {
 						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("120px"), }));
 
 		JLabel lblMemap = new JLabel("");
-		lblMemap.setIcon(Icon.memapLogo);
+		lblMemap.setIcon(IconStore.memapLogo);
 		add(lblMemap, "1, 1, center, center");
 
 		lblMemap_1 = new JLabel("Multi-energy Management and Aggregation Platform (MEMAP)");
@@ -50,8 +49,13 @@ public class InitialPanel extends JPanel {
 		add(lblMemap_1, "1, 4");
 
 		JLabel lblLogo = new JLabel("");
-		lblLogo.setIcon(Icon.fortissLogo);
+		lblLogo.setIcon(IconStore.fortissLogo);
 		add(lblLogo, "1, 6, center, center");
+	}
+
+	@Override
+	public void update() {
+		// Nothing to update
 	}
 
 }

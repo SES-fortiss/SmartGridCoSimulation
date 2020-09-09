@@ -2,13 +2,15 @@ package fortiss.components;
 
 import com.google.gson.annotations.Expose;
 
+import fortiss.gui.icons.ComponentIcon;
+import fortiss.media.IconStore;
+
 /**
  * Storage is the class for representing Storage objects. Example: Battery,
  * ThermalStorage.
  */
-public class Storage {
-	@Expose
-	private String name;
+public class Storage extends Component {
+	
 	@Expose
 	private String networkType;
 	@Expose
@@ -36,24 +38,17 @@ public class Storage {
 	 * @param effIN          charging efficiency. A positive double
 	 * @param effOUT         discharging efficiency. A positive double
 	 */
-	public Storage(String name, String networkType, double capacity, double soc, double maxCharging, double maxDischarging,
+	public Storage(Building building, String name, String networkType, double capacity, double soc, double maxCharging, double maxDischarging,
 			double effIN, double effOUT) {
-		this.setName(name);
-		this.setNetworkType(networkType);
-		this.setCapacity(capacity);
-		this.setSoc(soc);
-		this.setMaxCharging(maxCharging);
-		this.setMaxDischarging(maxDischarging);
-		this.setEffIN(effIN);
-		this.setEffOUT(effOUT);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+		super(name, building);
+		setNetworkType(networkType);
+		setCapacity(capacity);
+		setSoc(soc);
+		setMaxCharging(maxCharging);
+		setMaxDischarging(maxDischarging);
+		setEffIN(effIN);
+		setEffOUT(effOUT);
+		setIcon(new ComponentIcon(this, "storage", IconStore.sStorage, IconStore.uStorage));
 	}
 
 	public String getNetworkType() {

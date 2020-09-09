@@ -19,6 +19,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
+import fortiss.components.Demand;
 import fortiss.datastructures.Data;
 import fortiss.gui.listeners.button.DBrowseListener;
 import fortiss.gui.listeners.button.DPlotListener;
@@ -28,14 +29,14 @@ import fortiss.gui.listeners.textfield.DNameListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
-import fortiss.media.Icon;
+import fortiss.media.IconStore;
 import memap.examples.ExampleFiles;
 import memap.helper.profilehandler.TimedConsumerData;
 
 /**
  * Input panel for demand parameters.
  */
-public class DemandInputPanel extends JPanel {
+public class DemandInputPanel extends InformationPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -149,13 +150,13 @@ public class DemandInputPanel extends JPanel {
 		JButton btDBrowse = new JButton("");
 		panel.add(btDBrowse, "6, 9, right, center");
 		btDBrowse.addMouseListener(new DBrowseListener());
-		btDBrowse.setIcon(Icon.open);
+		btDBrowse.setIcon(IconStore.open);
 		btDBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
 		btDBrowse.setContentAreaFilled(false);
 
 		JButton btDPlot = new JButton("");
 		panel.add(btDPlot, "8, 9");
-		btDPlot.setIcon(Icon.visualize);
+		btDPlot.setIcon(IconStore.visualize);
 		btDPlot.setBorder(new EmptyBorder(3, 3, 3, 3));
 		btDPlot.setContentAreaFilled(false);
 		btDPlot.addMouseListener(new DPlotListener());
@@ -165,7 +166,7 @@ public class DemandInputPanel extends JPanel {
 		panel.add(lblCsvInstructions, "2, 13, 2, 1, left, default");
 
 		lblCsvformat = new JLabel("");
-		lblCsvformat.setIcon(Icon.csvFormat);
+		lblCsvformat.setIcon(IconStore.csvFormat);
 		panel.add(lblCsvformat, "4, 13, 6, 1, right, center");
 
 		lblCsvWarning = new JLabel(
@@ -235,7 +236,15 @@ public class DemandInputPanel extends JPanel {
 			e1.printStackTrace();
 		}
 		txtDConsumption.setText("");
-		DesignerPanel.selectedBuilding.getDemand().get(DesignerPanel.currentComponent)
-				.setConsumptionProfile("");
+		((Demand) DesignerPanel.selectedComponent).setConsumptionProfile("");
+	}
+
+	@Override
+	public void update() {
+		Demand demand = (Demand) DesignerPanel.selectedComponent;
+		txtDName.setText(demand.getName());
+		txtDConsumption.setText(demand.getConsumptionProfile());
+		plotPanel.clearSeries();
+		setData(demand.getConsumptionProfile());
 	}
 }

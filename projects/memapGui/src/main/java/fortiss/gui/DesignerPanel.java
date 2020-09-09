@@ -5,9 +5,6 @@ import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.datatransfer.DataFlavor;
-import java.io.BufferedReader;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 import javax.swing.JLabel;
@@ -15,13 +12,9 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
-import com.google.gson.Gson;
-
 import fortiss.components.Building;
-import fortiss.gui.listeners.helper.FileManager;
-import fortiss.gui.listeners.helper.ModelInitHelper;
+import fortiss.components.Component;
 import fortiss.gui.style.Colors;
-import fortiss.simulation.Parameters;
 
 public class DesignerPanel extends JPanel {
 
@@ -29,20 +22,14 @@ public class DesignerPanel extends JPanel {
 
 	// Object arrays
 	public static TreeMap<String, Building> buildings = new TreeMap<String, Building>();
-	
-	public static HashMap<Building, BuildingIcon> buildingIcons = new HashMap<Building, BuildingIcon>();
-	public static HashMap<Building, ArrayList<JLabel>> demandIcons = new HashMap<Building, ArrayList<JLabel>>();
-	public static HashMap<Building, ArrayList<JLabel>> storageIcons = new HashMap<Building, ArrayList<JLabel>>();
-	public static HashMap<Building, ArrayList<JLabel>> volatileIcons = new HashMap<Building, ArrayList<JLabel>>();
-	public static HashMap<Building, ArrayList<JLabel>> controllableIcons = new HashMap<Building, ArrayList<JLabel>>();
-	public static HashMap<Building, ArrayList<JLabel>> couplerIcons = new HashMap<Building, ArrayList<JLabel>>();
-	
+
 	// Flags
 	public static int buildingCount = buildings.size();
 	public static Building selectedBuilding = null;
-	public static int currentComponent;
-	
+	public static Component selectedComponent = null;
+
 	// Panels
+	private static TreeMap<String, InformationPanel> informationPanels = new TreeMap<String, InformationPanel>();
 	public static ParameterInputPanel parameterPanel;
 	public static ActionPanel pl_action; // Action panel: LoadListener, run, save, reset
 	public static BuildingInputPanel pl_ems_detail; // Split 1: panel for EMS details
@@ -57,7 +44,7 @@ public class DesignerPanel extends JPanel {
 	public static BuildingPanel pl_ems; // Split 1: panel for EMS icons
 	public static AddedComponentPanel pl_comp; // Split 2: panel for components icons
 	public static ObjectPanel pl_object; // Panel to hold "add building/component" buttons
-	public static CardLayout cl; // Card layout to show component details
+	private static CardLayout cl; // Card layout to show component details
 
 	// Labels
 	private JLabel lblFortissMemap;
@@ -76,7 +63,7 @@ public class DesignerPanel extends JPanel {
 	 * Create the frame.
 	 */
 	public DesignerPanel() {
-		//setSize(new Dimension(1920, 1080));
+		// setSize(new Dimension(1920, 1080));
 		setLayout(new BorderLayout(0, 0));
 
 		// Add dataFlavor class
@@ -100,33 +87,41 @@ public class DesignerPanel extends JPanel {
 		// Add parameter panel
 		parameterPanel = new ParameterInputPanel();
 		pl_comp_detail.add(parameterPanel, "parameter");
+		informationPanels.put("parameter", parameterPanel);
 
 		// Add initial panel
 		initialPanel = new InitialPanel();
 		pl_comp_detail.add(initialPanel, "initial");
+		informationPanels.put("initial", initialPanel);
 
 		// Add panel for buildings
 		pl_comp_detail.add(pl_ems_detail, "building");
+		informationPanels.put("building", pl_ems_detail);
 
 		// Add panel for demand components
 		demandPanel = new DemandInputPanel();
 		pl_comp_detail.add(demandPanel, "demand");
+		informationPanels.put("demand", demandPanel);
 
 		// Add panel for Storage Objects
 		storagePanel = new StorageInputPanel();
 		pl_comp_detail.add(storagePanel, "storage");
+		informationPanels.put("storage", storagePanel);
 
 		// Add panel for Volatile
 		volatilePanel = new VolatileInputPanel();
 		pl_comp_detail.add(volatilePanel, "volProduction");
+		informationPanels.put("volProduction", volatilePanel);
 
 		// Add panel for Controllable
 		controllablePanel = new ControllableInputPanel();
 		pl_comp_detail.add(controllablePanel, "contProduction");
+		informationPanels.put("contProduction", controllablePanel);
 
 		// Add panel for Coupler
 		couplerPanel = new CouplerInputPanel();
 		pl_comp_detail.add(couplerPanel, "coupler");
+		informationPanels.put("coupler", couplerPanel);
 
 		cl.show(DesignerPanel.pl_comp_detail, "initial");
 
@@ -155,28 +150,12 @@ public class DesignerPanel extends JPanel {
 		add(lblFortissMemap, BorderLayout.SOUTH);
 	}
 
-	public void initLastSession() {
-		Gson gson = new Gson();
-		FileManager fm = new FileManager();
-		BufferedReader br = fm.readParameterConfigFile();
-
-		String workingFile = "";
-		Parameters par = null;
-
-		if (br != null) {
-			par = gson.fromJson(br, Parameters.class);
-			// TODO Why clearing it here?
-			par.clearDescriptorFile();
-			workingFile = par.getLastSavedFile();
-
-			System.out.println(gson.toJson(par));
-		}
-
-		if (!workingFile.equals("")) {
-			ModelInitHelper.loadFromFile(workingFile);
-			ModelInitHelper.initParameters(par);
-		} else {
-			System.out.println("lastWorkingFile: " + workingFile);
-		}
+	/**
+	 * Updates a shows the information in a panel. Must be called after the
+	 * {@link #selectedBuilding} or {@link #selectedComponent} has been set.
+	 */
+	public static void showInformationPanel(String panelName) {
+		informationPanels.get(panelName).update();
+		cl.show(pl_comp_detail, panelName);
 	}
 }

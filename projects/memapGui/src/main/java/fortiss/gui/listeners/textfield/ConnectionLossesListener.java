@@ -46,7 +46,7 @@ public class ConnectionLossesListener extends KeyAdapter implements FocusListene
 	public void focusLost(FocusEvent e) {
 		if (!valid) {
 			String currentVal = Double.toString(connection.getLosses());
-			JOptionPane.showMessageDialog(PlanningTool.getMainContentPane(), message);
+			JOptionPane.showMessageDialog(PlanningTool.getInstance().getMainContentPane(), message);
 			source.setText(currentVal);
 		}
 	}
@@ -89,7 +89,7 @@ public class ConnectionLossesListener extends KeyAdapter implements FocusListene
 	@Override
 	public void keyTyped(KeyEvent e) {
 		char c = e.getKeyChar();
-		if (v.isNumber(c, source.getText().length())) {
+		if (v.isNumber(c, source.getText())) {
 			check = true;
 		} else {
 			check = false;

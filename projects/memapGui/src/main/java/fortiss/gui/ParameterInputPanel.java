@@ -10,7 +10,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -38,19 +37,17 @@ import fortiss.gui.listeners.textfield.StepsListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
-import fortiss.media.Icon;
+import fortiss.media.IconStore;
 import fortiss.simulation.Parameters;
+import fortiss.simulation.PlanningTool;
 
 /**
  * Parameter input panel
  */
-public class ParameterInputPanel extends JPanel {
-
-	/** Parameters of the simulation */
-	public Parameters pars = new Parameters();
+public class ParameterInputPanel extends InformationPanel {
 	
 	private static final long serialVersionUID = 1L;
-
+	
 	/** Simulation name */
 	private JTextField txtSimulationName;
 	/** steps MPC horizon. An integer */
@@ -118,7 +115,6 @@ public class ParameterInputPanel extends JPanel {
 		setBackground(Colors.background);
 		setForeground(Colors.normal);
 		initialize();
-		updateMarketPriceOptions();
 	}
 
 	/**
@@ -168,6 +164,8 @@ public class ParameterInputPanel extends JPanel {
 				FormSpecs.DEFAULT_ROWSPEC,
 				RowSpec.decode("50dlu:grow"),}));
 
+		Parameters pars = PlanningTool.getInstance().getParameters();
+		
 		lbTitle = new JLabel("SIMULATION PARAMETERS");
 		lbTitle.setFont(Fonts.getOswald());
 		lbTitle.setForeground(Colors.title);
@@ -248,7 +246,7 @@ public class ParameterInputPanel extends JPanel {
 
 		btBrowse = new JButton("");
 		btBrowse.addMouseListener(new BrowseListener());
-		btBrowse.setIcon(Icon.open);
+		btBrowse.setIcon(IconStore.open);
 		btBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
 		btBrowse.setContentAreaFilled(false);
 		add(btBrowse, "8, 17");
@@ -257,7 +255,7 @@ public class ParameterInputPanel extends JPanel {
 		add(lbOptimizer, "2, 19");
 
 		lbOptimizer2 = new JLabel("");
-		lbOptimizer2.setIcon(Icon.lp);
+		lbOptimizer2.setIcon(IconStore.lp);
 		lbOptimizer2.addMouseListener(new OptimizerListener());
 		add(lbOptimizer2, "6, 19, 3, 1, right, default");
 
@@ -265,7 +263,7 @@ public class ParameterInputPanel extends JPanel {
 		add(lbOptCriteria, "2, 21");
 
 		lbOptCriteria2 = new JLabel("");
-		lbOptCriteria2.setIcon(Icon.optCost);
+		lbOptCriteria2.setIcon(IconStore.optCost);
 		lbOptCriteria2.addMouseListener(new OptimizationCriteriaListener());
 		add(lbOptCriteria2, "6, 21, 3, 1, right, default");
 
@@ -273,22 +271,24 @@ public class ParameterInputPanel extends JPanel {
 		add(lbLoggingMode, "2, 23");
 
 		lbLoggingMode2 = new JLabel("");
-		lbLoggingMode2.setIcon(Icon.resultLogs);
+		lbLoggingMode2.setIcon(IconStore.resultLogs);
 		lbLoggingMode2.addMouseListener(new LoggingModeListener());
 		add(lbLoggingMode2, "6, 23, 3, 1, right, default");
 
 		add(btAccept, "1, 27, 7, 1, center, center");
-
+		
+		// Must be called at the end, when all other graphical components exist.
+		updateMarketPriceOptions(pars);
 	}
 
 	/**
 	 * Updates the market price options show to the user according to their
 	 * selection
 	 */
-	public void updateMarketPriceOptions() {
-
+	public void updateMarketPriceOptions(Parameters pars) {
+		
 		if (pars.isFixedPrice()) {
-			lbMarketPrice.setIcon(Icon.fixedMarket);
+			lbMarketPrice.setIcon(IconStore.fixedMarket);
 			txtFixedValue.setText(Double.toString(pars.getFixedMarketPrice()));
 			txtFixedValue.setVisible(true);
 			btBrowse.setVisible(false);
@@ -296,7 +296,7 @@ public class ParameterInputPanel extends JPanel {
 			txtMarketPriceFile.setVisible(false);
 
 		} else {
-			lbMarketPrice.setIcon(Icon.variableMarket);
+			lbMarketPrice.setIcon(IconStore.variableMarket);
 			txtMarketPriceFile.setText(pars.getMarketPriceFile());
 			txtFixedValue.setVisible(false);
 			btBrowse.setVisible(true);
@@ -309,29 +309,32 @@ public class ParameterInputPanel extends JPanel {
 	/**
 	 * Updates all the fields of the panel according to the parameters
 	 */
+	@Override
 	public void update() {
+		Parameters pars = PlanningTool.getInstance().getParameters();
+		txtSimulationName.setText(pars.getSimulationName());
 		txtSteps.setText(Integer.toString(pars.getMPCHorizon()));
 		txtLength.setText(Integer.toString(pars.getStepsPerDay()));
-		txtSimulationName.setText(pars.getSimulationName());
+		
 
-		updateMarketPriceOptions();
+		updateMarketPriceOptions(pars);
 
 		if (pars.getOptCriteria().equals("co2"))
-			lbOptCriteria2.setIcon(Icon.optCO2);
+			lbOptCriteria2.setIcon(IconStore.optCO2);
 		if (pars.getOptCriteria().equals("cost"))
-			lbOptCriteria2.setIcon(Icon.optCost);
+			lbOptCriteria2.setIcon(IconStore.optCost);
 
 		if (pars.getLoggingMode().equals("resultLogs"))
-			lbLoggingMode2.setIcon(Icon.resultLogs);
+			lbLoggingMode2.setIcon(IconStore.resultLogs);
 		if (pars.getLoggingMode().equals("fileLogs"))
-			lbLoggingMode2.setIcon(Icon.fileLogs);
+			lbLoggingMode2.setIcon(IconStore.fileLogs);
 		if (pars.getLoggingMode().equals("allLogs"))
-			lbLoggingMode2.setIcon(Icon.allLogs);
+			lbLoggingMode2.setIcon(IconStore.allLogs);
 
 		if (pars.getOptimizer().equals("lp"))
-			lbOptimizer2.setIcon(Icon.lp);
+			lbOptimizer2.setIcon(IconStore.lp);
 		if (pars.getOptimizer().equals("milp"))
-			lbOptimizer2.setIcon(Icon.milp);
+			lbOptimizer2.setIcon(IconStore.milp);
 		
 	}
 

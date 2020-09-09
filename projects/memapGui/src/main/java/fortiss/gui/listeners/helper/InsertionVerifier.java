@@ -2,6 +2,7 @@ package fortiss.gui.listeners.helper;
 
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
+
 import org.apache.commons.lang3.SystemUtils;
 
 /**
@@ -62,29 +63,19 @@ public class InsertionVerifier {
 			validKeys.add((char) KeyEvent.VK_SLASH);
 		}
 
-		if (!Character.isDigit(c) && !Character.isLetter(c) && !validKeys.contains(c)) {
-			valid = false;
-		} else {
-			valid = true;
-		}
-		return valid;
+		return Character.isDigit(c) || Character.isLetter(c) || validKeys.contains(c);
 	}
-
+	
 	/**
 	 * @return <code>true</code> if the input is a valid character to form a number.
+	 * @param c character inserted
+	 * @param text before character c was inserted
 	 */
-	public boolean isNumber(char c, int length) {
+	public boolean isNumber(char c, String text) {
 		validKeys.add((char) KeyEvent.VK_BACK_SPACE);
 		validKeys.add((char) KeyEvent.VK_DELETE);
-		if (!Character.isDigit(c) && !validKeys.contains(c) || length >= 9) {
-			valid = false;
-		} else {
-			if (c == '.') {
-				validKeys.remove(c);
-			}
-			valid = true;
-		}
-		return valid;
+		
+		return Character.isDigit(c) || validKeys.contains(c);
 	}
 
 }

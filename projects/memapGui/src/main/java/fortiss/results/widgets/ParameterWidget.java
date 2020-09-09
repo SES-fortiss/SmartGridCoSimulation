@@ -17,12 +17,12 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
-import fortiss.gui.DesignerPanel;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.FontSize;
 import fortiss.gui.style.Fonts;
-import fortiss.media.Icon;
+import fortiss.media.IconStore;
 import fortiss.simulation.Parameters;
+import fortiss.simulation.PlanningTool;
 import memap.helper.DirectoryConfiguration;
 import memap.media.Strings;
 
@@ -72,10 +72,10 @@ public class ParameterWidget extends JPanel {
 			topology = new ImageIcon(ImageIO.read(new File(location)));
 			topology = new ImageIcon(topology.getImage().getScaledInstance(700, 500, Image.SCALE_SMOOTH));
 		} catch (IOException e) {
-			topology = Icon.memapLogo;
+			topology = IconStore.memapLogo;
 		}
 		
-		Parameters pars = DesignerPanel.parameterPanel.pars;
+		Parameters pars = PlanningTool.getInstance().getParameters();
 		
 		JLabel lblImage = new JLabel(topology);
 		add(lblImage, "2, 3, 1, 15");
