@@ -4,6 +4,5 @@ import fortiss.simulation.helper.ProgressManager;
 
 /** A stage in the simulation */
 public abstract class SimulationState {
-	public void execute(ProgressManager pm) {
-	}
+	public abstract void execute(ProgressManager pm);
 }

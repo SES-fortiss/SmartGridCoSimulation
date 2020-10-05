@@ -15,6 +15,7 @@ import com.jgoodies.forms.layout.RowSpec;
 import fortiss.gui.commands.ConfigureParameters;
 import fortiss.gui.commands.LoadCommand;
 import fortiss.gui.commands.ResetCommand;
+import fortiss.gui.commands.SaveAsCommand;
 import fortiss.gui.commands.SaveCommand;
 import fortiss.gui.listeners.action.ButtonListener;
 import fortiss.gui.listeners.action.DarkModeListener;
@@ -42,12 +43,12 @@ public class ActionPanel extends JPanel {
 		StyleGenerator.setupStyle();
 		initialize();
 	}
-	
+
 	/**
 	 * Initializes the contents of the panel.
 	 */
 	private void initialize() {
-		setPreferredSize(new Dimension(PlanningToolWindow.WIDTH, 60));
+		setPreferredSize(new Dimension(623, 60));
 
 		// Add load button
 		JLabel lblLoad = new JLabel("");
@@ -57,22 +58,13 @@ public class ActionPanel extends JPanel {
 		lblLoad.addMouseListener(new ButtonListener(new LoadCommand()));
 		lblLoad.addMouseListener(new HoverMouseListener());
 
-		setLayout(new FormLayout(new ColumnSpec[] {
-				ColumnSpec.decode("350px:grow"),
-				FormSpecs.DEFAULT_COLSPEC,
-				ColumnSpec.decode("26px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("26px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("26px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("26px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("center:600px:grow"),
-				FormSpecs.DEFAULT_COLSPEC,},
-			new RowSpec[] {
-				FormSpecs.PARAGRAPH_GAP_ROWSPEC,
-				RowSpec.decode("26px"),}));
+		setLayout(new FormLayout(
+				new ColumnSpec[] { ColumnSpec.decode("350px:grow"), FormSpecs.DEFAULT_COLSPEC,
+						ColumnSpec.decode("26px"), ColumnSpec.decode("20px"), ColumnSpec.decode("26px"),
+						ColumnSpec.decode("20px"), ColumnSpec.decode("26px"), ColumnSpec.decode("20px"),
+						ColumnSpec.decode("26px"), ColumnSpec.decode("20px"), ColumnSpec.decode("center:600px:grow"),
+						FormSpecs.DEFAULT_COLSPEC, },
+				new RowSpec[] { FormSpecs.PARAGRAPH_GAP_ROWSPEC, RowSpec.decode("26px"), }));
 		add(lblLoad, "3, 2, left, top");
 
 		// Add run button
@@ -88,10 +80,19 @@ public class ActionPanel extends JPanel {
 		JLabel lblSave = new JLabel("");
 		lblSave.setBorder(new EmptyBorder(3, 3, 3, 3));
 		lblSave.setIcon(IconStore.saveAs);
-		lblSave.setToolTipText("Save as");
+		lblSave.setToolTipText("Save");
 		lblSave.addMouseListener(new ButtonListener(new SaveCommand()));
 		lblSave.addMouseListener(new HoverMouseListener());
 		add(lblSave, "7, 2, left, top");
+
+		// Add save button
+		JLabel lblSaveAs = new JLabel("");
+		lblSaveAs.setBorder(new EmptyBorder(3, 3, 3, 3));
+		lblSaveAs.setIcon(IconStore.saveAs);
+		lblSaveAs.setToolTipText("Save as");
+		lblSaveAs.addMouseListener(new ButtonListener(new SaveAsCommand()));
+		lblSaveAs.addMouseListener(new HoverMouseListener());
+		add(lblSaveAs, "9, 2, left, top");
 
 		// Add reset button
 		JLabel lblReset = new JLabel("");
@@ -100,7 +101,7 @@ public class ActionPanel extends JPanel {
 		lblReset.setToolTipText("Reset");
 		lblReset.addMouseListener(new ButtonListener(new ResetCommand()));
 		lblReset.addMouseListener(new HoverMouseListener());
-		add(lblReset, "9, 2, left, top");
+		add(lblReset, "11, 2, left, top");
 
 		JLabel lblDarkmode = new JLabel("");
 		lblDarkmode.setToolTipText("Select to turn dark mode on/off");

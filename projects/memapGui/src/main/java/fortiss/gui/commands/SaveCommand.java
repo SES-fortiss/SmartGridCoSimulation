@@ -5,6 +5,7 @@ import java.io.File;
 import fortiss.gui.listeners.helper.FileManager;
 import fortiss.simulation.Parameters;
 import fortiss.simulation.PlanningTool;
+import fortiss.simulation.helper.Logger;
 
 /**
  * Save a topology to an EXISTENT file. If the file does not exist, the a dialog
@@ -22,7 +23,7 @@ public class SaveCommand implements Command {
 			File file = new File(activeFilePath);
 			fm.writeMemapModel(file);
 			fm.writeParameterConfigFile();
-			System.out.println(">> Save file: " + file.getAbsolutePath());
+			Logger.getInstance().writeInfo("File saved: " + file.getAbsolutePath());
 		} else {
 			Command saveAs = new SaveAsCommand();
 			saveAs.execute();

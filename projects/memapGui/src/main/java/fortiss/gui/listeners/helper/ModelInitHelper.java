@@ -26,9 +26,9 @@ import fortiss.gui.DesignerPanel;
 import fortiss.gui.commands.ResetCommand;
 import fortiss.serialization.BuildingTypeAdapter;
 import fortiss.serialization.Point2DTypeAdapter;
-import fortiss.simulation.Parameters;
 import fortiss.simulation.PlanningTool;
 import fortiss.simulation.helper.ConnectionManager;
+import fortiss.simulation.helper.Logger;
 
 public class ModelInitHelper {
 
@@ -77,13 +77,18 @@ public class ModelInitHelper {
 						DesignerPanel.buildings.put(building.getName(), building);
 					}
 				} catch (JsonIOException | JsonSyntaxException e) {
+					Logger.getInstance().writeWarning("Json Exception: Couldn't load the topology");
 					e.printStackTrace();
 				}
 
 				DesignerPanel.buildingCount = DesignerPanel.buildings.size();
-				DesignerPanel.selectedBuilding = DesignerPanel.buildings.get(DesignerPanel.buildings.firstKey());
-				DesignerPanel.showInformationPanel("building");
-
+				
+				// Json File might be empty
+				if (DesignerPanel.buildingCount > 0) {
+					DesignerPanel.selectedBuilding = DesignerPanel.buildings.get(DesignerPanel.buildings.firstKey());
+					DesignerPanel.showInformationPanel("building");
+				}
+				
 				// Import Connections
 				JsonElement connections = p.next();
 				ArrayList<Connection> connectionList = gson.fromJson(connections,
@@ -96,20 +101,12 @@ public class ModelInitHelper {
 				PlanningTool planningTool = PlanningTool.getInstance();
 				planningTool.getPlanningToolWindow().setTitle("MEMAP - " + configurationFile + " - DesignerPanel");
 				planningTool.getParameters().setLastSavedFile(configurationFile);
-				System.out.println(">> Loaded file: " + configurationFile);
+				Logger.getInstance().writeInfo("File loaded: " + configurationFile);
 
 			} catch (FileNotFoundException e1) {
+				Logger.getInstance().writeWarning("File not found: " + configurationFile);
 				e1.printStackTrace();
 			}
 		}
-
 	}
-
-	/** Load the parameters */
-	public static void initParameters(Parameters par) {
-		PlanningTool planningTool = PlanningTool.getInstance();
-		planningTool.setParameters(par);
-		DesignerPanel.parameterPanel.update();
-	}
-
 }

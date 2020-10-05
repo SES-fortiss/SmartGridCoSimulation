@@ -24,6 +24,7 @@ import fortiss.serialization.Point2DTypeAdapter;
 import fortiss.simulation.Parameters;
 import fortiss.simulation.PlanningTool;
 import fortiss.simulation.helper.ConnectionManager;
+import fortiss.simulation.helper.Logger;
 import fortiss.simulation.helper.PositionManager;
 import memap.helper.DirectoryConfiguration;
 import simulation.SimulationStarter;
@@ -52,7 +53,7 @@ public class FileManager {
 			InputStream is = this.getClass().getResourceAsStream(source);
 			br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 		} catch (IOException e1) {
-			System.err.println("Error reading " + filename + " from resources");
+			Logger.getInstance().writeError("Error reading " + filename + " from resources");
 			e1.printStackTrace();
 			SimulationStarter.stopSimulation();
 		}
@@ -89,7 +90,7 @@ public class FileManager {
 			br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 
 		} catch (FileNotFoundException e) {
-			System.out.println("<INFO> - FileManager file not found: " + source);
+			Logger.getInstance().writeError(getClass().getName() + " - File not found: " + source);
 			return null;
 		}
 		return br;
@@ -131,7 +132,7 @@ public class FileManager {
 		Parameters pars = PlanningTool.getInstance().getParameters();
 		String location = System.getProperty("user.dir") + File.separator + mainDir + File.separator + configDir
 				+ File.separator + "parameterConfig.json";
-		System.out.println(">> Writing parameter configuration file in " + location);
+		Logger.getInstance().writeInfo("Writing parameter configuration file in: " + location);
 
 		File file = new File(location);
 
@@ -172,7 +173,7 @@ public class FileManager {
 
 		writeFile(str, file);
 
-		System.out.println(">> Writing memap model file in " + file);
+		Logger.getInstance().writeInfo("Writing MEMAP model in: " + file);
 	}
 
 	/** Writes one descriptor file per building with its configuration. */
@@ -191,7 +192,7 @@ public class FileManager {
 		
 		for (Entry<String, Building> entry : DesignerPanel.buildings.entrySet()) {
 			Building building = entry.getValue();
-			System.out.println(">> Writing descriptor " + building.getName() + " in " + location);
+			Logger.getInstance().writeInfo("Writing descriptor " + building.getName() + " in: " + location);
 
 			String filename = location + building.getName() + ".json";
 			File file = new File(filename);

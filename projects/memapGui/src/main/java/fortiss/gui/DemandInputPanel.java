@@ -30,6 +30,7 @@ import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.IconStore;
+import fortiss.simulation.helper.Logger;
 import memap.examples.ExampleFiles;
 import memap.helper.profilehandler.TimedConsumerData;
 
@@ -198,7 +199,7 @@ public class DemandInputPanel extends InformationPanel {
 				
 			} catch (IOException | ParseException e) {													
 				try {
-					System.out.println("DataReader first version format style error, trying the new version of the CSVReader instead.");
+					Logger.getInstance().writeWarning("DataReader first version format style error, trying the new version of the CSVReader instead.");
 					FileManager fm = new FileManager();			
 					TimedConsumerData timedData = new TimedConsumerData(fm.readFromSource(location));
 					this.data = new Data(timedData);
@@ -207,7 +208,7 @@ public class DemandInputPanel extends InformationPanel {
 					str_heat = "Heat";					
 					
 				} catch (IOException | ParseException e1) {
-					System.out.println("<INFO> Data for demand at " + location + " could not be read. Using zeros only.");
+					Logger.getInstance().writeWarning("Data for demand at " + location + " could not be read. Using zeros only.");
 					e.printStackTrace();
 					e1.printStackTrace();
 					loadEmptyData();
@@ -232,7 +233,7 @@ public class DemandInputPanel extends InformationPanel {
 			this.data = new Data(fm.readFromResources(ef.getFile("EXAMPLE0")), false, Data.BYCOLUMN);
 		} catch (IOException | ParseException e1) {
 			data = null;
-			System.err.println("Resources error. Default consumption file not found.");
+			Logger.getInstance().writeError("Default consumption file not found in resources.");
 			e1.printStackTrace();
 		}
 		txtDConsumption.setText("");

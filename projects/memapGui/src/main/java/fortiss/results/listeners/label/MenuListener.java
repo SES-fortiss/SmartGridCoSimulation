@@ -10,6 +10,7 @@ import fortiss.results.Reporter;
 import fortiss.results.ReporterDetailedResultPanel;
 import fortiss.results.ResultsLibrary;
 import fortiss.simulation.PlanningTool;
+import fortiss.simulation.helper.Logger;
 
 public class MenuListener implements TreeSelectionListener {
 
@@ -81,7 +82,7 @@ public class MenuListener implements TreeSelectionListener {
 		try {
 			parent = ((DefaultMutableTreeNode) child.getParentPath().getLastPathComponent()).toString();
 		} catch (Exception e1) {
-			System.out.println(">> There are no results to show.");
+			Logger.getInstance().writeInfo("There are no results to show.");
 		}
 		return parent;
 	}

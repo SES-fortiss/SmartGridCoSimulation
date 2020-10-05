@@ -28,6 +28,7 @@ public class MenuBar extends JMenuBar implements ActionListener {
 	private static final String DESIGNER_PANEL = "Design tool";
 	private static final String OVERVIEW_RESULT_PANEL = "Results overview";
 	private static final String DETAILED_RESULT_PANEL = "Detailed results";
+	private static final String LOG_PANEL = "Log panel";
 
 	private static final String SIMULATION = "Simulation";
 	private static final String START_SIMULATION = "Start simulation";
@@ -37,7 +38,7 @@ public class MenuBar extends JMenuBar implements ActionListener {
 
 	public MenuBar() {
 		add(createMenu(FILE, new String[] { LOAD, SAVE, SAVE_AS, CLOSE_WINDOW }));
-		add(createMenu(VIEW, new String[] { DESIGNER_PANEL, OVERVIEW_RESULT_PANEL, DETAILED_RESULT_PANEL }));
+		add(createMenu(VIEW, new String[] { DESIGNER_PANEL, OVERVIEW_RESULT_PANEL, DETAILED_RESULT_PANEL, LOG_PANEL }));
 		add(createMenu(SIMULATION, new String[] { START_SIMULATION, RESET }));
 	}
 
@@ -80,6 +81,10 @@ public class MenuBar extends JMenuBar implements ActionListener {
 		case DETAILED_RESULT_PANEL:
 			planningTool.addDetailedResultsAsTab();
 			planningTool.getPlanningToolWindow().showTab(planningTool.getReporterPanel());
+			break;
+		case LOG_PANEL:
+			planningTool.addLogAsATab();
+			planningTool.getPlanningToolWindow().showTab(planningTool.getLogPanel());
 			break;
 		case START_SIMULATION:
 			new RunCommand().execute();

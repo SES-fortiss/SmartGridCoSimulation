@@ -11,6 +11,7 @@ import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FileManager;
 import fortiss.simulation.Parameters;
 import fortiss.simulation.PlanningTool;
+import fortiss.simulation.helper.Logger;
 import memap.helper.DirectoryConfiguration;
 import memap.media.Strings;
 
@@ -44,7 +45,7 @@ public class OverviewResults extends ResultsLibrary {
 			resultsLibrary.put(Strings.memapOnModeName,
 					new Data(fm.readFromSource(filename), true, Data.BYROW));
 
-			System.out.println("File name for reading overview results: " + filename);
+			Logger.getInstance().writeInfo("File name for reading overview results: " + filename);
 
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();

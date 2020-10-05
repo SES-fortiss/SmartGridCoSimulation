@@ -12,6 +12,8 @@ import memap.helper.HelperConcat;
 import memap.helper.MetricsHandler;
 import memap.helper.SolutionHandler;
 import memap.helper.configurationOptions.Optimizer;
+import memap.main.SimulationProgress;
+import memap.main.Status;
 import memap.main.TopologyConfig;
 import memap.media.Strings;
 import memap.messages.BuildingMessage;
@@ -74,8 +76,11 @@ public class LPSolver {
 			}
 
 			LPOptimizationStarter os = new LPOptimizationStarter(topologyController);
-			double[] optSolution = os.runLinProg(problem);
-
+			
+			double[] optSolution = null;
+			
+			optSolution = os.runLinProg(problem);
+			
 			// Determination of costs
 			double buildingCostPerTimestep = 0;
 			double buildingCO2PerTimestep = 0;
@@ -160,7 +165,9 @@ public class LPSolver {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println(actorName + " cannot solve the optimization");
+			String error = getClass().getName() + ": " + actorName + " cannot solve the optimization";
+			SimulationProgress.getInstance().setStatus(Status.ERROR, error);
+			System.err.println(error);
 			System.out.println("names: " + Arrays.toString(problem.namesUB));
 			System.out.println("b: " + Arrays.toString(problem.b_eq));
 			System.out.println("ub: " + Arrays.toString(problem.x_ub));

@@ -5,8 +5,10 @@ import java.awt.EventQueue;
 import java.io.BufferedReader;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import fortiss.gui.DesignerPanel;
+import fortiss.gui.LogPanel;
 import fortiss.gui.PlanningToolWindow;
 import fortiss.gui.TrackerPanel;
 import fortiss.gui.listeners.helper.FileManager;
@@ -15,6 +17,7 @@ import fortiss.media.IconStore;
 import fortiss.results.Reporter;
 import fortiss.results.ReporterDetailedResultPanel;
 import fortiss.results.ReporterOverviewPanel;
+import fortiss.simulation.helper.Logger;
 import fortiss.simulation.helper.ProgressManager;
 import memap.controller.GuiController;
 
@@ -25,6 +28,7 @@ public class PlanningTool {
 	private static final String TRACKER_PANEL = "Simulation progress";
 	private static final String OVERVIEW_RESULT_PANEL = "Results overview";
 	private static final String DETAILED_RESULT_PANEL = "Detailed results";
+	private static final String LOG_PANEL = "Log Panel";
 
 	private static PlanningTool planningTool = new PlanningTool();
 
@@ -43,6 +47,8 @@ public class PlanningTool {
 	private ReporterDetailedResultPanel reporterDetailedResultPanel;
 	/** Reporter overview panel */
 	private ReporterOverviewPanel overviewPanel;
+	/** Log panel */
+	private LogPanel logPanel;
 	/** GUI controller */
 	private GuiController guiController;
 
@@ -65,11 +71,13 @@ public class PlanningTool {
 	 */
 	public void init() {
 		setPlanningToolWindow(new PlanningToolWindow());
-		setParameters(new Parameters());
 
+		setParameters(new Parameters());
+		
 		setDesignerPanel(new DesignerPanel());
 		setTrackerPanel(new TrackerPanel());
-
+		setLogPanel(new LogPanel());
+		
 		initLastSession();
 
 		setReporter(new Reporter());
@@ -78,7 +86,7 @@ public class PlanningTool {
 	}
 
 	public void initLastSession() {
-		Gson gson = new Gson();
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		FileManager fm = new FileManager();
 		BufferedReader br = fm.readParameterConfigFile();
 
@@ -91,14 +99,16 @@ public class PlanningTool {
 			par.clearDescriptorFiles();
 			workingFile = par.getLastSavedFile();
 
-			System.out.println("<INFO> - Parameters: " + gson.toJson(par));
+			Logger.getInstance().writeInfo("Parameters: " + gson.toJson(par));
 		}
 
 		if (!workingFile.isEmpty()) {
 			ModelInitHelper.loadFromFile(workingFile);
-			ModelInitHelper.initParameters(par);
+			setParameters(par);
+			DesignerPanel.parameterPanel.update();
+			
 		} else {
-			System.out.println("lastWorkingFile: " + workingFile);
+			Logger.getInstance().writeWarning("No working file found!");
 		}
 	}
 
@@ -121,6 +131,10 @@ public class PlanningTool {
 	public void addTrackerAsTab() {
 		getPlanningToolWindow().addPanelAsTab(TRACKER_PANEL, IconStore.exclamation, getTrackerPanel());
 	}
+	
+	public void addLogAsATab() {
+		getPlanningToolWindow().addPanelAsTab(LOG_PANEL, IconStore.open, getLogPanel());
+	}
 
 	/** Show the designer panel using the information from last session */
 	public void showDesigner() {
@@ -133,6 +147,12 @@ public class PlanningTool {
 		getPlanningToolWindow().showTab(getTrackerPanel());
 		repaintAll();
 	}
+	
+	/** Close the tracker panel */
+	public void closeTracker() {
+		getPlanningToolWindow().closeTab(getTrackerPanel());
+		repaintAll();
+	}
 
 	/** Loads the results and show the reporter panel */
 	public void showReporter() {
@@ -142,6 +162,19 @@ public class PlanningTool {
 		addOverviewResutlsAsTab();
 		addDetailedResultsAsTab();
 		getPlanningToolWindow().showTab(getReporterOverviewPanel());
+		repaintAll();
+	}
+	
+	/** Loads the results and show the reporter panel */
+	public void closeReporter() {
+		getPlanningToolWindow().closeTab(getReporterOverviewPanel());
+		getPlanningToolWindow().closeTab(getReporterPanel());
+		repaintAll();
+	}
+	
+	public void showLog() {
+		addLogAsATab();
+		getPlanningToolWindow().showTab(getLogPanel());
 		repaintAll();
 	}
 
@@ -177,6 +210,21 @@ public class PlanningTool {
 	 */
 	public void setTrackerPanel(TrackerPanel trackerPanel) {
 		this.trackerPanel = trackerPanel;
+	}
+	
+	/**
+	 * @return the logPanel
+	 */
+	public LogPanel getLogPanel() {
+		return logPanel;
+	}
+
+	/**
+	 * @param logPanel the logPanel to set
+	 */
+	public void setLogPanel(LogPanel logPanel) {
+		this.logPanel = logPanel;
+		Logger.getInstance().setLogPanel(logPanel);
 	}
 
 	/** @return reporterPanel */
@@ -265,4 +313,5 @@ public class PlanningTool {
 	public void setParameters(Parameters parameters) {
 		this.parameters = parameters;
 	}
+	
 }

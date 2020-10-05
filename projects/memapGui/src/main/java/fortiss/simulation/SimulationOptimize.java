@@ -3,9 +3,11 @@ package fortiss.simulation;
 import javax.swing.SwingUtilities;
 
 import fortiss.gui.TrackerPanel;
+import fortiss.simulation.helper.Logger;
 import fortiss.simulation.helper.ProgressManager;
 import memap.controller.GuiController;
 import memap.main.SimulationProgress;
+import memap.main.Status;
 
 public class SimulationOptimize extends SimulationState {
 
@@ -44,6 +46,9 @@ public class SimulationOptimize extends SimulationState {
 					Runnable pb = new Runnable() {
 						@Override
 						public void run() {
+							if (sp.getStatus().equals(Status.ERROR)) {
+								Logger.getInstance().writeError(sp.getError());
+							}
 							trackerPanel.setProgress((int) (sp.getProgress()));
 						}
 					};
@@ -70,10 +75,16 @@ public class SimulationOptimize extends SimulationState {
 				GuiController gc = planningTool.getGuiController();
 				gc.startSimulation();
 				pm.setState(new SimulationDone());
+
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
+				}
+
+				if (sp.getStatus().equals(Status.ERROR)) {
+					Logger.getInstance().writeError(sp.getError());
+					pm.setState(new SimulationReset());
 				}
 				pm.execute();
 			}

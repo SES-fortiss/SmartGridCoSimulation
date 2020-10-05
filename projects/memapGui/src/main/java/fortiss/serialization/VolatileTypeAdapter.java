@@ -15,6 +15,7 @@ import com.google.gson.JsonSerializer;
 import fortiss.components.Volatile;
 import fortiss.gui.icons.ComponentIcon;
 import fortiss.media.IconStore;
+import fortiss.simulation.helper.Logger;
 
 public class VolatileTypeAdapter implements JsonSerializer<Volatile>, JsonDeserializer<Volatile>{
 
@@ -32,7 +33,7 @@ public class VolatileTypeAdapter implements JsonSerializer<Volatile>, JsonDeseri
 		File forecastFile = new File(forecastFilePath);
 		if(!forecastFile.exists() && !forecastFilePath.isEmpty()) {
 			volatileProducer.setForecastFile("");
-			System.out.println("<WARN> - File " + forecastFilePath + " does not exist. Using zeros only.");
+			Logger.getInstance().writeWarning("File " + forecastFilePath + " does not exist. Using zeros only.");
 		}
 		
 		return volatileProducer;

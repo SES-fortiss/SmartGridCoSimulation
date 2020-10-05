@@ -7,6 +7,7 @@ import fortiss.gui.listeners.helper.FileManager;
 import fortiss.gui.listeners.helper.FileType;
 import fortiss.simulation.Parameters;
 import fortiss.simulation.PlanningTool;
+import fortiss.simulation.helper.Logger;
 
 /**
  * Open dialog in current directory, so that the user can choose a location.
@@ -26,7 +27,7 @@ public class SaveAsCommand implements Command {
 
 			FileManager fm = new FileManager();
 			fm.writeMemapModel(file);
-			System.out.println(">> Save file: " + file.getAbsolutePath());
+			Logger.getInstance().writeInfo("File saved: " + file.getAbsolutePath());
 
 			planningTool.getPlanningToolWindow().setTitle("MEMAP - " + file.getAbsolutePath() + " - PlanningTool");
 		}

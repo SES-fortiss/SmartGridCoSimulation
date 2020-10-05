@@ -13,6 +13,8 @@ import memap.helper.EnergyPrices;
 import memap.helper.HelperConcat;
 import memap.helper.MEMAPLogging;
 import memap.helper.SolutionHandler;
+import memap.main.SimulationProgress;
+import memap.main.Status;
 import memap.main.TopologyConfig;
 import memap.media.Strings;
 import memap.messages.BuildingMessage;
@@ -96,8 +98,9 @@ public class MILPSolver {
 			}
 		} else {
 			result = 5;
-			System.err.println("No solution found. Resuming execution, but without a solution");
-			System.exit(1);
+			String error = getClass().getName() + ": No solution found. Resuming execution without a solution";
+			SimulationProgress.getInstance().setStatus(Status.ERROR, error);
+			//System.exit(1); removed so that the GUI continues open when the optimization fails.
 			// TODO Add code to account for the other 14 solver status values. maybe switch
 			// to linear solver instead?
 			// TODO Add some UI warning. When this error takes place the results window does

@@ -18,6 +18,7 @@ public class SimulationSetup extends SimulationState {
 	@Override
 	public void execute(ProgressManager pm) {
 		PlanningTool planningTool = PlanningTool.getInstance();
+		planningTool.closeReporter();
 		planningTool.showTracker();
 
 		TrackerPanel loadingScreen = planningTool.getTrackerPanel();
