@@ -3,6 +3,8 @@ package memap.helper.milp;
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
 import memap.controller.TopologyController;
+import memap.helper.CO2profiles;
+import memap.helper.configurationOptions.OptimizationCriteria;
 import memap.messages.BuildingMessage;
 import memap.messages.extension.NetworkType;
 import memap.messages.planning.CouplerMessage;
@@ -332,7 +334,15 @@ public class MILPProblemNoConnections extends MILPProblem {
 				int index = i + 1 + nStepsMPC
 						* ((controllableHandled * 2) + volatileHandled + (couplerHandled * 2) + (storageHandled * 2));
 				colno[counter] = index;
-				row[counter++] = pm.operationalCostEUR;
+				
+				if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
+            		row[counter++] = pm.operationalCostEUR;
+				}
+            	
+            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
+            		row[counter++] = pm.operationalCostCO2;
+            	}
+            	
 				controllableHandled++;
 			}
 
@@ -340,7 +350,15 @@ public class MILPProblemNoConnections extends MILPProblem {
 				int index = i + 1 + nStepsMPC
 						* ((controllableHandled * 2) + volatileHandled + (couplerHandled * 2) + (storageHandled * 2));
 				colno[counter] = index;
-				row[counter++] = pm.operationalCostEUR;
+				
+				if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
+            		row[counter++] = pm.operationalCostEUR;
+				}
+            	
+            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
+            		row[counter++] = pm.operationalCostCO2;
+            	}
+            	
 				volatileHandled++;
 			}
 
@@ -348,13 +366,29 @@ public class MILPProblemNoConnections extends MILPProblem {
 				int index = i + 1 + nStepsMPC
 						* ((controllableHandled * 2) + volatileHandled + (couplerHandled * 2) + (storageHandled * 2));
 				colno[counter] = index;
-				row[counter++] = cm.operationalCostEUR;
+				
+				if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
+            		row[counter++] = cm.operationalCostEUR;
+				}
+            	
+            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
+            		row[counter++] = cm.operationalCostCO2;
+            	}
+            	
 				couplerHandled++;
 			}
 
 			for (StorageMessage sm : buildingMessage.storageList) {
-
-				double price = sm.operationalCostEUR;// + 0.0001 * i; // damit es sp�ter etwas teuerer wird.
+				
+				double price = 0;
+				
+				if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
+            		price = sm.operationalCostEUR + 0.0001 * i; // damit es spaeter etwas teuerer wird (besseres Ergebnis)
+				}
+            	
+            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
+            		price = sm.operationalCostCO2 + 0.0001 * i;
+            	}
 
 				int index = i + 1 + nStepsMPC
 						* ((controllableHandled * 2) + volatileHandled + (couplerHandled * 2) + (storageHandled * 2));
@@ -368,11 +402,24 @@ public class MILPProblemNoConnections extends MILPProblem {
 			// buy
 			int index = i + 1 + nStepsMPC
 					* ((controllableHandled * 2) + volatileHandled + (couplerHandled * 2) + (storageHandled * 2));
-			colno[counter] = index;
-			row[counter++] = energyPrices.getElectricityPriceInEuro(cts + i);
-			// sell
-			colno[counter] = index + nStepsMPC;
-			row[counter++] = -energyPrices.getElectricityPriceInEuro(cts + i) * 0.5;
+			
+			if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
+        		// buy
+            	colno[counter] = index;
+            	row[counter++] = energyPrices.getElectricityPriceInEuro(cts+i);
+            	// sell
+            	colno[counter] = index+nStepsMPC;
+            	row[counter++] = -energyPrices.getElectricityPriceInEuro(cts+i)*0.5;
+			}
+        	
+        	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
+        		// buy
+            	colno[counter] = index;
+            	row[counter++] = CO2profiles.getCO2emissions(cts+i);
+            	// sell, no compensation for selling
+            	colno[counter] = index+nStepsMPC;
+            	row[counter++] = 0;
+        	}
 		}
 
 		/* set the objective in lpsolve */

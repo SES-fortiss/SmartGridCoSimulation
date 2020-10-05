@@ -202,6 +202,15 @@ public class FileManager {
 			pars.addDescriptorFile(file);
 			writeFile(str, file);
 		}
+		
+		String connectionsFilePath = System.getProperty("user.dir") + File.separator + mainDir
+				+ File.separator + configDir + File.separator + "connections.json";
+		// Export connections
+		ConnectionManager cm = ConnectionManager.getInstance();
+		String str2 = gson.toJson(cm.getConnectionList());
+
+		Logger.getInstance().writeInfo("Writing descriptor file for connections in: " + connectionsFilePath);
+		writeFile(str2, new File(connectionsFilePath));
 	}
 
 	public void writeMemapModel() {
