@@ -18,6 +18,7 @@ abstract public class IconStore {
 	private static String loadingPath = "/resources/loading.gif";
 	private static String openPath = "/resources/open.png";
 	private static String resetPath = "/resources/reset.png";
+	private static String savePath = "/resources/save.png";
 	private static String saveAsPath = "/resources/saveAs.png";
 	private static String runPath = "/resources/run.png";
 	private static String onDarkModePath = "/resources/onDarkMode.png";
@@ -73,13 +74,15 @@ abstract public class IconStore {
 			new ImageIcon(IconStore.class.getResource(loadingPath)).getImage().getScaledInstance(1150, 450, Image.SCALE_DEFAULT));
 	
 	public static ImageIcon open = new ImageIcon(
-			new ImageIcon(IconStore.class.getResource(openPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+			new ImageIcon(IconStore.class.getResource(openPath)).getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
 	public static ImageIcon reset = new ImageIcon(
-			new ImageIcon(IconStore.class.getResource(resetPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+			new ImageIcon(IconStore.class.getResource(resetPath)).getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+	public static ImageIcon save = new ImageIcon(
+			new ImageIcon(IconStore.class.getResource(savePath)).getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
 	public static ImageIcon saveAs = new ImageIcon(
-			new ImageIcon(IconStore.class.getResource(saveAsPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+			new ImageIcon(IconStore.class.getResource(saveAsPath)).getImage().getScaledInstance(28, 28, Image.SCALE_SMOOTH));
 	public static ImageIcon run = new ImageIcon(
-			new ImageIcon(IconStore.class.getResource(runPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+			new ImageIcon(IconStore.class.getResource(runPath)).getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
 	public static ImageIcon onDarkMode = new ImageIcon(new ImageIcon(IconStore.class.getResource(onDarkModePath)).getImage()
 			.getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 	public static ImageIcon offDarkMode = new ImageIcon(new ImageIcon(IconStore.class.getResource(offDarkModePath))

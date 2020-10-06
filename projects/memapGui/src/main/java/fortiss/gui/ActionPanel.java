@@ -48,7 +48,7 @@ public class ActionPanel extends JPanel {
 	 * Initializes the contents of the panel.
 	 */
 	private void initialize() {
-		setPreferredSize(new Dimension(623, 60));
+		setPreferredSize(new Dimension(1047, 60));
 
 		// Add load button
 		JLabel lblLoad = new JLabel("");
@@ -58,13 +58,24 @@ public class ActionPanel extends JPanel {
 		lblLoad.addMouseListener(new ButtonListener(new LoadCommand()));
 		lblLoad.addMouseListener(new HoverMouseListener());
 
-		setLayout(new FormLayout(
-				new ColumnSpec[] { ColumnSpec.decode("350px:grow"), FormSpecs.DEFAULT_COLSPEC,
-						ColumnSpec.decode("26px"), ColumnSpec.decode("20px"), ColumnSpec.decode("26px"),
-						ColumnSpec.decode("20px"), ColumnSpec.decode("26px"), ColumnSpec.decode("20px"),
-						ColumnSpec.decode("26px"), ColumnSpec.decode("20px"), ColumnSpec.decode("center:600px:grow"),
-						FormSpecs.DEFAULT_COLSPEC, },
-				new RowSpec[] { FormSpecs.PARAGRAPH_GAP_ROWSPEC, RowSpec.decode("26px"), }));
+		setLayout(new FormLayout(new ColumnSpec[] {
+				ColumnSpec.decode("250px:grow"),
+				FormSpecs.DEFAULT_COLSPEC,
+				ColumnSpec.decode("30px"),
+				ColumnSpec.decode("30px"),
+				ColumnSpec.decode("30px"),
+				ColumnSpec.decode("30px"),
+				ColumnSpec.decode("30px"),
+				ColumnSpec.decode("30px"),
+				ColumnSpec.decode("30px"),
+				ColumnSpec.decode("30px"),
+				ColumnSpec.decode("center:550px:grow"),
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,},
+			new RowSpec[] {
+				FormSpecs.PARAGRAPH_GAP_ROWSPEC,
+				RowSpec.decode("30px"),}));
 		add(lblLoad, "3, 2, left, top");
 
 		// Add run button
@@ -79,7 +90,7 @@ public class ActionPanel extends JPanel {
 		// Add save button
 		JLabel lblSave = new JLabel("");
 		lblSave.setBorder(new EmptyBorder(3, 3, 3, 3));
-		lblSave.setIcon(IconStore.saveAs);
+		lblSave.setIcon(IconStore.save);
 		lblSave.setToolTipText("Save");
 		lblSave.addMouseListener(new ButtonListener(new SaveCommand()));
 		lblSave.addMouseListener(new HoverMouseListener());
@@ -103,12 +114,14 @@ public class ActionPanel extends JPanel {
 		lblReset.addMouseListener(new HoverMouseListener());
 		add(lblReset, "11, 2, left, top");
 
+		// TODO: Fix or remove dark mode
 		JLabel lblDarkmode = new JLabel("");
 		lblDarkmode.setToolTipText("Select to turn dark mode on/off");
 		lblDarkmode.setIcon(IconStore.offDarkMode);
 		lblDarkmode.addMouseListener(new DarkModeListener());
 		lblDarkmode.addMouseListener(new HoverMouseListener());
-		add(lblDarkmode, "11, 2, right, center");
+		add(lblDarkmode, "12, 2, right, center");
+		lblDarkmode.setVisible(false);
 	}
 
 }
