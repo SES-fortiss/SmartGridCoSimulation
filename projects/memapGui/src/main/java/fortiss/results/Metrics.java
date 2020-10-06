@@ -701,10 +701,5 @@ public abstract class Metrics {
 			value = value * 24 / pars.getStepsPerDay();
 		}
 		return powerSeries;
-		
-	//protected double convertPowerIntoEnergy(double averagePower) {
-		//Parameters pars = PlanningTool.getInstance().getParameters();
-		//int days = pars.getDays();
-		//return averagePower * days * 24.0;
 	}
 }
