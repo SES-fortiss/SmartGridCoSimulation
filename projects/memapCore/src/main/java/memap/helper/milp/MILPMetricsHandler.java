@@ -61,7 +61,7 @@ public class MILPMetricsHandler implements MetricsHandler {
 		 */
 		int nrContributors = (buildingMessage.getNrOfControllableProducers() * 2)
 				+ (buildingMessage.getNrOfVolatileProducers()) + (buildingMessage.getNrOfCouplers() * 2)
-				+ (buildingMessage.getNrOfStorages() * 2) + (2);
+				+ (buildingMessage.getNrOfStorages() * 2);
 
 		// initialize metrics
 		if (currentTimeStep == 0) {
