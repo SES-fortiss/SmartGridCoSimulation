@@ -42,7 +42,7 @@ public class CategoryPlotWidget extends XChartPanel<CategoryChart> {
 		getChart().getStyler().setChartTitleFont(Fonts.getOswald(18));
 		getChart().getStyler().setChartTitlePadding(15);
 		getChart().getStyler().setLegendFont(Fonts.getOpenSans(12));
-		getChart().getStyler().setLegendPosition(LegendPosition.InsideNE);
+		getChart().getStyler().setLegendPosition(LegendPosition.OutsideS);
 		getChart().getStyler().setLegendSeriesLineLength(20);
 		getChart().getStyler().setAxisTitleFont(Fonts.getOpenSans(12));
 		getChart().getStyler().setAxisTickLabelsFont(Fonts.getOpenSans(12));
