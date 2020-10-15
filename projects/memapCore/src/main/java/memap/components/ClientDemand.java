@@ -85,6 +85,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 			if (var.getValue() instanceof Number[]) {
 				consumptionProfile = (Double[]) var.getValue();
 //				Arrays.fill(consumptionProfile, (Math.abs((double[]) value.getValue().getValue())));
+//				System.out.println("Consumption value " + value + " was read: " + consumptionProfile[0]);
 			} else {
 				System.out.println("Value " + value + " is not in Number[] format");
 			}
@@ -121,9 +122,9 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		List<Double>  currentConsumptionProfile = null;
 		// Getting the sector-dependent ConsumptionProfiles at the current time step with predictions
 		// TODO: change to single method getConsumptionProfiles in Consumer Super-Class
-		if (networkType == NetworkType.ELECTRICITY) {
+		if (networkType == NetworkType.HEAT) {
 			currentConsumptionProfile = getHeatProfile(cts, nStepsMPC);
-		} else if (networkType == NetworkType.HEAT) {
+		} else if (networkType == NetworkType.ELECTRICITY) {
 			currentConsumptionProfile = getElectricityProfile(cts, nStepsMPC);
 		}
 		

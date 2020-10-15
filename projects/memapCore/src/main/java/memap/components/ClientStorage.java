@@ -34,8 +34,10 @@ public class ClientStorage extends Storage {
 	double opCost;
 	double costCO2;
 	public BasicClient client;
-	public List<NodeId> inputSetpointIds = new ArrayList<NodeId>();
-	public List<NodeId> outputSetpointIds = new ArrayList<NodeId>();
+	
+	public NodeId calculatedSocId;
+	public NodeId inputSetpointsId;
+	public NodeId outputSetpointsId;
 
 	public List<UaMonitoredItem> itemsDemand;
 	
@@ -52,18 +54,19 @@ public class ClientStorage extends Storage {
 	 * @param costCO2Id        CO2 cost [kg CO2/kWh]
 	 * @param port
 	 */
-	public ClientStorage(BasicClient client, String name, NodeId capacityId, NodeId stateOfCharge, NodeId maxChargingId,
+	public ClientStorage(BasicClient client, String name, NodeId capacityId, NodeId stateOfCharge, NodeId calculatedSocId, NodeId maxChargingId,
 			NodeId maxDischargingId, NodeId effInId, NodeId effOutId, NodeId nodeIdSector, NodeId opCostId,
-			NodeId costCO2Id, List<NodeId> inputSetpointIds, List<NodeId> outputSetpointIds,int port) throws InterruptedException, ExecutionException {
+			NodeId costCO2Id, NodeId inputSetpointsId, NodeId outputSetpointsId, int port) throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(capacityId), client.readFinalDoubleValue(stateOfCharge),
 				client.readFinalDoubleValue(maxChargingId), client.readFinalDoubleValue(maxDischargingId),
 				client.readFinalDoubleValue(effInId), client.readFinalDoubleValue(effOutId), port);
 		this.client = client;
-		this.inputSetpointIds = inputSetpointIds;
-		this.outputSetpointIds = outputSetpointIds;
+		this.inputSetpointsId = inputSetpointsId;
+		this.outputSetpointsId = outputSetpointsId;
 		this.networkType = setNetworkType(client, nodeIdSector);
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
+		this.calculatedSocId = calculatedSocId;
 		
 		
 		
@@ -135,20 +138,40 @@ public class ClientStorage extends Storage {
 			for (String key : optResult.resultMap.keySet()) {
 				if (key.equals(actorName + "Charge")) {
 					optimizationAdviceInput = optResult.resultMap.get(key);
-					for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC(); i++) {
-						DataValue data = new DataValue(new Variant(optimizationAdviceInput[i]), null, null);					
-						client.writeValue(inputSetpointIds.get(i), data);						
+					try {
+						if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, inputSetpointsId).getValue().getValue().getClass().isArray()) {
+							DataValue data = new DataValue(new Variant(optimizationAdviceInput), null, null);
+							client.writeValue(inputSetpointsId, data);
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ExecutionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}			
 				}
 				if (key.equals(actorName + "Discharge")) {
 					optimizationAdviceOutput = optResult.resultMap.get(key);
-					for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC(); i++) {
-						DataValue data = new DataValue(new Variant(optimizationAdviceOutput[i]), null, null);					
-						client.writeValue(outputSetpointIds.get(i), data);						
+					try {
+						if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, outputSetpointsId).getValue().getValue().getClass().isArray()) {
+							DataValue data = new DataValue(new Variant(optimizationAdviceOutput), null, null);
+							client.writeValue(outputSetpointsId, data);
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ExecutionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}			
 				}
 				
 			}
+			// update theoretical SOC
+			double newSOC =  this.stateOfCharge + TopologyConfig.getInstance().getStepLengthInHours()*(optimizationAdviceOutput[0]+optimizationAdviceInput[0])/this.capacity ;
+			DataValue sum = new DataValue(new Variant(newSOC), null, null);
+			client.writeValue(calculatedSocId, sum);
 		}
 	}
 	

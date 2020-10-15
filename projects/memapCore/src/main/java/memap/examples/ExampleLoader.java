@@ -32,13 +32,15 @@ import memap.main.TopologyConfig;
 import memap.messages.extension.NetworkType;
 
 public abstract class ExampleLoader {
-	public static TopologyController OpcUaExample() {
+	public static TopologyController OpcUaExample(int mpc) {
 		
 //		EnergyPrices.getInstance().init("ELECTRICITYPRICEEXAMPLE");
 		TopologyController topologyController = new TopologyController("MemapExample", OptHierarchy.MEMAP,
 				Optimizer.MILP, OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.RESULTS_ONLY);
-		TopologyConfig.getInstance().init(5, 96, 7, 4880, 0);
+		TopologyConfig.getInstance().init(mpc, 96, 7, 4880, 0);
 		EnergyPrices.getInstance().init(0.285);
+		EnergyPrices.getInstance().initGas("GASPRICEEXAMPLE");
+//		EnergyPrices.getInstance().initGas("./Gaspreise_CoSES.csv");
 		try {
 			FileReader endpoint1 = new FileReader(("src/main/java/resources/examples/FortissBuilding1Endpoint.json"));
 			FileReader nodes1 = new FileReader(("src/main/java/resources/examples/FortissBuilding1Nodes_NewDatamodel.json"));

@@ -155,13 +155,13 @@ public class MILPSolver {
 		double[] currentStep = { currentTimeStep };
 //		double[] currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
 		double[] currentOptVector = milpSolHandler.getEffSolutionForThisTimeStep(localBuildingMessage, names, optSolution, nStepsMPC);
-		double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep) };
+		double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep), energyPrices.getGasPriceInEuro(currentTimeStep) };
 		double[] totalCostsEUR = { costTotal };
 		double[] totalCO2emissions = { CO2Total };
 
 		String[] timeStep = { "Time step" };
 		String[] currentOptVectorNames = milpSolHandler.getVectorNamesForThisTimeStep(names, nStepsMPC);
-		String[] energyPrice = { "Energy price [EUR]" };
+		String[] energyPrice = { "Electricity price [EUR]", "Gas price [EUR]" };
 		String[] totalCosts = { "Total costs [EUR]" };
 		String[] co2emissions = { "CO2 emissions [kg CO2/kWh]" };
 

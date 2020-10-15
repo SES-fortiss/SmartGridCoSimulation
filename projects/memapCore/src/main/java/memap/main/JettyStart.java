@@ -1,5 +1,7 @@
 package memap.main;
 
+import java.io.FileWriter;
+import java.io.Writer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -8,6 +10,7 @@ import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
+import com.google.gson.Gson;
 
 import memap.controller.BuildingController;
 import memap.controller.OpcUaBuildingController;
@@ -31,6 +34,8 @@ public class JettyStart {
 	public TopologyController topologyMemapOn;
 	//public TopologyController topologyMemapOff;
 	public JsonObject errorCode;
+	protected Gson gson = new Gson();
+	
 	public boolean simLoop = true;
 	public static int numofBuildings = 0;
 	ScheduledExecutorService memapOnOffRegulator = Executors.newScheduledThreadPool(2);
@@ -62,8 +67,11 @@ public class JettyStart {
 	public void run(JsonArray endpointValues) {
 		topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILP, OptimizationCriteria.EUR,
 				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
-		TopologyConfig.getInstance().init(5, 96, 30, 4880, 0);
+		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 4880, 0);
+		System.out.println("MPC set to " + Simulation.N_STEPS_MPC);
 		EnergyPrices.getInstance().init(0.285);
+		EnergyPrices.getInstance().initGas("C:/Git/SESSIM/projects/memapCore/src/main/java/resources/gasprice_hourly.csv");
+//		EnergyPrices.getInstance().initGas("./gasprice_hourly.csv");
 		//topologyMemapOff = new TopologyController("MemapOff", OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
 		//		ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
 		errorCode = new JsonObject();
@@ -72,11 +80,40 @@ public class JettyStart {
 		 * generates a building controller for every jsonEndpoint,jsonNodes tuple
 		 * Buildings get attached to the topology
 		 */
+	
 		int num = endpointValues.size();
+		
+		/*
+		 * In case the startMessage comes directly from an opcua endpoint aggregator 
+		 * (e.g Holsten Systems UI), this part will use directly the information from the datamodel
+		 */
+		JsonArray endpoints = endpointValues;
+//		try {
+//			JsonObject full = (JsonObject) endpointValues.get(0);
+//			JsonObject project = (JsonObject) full.get("project");
+//			endpoints = (JsonArray) project.get("endpoints");
+//			
+			try (Writer writer = new FileWriter("endpoints.json")) {
+			    writer.write(gson.toJson(endpoints));
+			} catch (Exception e) {
+				System.err.println("Speicher fail!");
+				e.printStackTrace();
+			}
+//			
+//			num =  endpoints.size();
+//			
+//			
+//		} catch (Exception e1) {
+//			System.err.println("houses.get(\"endpoints\") hat nicht geklappt");
+//			e1.printStackTrace();
+//		}
+		
+		
 		setNumofBuildings(num);
 		System.out.println("Number of buildings: " + num);
-		for (int i = 0; i < endpointValues.size(); i++) {
-			JsonObject jsonEndpoint = (JsonObject) endpointValues.get(i);
+		for (int i = 0; i < endpoints.size(); i++) {
+			JsonObject jsonEndpoint = (JsonObject) endpoints.get(i);
+			System.out.println("Number of buildings: " + i);
 			try {
 				String NodeConfig = (String) jsonEndpoint.get("config");
 				JsonObject jsonNodes = null;

@@ -32,12 +32,21 @@ import opcMEMAP.ConfigInterface;
 
 public class Simulation {
 
+	public static int N_STEPS_MPC = 5;
+	
 	public static void main(String[] args) throws SQLException {
 		// Show help screen by default
 		String arg = "help";
 
+
 		if (args.length != 0) {
 			arg = args[0];
+			if (args.length > 1 ) {
+				try {
+					N_STEPS_MPC = Integer.parseInt(args[1]);
+				} catch(NumberFormatException e) {
+				} 
+			}
 		}
 
 		argParser(arg);
@@ -49,6 +58,7 @@ public class Simulation {
 		topologyController.startSimulation();
 	}
 
+	
 	private static void argParser(String arg) throws SQLException {
 		switch (arg) {
 		case "help":
@@ -60,7 +70,7 @@ public class Simulation {
 		case "start":
 		case "s":
 			System.out.println("========= START OPCUA SIMULATION =========");
-			run(ExampleLoader.OpcUaExample());
+			run(ExampleLoader.OpcUaExample(N_STEPS_MPC));
 			break;
 
 		// run the simulation in a loop
@@ -68,7 +78,7 @@ public class Simulation {
 		case "l":
 			while (true) {
 				System.out.println("========= START OPCUA SIMULATION =========");
-				run(ExampleLoader.OpcUaExample());
+				run(ExampleLoader.OpcUaExample(N_STEPS_MPC));
 			}
 
 			// run csv example in a loop

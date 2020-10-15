@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
 import com.google.common.collect.ImmutableList;
 
@@ -22,10 +23,11 @@ public class ClientProducer extends Producer {
 	
 	public final NetworkType networkType;
 	public double opCost;
+
 	public double costCO2;
 	public BasicClient client;
-	public List<NodeId> setpointIds = new ArrayList<NodeId>();
-	
+//	public List<NodeId> setpointIds = new ArrayList<NodeId>();
+	public NodeId setpointsId;
 	
 	/**
 	 * @param client
@@ -36,19 +38,20 @@ public class ClientProducer extends Producer {
 	 * @param networkType
 	 * @param opCostId    optimization cost [EUR]
 	 * @param costCO2Id   CO2 cost [kg CO2/kWh]
-	 * @param setpointIds 
+	 * @param setpointsId 
 	 * @param port
 	 */
-	public ClientProducer(BasicClient client, String name, NodeId nodeIdSector, NodeId minPowerId, NodeId maxPowerId, NodeId effId, NodeId opCostId, NodeId costCO2Id, List<NodeId> setpointIds, int port)
+	public ClientProducer(BasicClient client, String name, NodeId nodeIdSector, NodeId minPowerId, NodeId maxPowerId, NodeId effId, NodeId opCostId, NodeId costCO2Id, NodeId setpointsId, int port)
 			throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(minPowerId), client.readFinalDoubleValue(maxPowerId),
 				client.readFinalDoubleValue(effId), port);
 
 		// TODO an in superclass device:
 		this.client = client;
-		this.setpointIds = setpointIds;
+		this.setpointsId = setpointsId;
 		this.networkType = this.setNetworkType(client, nodeIdSector);
 		this.opCost = client.readFinalDoubleValue(opCostId);
+//		this.opCost = opCostId;
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
 		
 	}
@@ -71,10 +74,23 @@ public class ClientProducer extends Producer {
 			for (String key : optResult.resultMap.keySet()) {
 				if (key.equals(actorName)) {
 					optimizationAdvice = optResult.resultMap.get(key);
-					for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC(); i++) {
-						DataValue data = new DataValue(new Variant(optimizationAdvice[i]), null, null);					
-						client.writeValue(setpointIds.get(i), data);						
-					}			
+					try {
+						if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, setpointsId).getValue().getValue().getClass().isArray()) {
+							DataValue data = new DataValue(new Variant(optimizationAdvice), null, null);
+							client.writeValue(setpointsId, data);
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ExecutionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+//					for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC(); i++) {
+//						DataValue data = new DataValue(new Variant(optimizationAdvice[i]), null, null);					
+//						client.writeValue(setpointIds.get(i), data);						
+//					}			
 				}
 				
 			}

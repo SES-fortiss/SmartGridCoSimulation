@@ -1,5 +1,7 @@
 package memap.controller;
 
+import java.io.FileWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.google.common.collect.ImmutableList;
+import com.google.gson.Gson;
 
 import memap.components.prototypes.Device;
 import memap.components.ClientDemand;
@@ -57,6 +60,7 @@ public class OpcUaBuildingController implements BuildingController {
 
 	public JsonObject endpointConfig;
 	public JsonObject nodesConfig;
+	protected Gson gson = new Gson();
 
 	public String name;
 	private String endpointURL;
@@ -204,8 +208,9 @@ public class OpcUaBuildingController implements BuildingController {
 		
 		@SuppressWarnings("null")
 		private void initDevices() {
+			
 			for (String key : nodesConfig.keySet()) {
-				
+				System.out.println("Key: " + key);
 				switch (key) {
 				case "INFO":
 					JsonArray infos = (JsonArray) nodesConfig.get("INFO");
@@ -288,13 +293,17 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId minPowerId = NodeId.parse((String) cprod.get("MinPower"));
 							NodeId maxPowerId = NodeId.parse((String) cprod.get("MaxPower"));
 							NodeId effId = NodeId.parse((String) cprod.get("EffPrim"));
-							NodeId opCostId = NodeId.parse((String) cprod.get("PrimEnCost"));
 							NodeId costCO2Id = NodeId.parse((String) cprod.get("CO2PerKWh"));
-							List<NodeId> setpointsId = new ArrayList<NodeId>();
-							for (int j = 0; j < TopologyConfig.getInstance().getNrStepsMPC(); j++) { 
-								String SPname = "SPdevPwr" + Integer.toString(j+1);
-								setpointsId.add(j, NodeId.parse((String) cprod.get(SPname)));
-							}
+							NodeId opCostId = NodeId.parse((String) cprod.get("PrimEnCost"));
+							
+//							List<NodeId> setpointsId = new ArrayList<NodeId>();
+//							for (int j = 0; j < TopologyConfig.getInstance().getNrStepsMPC(); j++) { 
+//								String SPname = "SPdevPwr" + Integer.toString(j+1);
+//								setpointsId.add(j, NodeId.parse((String) cprod.get(SPname)));
+//							}
+							
+							NodeId setpointsId = NodeId.parse((String) cprod.get("SPDevPwr"));
+							
 							ClientProducer cp = new ClientProducer(client, "CPROD" + String.format("%02d",  i), primarySectId, minPowerId, maxPowerId,
 									effId, opCostId, costCO2Id, setpointsId, 0);
 							attach(cp);
@@ -349,17 +358,19 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId maxDischargingId = NodeId.parse((String) strge.get("MaxPower"));
 							NodeId capacityId = NodeId.parse((String) strge.get("Capacity"));
 							NodeId stateOfChargeId = NodeId.parse((String) strge.get("curSOC"));
+							NodeId calculatedSocId = NodeId.parse((String) strge.get("calcSOC"));
 							NodeId opCostId = NodeId.parse((String) strge.get("PrimEnCost"));
 							NodeId costCO2Id = NodeId.parse((String) strge.get("CO2PerKWh"));
-							List<NodeId> inputSetpointsId = new ArrayList<NodeId>();
-							List<NodeId> outputSetpointsId = new ArrayList<NodeId>();
-							for (int j = 0; j < TopologyConfig.getInstance().getNrStepsMPC(); j++) { 
-								String SPnameC = "SPCharge" + Integer.toString(j+1);
-								inputSetpointsId.add(j, NodeId.parse((String) strge.get(SPnameC)));
-								String SPnameD = "SPDisChrg" + Integer.toString(j+1);
-								outputSetpointsId.add(j, NodeId.parse((String) strge.get(SPnameD)));
-							}
-							ClientStorage cs = new ClientStorage(client, "STRGE" + String.format("%02d",  i), capacityId, stateOfChargeId,
+							NodeId inputSetpointsId = NodeId.parse((String) strge.get("SPCharge"));
+							NodeId outputSetpointsId = NodeId.parse((String) strge.get("SPDisChrg"));
+
+//							for (int j = 0; j < TopologyConfig.getInstance().getNrStepsMPC(); j++) { 
+//								String SPnameC = "SPCharge" + Integer.toString(j+1);
+//								inputSetpointsId.add(j, NodeId.parse((String) strge.get(SPnameC)));
+//								String SPnameD = "SPDisChrg" + Integer.toString(j+1);
+//								outputSetpointsId.add(j, NodeId.parse((String) strge.get(SPnameD)));
+//							}
+							ClientStorage cs = new ClientStorage(client, "STRGE" + String.format("%02d",  i), capacityId, stateOfChargeId, calculatedSocId,
 									maxChargingId, maxDischargingId, effInId, effOutId, primarySectId,
 									opCostId, costCO2Id, inputSetpointsId, outputSetpointsId, 0);
 							attach(cs);
