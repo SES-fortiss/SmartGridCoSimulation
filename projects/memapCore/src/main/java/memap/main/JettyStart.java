@@ -87,42 +87,43 @@ public class JettyStart {
 		 * In case the startMessage comes directly from an opcua endpoint aggregator 
 		 * (e.g Holsten Systems UI), this part will use directly the information from the datamodel
 		 */
-		JsonArray endpoints = endpointValues;
-//		try {
-//			JsonObject full = (JsonObject) endpointValues.get(0);
-//			JsonObject project = (JsonObject) full.get("project");
-//			endpoints = (JsonArray) project.get("endpoints");
-//			
-			try (Writer writer = new FileWriter("endpoints.json")) {
-			    writer.write(gson.toJson(endpoints));
-			} catch (Exception e) {
-				System.err.println("Speicher fail!");
-				e.printStackTrace();
-			}
-//			
-//			num =  endpoints.size();
-//			
-//			
-//		} catch (Exception e1) {
-//			System.err.println("houses.get(\"endpoints\") hat nicht geklappt");
-//			e1.printStackTrace();
-//		}
-		
+		JsonArray endpoints = endpointValues;		
+		try {
+			JsonObject full = (JsonObject) endpointValues.get(0);
+			JsonObject project = (JsonObject) full.get("project");
+			endpoints = (JsonArray) project.get("endpoints");
+			num =  endpoints.size();	
+		} catch (Exception e1) {
+			System.err.println("houses.get(\"endpoints\") hat nicht geklappt");
+			e1.printStackTrace();
+		}
 		
 		setNumofBuildings(num);
 		System.out.println("Number of buildings: " + num);
-		for (int i = 0; i < endpoints.size(); i++) {
+		
+		for (int i = 8; i < endpoints.size(); i++) {
+			
 			JsonObject jsonEndpoint = (JsonObject) endpoints.get(i);
-			System.out.println("Number of buildings: " + i);
+
+			JsonObject jsonNodes = null;
 			try {
-				String NodeConfig = (String) jsonEndpoint.get("config");
-				JsonObject jsonNodes = null;
-				try {
-					jsonNodes = (JsonObject) Jsoner.deserialize(NodeConfig);
-				} catch (JsonException e) {
-					System.err.println("Topology could not be deserialized");
+				
+				jsonNodes = (JsonObject) jsonEndpoint.get("config");
+				
+				try (Writer writer = new FileWriter("jsonNodes.json")) {
+				    writer.write(gson.toJson(jsonNodes));
+				} catch (Exception e) {
+					System.err.println("NodeConfig save fail!");
 					e.printStackTrace();
 				}
+				
+				try (Writer writer = new FileWriter("jsonEndpoint.json")) {
+				    writer.write(gson.toJson(jsonEndpoint));
+				} catch (Exception e) {
+					System.err.println("NodeConfig save fail!");
+					e.printStackTrace();
+				}
+
 				System.out.println("Building " + i + " will be added...");
 				BuildingController sampleBuilding = new OpcUaBuildingController(topologyMemapOn, jsonEndpoint, jsonNodes);
 				//BuildingController sampleBuilding2 = new OpcUaBuildingController(topologyMemapOff, jsonEndpoint, jsonNodes);

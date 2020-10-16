@@ -37,7 +37,7 @@ public abstract class JettyWebsocket
         
         System.out.println(Thread.currentThread().getContextClassLoader().getResource("."));
         
-        URL urlStatics = Thread.currentThread().getContextClassLoader().getResource("resources/webpage/index.html");
+        URL urlStatics = Thread.currentThread().getContextClassLoader().getResource("resources/webpage/indexH.html");
         Objects.requireNonNull(urlStatics,"Unable to find index.html in classpath");
         String urlBase = urlStatics.toExternalForm().replaceFirst("/[^/]*$","/");
         ServletHolder defHolder = new ServletHolder("default",new DefaultServlet());
