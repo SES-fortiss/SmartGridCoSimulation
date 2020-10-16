@@ -16,6 +16,7 @@ import fortiss.components.Demand;
 import fortiss.gui.icons.ComponentIcon;
 import fortiss.media.IconStore;
 import fortiss.simulation.helper.Logger;
+import memap.examples.ExampleFiles;
 
 public class DemandTypeAdapter implements JsonSerializer<Demand>, JsonDeserializer<Demand>{
 
@@ -31,7 +32,8 @@ public class DemandTypeAdapter implements JsonSerializer<Demand>, JsonDeserializ
 		// Fix path
 		String consumptionFilePath = demand.getConsumptionProfile();
 		File consumptionFile = new File(consumptionFilePath);
-		if(!consumptionFile.exists() && !consumptionFilePath.isEmpty()) {
+		ExampleFiles ef = new ExampleFiles();
+		if(!consumptionFile.exists() && !consumptionFilePath.isEmpty() && !ef.isExample(consumptionFilePath)) {
 			demand.setConsumptionProfile("");
 			Logger.getInstance().writeWarning("File " + consumptionFilePath + " does not exist. Using zeros only.");
 		}

@@ -113,8 +113,10 @@ public class PlotPanel extends JPanel {
 	 */
 	public void clearPlot() {
 		Graphics2D gf = (Graphics2D) getGraphics();
-		gf.setColor(Colors.background);
-		gf.fillRect(0, 0, getWidth(), getHeight());
+		if (gf != null) {
+			gf.setColor(Colors.background);
+			gf.fillRect(0, 0, getWidth(), getHeight());
+		}
 	}
 
 	/**

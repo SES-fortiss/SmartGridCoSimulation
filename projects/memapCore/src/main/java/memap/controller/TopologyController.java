@@ -53,7 +53,7 @@ public class TopologyController implements Runnable {
 		memapConfig = new ConfigurationMEMAP(optimizer, optimizationCriteria, optHierarchy, toolUsage, memapLogging);
 		globalTime.subscribeToCurrentTimeStep(SimulationProgress.getInstance());
 	}
-
+	
 	/** Attach a building to the topology */
 	public void attach(String buildingName, BuildingController buildingController) {
 		managedBuildings.put(buildingName, buildingController);

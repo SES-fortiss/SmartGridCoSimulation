@@ -21,7 +21,7 @@ public class FileManager {
 	 */
 	public BufferedReader readFromResources(String filename) {
 		BufferedReader br = null;
-		String source = "/resources/" + filename;
+		String source = "/" + filename;
 		try {
 			InputStream is = this.getClass().getResourceAsStream(source);
 			br = new BufferedReader(new InputStreamReader(is, "UTF-8"));

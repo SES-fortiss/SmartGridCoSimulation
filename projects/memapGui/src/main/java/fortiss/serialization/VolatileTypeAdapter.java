@@ -16,6 +16,7 @@ import fortiss.components.Volatile;
 import fortiss.gui.icons.ComponentIcon;
 import fortiss.media.IconStore;
 import fortiss.simulation.helper.Logger;
+import memap.examples.ExampleFiles;
 
 public class VolatileTypeAdapter implements JsonSerializer<Volatile>, JsonDeserializer<Volatile>{
 
@@ -31,9 +32,10 @@ public class VolatileTypeAdapter implements JsonSerializer<Volatile>, JsonDeseri
 		// Fix path
 		String forecastFilePath = volatileProducer.getForecastFile();
 		File forecastFile = new File(forecastFilePath);
-		if(!forecastFile.exists() && !forecastFilePath.isEmpty()) {
+		ExampleFiles ef = new ExampleFiles();
+		if(!forecastFile.exists() && !forecastFilePath.isEmpty() && !ef.isExample(forecastFilePath)) {
 			volatileProducer.setForecastFile("");
-			Logger.getInstance().writeWarning("File " + forecastFilePath + " does not exist. Using zeros only.");
+			Logger.getInstance().writeWarning("File " + forecastFilePath + " does not exist. Using default file.");
 		}
 		
 		return volatileProducer;

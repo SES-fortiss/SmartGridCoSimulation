@@ -7,8 +7,8 @@ import java.io.InputStream;
  */
 public class Fonts {
 
-	private static String oswaldPath = "/resources/fonts/Oswald/Oswald-Light.ttf";
-	private static String openSansPath = "/resources/fonts/Open_Sans/OpenSans-Light.ttf";
+	private static String oswaldPath = "/fonts/Oswald/Oswald-Light.ttf";
+	private static String openSansPath = "/fonts/Open_Sans/OpenSans-Light.ttf";
 	
 	public static Font getOswald() {
 		Font font;

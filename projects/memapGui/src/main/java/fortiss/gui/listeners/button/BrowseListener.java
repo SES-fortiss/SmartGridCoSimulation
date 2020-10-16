@@ -2,6 +2,7 @@ package fortiss.gui.listeners.button;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.Chooser;
@@ -19,9 +20,10 @@ public class BrowseListener extends MouseAdapter {
 
 		// Update selection in text field
 		Chooser c = new Chooser(FileType.CSV);
-		String path = c.showOpenDialog().getPath();
+		File file = c.showOpenDialog();
 		
-		if (path != null) {
+		if (file != null) {
+			String path = file.getPath();
 			Parameters pars = PlanningTool.getInstance().getParameters();
 			DesignerPanel.parameterPanel.txtMarketPriceFile.setText(path);
 			pars.setMarketPriceFile(path);

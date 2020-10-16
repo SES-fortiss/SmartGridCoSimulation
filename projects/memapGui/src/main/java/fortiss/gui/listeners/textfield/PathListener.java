@@ -3,6 +3,7 @@ package fortiss.gui.listeners.textfield;
 import java.io.File;
 
 import fortiss.gui.listeners.helper.InsertionVerifier;
+import memap.examples.ExampleFiles;
 
 public abstract class PathListener extends TextFieldListener {
 	
@@ -12,8 +13,9 @@ public abstract class PathListener extends TextFieldListener {
 
 	@Override
 	boolean isValidField(String text) {
+		ExampleFiles ef = new ExampleFiles();
 		File f = new File(text);
-		return f.exists() || text.isEmpty();
+		return f.exists() || text.isEmpty() || ef.isExample(text);
 	}
 
 	@Override

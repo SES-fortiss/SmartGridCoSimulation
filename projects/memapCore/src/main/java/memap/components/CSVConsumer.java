@@ -87,7 +87,7 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 			FileManager fm = new FileManager();
 			if (csvFile.isEmpty()) {
 				
-				OriginalCSVHandler ocsv = new OriginalCSVHandler(fm.getBuffer("EXAMPLE0"), topologyConfig);
+				OriginalCSVHandler ocsv = new OriginalCSVHandler(fm.getBuffer("CONSUMPTIONEXAMPLE0"), topologyConfig);
 				electricityProfile = ocsv.getElectricityProfile();
 				heatProfile = ocsv.getHeatProfile();
 				

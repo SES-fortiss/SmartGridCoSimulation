@@ -27,7 +27,6 @@ import fortiss.gui.listeners.textfield.VNameListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
-import fortiss.media.DesignerMessages;
 import fortiss.media.IconStore;
 
 /**
@@ -113,7 +112,7 @@ public class VolatileInputPanel extends InformationPanel {
 		lblVolatileProduction.setFont(Fonts.getOswald());
 		add(lblVolatileProduction, "2, 4, 3, 1, center, center");
 
-		lbVName = new JLabel(DesignerMessages.getString("nameLabel")); //$NON-NLS-1$
+		lbVName = new JLabel("Name");
 		add(lbVName, "2, 8");
 
 		txtVName = new JTextField();
@@ -122,19 +121,19 @@ public class VolatileInputPanel extends InformationPanel {
 		add(txtVName, "4, 8, 3, 1, fill, default");
 		txtVName.setColumns(10);
 
-		lbVNetworkType = new JLabel(DesignerMessages.getString("networkTypeLabel")); //$NON-NLS-1$
+		lbVNetworkType = new JLabel("Network type");
 		add(lbVNetworkType, "2, 10");
 
 		sVNetworkType = new JComboBox<>();
 		sVNetworkType.setFocusable(false);
 		sVNetworkType.setFocusTraversalKeysEnabled(false);
 		sVNetworkType.setModel(new DefaultComboBoxModel<String>(
-				new String[] { DesignerMessages.getString("heatNetworkType"), DesignerMessages.getString("electricityNetworkType") }));
+				new String[] { "Heat", "Electricity" }));
 		sVNetworkType.addItemListener(new VNetworkTypeListener());
 		sVNetworkType.addMouseListener(new VNetworkTypeListener());
 		add(sVNetworkType, "4, 10, 3, 1, fill, default");
 
-		lbVMinimumPower = new JLabel(DesignerMessages.getString("minimumPowerLabel")); //$NON-NLS-1$
+		lbVMinimumPower = new JLabel("Minimum power [kW]");
 		add(lbVMinimumPower, "2, 12");
 
 		txtVMinimumPower = new JTextField();
@@ -143,7 +142,7 @@ public class VolatileInputPanel extends InformationPanel {
 		add(txtVMinimumPower, "4, 12, 3, 1, fill, default");
 		txtVMinimumPower.setColumns(10);
 
-		lbVMaximumPower = new JLabel(DesignerMessages.getString("maximumPowerLabel")); //$NON-NLS-1$
+		lbVMaximumPower = new JLabel("Maximum power [kW]");
 		add(lbVMaximumPower, "2, 14");
 
 		txtVMaximumPower = new JTextField();
@@ -152,7 +151,7 @@ public class VolatileInputPanel extends InformationPanel {
 		add(txtVMaximumPower, "4, 14, 3, 1, fill, default");
 		txtVMaximumPower.setColumns(10);
 
-		lbVForecastFile = new JLabel(DesignerMessages.getString("forecastFile")); //$NON-NLS-1$
+		lbVForecastFile = new JLabel("Forecast file");
 		add(lbVForecastFile, "2, 16");
 
 		txtVForecastFile = new JTextField();
@@ -167,7 +166,7 @@ public class VolatileInputPanel extends InformationPanel {
 		btVBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
 		add(btVBrowse, "6, 16, right, center");
 
-		lbVCost = new JLabel(DesignerMessages.getString("fuelCost")); //$NON-NLS-1$
+		lbVCost = new JLabel("Fuel cost [EUR/kWh]");
 		add(lbVCost, "2, 18");
 
 		txtVCost = new JTextField();
@@ -176,7 +175,7 @@ public class VolatileInputPanel extends InformationPanel {
 		add(txtVCost, "4, 18, 3, 1, fill, default");
 		txtVCost.setColumns(10);
 
-		lbVCOEmission = new JLabel(DesignerMessages.getString("co2Emissions")); //$NON-NLS-1$
+		lbVCOEmission = new JLabel("CO2 Emissions [kg/kWh]"); //$NON-NLS-1$
 		add(lbVCOEmission, "2, 20");
 
 		txtVCOEmission = new JTextField();

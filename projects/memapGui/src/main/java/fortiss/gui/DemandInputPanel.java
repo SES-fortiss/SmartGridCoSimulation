@@ -106,18 +106,11 @@ public class DemandInputPanel extends InformationPanel {
 
 		panel = new JPanel();
 		add(panel, "1, 2, fill, fill");
-		panel.setLayout(new FormLayout(new ColumnSpec[] { 
-				ColumnSpec.decode("15dlu"), 
-				ColumnSpec.decode("120dlu"),
-				ColumnSpec.decode("15dlu"), 
-				ColumnSpec.decode("75dlu:grow"), 
-				FormSpecs.RELATED_GAP_COLSPEC,
-				FormSpecs.DEFAULT_COLSPEC, 
-				FormSpecs.RELATED_GAP_COLSPEC, 
-				FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC, 
-				ColumnSpec.decode("15dlu"), 
-				FormSpecs.RELATED_GAP_COLSPEC, },
+		panel.setLayout(new FormLayout(
+				new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("120dlu"), ColumnSpec.decode("15dlu"),
+						ColumnSpec.decode("75dlu:grow"), FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
+						FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC,
+						ColumnSpec.decode("15dlu"), FormSpecs.RELATED_GAP_COLSPEC, },
 				new RowSpec[] { FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
 						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
@@ -186,34 +179,40 @@ public class DemandInputPanel extends InformationPanel {
 	 * and set plotter to <code>false</code>
 	 */
 	public void setData(String location) {
-		
+
 		String str_electricity = "Series" + 2;
 		String str_heat = "Series" + 1;
-		
-		if (location != null && location.isEmpty()) {
+
+		if (location == null || location.isEmpty()) {
 			loadEmptyData();
 		} else {
 			try {
 				FileManager fm = new FileManager();
-				this.data = new Data(fm.readFromSource(location), false, Data.BYCOLUMN);
-				
-			} catch (IOException | ParseException e) {													
+				ExampleFiles ef = new ExampleFiles();
+				if (ef.isExample(location)) {
+					this.data = new Data(fm.readFromResources(ef.getFile(location)), false, Data.BYCOLUMN);
+				} else {
+					this.data = new Data(fm.readFromSource(location), false, Data.BYCOLUMN);
+				}
+			} catch (IOException | ParseException e) {
 				try {
-					Logger.getInstance().writeWarning("DataReader first version format style error, trying the new version of the CSVReader instead.");
-					FileManager fm = new FileManager();			
+					Logger.getInstance().writeWarning(
+							"DataReader first version format style error, trying the new version of the CSVReader instead.");
+					FileManager fm = new FileManager();
 					TimedConsumerData timedData = new TimedConsumerData(fm.readFromSource(location));
 					this.data = new Data(timedData);
-					
+
 					str_electricity = "Electricity";
-					str_heat = "Heat";					
-					
+					str_heat = "Heat";
+
 				} catch (IOException | ParseException e1) {
-					Logger.getInstance().writeWarning("Data for demand at " + location + " could not be read. Using zeros only.");
+					Logger.getInstance()
+							.writeWarning("Data for demand at " + location + " could not be read. Using zeros only.");
 					e.printStackTrace();
 					e1.printStackTrace();
 					loadEmptyData();
 				}
-				
+
 			}
 		}
 
@@ -230,7 +229,7 @@ public class DemandInputPanel extends InformationPanel {
 		ExampleFiles ef = new ExampleFiles();
 
 		try {
-			this.data = new Data(fm.readFromResources(ef.getFile("EXAMPLE0")), false, Data.BYCOLUMN);
+			this.data = new Data(fm.readFromResources(ef.getFile("CONSUMPTIONEXAMPLE0")), false, Data.BYCOLUMN);
 		} catch (IOException | ParseException e1) {
 			data = null;
 			Logger.getInstance().writeError("Default consumption file not found in resources.");

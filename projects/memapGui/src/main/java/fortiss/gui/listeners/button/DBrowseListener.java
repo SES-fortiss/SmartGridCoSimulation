@@ -2,6 +2,7 @@ package fortiss.gui.listeners.button;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import fortiss.components.Demand;
 import fortiss.gui.DesignerPanel;
@@ -16,15 +17,13 @@ public class DBrowseListener extends MouseAdapter {
 
 		// Update selection in text field
 		Chooser c = new Chooser(FileType.CSV);
-		String path = c.showOpenDialog().getPath();
-
-		if (path != null) {
-			DesignerPanel.demandPanel.txtDConsumption.setText(path);
-			d.setConsumptionProfile(path);
-		}
+		File file = c.showOpenDialog();
 
 		// null check necessary to account for a cancelled attempt to change path
-		if (path != null) {
+		if (file != null) {
+			String path = file.getPath();
+			DesignerPanel.demandPanel.txtDConsumption.setText(path);
+			d.setConsumptionProfile(path);
 			DesignerPanel.demandPanel.setData(path);
 		}
 	}
