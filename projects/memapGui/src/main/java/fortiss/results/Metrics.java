@@ -144,14 +144,14 @@ public abstract class Metrics {
 	 * @return the heat demand in time
 	 */
 	public ArrayList<Double> getHeatDemandInTime() {
-		return convertPowerIntoEnergy(detailedResult.getDataSeries(context, Strings.heatDemand));
+		return detailedResult.getDataSeries(context, Strings.heatDemand);
 	}
 
 	/**
 	 * @param heatDemand the heatDemand to set
 	 */
 	public void setHeatDemand() {
-		heatDemand = sum(getHeatDemandInTime());
+		heatDemand = convertPowerIntoEnergy(getHeatDemandInTime());
 	}
 
 	/**
@@ -165,7 +165,7 @@ public abstract class Metrics {
 	 * @param heatProduction the heatProduction to set
 	 */
 	public void setHeatProduction() {
-		heatProduction = sum(getTotalsByTimeStep(heatProducedBySourceInTime, nTimeSteps));
+		heatProduction = convertPowerIntoEnergy(getTotalsByTimeStep(heatProducedBySourceInTime, nTimeSteps));
 	}
 
 	/**
@@ -179,7 +179,7 @@ public abstract class Metrics {
 	 * @param heatCharge the heatCharge to set
 	 */
 	public void setHeatCharge() {
-		heatCharge = sum(getTotalsByTimeStep(heatChargedByStorageInTime, nTimeSteps));
+		heatCharge = convertPowerIntoEnergy(getTotalsByTimeStep(heatChargedByStorageInTime, nTimeSteps));
 	}
 
 	/**
@@ -193,7 +193,7 @@ public abstract class Metrics {
 	 * @param heatDischarge the heatDischarge to set
 	 */
 	public void setHeatDischarge() {
-		heatDischarge = sum(getTotalsByTimeStep(heatDischargedByStorageInTime, nTimeSteps));
+		heatDischarge = convertPowerIntoEnergy(getTotalsByTimeStep(heatDischargedByStorageInTime, nTimeSteps));
 	}
 
 	/**
@@ -232,7 +232,7 @@ public abstract class Metrics {
 	 * @return the electricity demand in time
 	 */
 	public ArrayList<Double> getElectricityDemandInTime() {
-		return convertPowerIntoEnergy(detailedResult.getDataSeries(context, Strings.electricityDemand));
+		return detailedResult.getDataSeries(context, Strings.electricityDemand);
 	}
 
 	/**
@@ -246,7 +246,7 @@ public abstract class Metrics {
 	 * @param electricityDemand the electricityDemand to set
 	 */
 	public void setElectricityDemand() {
-		electricityDemand = sum(getElectricityDemandInTime());
+		electricityDemand = convertPowerIntoEnergy(getElectricityDemandInTime());
 	}
 
 	/**
@@ -260,7 +260,7 @@ public abstract class Metrics {
 	 * @param electricityProduction the electricityProduction to set
 	 */
 	public void setElectricityProduction() {				
-		electricityProduction = sum(getTotalsByTimeStep(electricityProducedBySourceInTime, nTimeSteps));
+		electricityProduction = convertPowerIntoEnergy(getTotalsByTimeStep(electricityProducedBySourceInTime, nTimeSteps));
 	}
 
 	/**
@@ -274,7 +274,7 @@ public abstract class Metrics {
 	 * @param electricityCharge the electricityCharge to set
 	 */
 	public void setElectricityCharge() {
-		electricityCharge = sum(getTotalsByTimeStep(electricityChargedByStorageInTime, nTimeSteps));
+		electricityCharge = convertPowerIntoEnergy(getTotalsByTimeStep(electricityChargedByStorageInTime, nTimeSteps));
 	}
 
 	/**
@@ -288,7 +288,7 @@ public abstract class Metrics {
 	 * @param electricityDischarge the electricityDischarge to set
 	 */
 	public void setElectricityDischarge() {
-		electricityDischarge = sum(getTotalsByTimeStep(electricityDischargedByStorageInTime, nTimeSteps));
+		electricityDischarge = convertPowerIntoEnergy(getTotalsByTimeStep(electricityDischargedByStorageInTime, nTimeSteps));
 	}
 
 	/**
@@ -302,7 +302,7 @@ public abstract class Metrics {
 	 * @param electricityBuy the electricityBuy to set
 	 */
 	public void setElectricityBuy() {
-		this.electricityBuy = sum(convertPowerIntoEnergy(detailedResult.getDataSeries(context, Strings.elecBuy)));
+		this.electricityBuy = convertPowerIntoEnergy(detailedResult.getDataSeries(context, Strings.elecBuy));
 	}
 
 	/**
@@ -316,7 +316,7 @@ public abstract class Metrics {
 	 * @param electricitySell the electricitySell to set
 	 */
 	public void setElectricitySell() {
-		this.electricitySell = sum(convertPowerIntoEnergy(detailedResult.getDataSeries(context, Strings.elecSell)));
+		this.electricitySell = convertPowerIntoEnergy(detailedResult.getDataSeries(context, Strings.elecSell));
 	}
 
 	/**
@@ -517,7 +517,7 @@ public abstract class Metrics {
 	 * @param componentName the name of a component
 	 */
 	protected ArrayList<Double> getElectricityContributedBy(String entryName, String componentName) {
-		return convertPowerIntoEnergy(overviewResult.getDataSeries(entryName, "E_" + componentName));
+		return overviewResult.getDataSeries(entryName, "E_" + componentName);
 	}
 
 	/**
@@ -527,7 +527,7 @@ public abstract class Metrics {
 	 * @param componentName the name of a component
 	 */
 	protected ArrayList<Double> getHeatContributedBy(String entryName, String componentName) {
-		return convertPowerIntoEnergy(overviewResult.getDataSeries(entryName, "H_" + componentName));
+		return overviewResult.getDataSeries(entryName, "H_" + componentName);
 	}
 
 	/**
@@ -694,12 +694,21 @@ public abstract class Metrics {
 
 	/**
 	 * Converts power into energy (kW --> kWh)
-	 */
-	protected ArrayList<Double> convertPowerIntoEnergy(ArrayList<Double> powerSeries) {
-		Parameters pars = PlanningTool.getInstance().getParameters();
-		for (double value : powerSeries) {
+	 *
+	//protected //ArrayList<Double> convertPowerIntoEnergy(ArrayList<Double> powerSeries) {
+		////Parameters pars = PlanningTool.getInstance().getParameters();
+		//for (double value : powerSeries) {
 			value = value * 24 / pars.getStepsPerDay();
-		}
-		return powerSeries;
+		//}
+		//return powerSeries;
+	//}
+	
+	/**
+	 * Converts power into energy (kW --> kWh)
+	 */
+	protected double convertPowerIntoEnergy(ArrayList<Double> powerSeries) {
+		double averagePower = average(powerSeries);
+		int days = PlanningTool.getInstance().getParameters().getDays();
+		return averagePower * days * 24.0;
 	}
 }

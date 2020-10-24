@@ -37,8 +37,8 @@ public class MemapOffMetrics extends Metrics {
 	public ArrayList<Double> getHeatDemandInTime() {
 		ArrayList<Double> heatDemandInTime = new ArrayList<Double>(Collections.nCopies(nTimeSteps, 0.0));
 			for (String buildingName : DesignerPanel.buildings.keySet()) {
-				ArrayList<Double> heatDemandOfBuilding = convertPowerIntoEnergy(detailedResult.getDataSeries(buildingName,
-						Strings.heatDemand));
+				ArrayList<Double> heatDemandOfBuilding = detailedResult.getDataSeries(buildingName,
+						Strings.heatDemand);
 				heatDemandInTime = sumListValues(heatDemandInTime, heatDemandOfBuilding);
 			}
 		return heatDemandInTime;
@@ -46,7 +46,7 @@ public class MemapOffMetrics extends Metrics {
 
 	@Override
 	public void setHeatDemand() {
-		heatDemand = sum(getHeatDemandInTime());
+		heatDemand = convertPowerIntoEnergy(getHeatDemandInTime());
 	}
 
 	@Override
@@ -77,8 +77,8 @@ public class MemapOffMetrics extends Metrics {
 	public ArrayList<Double> getElectricityDemandInTime() {
 		ArrayList<Double> electricityDemandInTime = new ArrayList<Double>(Collections.nCopies(nTimeSteps, 0.0));
 			for (String buildingName : DesignerPanel.buildings.keySet()) {
-				ArrayList<Double> electricityDemandOfBuilding = convertPowerIntoEnergy(detailedResult.getDataSeries(buildingName,
-						Strings.electricityDemand));
+				ArrayList<Double> electricityDemandOfBuilding = detailedResult.getDataSeries(buildingName,
+						Strings.electricityDemand);
 				electricityDemandInTime = sumListValues(electricityDemandInTime, electricityDemandOfBuilding);
 			}
 		return electricityDemandInTime;
@@ -86,14 +86,14 @@ public class MemapOffMetrics extends Metrics {
 	
 	@Override
 	public void setElectricityDemand() {
-		electricityDemand = sum(getElectricityDemandInTime());
+		electricityDemand = convertPowerIntoEnergy(getElectricityDemandInTime());
 	}
 
 	@Override
 	public void setElectricityBuy() {
 		electricityBuy = 0;
 		for (String buildingName : DesignerPanel.buildings.keySet()) {
-			electricityBuy += sum(convertPowerIntoEnergy(detailedResult.getDataSeries(buildingName, Strings.elecBuy)));
+			electricityBuy += convertPowerIntoEnergy(detailedResult.getDataSeries(buildingName, Strings.elecBuy));
 		}
 	}
 
@@ -101,7 +101,7 @@ public class MemapOffMetrics extends Metrics {
 	public void setElectricitySell() {
 		electricitySell = 0;
 		for (String buildingName : DesignerPanel.buildings.keySet()) {
-			electricitySell += sum(convertPowerIntoEnergy(detailedResult.getDataSeries(buildingName, Strings.elecSell)));
+			electricitySell += convertPowerIntoEnergy(detailedResult.getDataSeries(buildingName, Strings.elecSell));
 		}
 	}
 
