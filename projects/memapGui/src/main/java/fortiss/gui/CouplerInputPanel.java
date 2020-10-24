@@ -186,7 +186,7 @@ public class CouplerInputPanel extends InformationPanel{
 		add(txtCMaximumPower, "4, 16, fill, default");
 		txtCMaximumPower.setColumns(10);
 
-		lbCPrimaryNetworkEfficiency = new JLabel("Primary network efficiency [0-1]");
+		lbCPrimaryNetworkEfficiency = new JLabel("Primary network efficiency [-1-10]");
 		add(lbCPrimaryNetworkEfficiency, "2, 18");
 
 		txtCEfficiencyPrimary = new JTextField();
@@ -195,7 +195,7 @@ public class CouplerInputPanel extends InformationPanel{
 		add(txtCEfficiencyPrimary, "4, 18, fill, default");
 		txtCEfficiencyPrimary.setColumns(10);
 
-		lbCSecondaryNetworkEfficiency = new JLabel("Secondary network efficiency [0-1]");
+		lbCSecondaryNetworkEfficiency = new JLabel("Secondary network efficiency [-1-10]");
 		add(lbCSecondaryNetworkEfficiency, "2, 20");
 
 		txtCEfficiencySecondary = new JTextField();
