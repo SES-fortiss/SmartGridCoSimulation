@@ -37,6 +37,8 @@ public class TextBoxWidget extends JPanel {
 				FormSpecs.DEFAULT_ROWSPEC,
 				FormSpecs.UNRELATED_GAP_ROWSPEC,}));
 
+		DecimalFormat df = new DecimalFormat("0.0#");
+		
 		JLabel titleLabel = new JLabel("    " + title.toUpperCase(), SwingConstants.LEFT);
 		titleLabel.setFont(Fonts.getOswald(FontSize.SMALL));
 		titleLabel.setOpaque(true);
@@ -47,7 +49,7 @@ public class TextBoxWidget extends JPanel {
 		separator.setForeground(Colors.green);
 		separator.setPreferredSize(new Dimension(400, 1));
 
-		JLabel metricLabel = new JLabel(new DecimalFormat("#.0##").format(value).toUpperCase() + " " + unit.toUpperCase(), SwingConstants.CENTER);
+		JLabel metricLabel = new JLabel(df.format(value).toUpperCase() + " " + unit.toUpperCase(), SwingConstants.CENTER);
 		metricLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 		metricLabel.setFont(Fonts.getOpenSans(FontSize.LARGE));
 		metricLabel.setForeground(Colors.normal);

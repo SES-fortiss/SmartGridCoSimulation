@@ -12,6 +12,7 @@ import org.knowm.xchart.style.PieStyler.AnnotationType;
 import org.knowm.xchart.style.Styler.LegendPosition;
 
 import fortiss.gui.style.Colors;
+import fortiss.gui.style.FontSize;
 import fortiss.gui.style.Fonts;
 
 public class PieChartWidget extends XChartPanel<PieChart> {
@@ -28,9 +29,9 @@ public class PieChartWidget extends XChartPanel<PieChart> {
 		getChart().getStyler().setChartBackgroundColor(UIManager.getColor("Panel.background"));
 		getChart().getStyler().setChartFontColor(Colors.accent1);
 		getChart().getStyler().setChartPadding(10);
-		getChart().getStyler().setChartTitleFont(Fonts.getOswald(18));
+		getChart().getStyler().setChartTitleFont(Fonts.getOswald(FontSize.NORMAL));
 		getChart().getStyler().setChartTitlePadding(15);
-		getChart().getStyler().setLegendFont(Fonts.getOpenSans(12));
+		getChart().getStyler().setLegendFont(Fonts.getOpenSans(FontSize.TINY));
 		getChart().getStyler().setLegendPosition(LegendPosition.OutsideS);
 		getChart().getStyler().setLegendSeriesLineLength(20);
 		getChart().getStyler().setAnnotationType(AnnotationType.Percentage);

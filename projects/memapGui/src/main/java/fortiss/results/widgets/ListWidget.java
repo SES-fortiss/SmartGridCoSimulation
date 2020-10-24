@@ -39,11 +39,13 @@ public class ListWidget extends JPanel {
 	}
 	
 	public void addRow(String name, double value, String unit) {
+		DecimalFormat df = new DecimalFormat("0.0#");
+		
 		JLabel nameLabel = new JLabel (name);
 		nameLabel.setFont(Fonts.getOpenSans(FontSize.NORMAL));
 		nameLabel.setForeground(Colors.green);
 		
-		JLabel valueLabel = new JLabel (new DecimalFormat("#.0##").format(value) + " " + unit);
+		JLabel valueLabel = new JLabel (df.format(value) + " " + unit);
 		valueLabel.setFont(Fonts.getOpenSans(FontSize.NORMAL));
 		valueLabel.setForeground(Colors.darkGray);
 		

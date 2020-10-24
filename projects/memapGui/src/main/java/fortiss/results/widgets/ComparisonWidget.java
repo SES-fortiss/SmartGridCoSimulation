@@ -40,13 +40,15 @@ public class ComparisonWidget extends JPanel {
 				FormSpecs.DEFAULT_ROWSPEC,
 				FormSpecs.UNRELATED_GAP_ROWSPEC,}));
 		
+		DecimalFormat df = new DecimalFormat("0.0#");
+		
 		// Computations
-		String memapOn = new DecimalFormat("#.0##").format(memapOnValue);
+		String memapOn = df.format(memapOnValue);
 		
 		Comparator c = new Comparator();
 		double gainValue = c.getGain(memapOnValue, memapOffValue);
-		String gain = new DecimalFormat("#.0##").format(gainValue);
-		String percentualGain = new DecimalFormat("#.0##").format(c.getPercentualGain(memapOnValue, memapOffValue));
+		String gain = df.format(gainValue);
+		String percentualGain = df.format(c.getPercentualGain(memapOnValue, memapOffValue));
 		
 		if (gainValue > 0) {
 			gain = "+" + gain;

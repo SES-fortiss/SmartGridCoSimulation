@@ -12,6 +12,7 @@ import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.style.Styler.LegendPosition;
 
 import fortiss.gui.style.Colors;
+import fortiss.gui.style.FontSize;
 import fortiss.gui.style.Fonts;
 
 public class CategoryPlotWidget extends XChartPanel<CategoryChart> {
@@ -39,13 +40,13 @@ public class CategoryPlotWidget extends XChartPanel<CategoryChart> {
 		getChart().getStyler().setChartBackgroundColor(UIManager.getColor("Panel.background"));
 		getChart().getStyler().setChartFontColor(Colors.accent1);
 		getChart().getStyler().setChartPadding(10);
-		getChart().getStyler().setChartTitleFont(Fonts.getOswald(18));
+		getChart().getStyler().setChartTitleFont(Fonts.getOswald(FontSize.NORMAL));
 		getChart().getStyler().setChartTitlePadding(15);
-		getChart().getStyler().setLegendFont(Fonts.getOpenSans(12));
+		getChart().getStyler().setLegendFont(Fonts.getOpenSans(FontSize.TINY));
 		getChart().getStyler().setLegendPosition(LegendPosition.OutsideS);
 		getChart().getStyler().setLegendSeriesLineLength(20);
-		getChart().getStyler().setAxisTitleFont(Fonts.getOpenSans(12));
-		getChart().getStyler().setAxisTickLabelsFont(Fonts.getOpenSans(12));
+		getChart().getStyler().setAxisTitleFont(Fonts.getOpenSans(FontSize.TINY));
+		getChart().getStyler().setAxisTickLabelsFont(Fonts.getOpenSans(FontSize.TINY));
 
 		series.forEach((serie) -> getChart().addSeries(serie.getName(), (List<?>) serie.getXData(),
 				(List<? extends Number>) serie.getYData()));
