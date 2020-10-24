@@ -12,7 +12,7 @@ public class FixedValueListener extends NumberListener{
 	@Override
 	void update(String text) {
 		Parameters pars = PlanningTool.getInstance().getParameters();
-		pars.setFixedMarketPrice(Integer.parseUnsignedInt(text));		
+		pars.setFixedMarketPrice(Double.parseDouble(text));		
 	}
 
 	@Override
