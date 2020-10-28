@@ -11,6 +11,7 @@ import javax.swing.ImageIcon;
 abstract public class IconStore {
 
 	private static String fortissLogoPath = "/fortissLogo.png";
+	private static String tumLogoPath = "/tumLogo.png";
 	private static String memapLogoPath = "/memap.png";
 	
 	private static String costReductionPath = "/costReduction.png";
@@ -58,6 +59,15 @@ abstract public class IconStore {
 	
 	public static ImageIcon fortissLogo = new ImageIcon(
 			new ImageIcon(IconStore.class.getResource(fortissLogoPath)).getImage().getScaledInstance(180, 60, Image.SCALE_SMOOTH));
+	
+	public static ImageIcon tumLogo = new ImageIcon(
+			new ImageIcon(IconStore.class.getResource(tumLogoPath)).getImage().getScaledInstance(180, 70, Image.SCALE_SMOOTH));
+	
+	public static ImageIcon smallFortissLogo = new ImageIcon(
+			new ImageIcon(IconStore.class.getResource(fortissLogoPath)).getImage().getScaledInstance(60, 20, Image.SCALE_SMOOTH));
+	
+	public static ImageIcon smallTumLogo = new ImageIcon(
+			new ImageIcon(IconStore.class.getResource(tumLogoPath)).getImage().getScaledInstance(60, 30, Image.SCALE_SMOOTH));
 	
 	public static ImageIcon memapLogo = new ImageIcon(
 			new ImageIcon(IconStore.class.getResource(memapLogoPath)).getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH));

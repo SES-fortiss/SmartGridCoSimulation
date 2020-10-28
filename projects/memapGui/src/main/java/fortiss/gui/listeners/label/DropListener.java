@@ -56,7 +56,7 @@ public class DropListener extends DropTargetAdapter implements DropTargetListene
 				event.dropComplete(true);
 				panel.validate();
 
-				if (DesignerPanel.buildingCount > 0 && !DesignerPanel.pl_object.comp_box.isVisible()) {
+				if (DesignerPanel.buildingCount > 0) {
 					DesignerPanel.pl_object.showComponentBox();
 				}
 				return;

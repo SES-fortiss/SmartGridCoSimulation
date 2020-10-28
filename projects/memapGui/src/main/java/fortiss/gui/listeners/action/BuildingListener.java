@@ -26,7 +26,7 @@ public class BuildingListener extends MouseAdapter {
 
 			DesignerPanel.showInformationPanel("building");
 			
-			if (DesignerPanel.buildingCount > 0 && !DesignerPanel.pl_object.comp_box.isVisible()) {
+			if (DesignerPanel.buildingCount > 0) {
 				DesignerPanel.pl_object.showComponentBox();
 			}
 		}

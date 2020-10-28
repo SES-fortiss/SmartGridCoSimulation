@@ -4,14 +4,11 @@ import java.awt.Graphics;
 
 import javax.swing.JLabel;
 
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.FormSpecs;
-import com.jgoodies.forms.layout.RowSpec;
-
 import fortiss.gui.style.Colors;
+import fortiss.gui.style.FontSize;
 import fortiss.gui.style.Fonts;
 import fortiss.media.IconStore;
+import net.miginfocom.swing.MigLayout;
 
 /**
  * Shows project name and company logo
@@ -36,21 +33,25 @@ public class InitialPanel extends InformationPanel {
 	 * Initialize the contents of the panel.
 	 */
 	public InitialPanel() {
-		setLayout(new FormLayout(new ColumnSpec[] { ColumnSpec.decode("center:449px"), },
-				new RowSpec[] { RowSpec.decode("250px"), FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("120px"), }));
+		setLayout(new MigLayout("insets 0 0 0 0, filly, center, width 99%", 
+				"[center]", 
+				"[center]5[center]100[bottom]5[bottom]"));
 
 		JLabel lblMemap = new JLabel("");
 		lblMemap.setIcon(IconStore.memapLogo);
-		add(lblMemap, "1, 1, center, center");
+		add(lblMemap, "wrap");
 
-		lblMemap_1 = new JLabel("Multi-energy Management and Aggregation Platform (MEMAP)");
-		lblMemap_1.setFont(Fonts.getOswald());
-		add(lblMemap_1, "1, 4");
+		lblMemap_1 = new JLabel("<html><center>Multi-energy Management <br/> and Aggregation Platform <br/>(MEMAP) </center></html>");
+		lblMemap_1.setFont(Fonts.getOswald(FontSize.HUGE));
+		add(lblMemap_1, "wrap");
 
-		JLabel lblLogo = new JLabel("");
-		lblLogo.setIcon(IconStore.fortissLogo);
-		add(lblLogo, "1, 6, center, center");
+		JLabel lblFortissLogo = new JLabel("");
+		lblFortissLogo.setIcon(IconStore.fortissLogo);
+		add(lblFortissLogo, "wrap");
+		
+		JLabel lblTumLogo = new JLabel("");
+		lblTumLogo.setIcon(IconStore.tumLogo);
+		add(lblTumLogo, "wrap");
 	}
 
 	@Override
