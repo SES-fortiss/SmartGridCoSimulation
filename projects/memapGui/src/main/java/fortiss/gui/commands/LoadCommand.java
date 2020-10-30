@@ -13,7 +13,7 @@ public class LoadCommand implements Command {
 		Chooser chooser = new Chooser(FileType.JSON);
 		File file = chooser.showOpenDialog();
 		if (file != null) {
-			ModelInitHelper.loadFromFile(file.getAbsolutePath());
+			new ModelInitHelper().loadFromFile(file.getAbsolutePath());
 		}
 	}
 }

@@ -1,6 +1,5 @@
 package fortiss.gui.commands;
 
-import fortiss.gui.listeners.helper.FileManager;
 import fortiss.gui.listeners.helper.WindowSnipper;
 import fortiss.simulation.SimulationSetup;
 import fortiss.simulation.helper.ProgressManager;
@@ -15,10 +14,7 @@ public class RunCommand implements Command {
 
 	@Override
 	public void execute() {
-		FileManager fm = new FileManager();
-		fm.writeMemapModel();
-		fm.writeBuildingDescriptorFiles();
-		fm.writeParameterConfigFile(); // Should be called after writeDescriptorFiles()
+		new SaveCommand().execute();
 
 		WindowSnipper ws = new WindowSnipper();
 		ws.createTopologySnip();

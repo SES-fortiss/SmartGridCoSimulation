@@ -2,16 +2,12 @@ package fortiss.simulation;
 
 import java.awt.Container;
 import java.awt.EventQueue;
-import java.io.BufferedReader;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.prefs.Preferences;
 
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.LogPanel;
 import fortiss.gui.PlanningToolWindow;
 import fortiss.gui.TrackerPanel;
-import fortiss.gui.listeners.helper.FileManager;
 import fortiss.gui.listeners.helper.ModelInitHelper;
 import fortiss.media.IconStore;
 import fortiss.results.Reporter;
@@ -24,6 +20,8 @@ import memap.controller.GuiController;
 /** Entry point for the application */
 public class PlanningTool {
 
+	private Preferences preferences = Preferences.userNodeForPackage(this.getClass());
+	private static final String WORKING_FILE = "WORKING_FILE";
 	private static final String DESIGNER_PANEL = "Design tool";
 	private static final String TRACKER_PANEL = "Simulation progress";
 	private static final String OVERVIEW_RESULT_PANEL = "Results overview";
@@ -86,27 +84,10 @@ public class PlanningTool {
 	}
 
 	public void initLastSession() {
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		FileManager fm = new FileManager();
-		BufferedReader br = fm.readParameterConfigFile();
-
-		String workingFile = "";
-		Parameters par = null;
-
-		if (br != null) {
-			par = gson.fromJson(br, Parameters.class);
-			// TODO Why clearing it here?
-			par.clearDescriptorFiles();
-			workingFile = par.getLastSavedFile();
-
-			Logger.getInstance().writeInfo("Parameters: " + gson.toJson(par));
-		}
-
-		if (!workingFile.isEmpty()) {
-			ModelInitHelper.loadFromFile(workingFile);
-			setParameters(par);
-			DesignerPanel.parameterPanel.update();
-			
+		
+		String workingFilePath = getWorkingFile();
+		if (!workingFilePath.isEmpty()) {			
+			new ModelInitHelper().loadFromFile(workingFilePath);
 		} else {
 			Logger.getInstance().writeWarning("No working file found!");
 		}
@@ -289,7 +270,7 @@ public class PlanningTool {
 		return getPlanningToolWindow().getContentPane();
 	}
 
-	/**
+	/**key
 	 * Set the reporter
 	 * 
 	 * @param reporter an object of type {@link Reporter}}
@@ -312,6 +293,15 @@ public class PlanningTool {
 	 */
 	public void setParameters(Parameters parameters) {
 		this.parameters = parameters;
+	}
+	
+	public void setWorkingFile(String path) {
+		preferences.put(WORKING_FILE, path);
+		Logger.getInstance().writeInfo("Working file set to " + path);
+	}
+	
+	public String getWorkingFile() {
+		return preferences.get(WORKING_FILE, "");
 	}
 	
 }

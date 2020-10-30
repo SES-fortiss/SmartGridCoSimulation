@@ -1,9 +1,8 @@
 package fortiss.simulation;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+
+import com.google.gson.annotations.Expose;
 
 import fortiss.gui.DesignerPanel;
 import fortiss.media.IconStore;
@@ -42,32 +41,39 @@ public class Parameters {
 		}
 	};
 
-	/** paths to descriptor files */
-	private Set<File> descriptorFiles = new HashSet<File>();
 	/** Simulation name */
+	@Expose
 	private String simulationName;
 	/** length MemapSimulation steps. An integer */
+	@Expose
 	private int length;
 	/** steps MPC horizon. An integer */
+	@Expose
 	private int steps;
 	/** days Number of days to be simulated */
+	@Expose
 	private int days;
 	/** hasfixedPrice a boolean. Fixed (true)/ variable (false) */
+	@Expose
 	private boolean hasfixedPrice;
 	/** path to a file that describe variability in market prices */
+	@Expose
 	private String marketPriceFile;
 	/** A fixed value for market price */
+	@Expose
 	private double fixedMarketPrice = 0;
 	/** memapON a boolean. On(true)/ off (false) */
+	@Expose
 	private boolean memapON;
 	/** optCriteria a String. Optimization criteria: {cost, co2} */
+	@Expose
 	private String optCriteria;
 	/** optimizer a String. Optimizer: {LP, MILP} */
+	@Expose
 	private String optimizer;
 	/** loggingMode a String. loggingMode: {allLogs, fileLogs, resultLogs} */
+	@Expose
 	private String loggingMode;
-	/** lastSavedFile remembers the last save of a file this allows to reset the session during next startup */
-	private String lastSavedFile;
 
 	/**
 	 * Constructor for class Parameters
@@ -84,8 +90,6 @@ public class Parameters {
 		setMemapON(false);
 		setOptCriteria(criteriaOptions.get(0));
 		setLoggingMode(loggingOptions.get(0));
-		setLastSavedFile("");
-		clearDescriptorFiles();
 	}
 
 	public String getSimulationName() {
@@ -176,18 +180,6 @@ public class Parameters {
 		}
 	}
 
-	public Set<File> getDescriptorFiles() {
-		return descriptorFiles;
-	}
-
-	public void addDescriptorFile(File descriptorFile) {
-		descriptorFiles.add(descriptorFile);
-	}
-	
-	public void clearDescriptorFiles() {
-		descriptorFiles.clear();
-	}
-
 	public String getMarketPriceFile() {
 		return marketPriceFile;
 	}
@@ -222,13 +214,5 @@ public class Parameters {
 			setLoggingMode(loggingOptions.get(index + 1));
 			DesignerPanel.parameterPanel.lbLoggingMode2.setIcon(IconStore.loggingMode.get(index + 1));
 		}
-	}
-
-	public String getLastSavedFile() {
-		return lastSavedFile;
-	}
-
-	public void setLastSavedFile(String lastSavedFile) {
-		this.lastSavedFile = lastSavedFile;
 	}
 }

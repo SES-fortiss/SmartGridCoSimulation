@@ -27,9 +27,7 @@ public class ResetCommand implements Command {
 		PlanningTool planningTool = PlanningTool.getInstance();
 		planningTool.getPlanningToolWindow().setTitle("");
 
-		// Clean lastSavedFile and descriptorFile paths
-		planningTool.getParameters().setLastSavedFile("");
-		planningTool.getParameters().clearDescriptorFiles();
+		planningTool.setWorkingFile("");
 	}
 
 }
