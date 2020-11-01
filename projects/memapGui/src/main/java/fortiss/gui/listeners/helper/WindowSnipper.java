@@ -25,7 +25,18 @@ public class WindowSnipper {
 		try {
 			String location = System.getProperty("user.dir") + File.separator + DirectoryConfiguration.mainDir
 					+ File.separator + "topology.jpg";
-			ImageIO.write(image, "jpg", new File(location));
+			File file = new File(location);
+			
+			if (!file.exists()) {
+				try {
+					file.getParentFile().mkdirs();
+					file.createNewFile();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			ImageIO.write(image, "jpg", file);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
