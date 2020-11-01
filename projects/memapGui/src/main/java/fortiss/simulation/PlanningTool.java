@@ -297,7 +297,6 @@ public class PlanningTool {
 	
 	public void setWorkingFile(String path) {
 		preferences.put(WORKING_FILE, path);
-		Logger.getInstance().writeInfo("Working file set to " + path);
 	}
 	
 	public String getWorkingFile() {
