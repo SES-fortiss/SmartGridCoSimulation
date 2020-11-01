@@ -224,7 +224,7 @@ public class MetricsGenerator {
 			contextPanel.addBarPlotWidget("Energy produced by type", "Buildings", "Energy [kWh]", 400, 400,
 					energyByBuilding, "* Storages are not considered energy producers");
 		}
-		contextPanel.addComponentUsageWidget(contextName, Strings.memapOnModeName , metrics.getEnergyProducedBySource(), 3);
+		contextPanel.addComponentUsageWidget(contextName, "Component usage - " + contextName , metrics.getEnergyProducedBySource(), 3);
 	}
 
 }
