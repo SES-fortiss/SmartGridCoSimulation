@@ -31,7 +31,11 @@ public abstract class TextFieldListener extends KeyAdapter implements FocusListe
 	@Override
 	public void focusGained(FocusEvent e) {
 		building = DesignerPanel.selectedBuilding;
-		building.getIcon().highlight();
+		
+		// might be null if simulation parameters are modified, but no buildings exist
+		if(DesignerPanel.selectedComponent != null) {
+			building.getIcon().highlight();
+		}
 		
 		if(DesignerPanel.selectedComponent != null) {
 			// A component is selected
@@ -54,8 +58,10 @@ public abstract class TextFieldListener extends KeyAdapter implements FocusListe
 			source.setText(getAttribute());
 		}
 		
-		building.getIcon().playDown();
-		
+		if(building != null) {
+			building.getIcon().playDown();
+		}
+			
 		if(component != null) {
 			component.getIcon().playDown();
 		}

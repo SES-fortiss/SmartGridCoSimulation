@@ -1,25 +1,14 @@
 package fortiss.gui;
 
 import java.awt.ComponentOrientation;
-import java.awt.Cursor;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
-
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.FormSpecs;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.Sizes;
 
 import fortiss.gui.commands.RunCommand;
 import fortiss.gui.listeners.action.ButtonListener;
@@ -28,7 +17,7 @@ import fortiss.gui.listeners.label.LoggingModeListener;
 import fortiss.gui.listeners.label.MarketPriceListener;
 import fortiss.gui.listeners.label.OptimizationCriteriaListener;
 import fortiss.gui.listeners.label.OptimizerListener;
-import fortiss.gui.listeners.selectionitem.DaysListener;
+import fortiss.gui.listeners.textfield.DaysListener;
 import fortiss.gui.listeners.textfield.FixedValueListener;
 import fortiss.gui.listeners.textfield.LengthListener;
 import fortiss.gui.listeners.textfield.MarketPriceFileListener;
@@ -40,6 +29,7 @@ import fortiss.gui.style.StyleGenerator;
 import fortiss.media.IconStore;
 import fortiss.simulation.Parameters;
 import fortiss.simulation.PlanningTool;
+import net.miginfocom.swing.MigLayout;
 
 /**
  * Parameter input panel
@@ -54,6 +44,8 @@ public class ParameterInputPanel extends InformationPanel {
 	private JTextField txtSteps;
 	/** length MemapSimulation steps. An integer */
 	private JTextField txtLength;
+	/** Number of days chooser */
+	public JTextField txtDays;
 	/** path to a file that describe variability in market prices */
 	public JTextField txtMarketPriceFile;
 	/** Fixed value for market price */
@@ -89,8 +81,6 @@ public class ParameterInputPanel extends InformationPanel {
 	private JLabel lbLoggingMode;
 	/** button to open file selection window */
 	private JButton btBrowse;
-	/** Number of days chooser */
-	public JComboBox<Integer> sDays;
 
 	/** Necessary for dark mode on/off implementation */
 	@Override
@@ -123,159 +113,118 @@ public class ParameterInputPanel extends InformationPanel {
 	public void initialize() {
 		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Parameter input", TitledBorder.RIGHT,
 				TitledBorder.TOP, null, Colors.accent2));
-		setLayout(new FormLayout(new ColumnSpec[] {
-				ColumnSpec.decode("15dlu"),
-				ColumnSpec.decode("max(75dlu;default)"),
-				FormSpecs.DEFAULT_COLSPEC,
-				ColumnSpec.decode("50dlu:grow"),
-				FormSpecs.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("20dlu"),
-				ColumnSpec.decode("10dlu"),
-				ColumnSpec.decode("20dlu"),
-				FormSpecs.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("20dlu"),},
-			new RowSpec[] {
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("fill:default"),
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				new RowSpec(RowSpec.CENTER, Sizes.bounded(Sizes.DEFAULT, Sizes.constant("2dlu", false), Sizes.constant("15dlu", false)), 0),
-				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				RowSpec.decode("20dlu"),
-				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("50dlu"),
-				FormSpecs.UNRELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				RowSpec.decode("50dlu:grow"),}));
+		
+		setLayout(new MigLayout("insets 30 30 30 30, center, hidemode 2, wrap 3, fillx, width 60%", 
+				"[left]10[right]5[right]", 
+				"[center]30[]10[]10[]10[]10[]10[]10[]10[]10[]30[]"));
 
 		Parameters pars = PlanningTool.getInstance().getParameters();
 		
 		lbTitle = new JLabel("SIMULATION PARAMETERS");
 		lbTitle.setFont(Fonts.getOswald());
 		lbTitle.setForeground(Colors.title);
-		add(lbTitle, "2, 4, 5, 1, center, center");
+		add(lbTitle, "span 3, center");
 
 		lbSimulationName = new JLabel("Simulation name");
-		add(lbSimulationName, "2, 8");
+		add(lbSimulationName);
 
 		txtSimulationName = new JTextField();
-		add(txtSimulationName, "4, 8, 5, 1, fill, default");
+		add(txtSimulationName, "span 2");
 		txtSimulationName.setText(pars.getSimulationName());
 		txtSimulationName.addKeyListener(new SimulationNameListener());
 		txtSimulationName.addFocusListener(new SimulationNameListener());
-		txtSimulationName.setColumns(10);
+		txtSimulationName.setColumns(20);
 
 		lbLength = new JLabel("Steps per day");
-		add(lbLength, "2, 10");
+		add(lbLength);
 
 		txtLength = new JTextField();
 		txtLength.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		txtLength.setText(Integer.toString(pars.getStepsPerDay()));
 		txtLength.addKeyListener(new LengthListener());
 		txtLength.addFocusListener(new LengthListener());
-		add(txtLength, "7, 10, 2, 1, fill, center");
-		txtLength.setColumns(5);
+		add(txtLength, "span 2");
+		txtLength.setColumns(7);
 
 		lbSteps = new JLabel("MPC horizon");
-		add(lbSteps, "2, 12");
+		add(lbSteps);
 
 		txtSteps = new JTextField();
 		txtSteps.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		txtSteps.setText(Integer.toString(pars.getMPCHorizon()));
 		txtSteps.addKeyListener(new StepsListener());
 		txtSteps.addFocusListener(new StepsListener());
-		add(txtSteps, "7, 12, 2, 1, fill, center");
-		txtSteps.setColumns(5);
+		add(txtSteps, "span 2");
+		txtSteps.setColumns(7);
 
 		lbDays = new JLabel("Number of days");
-		add(lbDays, "2, 14");
+		add(lbDays);
 
-		sDays = new JComboBox<>();
-		sDays.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		sDays.setBorder(UIManager.getBorder("MenuItem.border"));
-		sDays.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		sDays.setModel(new DefaultComboBoxModel<Integer>(new Integer[] { 1, 2, 3, 4, 5 }));
-		sDays.addItemListener(new DaysListener());
-		add(sDays, "6, 14, 3, 1, fill, default");
+		txtDays = new JTextField();
+		txtDays.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		txtDays.setText(Integer.toString(pars.getDays()));
+		txtDays.addKeyListener(new DaysListener());
+		txtDays.addFocusListener(new DaysListener());
+		add(txtDays, "span 2");
+		txtDays.setColumns(7);
 
-		lbPrice = new JLabel("<html>Market electricity<br>price [EUR/kWh]</html>");
-		add(lbPrice, "2, 16");
-
-		JButton btAccept = new JButton("Start simulation");
-		btAccept.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
-		btAccept.addMouseListener(new ButtonListener(new RunCommand()));
-
-		lbMarketPrice = new JLabel("");
-		lbMarketPrice.addMouseListener(new MarketPriceListener());
-		add(lbMarketPrice, "6, 16, 3, 1, right, default");
+		lbPrice = new JLabel("Market electricityprice [EUR/kWh]");
+		add(lbPrice);
 
 		txtFixedValue = new JTextField("");
 		txtFixedValue.setText(Double.toString(pars.getFixedMarketPrice()));
 		txtFixedValue.addKeyListener(new FixedValueListener());
 		txtFixedValue.addFocusListener(new FixedValueListener());
-		add(txtFixedValue, "3, 16, 3, 1, fill, default");
-		txtFixedValue.setColumns(10);
+		add(txtFixedValue, "right");
+		txtFixedValue.setColumns(7);
 
+		lbMarketPrice = new JLabel("");
+		lbMarketPrice.addMouseListener(new MarketPriceListener());
+		add(lbMarketPrice, "wrap");
+		
 		lbMarketPriceInstruction = new JLabel("Select a file");
-		add(lbMarketPriceInstruction, "2, 17");
-
+		add(lbMarketPriceInstruction, "hidemode 3");
+		
 		txtMarketPriceFile = new JTextField("");
 		txtMarketPriceFile.addKeyListener(new MarketPriceFileListener());
 		txtMarketPriceFile.addFocusListener(new MarketPriceFileListener());
-		add(txtMarketPriceFile, "3, 17, 4, 1, fill, default");
+		add(txtMarketPriceFile, "hidemode 3");
 		txtMarketPriceFile.setColumns(10);
-
+		
 		btBrowse = new JButton("");
 		btBrowse.addMouseListener(new BrowseListener());
 		btBrowse.setIcon(IconStore.open);
 		btBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
 		btBrowse.setContentAreaFilled(false);
-		add(btBrowse, "8, 17");
+		add(btBrowse, "hidemode 3");
 
 		lbOptimizer = new JLabel("Optimizer");
-		add(lbOptimizer, "2, 19");
+		add(lbOptimizer);
 
 		lbOptimizer2 = new JLabel("");
 		lbOptimizer2.setIcon(IconStore.lp);
 		lbOptimizer2.addMouseListener(new OptimizerListener());
-		add(lbOptimizer2, "6, 19, 3, 1, right, default");
+		add(lbOptimizer2, "span2");
 
 		lbOptCriteria = new JLabel("Optimization criteria");
-		add(lbOptCriteria, "2, 21");
+		add(lbOptCriteria);
 
 		lbOptCriteria2 = new JLabel("");
 		lbOptCriteria2.setIcon(IconStore.optCost);
 		lbOptCriteria2.addMouseListener(new OptimizationCriteriaListener());
-		add(lbOptCriteria2, "6, 21, 3, 1, right, default");
+		add(lbOptCriteria2, "span2");
 
 		lbLoggingMode = new JLabel("Logging mode");
-		add(lbLoggingMode, "2, 23");
+		add(lbLoggingMode);
 
 		lbLoggingMode2 = new JLabel("");
 		lbLoggingMode2.setIcon(IconStore.resultLogs);
 		lbLoggingMode2.addMouseListener(new LoggingModeListener());
-		add(lbLoggingMode2, "6, 23, 3, 1, right, default");
+		add(lbLoggingMode2, "span2");
 
-		add(btAccept, "1, 27, 7, 1, center, center");
+		JButton btAccept = new JButton("Start simulation");
+		btAccept.addMouseListener(new ButtonListener(new RunCommand()));
+		add(btAccept, "span 3, center");
 		
 		// Must be called at the end, when all other graphical components exist.
 		updateMarketPriceOptions(pars);
@@ -315,7 +264,7 @@ public class ParameterInputPanel extends InformationPanel {
 		txtSimulationName.setText(pars.getSimulationName());
 		txtSteps.setText(Integer.toString(pars.getMPCHorizon()));
 		txtLength.setText(Integer.toString(pars.getStepsPerDay()));
-		
+		txtDays.setText(Integer.toString(pars.getDays()));
 
 		updateMarketPriceOptions(pars);
 

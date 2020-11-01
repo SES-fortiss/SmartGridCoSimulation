@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import fortiss.gui.listeners.helper.InsertionVerifier;
+import fortiss.simulation.helper.Logger;
 
 public abstract class NumberListener extends TextFieldListener {
 
@@ -43,9 +44,26 @@ public abstract class NumberListener extends TextFieldListener {
 		if(!Pattern.compile("[0-9]").matcher(text).find())
 			return false;
 		
-		if(decimalAllowed)
+		if(decimalAllowed) {
 			if(StringUtils.countMatches(text, ".") > 1)
 				return false;
+			
+			// Is the number really a double?: check necessary in case of copy-paste values
+			try {
+				Double.parseDouble(text);
+			} catch (NumberFormatException e) {
+				Logger.getInstance().writeError("Number format exception. Expected a double and received " + text);
+				return false;
+			}
+		} else {
+			// Is the number really an integer?: check necessary in case of copy-paste values
+			try {
+				Integer.parseUnsignedInt(text);
+			} catch (NumberFormatException e) {
+				Logger.getInstance().writeError("Number format exception. Expected an integer and received " + text);
+				return false;
+			}
+		}
 		
 		if(negativeAllowed)
 			if(!(StringUtils.countMatches(text, "-") == 1 && StringUtils.startsWith(text, "-") || StringUtils.countMatches(text, "-") == 0))
