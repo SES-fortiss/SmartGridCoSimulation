@@ -1,6 +1,8 @@
 package fortiss.gui.listeners.textfield;
 
+import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.InsertionVerifier;
+import fortiss.simulation.helper.Logger;
 
 public class BPortListener extends TextFieldListener {
 
@@ -12,9 +14,13 @@ public class BPortListener extends TextFieldListener {
 	boolean isValidField(String text) {
 		boolean valid = false;
 		if (!text.isEmpty()) {
-			int num = Integer.parseUnsignedInt(text);
-			if (num == 0 || (num > 1024 && num < 49151))
-				valid = true;
+			try {
+				int num = Integer.parseUnsignedInt(text);	
+				if (num == 0 || (num > 1024 && num < 49151))
+					valid = true;
+			} catch (NumberFormatException e) {
+				Logger.getInstance().writeError("Number format exception. Expected an integer and received " + text);
+			}
 		}
 		return valid;
 	}
@@ -27,7 +33,12 @@ public class BPortListener extends TextFieldListener {
 	
 	@Override
 	void update(String text) {
-		building.setPort(Integer.parseUnsignedInt(text));
+		try {
+			building.setPort(Integer.parseUnsignedInt(text));
+		} catch (NumberFormatException e) {
+			Logger.getInstance().writeError("Number format exception. Expected an integer and received " + text);
+			DesignerPanel.pl_ems_detail.update();
+		}
 	}
 
 	@Override
