@@ -473,7 +473,7 @@ public abstract class Metrics {
 		HashMap<String, Number> totals = new HashMap<String, Number>();
 		for (Entry<String, ArrayList<Double>> componentEntry : map.entrySet()) {
 			String componentName = componentEntry.getKey();
-			double total = sum(map.get(componentName));
+			double total = convertPowerIntoEnergy(map.get(componentName));
 			totals.put(componentName, total);
 		}
 		return totals;
@@ -691,17 +691,6 @@ public abstract class Metrics {
 		}
 		return electricityChargedByStorageInTime;
 	}
-
-	/**
-	 * Converts power into energy (kW --> kWh)
-	 *
-	//protected //ArrayList<Double> convertPowerIntoEnergy(ArrayList<Double> powerSeries) {
-		////Parameters pars = PlanningTool.getInstance().getParameters();
-		//for (double value : powerSeries) {
-			value = value * 24 / pars.getStepsPerDay();
-		//}
-		//return powerSeries;
-	//}
 	
 	/**
 	 * Converts power into energy (kW --> kWh)
