@@ -53,10 +53,12 @@ public class CategoryPlotWidget extends XChartPanel<CategoryChart> {
 	}
 	
 	public boolean isEmpty() {
-		double sum = 0;
+		// If at least one series has non-zero values, the plot is not empty
 		for (CategorySeries item : series) {
-			sum = item.getYMax() + item.getYMin();
+			if(item.getYMax() != 0 && item.getYMin() != 0 ) {
+				return false;
+			}
 		}
-		return sum == 0;
+		return true;
 	}
 }
