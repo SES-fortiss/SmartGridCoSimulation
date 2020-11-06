@@ -68,10 +68,9 @@ public class JettyStart {
 		topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILP, OptimizationCriteria.EUR,
 				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
 		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 4880, 0);
-		System.out.println("MPC set to " + Simulation.N_STEPS_MPC);
 		EnergyPrices.getInstance().init(0.285);
-		EnergyPrices.getInstance().initGas("C:/Git/SESSIM/projects/memapCore/src/main/java/resources/gasprice_hourly.csv");
-//		EnergyPrices.getInstance().initGas("./gasprice_hourly.csv");
+//		EnergyPrices.getInstance().initGas("C:/Git/SESSIM/projects/memapCore/src/main/java/resources/gasprice_15minutes2.csv");
+		EnergyPrices.getInstance().initGas("./gasprice_15minutes.csv");
 		//topologyMemapOff = new TopologyController("MemapOff", OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
 		//		ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
 		errorCode = new JsonObject();
@@ -93,12 +92,12 @@ public class JettyStart {
 //			JsonObject project = (JsonObject) full.get("project");
 //			endpoints = (JsonArray) project.get("endpoints");
 //			
-			try (Writer writer = new FileWriter("endpoints.json")) {
-			    writer.write(gson.toJson(endpoints));
-			} catch (Exception e) {
-				System.err.println("Speicher fail!");
-				e.printStackTrace();
-			}
+//			try (Writer writer = new FileWriter("endpoints.json")) {
+//			    writer.write(gson.toJson(endpoints));
+//			} catch (Exception e) {
+//				System.err.println("Speicher fail!");
+//				e.printStackTrace();
+//			}
 //			
 //			num =  endpoints.size();
 //			
@@ -113,7 +112,6 @@ public class JettyStart {
 		System.out.println("Number of buildings: " + num);
 		for (int i = 0; i < endpoints.size(); i++) {
 			JsonObject jsonEndpoint = (JsonObject) endpoints.get(i);
-			System.out.println("Number of buildings: " + i);
 			try {
 				String NodeConfig = (String) jsonEndpoint.get("config");
 				JsonObject jsonNodes = null;
@@ -123,13 +121,13 @@ public class JettyStart {
 					System.err.println("Topology could not be deserialized");
 					e.printStackTrace();
 				}
-				System.out.println("Building " + i + " will be added...");
+				System.out.println("Building " + (i+1) + " will be added...");
 				BuildingController sampleBuilding = new OpcUaBuildingController(topologyMemapOn, jsonEndpoint, jsonNodes);
 				//BuildingController sampleBuilding2 = new OpcUaBuildingController(topologyMemapOff, jsonEndpoint, jsonNodes);
 				topologyMemapOn.attach(sampleBuilding);
 				//topologyMemapOff.attach(sampleBuilding2);
 				errorCode.put((String) jsonEndpoint.get("name"), 0);
-				System.out.println("Building " + i + " was added...");
+				System.out.println("Building " + (i+1) + " was added...");
 
 			} catch (IllegalStateException e2) {
 				System.err.println("WARNING: Failed to create Client. Building has not been initialised");

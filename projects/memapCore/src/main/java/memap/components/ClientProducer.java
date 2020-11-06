@@ -12,8 +12,10 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
 import com.google.common.collect.ImmutableList;
 
+import akka.basicMessages.RequestContent;
 import memap.components.prototypes.Producer;
 import memap.controller.TopologyController;
+import memap.helper.EnergyPrices;
 import memap.helperOPCua.BasicClient;
 import memap.main.TopologyConfig;
 import memap.messages.OptimizationResultMessage;
@@ -23,11 +25,12 @@ public class ClientProducer extends Producer {
 	
 	public final NetworkType networkType;
 	public double opCost;
-
+	double trigger;
 	public double costCO2;
 	public BasicClient client;
 //	public List<NodeId> setpointIds = new ArrayList<NodeId>();
 	public NodeId setpointsId;
+	public NodeId triggerId;
 	
 	/**
 	 * @param client
@@ -41,7 +44,7 @@ public class ClientProducer extends Producer {
 	 * @param setpointsId 
 	 * @param port
 	 */
-	public ClientProducer(BasicClient client, String name, NodeId nodeIdSector, NodeId minPowerId, NodeId maxPowerId, NodeId effId, NodeId opCostId, NodeId costCO2Id, NodeId setpointsId, int port)
+	public ClientProducer(BasicClient client, String name, NodeId triggerId, NodeId nodeIdSector, NodeId minPowerId, NodeId maxPowerId, NodeId effId, NodeId opCostId, NodeId costCO2Id, NodeId setpointsId, int port)
 			throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(minPowerId), client.readFinalDoubleValue(maxPowerId),
 				client.readFinalDoubleValue(effId), port);
@@ -50,6 +53,8 @@ public class ClientProducer extends Producer {
 		this.client = client;
 		this.setpointsId = setpointsId;
 		this.networkType = this.setNetworkType(client, nodeIdSector);
+		this.triggerId = triggerId;
+		this.trigger = client.readFinalDoubleValue(triggerId);
 		this.opCost = client.readFinalDoubleValue(opCostId);
 //		this.opCost = opCostId;
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
@@ -69,7 +74,9 @@ public class ClientProducer extends Producer {
 	
 	@Override
 	public void handleRequest() {
+		
 		if (requestContentReceived instanceof OptimizationResultMessage) {
+			
 			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
 			for (String key : optResult.resultMap.keySet()) {
 				if (key.equals(actorName)) {
@@ -94,6 +101,28 @@ public class ClientProducer extends Producer {
 				}
 				
 			}
+			System.out.println("Setpoint written for CPROD.");
+		}
+		
+		double tr = trigger;
+		System.out.println(tr + " - CPROD waiting for new trigger....");
+		while (tr ==  trigger) {
+			try {
+				tr = client.readFinalDoubleValue(triggerId);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+		}
+		trigger = tr;
+		try {
+			Thread.sleep(1500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -107,5 +136,6 @@ public class ClientProducer extends Producer {
 	public NetworkType setNetworkType(BasicClient client, NodeId nodeIdSector) {
 		return super.setNetworkType(client, nodeIdSector);
 	}
+
 
 }

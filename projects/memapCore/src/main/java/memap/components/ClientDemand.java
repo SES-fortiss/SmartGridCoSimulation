@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateReq
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
+import akka.basicMessages.RequestContent;
 import akka.timeManagement.CurrentTimeStepSubscriber;
 import memap.components.prototypes.Consumer;
 import memap.controller.TopologyController;
@@ -33,6 +34,8 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 	private int currentTimeStep;
 	public BasicClient client;
 	public NodeId nodeId;
+	public NodeId triggerId;
+	double trigger;
 	/** Consumption profile values */
 	public Double consumptionProfile[];
 
@@ -50,9 +53,19 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 	 * @param port
 	 */
 
-	public ClientDemand(BasicClient client, String name, NodeId nodeIdSector, NodeId nodeIdConsumption, NodeId arrayForecastId, NodeId demandSetpointId, int port) {
+	public ClientDemand(BasicClient client, String name, NodeId triggerId, NodeId nodeIdSector, NodeId nodeIdConsumption, NodeId arrayForecastId, NodeId demandSetpointId, int port) {
 		super(name, port);
 		this.client = client;
+		this.triggerId = triggerId;
+		try {
+			this.trigger = client.readFinalDoubleValue(triggerId);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (ExecutionException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		networkType = setNetworkType(client, nodeIdSector);
 		
 		
@@ -110,9 +123,6 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 	}
 
 
-
-
-
 	@Override
 	public void makeDecision() {
 		int nStepsMPC = topologyConfig.getNrStepsMPC();
@@ -146,6 +156,33 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		super.updateDisplay(consumptionMessage);
 	}
 	
+	
+	
+	
+	@Override
+	public void handleRequest() {
+		double tr = trigger;
+		while (tr ==  trigger) {
+			try {
+				tr = client.readFinalDoubleValue(this.triggerId);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		trigger = tr;
+		try {
+			Thread.sleep(1500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+
 	@Override
 	public List<Double> getHeatProfile(int timeStep, int mpcHorizon) {
 		return new ArrayList<Double>(Arrays.asList(consumptionProfile));
@@ -172,5 +209,6 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 	public NetworkType setNetworkType(BasicClient client, NodeId nodeIdSector) {
 		return super.setNetworkType(client, nodeIdSector);
 	}
+	
 	
 }

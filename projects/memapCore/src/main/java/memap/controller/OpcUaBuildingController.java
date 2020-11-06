@@ -209,29 +209,33 @@ public class OpcUaBuildingController implements BuildingController {
 		@SuppressWarnings("null")
 		private void initDevices() {
 			
+			NodeId trigger = null;
+			System.out.println("Reading EMS....");
+//			try (Writer writer = new FileWriter("nodesConfig.json")) {
+//			    writer.write(gson.toJson(nodesConfig));
+//			} catch (Exception e) {
+//				System.err.println("Speicher fail!");
+//				e.printStackTrace();
+//			}
+			JsonArray infos = (JsonArray) nodesConfig.get("EMS");
+			for (int i = 0; i < infos.size(); i++) {
+				try {
+					JsonObject info = (JsonObject) infos.get(i);
+					NodeId nid1 = NodeId.parse((String) info.get("nameId"));	
+					trigger = NodeId.parse((String) info.get("trigger"));
+					String EmsName = client.readFinalStringValue(nid1);
+					System.out.println("EMS nameID: " + EmsName);
+				} catch (Exception e) {
+					System.err.println("WARNING: Could not add name string to building " + name
+							+ ".\nPlease check " + infos.toString());
+				}
+			}
+			
+
 			for (String key : nodesConfig.keySet()) {
-				System.out.println("Key: " + key);
+//				System.out.println("Key: " + key);
 				switch (key) {
-				case "INFO":
-					JsonArray infos = (JsonArray) nodesConfig.get("INFO");
-					for (int i = 0; i < infos.size(); i++) {
-						try {
-							JsonObject info = (JsonObject) infos.get(i);
-							NodeId nid1 = NodeId.parse((String) info.get("nameId"));	
-//							NodeId nid1 = NodeId.parse((String) info.get("site"));		
-//							NodeId nid2 = NodeId.parse((String) info.get("ems"));
-//							NodeId nid3 = NodeId.parse((String) info.get("object"));
-							String EmsName = client.readFinalStringValue(nid1);
-//							String str1 = client.readFinalStringValue(nid1);
-//							String str2 = client.readFinalStringValue(nid2);
-//							String str3 = client.readFinalStringValue(nid3);
-//							nameString = str1 + "EMS" + str2 + "OBJ" + str3;
-							System.out.println("EMS nameID: " + EmsName);
-						} catch (Exception e) {
-							System.err.println("WARNING: Could not add name string to building " + name
-									+ ".\nPlease check " + infos.toString());
-						}
-					}
+				case "EMS":
 					break;
 				
 				case "COUPL":
@@ -273,7 +277,7 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId arrayForecastId = NodeId.parse((String) demnd.get("DemandFC"));
 							NodeId consumptionId = NodeId.parse((String) demnd.get("currentDem"));
 							NodeId demandSetpointId = NodeId.parse((String) demnd.get("DemndSetPt"));
-							ClientDemand cd = new ClientDemand(client, "DEMND" + String.format("%02d",  i), demndSectId, consumptionId, arrayForecastId, demandSetpointId, 0);
+							ClientDemand cd = new ClientDemand(client, "DEMND" + String.format("%02d",  i), trigger, demndSectId, consumptionId, arrayForecastId, demandSetpointId, 0);
 							attach(cd);
 							cd.setTopologyController(topologyController);
 							System.out.println("Added demand to " + name);
@@ -304,7 +308,7 @@ public class OpcUaBuildingController implements BuildingController {
 							
 							NodeId setpointsId = NodeId.parse((String) cprod.get("SPDevPwr"));
 							
-							ClientProducer cp = new ClientProducer(client, "CPROD" + String.format("%02d",  i), primarySectId, minPowerId, maxPowerId,
+							ClientProducer cp = new ClientProducer(client, "CPROD" + String.format("%02d",  i), trigger, primarySectId, minPowerId, maxPowerId,
 									effId, opCostId, costCO2Id, setpointsId, 0);
 							attach(cp);
 							cp.setTopologyController(topologyController);
@@ -370,7 +374,7 @@ public class OpcUaBuildingController implements BuildingController {
 //								String SPnameD = "SPDisChrg" + Integer.toString(j+1);
 //								outputSetpointsId.add(j, NodeId.parse((String) strge.get(SPnameD)));
 //							}
-							ClientStorage cs = new ClientStorage(client, "STRGE" + String.format("%02d",  i), capacityId, stateOfChargeId, calculatedSocId,
+							ClientStorage cs = new ClientStorage(client, "STRGE" + String.format("%02d",  i), capacityId, trigger, stateOfChargeId, calculatedSocId,
 									maxChargingId, maxDischargingId, effInId, effOutId, primarySectId,
 									opCostId, costCO2Id, inputSetpointsId, outputSetpointsId, 0);
 							attach(cs);
