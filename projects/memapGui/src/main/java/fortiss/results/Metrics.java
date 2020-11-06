@@ -490,6 +490,14 @@ public abstract class Metrics {
 	protected double sum(ArrayList<Double> data) {
 		return data.stream().mapToDouble(Double::doubleValue).sum();
 	}
+	
+	protected ArrayList<Double> abs(ArrayList<Double> data) {
+		ArrayList<Double> positiveData = new ArrayList<Double>();
+		for (double value : data) {
+			positiveData.add(Math.abs(value));
+		}
+		return positiveData;
+	}
 
 	/**
 	 * @returns the sum of the elements data
@@ -515,7 +523,7 @@ public abstract class Metrics {
 	 * @param componentName the name of a component
 	 */
 	protected ArrayList<Double> getElectricityContributedBy(String entryName, String componentName) {
-		return overviewResult.getDataSeries(entryName, "E_" + componentName);
+		return abs(overviewResult.getDataSeries(entryName, "E_" + componentName));
 	}
 
 	/**
@@ -525,7 +533,7 @@ public abstract class Metrics {
 	 * @param componentName the name of a component
 	 */
 	protected ArrayList<Double> getHeatContributedBy(String entryName, String componentName) {
-		return overviewResult.getDataSeries(entryName, "H_" + componentName);
+		return abs(overviewResult.getDataSeries(entryName, "H_" + componentName));
 	}
 
 	/**
