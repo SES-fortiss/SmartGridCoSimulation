@@ -37,8 +37,6 @@ public class ComponentUsageWidget extends JPanel {
 		int height = 400;
 		
 		setLayout(new MigLayout("insets 0 0 0 0, width 100%, gapy 0", "", ""));
-				//"[center]", 
-				//""));
 		setBorder(BorderFactory.createLineBorder(Colors.green));
 		
 		JLabel titleLabel = new JLabel("    " + title.toUpperCase(), SwingConstants.LEFT);

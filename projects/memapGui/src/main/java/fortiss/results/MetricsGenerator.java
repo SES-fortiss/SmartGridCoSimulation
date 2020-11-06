@@ -121,15 +121,16 @@ public class MetricsGenerator {
 
 		HashMap<String, Number> componentUsage = new HashMap<String, Number>();
 		componentUsage.putAll(memapOnMetrics.getEnergyProducedBySource());
-		// TODO: Check what market should represent: buy/sell
-		componentUsage.put("Market", memapOnMetrics.getElectricityBuy() + memapOnMetrics.getHeatBuy());
-		summaryPanel.addComponentUsageWidget(Strings.memapOnModeName, "Component usage - " + Strings.memapOnModeName, componentUsage, 5);
+		componentUsage.put("Market (Elec. buy)", memapOnMetrics.getElectricityBuy());
+		componentUsage.put("Market (Heat buy)", memapOnMetrics.getHeatBuy());
+		summaryPanel.addComponentUsageWidget(Strings.memapOnModeName, "Component usage - " + Strings.memapOnModeName, componentUsage, 3);
 
 		HashMap<String, Number> componentUsage2 = new HashMap<String, Number>();
 		componentUsage2.putAll(memapOffMetrics.getEnergyProducedBySource());
-		componentUsage2.put("Market", memapOffMetrics.getElectricityBuy() + memapOffMetrics.getHeatBuy());
+		componentUsage2.put("Market (Elec. buy)", memapOffMetrics.getElectricityBuy());
+		componentUsage2.put("Market (Heat buy)", memapOffMetrics.getHeatBuy());
 		summaryPanel.addComponentUsageWidget(Strings.memapOffModeName, "Component usage - " + Strings.memapOffModeName,
-				componentUsage2, 5);
+				componentUsage2, 3);
 	}
 
 	/**
@@ -223,7 +224,12 @@ public class MetricsGenerator {
 			contextPanel.addBarPlotWidget("Energy produced by type", "Buildings", "Energy [kWh]", 400, 400,
 					energyByBuilding, "* Storages are not considered energy producers");
 		}
-		contextPanel.addComponentUsageWidget(contextName, "Component usage - " + contextName , metrics.getEnergyProducedBySource(), 3);
+
+		HashMap<String, Number> componentUsage = new HashMap<String, Number>();
+		componentUsage.putAll(metrics.getEnergyProducedBySource());
+		componentUsage.put("Market (Elec. buy)", metrics.getHeatBuy());
+		componentUsage.put("Market (Heat buy)", metrics.getHeatBuy());
+		contextPanel.addComponentUsageWidget(contextName, "Component usage - " + contextName, componentUsage, 3);
 	}
 
 }

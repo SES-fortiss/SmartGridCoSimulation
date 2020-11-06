@@ -446,14 +446,12 @@ public abstract class Metrics {
 		HashMap<String, Number> electricityProducedBySource = getElectricityProducedBySource();
 		HashMap<String, Number> heatProducedBySource = getHeatProducedBySource();
 
-		energyProducedBySource.putAll(electricityProducedBySource);
-		for (Entry<String, Number> l : heatProducedBySource.entrySet()) {
-			if (energyProducedBySource.containsKey(l.getKey())) {
-				double currentValue = energyProducedBySource.get(l.getKey()).doubleValue();
-				energyProducedBySource.replace(l.getKey(), currentValue + l.getValue().doubleValue());
-			} else {
-				energyProducedBySource.put(l.getKey(), l.getValue());
-			}
+		for (Entry<String, Number> source : electricityProducedBySource.entrySet()) {
+			energyProducedBySource.put(source.getKey() + " (Elec.)", source.getValue());
+		}
+
+		for (Entry<String, Number> source : heatProducedBySource.entrySet()) {
+			energyProducedBySource.put(source.getKey() + " (Heat)", source.getValue());
 		}
 		return energyProducedBySource;
 	}
