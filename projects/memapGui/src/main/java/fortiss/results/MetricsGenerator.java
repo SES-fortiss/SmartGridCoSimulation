@@ -183,7 +183,6 @@ public class MetricsGenerator {
 		int sizeFactor = (int) Math.min(4.0, Math.round(metrics.nTimeSteps / 20 + 0.5));
 		// TODO + NOTE change for visual testing
 
-		// sizeFactor = 4;
 		contextPanel.addBarPlotWidget("Energy produced and demanded", "Time steps", "Power [kWh]", 1600, 400,
 				energySeries, "* Storages are not considered energy producers");
 
