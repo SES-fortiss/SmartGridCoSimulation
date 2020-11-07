@@ -145,7 +145,7 @@ public class MetricsGenerator {
 		contextPanel.addTitleWidget(contextName);
 		// Text widget: Total cost (EUR and CO2)
 		contextPanel.addTextWidget("Total cost", metrics.getCost(), Strings.costsUnit, null);
-		contextPanel.addTextWidget("Total CO2 Emissions", metrics.getCo2emissions(), "kg CO2", null);
+		contextPanel.addTextWidget("Total CO2 Emissions", metrics.getCo2emissions(), Strings.co2EmissionsUnit, null);
 
 		// Text widget: Energy demanded
 		contextPanel.addTextWidget(Strings.heatDemand, metrics.getHeatDemand(), Strings.energyUnit, null);
@@ -181,33 +181,17 @@ public class MetricsGenerator {
 		energySeries.add(
 				new CategorySeries("Heat Production", metrics.getTime(), metrics.getHeatProducedInTime(), null, null));
 
-		int sizeFactor = (int) Math.min(4.0, Math.round(metrics.nTimeSteps / 20 + 0.5));
-		// TODO + NOTE change for visual testing
-
 		contextPanel.addBarPlotWidget("Energy produced and demanded", "Time steps", "Power [kWh]", 1600, 400,
 				energySeries, "* Storages are not considered energy producers");
-
-		// Pie widget: Energy contributed by storage
-		contextPanel.addPiePlotWidget("Heat contributed by storage", 400, 400, metrics.getHeatDischargedByStorage(),
-				null);
-		contextPanel.addPiePlotWidget("Electricity contributed by storage", 400, 400,
-				metrics.getElectricityDischargedByStorage(), null);
 
 		// Pie widget: Energy produced by type
 		HashMap<String, Number> energyProductionByType = new HashMap<String, Number>();
 		energyProductionByType.put("Electricity", metrics.getElectricityProduction());
 		energyProductionByType.put("Heat", metrics.getHeatProduction());
+		energyProductionByType.put("Market (Elec. buy)", metrics.getHeatBuy());
+		energyProductionByType.put("Market (Heat buy)", metrics.getElectricityBuy());
 		contextPanel.addPiePlotWidget("Energy produced by type", 400, 400, energyProductionByType,
 				"* Storages are not considered energy producers");
-
-		// Pie widget: Energy produced by source
-		sizeFactor = metrics.getElectricityProducedBySource().size() - 2;
-		contextPanel.addPiePlotWidget("Electricity produced by source", 400, sizeFactor * 20 + 400,
-				metrics.getElectricityProducedBySource(), "* Storages are not considered energy producers");
-
-		sizeFactor = metrics.getHeatProducedBySource().size() - 2;
-		contextPanel.addPiePlotWidget("Heat produced by source", 400, sizeFactor * 20 + 400,
-				metrics.getHeatProducedBySource(), "* Storages are not considered energy producers");
 
 		// Bar widget: Energy produced by type and building
 		if (metrics.context.equals(Strings.memapOnModeName)) {
@@ -227,7 +211,7 @@ public class MetricsGenerator {
 
 		HashMap<String, Number> componentUsage = new HashMap<String, Number>();
 		componentUsage.putAll(metrics.getEnergyProducedBySource());
-		componentUsage.put("Market (Elec. buy)", metrics.getHeatBuy());
+		componentUsage.put("Market (Elec. buy)", metrics.getElectricityBuy());
 		componentUsage.put("Market (Heat buy)", metrics.getHeatBuy());
 		contextPanel.addComponentUsageWidget(contextName, "Component usage - " + contextName, componentUsage, 3);
 	}
