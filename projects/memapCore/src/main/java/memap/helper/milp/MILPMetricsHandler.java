@@ -112,6 +112,13 @@ public class MILPMetricsHandler implements MetricsHandler {
 					efficiency[1] = message.efficiencyDischarge;
 				}
  			}
+			if (componentName.equals(message.name + "Charge")) {
+				if(message.networkType.equals(NetworkType.HEAT)) {
+					efficiency[0] = message.efficiencyCharge;
+				} else {
+					efficiency[1] = message.efficiencyCharge;
+				}
+ 			}
 		}
 		for (CouplerMessage message : buildingMessage.couplerList) {
 			if (componentName.equals(message.name)) {
