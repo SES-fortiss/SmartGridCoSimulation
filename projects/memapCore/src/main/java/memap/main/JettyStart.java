@@ -124,13 +124,13 @@ public class JettyStart {
 					e.printStackTrace();
 				}
 
-				System.out.println("Building " + i + " will be added...");
+				System.out.println("Building " + (i+1) + " will be added...");
 				BuildingController sampleBuilding = new OpcUaBuildingController(topologyMemapOn, jsonEndpoint, jsonNodes);
 				//BuildingController sampleBuilding2 = new OpcUaBuildingController(topologyMemapOff, jsonEndpoint, jsonNodes);
 				topologyMemapOn.attach(sampleBuilding);
 				//topologyMemapOff.attach(sampleBuilding2);
 				errorCode.put((String) jsonEndpoint.get("name"), 0);
-				System.out.println("Building " + i + " was added...");
+				System.out.println("Building " + (i+1) + " was added...");
 
 			} catch (IllegalStateException e2) {
 				System.err.println("WARNING: Failed to create Client. Building has not been initialised");

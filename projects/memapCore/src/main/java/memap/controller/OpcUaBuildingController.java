@@ -3,12 +3,14 @@ package memap.controller;
 import java.io.FileWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,6 +24,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 
 import memap.components.prototypes.Device;
+import memap.helper.HelperConcat;
+import memap.helper.HelperUnnestingJSON;
 import memap.components.ClientDemand;
 import memap.components.ClientCoupler;
 import memap.components.ClientProducer;
@@ -218,52 +222,83 @@ public class OpcUaBuildingController implements BuildingController {
 	 */
 	private class NodesConfigHandler {
 		
+		
+		
 		@SuppressWarnings("null")
 		private void initDevices() {
 			
 //			for (int n = 0; n < fullNodesConfig.size(); n++) {  //Iterate through site, object, EMS ....
 			for ( String EMSkey : fullNodesConfig.keySet()) {
-				nodesConfig = (JsonObject) fullNodesConfig.get(EMSkey);
+				JsonObject emsNodesConfig = (JsonObject) fullNodesConfig.get(EMSkey);
 				
 				// Todo: Parse string to get LS, Obj, EMS - NUmber)
-				System.out.println("Reading EMS" + EMSkey);
+				System.out.println("Reading EMS" + EMSkey);			
 	
-				for (String key : nodesConfig.keySet()) {
+//				Map<String, Object> map = new HashMap<String, Object>();
+//		        Iterator<Entry<String, Object>> keys = emsNodesConfig.entrySet().iterator();
+//		        while(keys.hasNext()) {
+//		        	Map.Entry key = (Map.Entry) keys.next();
+//		            Object value = key.getValue();
+//		            System.out.println("ObjectValue" + value.toString());
+//		            if (value instanceof JsonArray) {
+//		            	System.out.println("JsonArray");
+//		            } else if (value instanceof JsonObject) {
+//		            	System.out.println("JsonObject");
+//		            } else if (value instanceof String) {
+//		            	System.out.println("Node:" + value);
+//		            }
+//		        }
+				
+				for (String key : emsNodesConfig.keySet()) {
 					System.out.println("Key: " + key);
 	//				System.out.println("Key: " + key);
 					switch (key) {
 					case "NO": //"INFO":
-						JsonArray infos = (JsonArray) nodesConfig.get("INFO");
-						for (int i = 0; i < infos.size(); i++) {
-							try {
-								JsonObject info = (JsonObject) infos.get(i);
-								NodeId nid1 = NodeId.parse((String) info.get("nameId"));	
-	//							NodeId nid1 = NodeId.parse((String) info.get("site"));		
-	//							NodeId nid2 = NodeId.parse((String) info.get("ems"));
-	//							NodeId nid3 = NodeId.parse((String) info.get("object"));
-								String EmsName = client.readFinalStringValue(nid1);
-	//							String str1 = client.readFinalStringValue(nid1);
-	//							String str2 = client.readFinalStringValue(nid2);
-	//							String str3 = client.readFinalStringValue(nid3);
-	//							nameString = str1 + "EMS" + str2 + "OBJ" + str3;
-								System.out.println("EMS nameID: " + EmsName);
-							} catch (Exception e) {
-								System.err.println("WARNING: Could not add name string to building " + name
-										+ ".\nPlease check " + infos.toString());
-							}
-						}
+//						JsonArray infos = (JsonArray) nodesConfig.get("NO");
+//
+//						for (int i = 0; i < infos.size(); i++) {
+//							try {
+//								JsonObject info = (JsonObject) infos.get(i);
+//								NodeId nid1 = NodeId.parse((String) info.get("nameId"));	
+//	//							NodeId nid1 = NodeId.parse((String) info.get("site"));		
+//	//							NodeId nid2 = NodeId.parse((String) info.get("ems"));
+//	//							NodeId nid3 = NodeId.parse((String) info.get("object"));
+//								String EmsName = client.readFinalStringValue(nid1);
+//	//							String str1 = client.readFinalStringValue(nid1);
+//	//							String str2 = client.readFinalStringValue(nid2);
+//	//							String str3 = client.readFinalStringValue(nid3);
+//	//							nameString = str1 + "EMS" + str2 + "OBJ" + str3;
+//								System.out.println("EMS nameID: " + EmsName);
+//							} catch (Exception e) {
+//								System.err.println("WARNING: Could not add name string to building " + name
+//										+ ".\nPlease check " + infos.toString());
+//							}
+//						}
 						break;
 					
 					case "COUPL":
-						JsonObject coupl = (JsonObject) nodesConfig.get("COUPL");
-						JsonArray one = (JsonArray) coupl.get("1");
-						JsonObject first = (JsonObject) coupl.get(1);
-						JsonObject ZM = (JsonObject) coupl.get("ZM");
+						JsonObject coupler = (JsonObject) emsNodesConfig.get("COUPL");
 						
-						JsonArray coupler = (JsonArray) nodesConfig.get("HT");
-						for (int i = 0; i < coupler.size(); i++) {
+						for (int i = 0; i < coupler.keySet().size(); i++) {
+							
+							try (Writer writer = new FileWriter("coupl.json")) {
+							    writer.write(gson.toJson(coupler));
+							} catch (Exception e) {
+								System.err.println("coupl save fail!");
+								e.printStackTrace();
+							}
+							System.out.println("Read Coupl Nr" + (i+1) + " of " + coupler.keySet().size());
+							JsonObject coupl = HelperUnnestingJSON.unnestJson(i, coupler);
+					
+							try (Writer writer = new FileWriter("coupl2.json")) {
+							    writer.write(gson.toJson(coupl));
+							} catch (Exception e) {
+								System.err.println("coupl2 save fail!");
+								e.printStackTrace();
+							}
+							
 							try {
-								coupl = (JsonObject) coupler.get(i);
+//								coupl = (JsonObject) coupler.get(i);
 								NodeId primarySectId = NodeId.parse((String) coupl.get("PrimSect"));
 								NodeId secondarySectId = NodeId.parse((String) coupl.get("SecdSect"));
 								NodeId minPowerId = NodeId.parse((String) coupl.get("MinPower"));
@@ -284,16 +319,18 @@ public class OpcUaBuildingController implements BuildingController {
 								System.out.println("Added coupler to " + name);
 							} catch (Exception e) {
 								System.err.println("WARNING: Could not add coupler " + i + " to building " + name
-										+ ".\nPlease check " + coupler.toString());
+										+ ".\nPlease check " + coupl.toString());
 							}
 						}
 						break;
 	
 					case "DEMND":
-						JsonArray demands = (JsonArray) nodesConfig.get("DEMND");
-						for (int i = 0; i < demands.size(); i++) {
+						JsonObject demands = (JsonObject) emsNodesConfig.get("DEMND");
+						for (int i = 0; i < demands.keySet().size(); i++) {
+							System.out.println("Read Demand Nr" + (i+1) + " of " + demands.keySet().size());
+							JsonObject demnd = HelperUnnestingJSON.unnestJson(i, demands);
 							try {
-								JsonObject demnd = (JsonObject) demands.get(i);
+//								JsonObject demnd = (JsonObject) demands.get(i);
 								NodeId demndSectId = NodeId.parse((String) demnd.get("PrimSect"));
 								NodeId arrayForecastId = NodeId.parse((String) demnd.get("DemandFC"));
 								NodeId consumptionId = NodeId.parse((String) demnd.get("currentDem"));
@@ -304,16 +341,17 @@ public class OpcUaBuildingController implements BuildingController {
 								System.out.println("Added demand to " + name);
 							} catch (Exception e) {
 								System.err.println("WARNING: Could not add demand " + i + " to building " + name
-										+ ".\nPlease check " + demands.toString());
+										+ ".\nPlease check " + demnd.toString());
 							}
 						}
 						break;
 	
 					case "CPROD":
-						JsonArray cproducers = (JsonArray) nodesConfig.get("CPROD");
-						for (int i = 0; i < cproducers.size(); i++) {
+						JsonObject controllableProd = (JsonObject) emsNodesConfig.get("CPROD");
+						for (int i = 0; i < controllableProd.keySet().size(); i++) {
+							JsonObject cprod = HelperUnnestingJSON.unnestJson(i, controllableProd);
 							try {
-								JsonObject cprod = (JsonObject) cproducers.get(i);
+//								JsonObject cprod = (JsonObject) cproducers.get(i);
 								NodeId primarySectId = NodeId.parse((String) cprod.get("PrimSect"));	
 								NodeId minPowerId = NodeId.parse((String) cprod.get("MinPower"));
 								NodeId maxPowerId = NodeId.parse((String) cprod.get("MaxPower"));
@@ -337,16 +375,17 @@ public class OpcUaBuildingController implements BuildingController {
 							} catch (Exception e) {
 								System.err.println(e);
 								System.err.println("WARNING: Could not add controllable producer " + i + " to building " + name
-										+ ".\nPlease check " + cproducers.toString());
+										+ ".\nPlease check " + cprod.toString());
 							}
 						}
 						break;
 	
 					case "VPROD":
-						JsonArray vproducers = (JsonArray) nodesConfig.get("VPROD");
-						for (int i = 0; i < vproducers.size(); i++) {
+						JsonObject volatileProd = (JsonObject) emsNodesConfig.get("VPROD");
+						for (int i = 0; i < volatileProd.keySet().size(); i++) {
+							JsonObject vprod = HelperUnnestingJSON.unnestJson(i, volatileProd);
 							try {
-								JsonObject vprod = (JsonObject) vproducers.get(i);
+//								JsonObject vprod = (JsonObject) vproducers.get(i);
 								NodeId primarySectId = NodeId.parse((String) vprod.get("PrimSect"));
 	//							NodeId effId = NodeId.parse((String) vprod.get("EffPrim"));
 	//							NodeId minPowerId = NodeId.parse((String) vprod.get("MinPower"));
@@ -366,16 +405,19 @@ public class OpcUaBuildingController implements BuildingController {
 								System.out.println("Added volatile producers to " + name);
 							} catch (Exception e) {
 								System.err.println("WARNING: Could not add volatile producer " + i + " to building " + name
-										+ ".\nPlease check " + vproducers.toString());
+										+ ".\nPlease check " + vprod.toString());
 							}
 						}
 						break;
 						
 					case "STRGE":
-						JsonArray storages = (JsonArray) nodesConfig.get("STRGE");
-						for (int i = 0; i < storages.size(); i++) {
+						JsonObject storages = (JsonObject) emsNodesConfig.get("STRGE");
+						for (int i = 0; i < storages.keySet().size(); i++) {
+							System.out.println("Read Strg Nr" + (i+1) + " of " + storages.keySet().size());
+							JsonObject strge = HelperUnnestingJSON.unnestJson(i, storages);
+							
 							try {
-								JsonObject strge = (JsonObject) storages.get(i);
+//								JsonObject strge = (JsonObject) storages.get(i);
 								NodeId primarySectId = NodeId.parse((String) strge.get("PrimSect"));
 								NodeId effInId = NodeId.parse((String) strge.get("EffPrim"));
 								NodeId effOutId = NodeId.parse((String) strge.get("DisEffPrim"));
@@ -383,7 +425,8 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId maxDischargingId = NodeId.parse((String) strge.get("MaxPower"));
 								NodeId capacityId = NodeId.parse((String) strge.get("Capacity"));
 								NodeId stateOfChargeId = NodeId.parse((String) strge.get("curSOC"));
-								NodeId calculatedSocId = NodeId.parse((String) strge.get("calcSOC"));
+//								NodeId calculatedSocId = NodeId.parse((String) strge.get("calcSOC"));
+								NodeId calculatedSocId = NodeId.parse((String) strge.get("curSOC"));
 								NodeId opCostId = NodeId.parse((String) strge.get("PrimEnCost"));
 								NodeId costCO2Id = NodeId.parse((String) strge.get("CO2PerKWh"));
 								NodeId inputSetpointsId = NodeId.parse((String) strge.get("SPCharge"));
@@ -403,7 +446,7 @@ public class OpcUaBuildingController implements BuildingController {
 								System.out.println("Added storage to " + name);
 							} catch (Exception e) {
 								System.err.println("WARNING: Could not add storage " + i + " to building " + name
-										+ ".\nPlease check " + storages.toString());
+										+ ".\nPlease check " + strge.toString());
 							}
 						}
 						break;
