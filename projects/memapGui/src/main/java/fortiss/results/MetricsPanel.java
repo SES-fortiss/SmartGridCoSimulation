@@ -70,7 +70,7 @@ public class MetricsPanel extends JPanel {
 
 		if (!(barPlotWidget).isEmpty()) {
 			if (width > 800) {
-				add(barPlotWidget, "span 2");
+				add(barPlotWidget, "span 2, growx");
 			} else {
 				add(barPlotWidget, "sizegroupx 1, growx");
 			}

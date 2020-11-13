@@ -72,10 +72,8 @@ public class ComponentUsageWidget extends JPanel {
 		List <String> keys = new ArrayList<String>(sortedMap.keySet());
 		List <Number> values = new ArrayList<Number>(sortedMap.values());
 		
-		CategoryChart ch = new CategoryChartBuilder().width(width).height(height).xAxisTitle("Component")
-				.yAxisTitle("Energy Produced [kWH]").build();
-		
-		XChartPanel<CategoryChart> chart = new XChartPanel<CategoryChart>(ch); 
+		XChartPanel<CategoryChart> chart = new XChartPanel<CategoryChart>(new CategoryChartBuilder().width(width).height(height).xAxisTitle("Component")
+				.yAxisTitle("Energy Produced [kWH]").build()); 
 		
 		chart.getChart().getStyler().setDefaultSeriesRenderStyle(CategorySeriesRenderStyle.Bar);
 		chart.getChart().getStyler().setChartBackgroundColor(Colors.white);
@@ -86,7 +84,7 @@ public class ComponentUsageWidget extends JPanel {
 		chart.getChart().getStyler().setAxisTitleFont(Fonts.getOpenSans(FontSize.TINY));
 		chart.getChart().getStyler().setAxisTickLabelsFont(Fonts.getOpenSans(FontSize.TINY));
 		
-		ch.addSeries("Energy [kWh]", keys, values);
+		chart.getChart().addSeries("Energy [kWh]", keys, values);
 
 		add(titleLabel, "width 100%, align left, wrap");
 		add(separator, "width 100%, wrap");

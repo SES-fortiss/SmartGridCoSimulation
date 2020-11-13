@@ -73,14 +73,14 @@ public class MetricsGenerator {
 		lwMemapOff.addRow("Cost", perBuildingOptimizationCost, Strings.costsUnit);
 		lwMemapOff.addRow("CO2", perBuildingOptimizationCo2Emissions, Strings.co2EmissionsUnit);
 
-		// // List widget: System energy demand
+		// List widget: System energy demand
 		ListWidget lwDemand = summaryPanel.addListWidget(Strings.performancePanelName, "System Energy Demand", null);
 		lwDemand.addRow("Electricity", memapOnMetrics.getElectricityDemand(), Strings.energyUnit);
 		lwDemand.addRow("Heat", memapOnMetrics.getHeatDemand(), Strings.energyUnit);
 		lwDemand.setPreferredSize(new Dimension(290, 100));
 
 		// MEMAP ON - FIGURES
-		// List widget: Electricity balance : memapOn
+		// List widget: Electricity balance
 		ListWidget lwElectricity = summaryPanel.addListWidget(Strings.memapOnModeName, "Electricity balance: " + Strings.memapOnModeName,
 				null);
 		lwElectricity.addRow("Total demand", memapOnMetrics.getElectricityDemand(), Strings.energyUnit);
@@ -100,6 +100,7 @@ public class MetricsGenerator {
 		lwHeat.addRow("Market selling", memapOnMetrics.getHeatSell(), Strings.energyUnit);
 
 		// MEMAP OFF - FIGURES
+		// List widget: Electricity balance
 		ListWidget lwElectricity2 = summaryPanel.addListWidget(Strings.memapOffModeName,
 				"Electricity balance: " + Strings.memapOffModeName, null);
 		lwElectricity2.addRow("Total demand", memapOffMetrics.getElectricityDemand(), Strings.energyUnit);
@@ -160,7 +161,7 @@ public class MetricsGenerator {
 		lwHeat.addRow("Market buying", metrics.getHeatBuy(), Strings.energyUnit);
 		lwHeat.addRow("Market selling", metrics.getHeatSell(), Strings.energyUnit);
 		
-		// List widget: Electricity balance : memapOn
+		// List widget: Electricity balance
 		ListWidget lwElectricity = contextPanel.addListWidget(contextName, "Electricity balance: " + contextName,
 				null);
 		lwElectricity.addRow("Total demand", metrics.getElectricityDemand(), Strings.energyUnit);
@@ -170,19 +171,23 @@ public class MetricsGenerator {
 		lwElectricity.addRow("Market buying", metrics.getElectricityBuy(), Strings.energyUnit);
 		lwElectricity.addRow("Market selling", metrics.getElectricitySell(), Strings.energyUnit);
 
-		// Bar widget: Energy produced vs demanded per time step
+		// Bar widget: Energy contributed vs demanded per time step
 		List<CategorySeries> energySeries = new ArrayList<CategorySeries>();
-		energySeries.add(new CategorySeries("Electricity Demand ", metrics.getTime(),
+		energySeries.add(new CategorySeries("Electricity demanded", metrics.getTime(),
 				metrics.getElectricityDemandInTime(), null, null));
-		energySeries.add(new CategorySeries("Electricity Production", metrics.getTime(),
+		energySeries.add(new CategorySeries("Electricity produced", metrics.getTime(),
 				metrics.getElectricityProducedInTime(), null, null));
+		energySeries.add(new CategorySeries("Electricity discharged", metrics.getTime(),
+				metrics.getElectricityDischargeInTime(), null, null));
 		energySeries
-				.add(new CategorySeries("Heat Demand ", metrics.getTime(), metrics.getHeatDemandInTime(), null, null));
+				.add(new CategorySeries("Heat demanded ", metrics.getTime(), metrics.getHeatDemandInTime(), null, null));
 		energySeries.add(
-				new CategorySeries("Heat Production", metrics.getTime(), metrics.getHeatProducedInTime(), null, null));
-
-		contextPanel.addBarPlotWidget("Energy produced and demanded", "Time steps", "Power [kWh]", 1600, 400,
-				energySeries, "* Storages are not considered energy producers");
+				new CategorySeries("Heat produced", metrics.getTime(), metrics.getHeatProducedInTime(), null, null));
+		energySeries.add(
+				new CategorySeries("Heat discharged", metrics.getTime(), metrics.getHeatDischargeInTime(), null, null));
+		
+		contextPanel.addBarPlotWidget("Energy produced, discharged and demanded", "Time steps", "Power [kWh]", 1600, 400,
+				energySeries, null);
 
 		// Pie widget: Energy produced by type
 		HashMap<String, Number> energyProductionByType = new HashMap<String, Number>();

@@ -1,8 +1,13 @@
 package fortiss.results.widgets;
 
+import java.awt.Dimension;
 import java.util.List;
 
-import javax.swing.UIManager;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
@@ -14,8 +19,9 @@ import org.knowm.xchart.style.Styler.LegendPosition;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.FontSize;
 import fortiss.gui.style.Fonts;
+import net.miginfocom.swing.MigLayout;
 
-public class CategoryPlotWidget extends XChartPanel<CategoryChart> {
+public class CategoryPlotWidget extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private List<CategorySeries> series;
@@ -31,25 +37,43 @@ public class CategoryPlotWidget extends XChartPanel<CategoryChart> {
 	public CategoryPlotWidget(String title, String xAxisTitle, String yAxisTitle, int width, int height,
 			List<CategorySeries> series, CategorySeriesRenderStyle style) {
 
-		super(new CategoryChartBuilder().width(width).height(height).title(title.toUpperCase()).xAxisTitle(xAxisTitle)
+		setLayout(new MigLayout("insets 0 0 0 0, width 100%, fillx, gapy 0", "", ""));
+		setBorder(BorderFactory.createLineBorder(Colors.green));
+		
+		JLabel titleLabel = new JLabel("    " + title.toUpperCase(), SwingConstants.LEFT);
+		titleLabel.setAlignmentX(LEFT_ALIGNMENT);
+		titleLabel.setFont(Fonts.getOswald(FontSize.SMALL));
+		titleLabel.setOpaque(true);
+		titleLabel.setBackground(Colors.gray);
+		titleLabel.setForeground(Colors.normal);
+		
+		JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+		separator.setForeground(Colors.green);
+		separator.setPreferredSize(new Dimension(400, 1));
+		
+		XChartPanel<CategoryChart> chart = new XChartPanel<CategoryChart>(new CategoryChartBuilder().width(width).height(height).xAxisTitle(xAxisTitle)
 				.yAxisTitle(yAxisTitle).build());
 
 		this.series = series;
-		getChart().getStyler().setDefaultSeriesRenderStyle(style);
-		// getChart().getStyler().setChartBackgroundColor(Colors.background);
-		getChart().getStyler().setChartBackgroundColor(UIManager.getColor("Panel.background"));
-		getChart().getStyler().setChartFontColor(Colors.accent1);
-		getChart().getStyler().setChartPadding(10);
-		getChart().getStyler().setChartTitleFont(Fonts.getOswald(FontSize.NORMAL));
-		getChart().getStyler().setChartTitlePadding(15);
-		getChart().getStyler().setLegendFont(Fonts.getOpenSans(FontSize.TINY));
-		getChart().getStyler().setLegendPosition(LegendPosition.OutsideS);
-		getChart().getStyler().setLegendSeriesLineLength(20);
-		getChart().getStyler().setAxisTitleFont(Fonts.getOpenSans(FontSize.TINY));
-		getChart().getStyler().setAxisTickLabelsFont(Fonts.getOpenSans(FontSize.TINY));
-
-		series.forEach((serie) -> getChart().addSeries(serie.getName(), (List<?>) serie.getXData(),
+		chart.getChart().getStyler().setDefaultSeriesRenderStyle(style);
+		chart.getChart().getStyler().setChartBackgroundColor(Colors.white);
+		//chart.getChart().getStyler().setStacked(true);
+		chart.getChart().getStyler().setChartFontColor(Colors.accent1);
+		chart.getChart().getStyler().setChartPadding(10);
+		chart.getChart().getStyler().setChartTitleFont(Fonts.getOswald(FontSize.NORMAL));
+		chart.getChart().getStyler().setChartTitlePadding(0);
+		chart.getChart().getStyler().setLegendFont(Fonts.getOpenSans(FontSize.TINY));
+		chart.getChart().getStyler().setLegendPosition(LegendPosition.OutsideE);
+		chart.getChart().getStyler().setLegendSeriesLineLength(20);
+		chart.getChart().getStyler().setAxisTitleFont(Fonts.getOpenSans(FontSize.TINY));
+		chart.getChart().getStyler().setAxisTickLabelsFont(Fonts.getOpenSans(FontSize.TINY));
+		
+		series.forEach((serie) -> chart.getChart().addSeries(serie.getName(), (List<?>) serie.getXData(),
 				(List<? extends Number>) serie.getYData()));
+
+		add(titleLabel, "width 100%, align left, wrap");
+		add(separator, "width 100%, wrap");
+		add(chart, "width 100%, wrap");
 	}
 	
 	public boolean isEmpty() {

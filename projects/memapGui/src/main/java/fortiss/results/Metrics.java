@@ -155,17 +155,28 @@ public abstract class Metrics {
 	}
 
 	/**
-	 * @return the heatProduction
+	 * @return the heatProduction. Heat production is a metric that includes the
+	 *         heat produced by couplers, controllable producers and volatile
+	 *         produces. This metric does not account for the heat contributed by
+	 *         storages (See {@link #getHeatContributionInTime()}).
 	 */
 	public double getHeatProduction() {
 		return heatProduction;
 	}
 
 	/**
-	 * @param heatProduction the heatProduction to set
+	 * Set heatProduction
 	 */
 	public void setHeatProduction() {
 		heatProduction = convertPowerIntoEnergy(getTotalsByTimeStep(heatProducedBySourceInTime, nTimeSteps));
+	}
+
+	/**
+	 * @return heatDischarge in time (Power). Heat discharge is a metric that sums
+	 *         up the heat contributed by storages.
+	 */
+	public ArrayList<Double> getHeatDischargeInTime() {
+		return getTotalsByTimeStep(heatDischargedByStorageInTime, nTimeSteps);
 	}
 
 	/**
@@ -193,7 +204,7 @@ public abstract class Metrics {
 	 * @param heatDischarge the heatDischarge to set
 	 */
 	public void setHeatDischarge() {
-		heatDischarge = convertPowerIntoEnergy(getTotalsByTimeStep(heatDischargedByStorageInTime, nTimeSteps));
+		heatDischarge = convertPowerIntoEnergy(getHeatDischargeInTime());
 	}
 
 	/**
@@ -250,7 +261,11 @@ public abstract class Metrics {
 	}
 
 	/**
-	 * @return the electricityProduction
+	 * @return the electricityProduction. Electricity production is a metric that
+	 *         includes the electricity produced by couplers, controllable producers
+	 *         and volatile produces. This metric does not account for the
+	 *         electricity contributed by storages (See
+	 *         {@link #getElectricityContributionInTime()}).
 	 */
 	public double getElectricityProduction() {
 		return electricityProduction;
@@ -259,8 +274,17 @@ public abstract class Metrics {
 	/**
 	 * @param electricityProduction the electricityProduction to set
 	 */
-	public void setElectricityProduction() {				
-		electricityProduction = convertPowerIntoEnergy(getTotalsByTimeStep(electricityProducedBySourceInTime, nTimeSteps));
+	public void setElectricityProduction() {
+		electricityProduction = convertPowerIntoEnergy(
+				getTotalsByTimeStep(electricityProducedBySourceInTime, nTimeSteps));
+	}
+
+	/**
+	 * @return electricityDischarge in time (Power). Electricity discharge is a
+	 *         metric that sums up the electricity contributed by storages.
+	 */
+	public ArrayList<Double> getElectricityDischargeInTime() {
+		return getTotalsByTimeStep(electricityDischargedByStorageInTime, nTimeSteps);
 	}
 
 	/**
@@ -288,7 +312,7 @@ public abstract class Metrics {
 	 * @param electricityDischarge the electricityDischarge to set
 	 */
 	public void setElectricityDischarge() {
-		electricityDischarge = convertPowerIntoEnergy(getTotalsByTimeStep(electricityDischargedByStorageInTime, nTimeSteps));
+		electricityDischarge = convertPowerIntoEnergy(getElectricityDischargeInTime());
 	}
 
 	/**
@@ -490,7 +514,7 @@ public abstract class Metrics {
 	protected double sum(ArrayList<Double> data) {
 		return data.stream().mapToDouble(Double::doubleValue).sum();
 	}
-	
+
 	protected ArrayList<Double> abs(ArrayList<Double> data) {
 		ArrayList<Double> positiveData = new ArrayList<Double>();
 		for (double value : data) {
@@ -697,7 +721,7 @@ public abstract class Metrics {
 		}
 		return electricityChargedByStorageInTime;
 	}
-	
+
 	/**
 	 * Converts power into energy (kW --> kWh)
 	 */
