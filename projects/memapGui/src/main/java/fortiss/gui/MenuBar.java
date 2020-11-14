@@ -28,7 +28,7 @@ public class MenuBar extends JMenuBar implements ActionListener {
 	private static final String DESIGNER_PANEL = "Design tool";
 	private static final String OVERVIEW_RESULT_PANEL = "Results overview";
 	private static final String DETAILED_RESULT_PANEL = "Detailed results";
-	private static final String LOG_PANEL = "Log panel";
+	private static final String LOG_PANEL = "Log";
 
 	private static final String SIMULATION = "Simulation";
 	private static final String START_SIMULATION = "Start simulation";

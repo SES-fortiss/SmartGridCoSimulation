@@ -50,6 +50,7 @@ abstract public class IconStore {
 	private static String visualizePath = "/visualize.png";
 	private static String vsvFormatPath = "/csvFormat.png";
 	private static String seriesPath = "/series.png";
+	private static String logPath = "/log.png";
 	private static String statisticsPath = "/statistics.png";
 	private static String exclamationPath = "/exclamation.png";
 	private static String editPath = "/edit.png";
@@ -164,6 +165,8 @@ abstract public class IconStore {
 			new ImageIcon(IconStore.class.getResource(seriesPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 	public static ImageIcon statistics = new ImageIcon(
 			new ImageIcon(IconStore.class.getResource(statisticsPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+	public static ImageIcon log = new ImageIcon(
+			new ImageIcon(IconStore.class.getResource(logPath)).getImage().getScaledInstance(18, 18, Image.SCALE_SMOOTH));
 	public static ImageIcon exclamation = new ImageIcon(
 			new ImageIcon(IconStore.class.getResource(exclamationPath)).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 	public static ImageIcon edit = new ImageIcon(

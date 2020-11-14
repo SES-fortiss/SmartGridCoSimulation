@@ -26,7 +26,7 @@ public class PlanningTool {
 	private static final String TRACKER_PANEL = "Simulation progress";
 	private static final String OVERVIEW_RESULT_PANEL = "Results overview";
 	private static final String DETAILED_RESULT_PANEL = "Detailed results";
-	private static final String LOG_PANEL = "Log Panel";
+	private static final String LOG_PANEL = "Log";
 
 	private static PlanningTool planningTool = new PlanningTool();
 
@@ -114,7 +114,7 @@ public class PlanningTool {
 	}
 	
 	public void addLogAsATab() {
-		getPlanningToolWindow().addPanelAsTab(LOG_PANEL, IconStore.open, getLogPanel());
+		getPlanningToolWindow().addPanelAsTab(LOG_PANEL, IconStore.log, getLogPanel());
 	}
 
 	/** Show the designer panel using the information from last session */
