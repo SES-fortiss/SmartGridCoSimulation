@@ -44,11 +44,8 @@ public class GuiController {
 	}
 
 	public void setUp() throws FileNotFoundException {
-		topMemapOn = createTopology();
-		topMemapOn.setOptimizationHierarchy(OptHierarchy.MEMAP);
-
-		topMemapOff = createTopology();
-		topMemapOff.setOptimizationHierarchy(OptHierarchy.BUILDING);
+		topMemapOn = createTopology(OptHierarchy.MEMAP);
+		topMemapOff = createTopology(OptHierarchy.BUILDING);
 	}
 
 	public void startSimulation() {
@@ -56,12 +53,10 @@ public class GuiController {
 
 		Thread helperThread = new Thread(topMemapOff);
 		helperThread.start();
-
 		topMemapOn.run();
-		// topMemapOff.run();
 	}
 
-	private TopologyController createTopology() {
+	private TopologyController createTopology(OptHierarchy optimizationHierarchy) {
 
 		FileReader reader = null;
 		try {
@@ -130,8 +125,7 @@ public class GuiController {
 			}
 		}
 
-		OptHierarchy optHierarchy = (jObject.get("memapON").getAsBoolean() == true) ? OptHierarchy.MEMAP
-				: OptHierarchy.BUILDING;
+		OptHierarchy optHierarchy = optimizationHierarchy;
 		OptimizationCriteria optimizationCriteria = (jObject.get("optCriteria").getAsString().contentEquals("cost"))
 				? OptimizationCriteria.EUR
 				: OptimizationCriteria.CO2;

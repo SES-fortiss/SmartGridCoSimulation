@@ -62,9 +62,6 @@ public class Parameters {
 	/** A fixed value for market price */
 	@Expose
 	private double fixedMarketPrice = 0;
-	/** memapON a boolean. On(true)/ off (false) */
-	@Expose
-	private boolean memapON;
 	/** optCriteria a String. Optimization criteria: {cost, co2} */
 	@Expose
 	private String optCriteria;
@@ -87,7 +84,6 @@ public class Parameters {
 		setFixedMarketPrice(0.275);
 		setMarketPriceFile("");
 		setOptimizer(optimizerOptions.get(0));
-		setMemapON(false);
 		setOptCriteria(criteriaOptions.get(0));
 		setLoggingMode(loggingOptions.get(0));
 	}
@@ -150,14 +146,6 @@ public class Parameters {
 			setOptimizer(optimizerOptions.get(index + 1));
 			DesignerPanel.parameterPanel.lbOptimizer2.setIcon(IconStore.optimizer.get(index + 1));
 		}
-	}
-
-	public boolean isMemapON() {
-		return memapON;
-	}
-
-	public void setMemapON(boolean memapON) {
-		this.memapON = memapON;
 	}
 
 	public String getOptCriteria() {
