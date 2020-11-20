@@ -67,6 +67,7 @@ public class MILPProblem {
 			couplerHandled++;
 		}
 
+		// TODO Check line 76: operationalCostCO2 ? 
 		for (StorageMessage storageMessage : bm.storageList) {
 			for (int i = 0; i < nStepsMPC; i++) {
 				int index = indexBuilding + i + nStepsMPC
