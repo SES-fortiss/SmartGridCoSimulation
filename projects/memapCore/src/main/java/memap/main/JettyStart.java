@@ -101,7 +101,7 @@ public class JettyStart {
 		setNumofBuildings(num);
 		System.out.println("Number of buildings: " + num);
 		
-		for (int i = 8; i < endpoints.size(); i++) {
+		for (int i = 6; i < endpoints.size()-1; i++) {
 			
 			JsonObject jsonEndpoint = (JsonObject) endpoints.get(i);
 
@@ -110,20 +110,6 @@ public class JettyStart {
 				
 				jsonNodes = (JsonObject) jsonEndpoint.get("config");
 				
-				try (Writer writer = new FileWriter("jsonNodes.json")) {
-				    writer.write(gson.toJson(jsonNodes));
-				} catch (Exception e) {
-					System.err.println("NodeConfig save fail!");
-					e.printStackTrace();
-				}
-				
-				try (Writer writer = new FileWriter("jsonEndpoint.json")) {
-				    writer.write(gson.toJson(jsonEndpoint));
-				} catch (Exception e) {
-					System.err.println("NodeConfig save fail!");
-					e.printStackTrace();
-				}
-
 				System.out.println("Building " + (i+1) + " will be added...");
 				BuildingController sampleBuilding = new OpcUaBuildingController(topologyMemapOn, jsonEndpoint, jsonNodes);
 				//BuildingController sampleBuilding2 = new OpcUaBuildingController(topologyMemapOff, jsonEndpoint, jsonNodes);

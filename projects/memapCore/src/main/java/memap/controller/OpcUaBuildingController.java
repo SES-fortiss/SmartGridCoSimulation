@@ -1,16 +1,10 @@
 package memap.controller;
 
-import java.io.FileWriter;
-import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,11 +14,9 @@ import org.slf4j.LoggerFactory;
 
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonObject;
-import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 
 import memap.components.prototypes.Device;
-import memap.helper.HelperConcat;
 import memap.helper.HelperUnnestingJSON;
 import memap.components.ClientDemand;
 import memap.components.ClientCoupler;
@@ -227,75 +219,45 @@ public class OpcUaBuildingController implements BuildingController {
 		@SuppressWarnings("null")
 		private void initDevices() {
 			
-//			for (int n = 0; n < fullNodesConfig.size(); n++) {  //Iterate through site, object, EMS ....
+//			TODO: for (int n = 0; n < fullNodesConfig.size(); n++) {  //Iterate through site, object, EMS ....
+			
 			for ( String EMSkey : fullNodesConfig.keySet()) {
 				JsonObject emsNodesConfig = (JsonObject) fullNodesConfig.get(EMSkey);
 				
 				// Todo: Parse string to get LS, Obj, EMS - NUmber)
 				System.out.println("Reading EMS" + EMSkey);			
-	
-//				Map<String, Object> map = new HashMap<String, Object>();
-//		        Iterator<Entry<String, Object>> keys = emsNodesConfig.entrySet().iterator();
-//		        while(keys.hasNext()) {
-//		        	Map.Entry key = (Map.Entry) keys.next();
-//		            Object value = key.getValue();
-//		            System.out.println("ObjectValue" + value.toString());
-//		            if (value instanceof JsonArray) {
-//		            	System.out.println("JsonArray");
-//		            } else if (value instanceof JsonObject) {
-//		            	System.out.println("JsonObject");
-//		            } else if (value instanceof String) {
-//		            	System.out.println("Node:" + value);
-//		            }
-//		        }
+
 				
 				for (String key : emsNodesConfig.keySet()) {
 					System.out.println("Key: " + key);
-	//				System.out.println("Key: " + key);
 					switch (key) {
 					case "NO": //"INFO":
-//						JsonArray infos = (JsonArray) nodesConfig.get("NO");
-//
-//						for (int i = 0; i < infos.size(); i++) {
-//							try {
-//								JsonObject info = (JsonObject) infos.get(i);
-//								NodeId nid1 = NodeId.parse((String) info.get("nameId"));	
-//	//							NodeId nid1 = NodeId.parse((String) info.get("site"));		
-//	//							NodeId nid2 = NodeId.parse((String) info.get("ems"));
-//	//							NodeId nid3 = NodeId.parse((String) info.get("object"));
-//								String EmsName = client.readFinalStringValue(nid1);
-//	//							String str1 = client.readFinalStringValue(nid1);
-//	//							String str2 = client.readFinalStringValue(nid2);
-//	//							String str3 = client.readFinalStringValue(nid3);
-//	//							nameString = str1 + "EMS" + str2 + "OBJ" + str3;
-//								System.out.println("EMS nameID: " + EmsName);
-//							} catch (Exception e) {
-//								System.err.println("WARNING: Could not add name string to building " + name
-//										+ ".\nPlease check " + infos.toString());
-//							}
-//						}
+						JsonObject info = HelperUnnestingJSON.unnestJsonAry((JsonArray) nodesConfig.get("NO"));
+						try {
+							NodeId nid1 = NodeId.parse((String) info.get("nameId"));	
+//							NodeId nid1 = NodeId.parse((String) info.get("site"));		
+//							NodeId nid2 = NodeId.parse((String) info.get("ems"));
+//							NodeId nid3 = NodeId.parse((String) info.get("object"));
+							String EmsName = client.readFinalStringValue(nid1);
+//							String str1 = client.readFinalStringValue(nid1);
+//							String str2 = client.readFinalStringValue(nid2);
+//							String str3 = client.readFinalStringValue(nid3);
+//							nameString = str1 + "EMS" + str2 + "OBJ" + str3;
+							System.out.println("EMS nameID: " + EmsName);
+						} catch (Exception e) {
+							System.err.println("WARNING: Could not add name string to building " + name
+									+ ".\nPlease check " + info.toString());
+						}
+						
 						break;
 					
 					case "COUPL":
 						JsonObject coupler = (JsonObject) emsNodesConfig.get("COUPL");
 						
 						for (int i = 0; i < coupler.keySet().size(); i++) {
-							
-							try (Writer writer = new FileWriter("coupl.json")) {
-							    writer.write(gson.toJson(coupler));
-							} catch (Exception e) {
-								System.err.println("coupl save fail!");
-								e.printStackTrace();
-							}
+
 							System.out.println("Read Coupl Nr" + (i+1) + " of " + coupler.keySet().size());
-							JsonObject coupl = HelperUnnestingJSON.unnestJson(i, coupler);
-					
-							try (Writer writer = new FileWriter("coupl2.json")) {
-							    writer.write(gson.toJson(coupl));
-							} catch (Exception e) {
-								System.err.println("coupl2 save fail!");
-								e.printStackTrace();
-							}
+							JsonObject coupl = HelperUnnestingJSON.unnestJsonObj(i, coupler);
 							
 							try {
 //								coupl = (JsonObject) coupler.get(i);
@@ -328,9 +290,8 @@ public class OpcUaBuildingController implements BuildingController {
 						JsonObject demands = (JsonObject) emsNodesConfig.get("DEMND");
 						for (int i = 0; i < demands.keySet().size(); i++) {
 							System.out.println("Read Demand Nr" + (i+1) + " of " + demands.keySet().size());
-							JsonObject demnd = HelperUnnestingJSON.unnestJson(i, demands);
+							JsonObject demnd = HelperUnnestingJSON.unnestJsonObj(i, demands);
 							try {
-//								JsonObject demnd = (JsonObject) demands.get(i);
 								NodeId demndSectId = NodeId.parse((String) demnd.get("PrimSect"));
 								NodeId arrayForecastId = NodeId.parse((String) demnd.get("DemandFC"));
 								NodeId consumptionId = NodeId.parse((String) demnd.get("currentDem"));
@@ -349,22 +310,14 @@ public class OpcUaBuildingController implements BuildingController {
 					case "CPROD":
 						JsonObject controllableProd = (JsonObject) emsNodesConfig.get("CPROD");
 						for (int i = 0; i < controllableProd.keySet().size(); i++) {
-							JsonObject cprod = HelperUnnestingJSON.unnestJson(i, controllableProd);
+							JsonObject cprod = HelperUnnestingJSON.unnestJsonObj(i, controllableProd);
 							try {
-//								JsonObject cprod = (JsonObject) cproducers.get(i);
 								NodeId primarySectId = NodeId.parse((String) cprod.get("PrimSect"));	
 								NodeId minPowerId = NodeId.parse((String) cprod.get("MinPower"));
 								NodeId maxPowerId = NodeId.parse((String) cprod.get("MaxPower"));
 								NodeId effId = NodeId.parse((String) cprod.get("EffPrim"));
 								NodeId costCO2Id = NodeId.parse((String) cprod.get("CO2PerKWh"));
 								NodeId opCostId = NodeId.parse((String) cprod.get("PrimEnCost"));
-								
-	//							List<NodeId> setpointsId = new ArrayList<NodeId>();
-	//							for (int j = 0; j < TopologyConfig.getInstance().getNrStepsMPC(); j++) { 
-	//								String SPname = "SPdevPwr" + Integer.toString(j+1);
-	//								setpointsId.add(j, NodeId.parse((String) cprod.get(SPname)));
-	//							}
-								
 								NodeId setpointsId = NodeId.parse((String) cprod.get("SPDevPwr"));
 								
 								ClientProducer cp = new ClientProducer(client, "CPROD" + String.format("%02d",  i), primarySectId, minPowerId, maxPowerId,
@@ -383,7 +336,7 @@ public class OpcUaBuildingController implements BuildingController {
 					case "VPROD":
 						JsonObject volatileProd = (JsonObject) emsNodesConfig.get("VPROD");
 						for (int i = 0; i < volatileProd.keySet().size(); i++) {
-							JsonObject vprod = HelperUnnestingJSON.unnestJson(i, volatileProd);
+							JsonObject vprod = HelperUnnestingJSON.unnestJsonObj(i, volatileProd);
 							try {
 //								JsonObject vprod = (JsonObject) vproducers.get(i);
 								NodeId primarySectId = NodeId.parse((String) vprod.get("PrimSect"));
@@ -414,7 +367,7 @@ public class OpcUaBuildingController implements BuildingController {
 						JsonObject storages = (JsonObject) emsNodesConfig.get("STRGE");
 						for (int i = 0; i < storages.keySet().size(); i++) {
 							System.out.println("Read Strg Nr" + (i+1) + " of " + storages.keySet().size());
-							JsonObject strge = HelperUnnestingJSON.unnestJson(i, storages);
+							JsonObject strge = HelperUnnestingJSON.unnestJsonObj(i, storages);
 							
 							try {
 //								JsonObject strge = (JsonObject) storages.get(i);
@@ -432,12 +385,6 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId inputSetpointsId = NodeId.parse((String) strge.get("SPCharge"));
 								NodeId outputSetpointsId = NodeId.parse((String) strge.get("SPDisChrg"));
 	
-	//							for (int j = 0; j < TopologyConfig.getInstance().getNrStepsMPC(); j++) { 
-	//								String SPnameC = "SPCharge" + Integer.toString(j+1);
-	//								inputSetpointsId.add(j, NodeId.parse((String) strge.get(SPnameC)));
-	//								String SPnameD = "SPDisChrg" + Integer.toString(j+1);
-	//								outputSetpointsId.add(j, NodeId.parse((String) strge.get(SPnameD)));
-	//							}
 								ClientStorage cs = new ClientStorage(client, "STRGE" + String.format("%02d",  i), capacityId, stateOfChargeId, calculatedSocId,
 										maxChargingId, maxDischargingId, effInId, effOutId, primarySectId,
 										opCostId, costCO2Id, inputSetpointsId, outputSetpointsId, 0);

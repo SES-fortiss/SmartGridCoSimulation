@@ -1,7 +1,5 @@
 package memap.helper;
 
-import java.io.FileWriter;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -23,23 +21,22 @@ public class HelperUnnestingJSON {
 	 *
 	 */
 	
-	public static JsonObject unnestJson(int deviceNumber, JsonObject device) {
+	public static JsonObject unnestJsonObj(int deviceNumber, JsonObject device) {
 		
 		Map<String, Object> allnodes = new HashMap<String, Object>(); // to collect all buried NodeIDs
 		
 		String devKey = Integer.toString(deviceNumber+1);
-		System.out.println("Read substructure of device Nr: " + devKey);
 		JsonArray readDevice = (JsonArray) device.get(devKey);
-		
-		try (Writer writer = new FileWriter("readDevice.json")) {
-		    writer.write(gson.toJson(readDevice));
-		} catch (Exception e) {
-			System.err.println("readDevice save fail!");
-			e.printStackTrace();
-		}
-
 		goThroughArray(allnodes, readDevice);
 
+		return new JsonObject(allnodes);
+	}
+	
+public static JsonObject unnestJsonAry(JsonArray readDevice) {
+		
+		Map<String, Object> allnodes = new HashMap<String, Object>(); // to collect all buried NodeIDs
+		goThroughArray(allnodes, readDevice);
+		
 		return new JsonObject(allnodes);
 	}
 	
