@@ -177,15 +177,24 @@ public class LPSolver {
 			}
 
 			// METRICS FOR RESULTS OVERVIEW
-			MetricsHandler mc = new LPMetricsHandler(buildingMessage, optResult, optSolution, problem, currentTimeStep,
-					nStepsMPC);
-
+			MetricsHandler mc = null;
+			
+			if (buildingMessageList != null) {
+				mc = new LPMetricsHandler(buildingMessageList, optResult, optSolution, problem, currentTimeStep,
+						nStepsMPC);
+	
+				
+			} else {
+				mc = new LPMetricsHandler(buildingMessage, optResult, optSolution, problem, currentTimeStep,
+						nStepsMPC);
+			}
+			
 			// filename to be created
 			String filename = topologyController.getSimulationName() + "/MPC" + nStepsMPC + "_LP/";
 			filename += actorName + "_MPC" + nStepsMPC + Strings.lpOverviewFileSuffix;
 
 			mc.calculateOverviewMetrics(filename);
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			String error = getClass().getName() + ": " + actorName + " cannot solve the optimization";
