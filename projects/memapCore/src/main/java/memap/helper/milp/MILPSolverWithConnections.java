@@ -157,7 +157,7 @@ public class MILPSolverWithConnections extends MILPSolver {
 		workWithResults(optSolution, names, lambda, lambdaCO2, buildingMessages);
 
 		// METRICS FOR RESULTS OVERVIEW
-		MetricsHandler metricsHandler = new MILPWithConnectionsMetricsHandler(topologyController, buildingMessages, optResult, optSolution, problem,
+		MetricsHandler metricsHandler = new MILPMetricsHandler(topologyController, buildingMessages, optResult, optSolution, problem,
 				milpSolHandler, currentTimeStep, nStepsMPC);
 
 		// filename to be created
