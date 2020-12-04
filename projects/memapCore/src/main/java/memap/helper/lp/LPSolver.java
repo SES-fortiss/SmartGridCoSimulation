@@ -17,6 +17,7 @@ import memap.main.Status;
 import memap.main.TopologyConfig;
 import memap.media.Strings;
 import memap.messages.BuildingMessage;
+import memap.messages.BuildingMessageHandler;
 import memap.messages.OptimizationResultMessage;
 
 public class LPSolver {
@@ -76,11 +77,11 @@ public class LPSolver {
 			}
 
 			LPOptimizationStarter os = new LPOptimizationStarter(topologyController);
-			
+
 			double[] optSolution = null;
-			
+
 			optSolution = os.runLinProg(problem);
-			
+
 			// Determination of costs
 			double buildingCostPerTimestep = 0;
 			double buildingCO2PerTimestep = 0;
@@ -99,7 +100,6 @@ public class LPSolver {
 
 			// Creation of the result vector
 			double[] currentStep = { 0 + currentTimeStep };
-			double[] currentDemand = solHandler.getDemandForThisTimestep(problem.b_eq, nStepsMPC);
 			double[] currentOptVector = solHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
 			double[] currentSOC = solHandler.getCurrentSOC(buildingMessage.storageList);
 			double[] totalCostsValue = { costTotal };
@@ -107,12 +107,35 @@ public class LPSolver {
 			double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep) };
 
 			String[] timeStep = { Strings.timeStep };
-			String[] currentDemandNames = solHandler.getNamesForDemandSingleBuilding();
 			String[] currentOptVectorNames = solHandler.getVectorNamesForThisTimeStep(problem.namesUB, nStepsMPC);
 			String[] currentSOCNames = solHandler.getNamesForSOC(buildingMessage.storageList);
-			String[] energyPrice = { Strings.energyPriceAndUnit};
+			String[] energyPrice = { Strings.energyPriceAndUnit };
 			String[] totalCosts = { Strings.totalCostAndUnit };
 			String[] co2emissions = { Strings.co2EmissionsAndUnit };
+
+			double[] currentDemand = null;
+			String[] currentDemandNames = null;
+
+			if (buildingMessageList != null) {
+				// With connections
+				BuildingMessageHandler buildingMessageHandler = new BuildingMessageHandler();
+				double[] demandVector = buildingMessageHandler.getCombinedDemandVector(buildingMessageList, nStepsMPC);
+				currentDemand = solHandler.getDemandForThisTimestep(demandVector, nStepsMPC);
+				currentDemandNames = solHandler.getNamesForDemand(buildingMessageList, nStepsMPC);
+
+				// Small modification to calculate the aggregated demand of the buildings.
+				double[] resultWithTotalHeatDemand = new double[currentDemand.length + 1];
+				for (int i = 0; i < currentDemand.length - 1; i++) {
+					resultWithTotalHeatDemand[0] += currentDemand[i];
+					resultWithTotalHeatDemand[i + 1] = currentDemand[i];
+				}
+				resultWithTotalHeatDemand[currentDemand.length] = currentDemand[currentDemand.length - 1];
+				currentDemand = resultWithTotalHeatDemand;
+			} else {
+				// Without connections
+				currentDemand = solHandler.getDemandForThisTimestep(problem.b_eq, nStepsMPC);
+				currentDemandNames = solHandler.getNamesForDemandSingleBuilding();
+			}
 
 			String[] namesResult = HelperConcat.concatAllObjects(timeStep, currentDemandNames, currentOptVectorNames,
 					currentSOCNames, energyPrice, totalCosts, co2emissions);
@@ -135,7 +158,7 @@ public class LPSolver {
 			buildingsSolutionPerTimeStep[currentTimeStep] = vectorResult;
 
 			String saveString = topologyController.getSimulationName() + "/MPC" + nStepsMPC + "_LP/";
-			saveString += actorName + "_MPC" + nStepsMPC +Strings.lpSolutionFileSuffix;
+			saveString += actorName + "_MPC" + nStepsMPC + Strings.lpSolutionFileSuffix;
 
 			if (currentTimeStep == (topologyConfig.getNrOfIterations() - 1)) {
 				solHandler.exportMatrix(buildingsSolutionPerTimeStep, saveString, namesResult);
@@ -154,12 +177,12 @@ public class LPSolver {
 			}
 
 			// METRICS FOR RESULTS OVERVIEW
-			MetricsHandler mc = new LPMetricsHandler(buildingMessage, optResult, optSolution, problem,
-					currentTimeStep, nStepsMPC);
+			MetricsHandler mc = new LPMetricsHandler(buildingMessage, optResult, optSolution, problem, currentTimeStep,
+					nStepsMPC);
 
 			// filename to be created
 			String filename = topologyController.getSimulationName() + "/MPC" + nStepsMPC + "_LP/";
-			filename += actorName + "_MPC" + nStepsMPC +Strings.lpOverviewFileSuffix;
+			filename += actorName + "_MPC" + nStepsMPC + Strings.lpOverviewFileSuffix;
 
 			mc.calculateOverviewMetrics(filename);
 
