@@ -101,29 +101,29 @@ public class ClientProducer extends Producer {
 				}
 				
 			}
-			System.out.println("Setpoint written for CPROD.");
 		}
 		
-		double tr = trigger;
-		System.out.println(tr + " - CPROD waiting for new trigger....");
-		while (tr ==  trigger) {
-			try {
-				tr = client.readFinalDoubleValue(triggerId);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
-		}
-		trigger = tr;
-		try {
-			Thread.sleep(1500);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		// Trigger was temporarily used for synchronization with the local EMS before reading the data	
+//		double tr = trigger;
+//		System.out.println(tr + " - CPROD waiting for new trigger....");
+//		while (tr ==  trigger) {
+//			try {
+//				tr = client.readFinalDoubleValue(triggerId);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (ExecutionException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}	
+//		}
+//		trigger = tr;
+//		try {
+//			Thread.sleep(1500);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 	
 	/** Passes a reference of an object of class {@link TopologyController} to the parent class */

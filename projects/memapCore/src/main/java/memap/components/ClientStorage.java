@@ -57,11 +57,11 @@ public class ClientStorage extends Storage {
 	 * @param port
 	 */
 	public ClientStorage(BasicClient client, String name, NodeId capacityId, NodeId triggerId, NodeId stateOfCharge, NodeId calculatedSocId, NodeId maxChargingId,
-			NodeId maxDischargingId, NodeId effInId, NodeId effOutId, NodeId nodeIdSector, NodeId opCostId,
+			NodeId maxDischargingId, NodeId effInId, NodeId effOutId, NodeId storageLossId, NodeId nodeIdSector, NodeId opCostId,
 			NodeId costCO2Id, NodeId inputSetpointsId, NodeId outputSetpointsId, int port) throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(capacityId), client.readFinalDoubleValue(stateOfCharge),
 				client.readFinalDoubleValue(maxChargingId), client.readFinalDoubleValue(maxDischargingId),
-				client.readFinalDoubleValue(effInId), client.readFinalDoubleValue(effOutId), port);
+				client.readFinalDoubleValue(effInId), client.readFinalDoubleValue(effOutId), client.readFinalDoubleValue(storageLossId), port);
 		this.client = client;
 		this.inputSetpointsId = inputSetpointsId;
 		this.outputSetpointsId = outputSetpointsId;
@@ -172,31 +172,37 @@ public class ClientStorage extends Storage {
 				}
 				
 			}
+			
 			// update theoretical SOC
-			double newSOC =  this.stateOfCharge + TopologyConfig.getInstance().getStepLengthInHours()*(optimizationAdviceOutput[0]+optimizationAdviceInput[0])/this.capacity ;
+			double socRef = 0.75;
+			double lossEff = this.storageLoss/(24 * this.capacity * socRef); //
+			
+			double newSOC =  this.stateOfCharge + TopologyConfig.getInstance().getStepLengthInHours()*(optimizationAdviceOutput[0]+optimizationAdviceInput[0] - lossEff*this.stateOfCharge)/this.capacity  ;
 			DataValue sum = new DataValue(new Variant(newSOC), null, null);
 			client.writeValue(calculatedSocId, sum);
+			this.stateOfCharge = newSOC;
 		}
 		
-		double tr = trigger;
-		while (tr ==  trigger) {
-			try {
-				tr = client.readFinalDoubleValue(this.triggerId);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		trigger = tr;
-		try {
-			Thread.sleep(1500);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		// Trigger was temporarily used for synchronization with the local EMS before reading the data		
+//		double tr = trigger;
+//		while (tr ==  trigger) {
+//			try {
+//				tr = client.readFinalDoubleValue(this.triggerId);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (ExecutionException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		trigger = tr;
+//		try {
+//			Thread.sleep(1500);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 	
 	/** Passes a reference of an object of class {@link TopologyController} to the parent class */
@@ -207,6 +213,7 @@ public class ClientStorage extends Storage {
 
 	@Override
 	public Double getStateOfCharge() {
+		
 		return stateOfCharge;
 	}
 

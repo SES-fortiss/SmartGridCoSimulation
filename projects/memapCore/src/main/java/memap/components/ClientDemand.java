@@ -57,15 +57,6 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		super(name, port);
 		this.client = client;
 		this.triggerId = triggerId;
-		try {
-			this.trigger = client.readFinalDoubleValue(triggerId);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (ExecutionException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 		networkType = setNetworkType(client, nodeIdSector);
 		
 		
@@ -161,25 +152,45 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 	
 	@Override
 	public void handleRequest() {
-		double tr = trigger;
-		while (tr ==  trigger) {
-			try {
-				tr = client.readFinalDoubleValue(this.triggerId);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		trigger = tr;
+		
 		try {
-			Thread.sleep(1500);
-		} catch (InterruptedException e) {
+			this.trigger = client.readFinalDoubleValue(triggerId);
+		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
+		} catch (ExecutionException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
+		
+		// CoSES: Trigger should be increased only once
+		if (this.networkType == NetworkType.HEAT) {
+			trigger++;
+			
+			DataValue newTrigger = new DataValue(new Variant(trigger), null, null);
+			client.writeValue(triggerId, newTrigger);
+			System.out.println("Trigger written: " + trigger);
+		}
+		
+//		double tr = trigger;
+//		while (tr ==  trigger) {
+//			try {
+//				tr = client.readFinalDoubleValue(this.triggerId);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (ExecutionException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		trigger = tr;
+//		try {
+//			Thread.sleep(1500);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 

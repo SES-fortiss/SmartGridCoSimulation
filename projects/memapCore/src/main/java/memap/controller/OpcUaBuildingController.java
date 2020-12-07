@@ -363,6 +363,7 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId capacityId = NodeId.parse((String) strge.get("Capacity"));
 							NodeId stateOfChargeId = NodeId.parse((String) strge.get("curSOC"));
 							NodeId calculatedSocId = NodeId.parse((String) strge.get("calcSOC"));
+							NodeId storageLossId = NodeId.parse((String) strge.get("StorLossPD"));
 							NodeId opCostId = NodeId.parse((String) strge.get("PrimEnCost"));
 							NodeId costCO2Id = NodeId.parse((String) strge.get("CO2PerKWh"));
 							NodeId inputSetpointsId = NodeId.parse((String) strge.get("SPCharge"));
@@ -375,7 +376,7 @@ public class OpcUaBuildingController implements BuildingController {
 //								outputSetpointsId.add(j, NodeId.parse((String) strge.get(SPnameD)));
 //							}
 							ClientStorage cs = new ClientStorage(client, "STRGE" + String.format("%02d",  i), capacityId, trigger, stateOfChargeId, calculatedSocId,
-									maxChargingId, maxDischargingId, effInId, effOutId, primarySectId,
+									maxChargingId, maxDischargingId, effInId, effOutId, storageLossId, primarySectId,
 									opCostId, costCO2Id, inputSetpointsId, outputSetpointsId, 0);
 							attach(cs);
 							cs.setTopologyController(topologyController);

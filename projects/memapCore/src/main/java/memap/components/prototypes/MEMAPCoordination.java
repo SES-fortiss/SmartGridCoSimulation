@@ -130,11 +130,12 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 			System.out.println(topologyController.getOptimizer() + ": " + this.actorName + " cost = "
 					+ String.format("%.03f", costTotal) + " EUR ; CO2: " + String.format("%.03f", CO2Total) + " kg");
 			
-//			try {
-//				Thread.sleep(1000);
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
+			try {
+//				Thread.sleep(10000);
+				Thread.sleep(900000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			
 		}
 	}

@@ -69,8 +69,8 @@ public class JettyStart {
 				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
 		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 4880, 0);
 		EnergyPrices.getInstance().init(0.285);
-//		EnergyPrices.getInstance().initGas("C:/Git/SESSIM/projects/memapCore/src/main/java/resources/gasprice_15minutes2.csv");
-		EnergyPrices.getInstance().initGas("./gasprice_15minutes.csv");
+		EnergyPrices.getInstance().initGas("C:/Git/SESSIM/projects/memapCore/src/main/java/resources/gasprice_15minutes.csv");
+//		EnergyPrices.getInstance().initGas("./gasprice_15minutes.csv");
 		//topologyMemapOff = new TopologyController("MemapOff", OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
 		//		ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
 		errorCode = new JsonObject();
