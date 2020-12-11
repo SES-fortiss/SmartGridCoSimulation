@@ -193,8 +193,8 @@ public class MetricsGenerator {
 		HashMap<String, Number> energyProductionByType = new HashMap<String, Number>();
 		energyProductionByType.put("Electricity", metrics.getElectricityProduction());
 		energyProductionByType.put("Heat", metrics.getHeatProduction());
-		energyProductionByType.put("Market (Elec. buy)", metrics.getHeatBuy());
-		energyProductionByType.put("Market (Heat buy)", metrics.getElectricityBuy());
+		energyProductionByType.put("Market (Elec. buy)", metrics.getElectricityBuy());
+		energyProductionByType.put("Market (Heat buy)", metrics.getHeatBuy());
 		contextPanel.addPiePlotWidget("Energy produced by type", 400, 400, energyProductionByType,
 				"* Storages are not considered energy producers");
 
