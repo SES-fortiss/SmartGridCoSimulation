@@ -70,8 +70,6 @@ public class LPSolver {
 				if (buildingMessageList != null) {
 					problem = mb.multipleBuildings(getBuildingMessageList());
 				} else {
-					System.err.println(this.getClass()
-							+ ": trying to solve LPwithConnections, but buildingMessageListIsEmpty, will do it  without Connections");
 					problem = mb.singleBuilding(buildingMessage);
 				}
 			}
