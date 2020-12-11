@@ -33,9 +33,12 @@ public class DemandTypeAdapter implements JsonSerializer<Demand>, JsonDeserializ
 		String consumptionFilePath = demand.getConsumptionProfile();
 		File consumptionFile = new File(consumptionFilePath);
 		ExampleFiles ef = new ExampleFiles();
+		
 		if(!consumptionFile.exists() && !consumptionFilePath.isEmpty() && !ef.isExample(consumptionFilePath)) {
-			demand.setConsumptionProfile("");
+			demand.setConsumptionProfile(""); // It calls setData()
 			Logger.getInstance().writeWarning("File " + consumptionFilePath + " does not exist. Using zeros only.");
+		} else {// The file exist and the path was set by gson
+			demand.setData();
 		}
 		return demand;
 	}

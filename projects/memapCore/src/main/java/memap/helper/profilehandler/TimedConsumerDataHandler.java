@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import memap.main.TopologyConfig;
-
+@Deprecated
 public class TimedConsumerDataHandler {
 
 	private ArrayList<Double> heatProfile;

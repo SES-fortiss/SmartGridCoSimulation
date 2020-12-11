@@ -30,6 +30,7 @@ import fortiss.simulation.Parameters;
 import fortiss.simulation.PlanningTool;
 import fortiss.simulation.helper.ConnectionManager;
 import fortiss.simulation.helper.Logger;
+import memap.examples.ExampleFiles;
 
 public class ModelInitHelper {
 
@@ -102,6 +103,17 @@ public class ModelInitHelper {
 			// Import parameters
 			JsonElement parameters = p.next();
 			planningTool.setParameters(gson.fromJson(parameters, Parameters.class));
+			// Fix path
+			String variablePricePath = planningTool.getParameters().getMarketPriceFile();
+			File variablePriceFile = new File(variablePricePath);
+			ExampleFiles ef = new ExampleFiles();
+			if(!variablePriceFile.exists() && !variablePricePath.isEmpty() && !ef.isExample(variablePricePath)) {
+				planningTool.getParameters().setMarketPriceFile(""); // It calls setData()
+				Logger.getInstance().writeWarning("File " + variablePricePath + " does not exist. Using default.");
+			} else {// The file exist and the path was set by gson
+				planningTool.getParameters().setData();
+			}
+			
 			DesignerPanel.parameterPanel.update();
 			Logger.getInstance().writeInfo("Parameters: " + gson.toJson(planningTool.getParameters()));
 
