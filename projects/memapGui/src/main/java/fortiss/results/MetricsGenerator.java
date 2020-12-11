@@ -186,7 +186,7 @@ public class MetricsGenerator {
 		energySeries.add(
 				new CategorySeries("Heat discharged", metrics.getTime(), metrics.getHeatDischargeInTime(), null, null));
 		
-		contextPanel.addBarPlotWidget("Energy produced, discharged and demanded", "Time steps", "Power [kWh]", 1600, 400,
+		contextPanel.addBarPlotWidget("Energy produced, discharged and demanded", "Time steps", "Power [" + Strings.powerUnit + "]", 1600, 400,
 				energySeries, null);
 
 		// Pie widget: Energy produced by type
@@ -210,7 +210,7 @@ public class MetricsGenerator {
 			energyByBuilding
 					.add(new CategorySeries("Heat Production", new ArrayList<String>(heatProductionByBuilding.keySet()),
 							new ArrayList<Number>(heatProductionByBuilding.values()), null, null));
-			contextPanel.addBarPlotWidget("Energy produced by type", "Buildings", "Energy [kWh]", 400, 400,
+			contextPanel.addBarPlotWidget("Energy produced by type", "Buildings", "Energy produced [" + Strings.energyUnit + "]", 400, 400,
 					energyByBuilding, "* Storages are not considered energy producers");
 		}
 

@@ -24,6 +24,7 @@ import org.knowm.xchart.XChartPanel;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.FontSize;
 import fortiss.gui.style.Fonts;
+import memap.media.Strings;
 import net.miginfocom.swing.MigLayout;
 
 public class ComponentUsageWidget extends JPanel {
@@ -73,7 +74,7 @@ public class ComponentUsageWidget extends JPanel {
 		List <Number> values = new ArrayList<Number>(sortedMap.values());
 		
 		XChartPanel<CategoryChart> chart = new XChartPanel<CategoryChart>(new CategoryChartBuilder().width(width).height(height).xAxisTitle("Component")
-				.yAxisTitle("Energy Produced [kWH]").build()); 
+				.yAxisTitle("Energy Produced [" + Strings.energyUnit + "]").build()); 
 		
 		chart.getChart().getStyler().setDefaultSeriesRenderStyle(CategorySeriesRenderStyle.Bar);
 		chart.getChart().getStyler().setChartBackgroundColor(Colors.white);
@@ -84,7 +85,7 @@ public class ComponentUsageWidget extends JPanel {
 		chart.getChart().getStyler().setAxisTitleFont(Fonts.getOpenSans(FontSize.TINY));
 		chart.getChart().getStyler().setAxisTickLabelsFont(Fonts.getOpenSans(FontSize.TINY));
 		
-		chart.getChart().addSeries("Energy [kWh]", keys, values);
+		chart.getChart().addSeries("Energy Produced [" + Strings.energyUnit + "]", keys, values);
 
 		add(titleLabel, "width 100%, align left, wrap");
 		add(separator, "width 100%, wrap");
