@@ -3,7 +3,8 @@ package fortiss.gui.listeners.label;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import fortiss.gui.DesignerPanel;
+import fortiss.simulation.Parameters;
+import fortiss.simulation.PlanningTool;
 
 public class LoggingModeListener extends MouseAdapter {
 
@@ -12,6 +13,7 @@ public class LoggingModeListener extends MouseAdapter {
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		DesignerPanel.parameterPanel.pars.nextLoggingMode();
+		Parameters parameters = PlanningTool.getInstance().getParameters();
+		parameters.nextLoggingMode();
 	}
 }

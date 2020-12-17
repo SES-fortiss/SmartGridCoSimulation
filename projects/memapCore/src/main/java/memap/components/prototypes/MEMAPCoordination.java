@@ -58,8 +58,8 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 		totalCO2Vector = new double[topologyConfig.getNrOfIterations()];
 		solutionPerTimeStep = new double[topologyConfig.getNrOfIterations()][];
 		nStepsMPC = topologyConfig.getNrStepsMPC();
-		lpSolHandler = new SolutionHandler(nStepsMPC);
-		milpSolHandler = new SolutionHandler(nStepsMPC);
+		lpSolHandler = new SolutionHandler(nStepsMPC, topologyConfig);
+		milpSolHandler = new SolutionHandler(nStepsMPC, topologyConfig);
 	}
 
 	@Override

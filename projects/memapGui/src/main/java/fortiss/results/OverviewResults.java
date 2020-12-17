@@ -10,11 +10,14 @@ import fortiss.datastructures.Data;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FileManager;
 import fortiss.simulation.Parameters;
+import fortiss.simulation.PlanningTool;
+import fortiss.simulation.helper.Logger;
 import memap.helper.DirectoryConfiguration;
+import memap.media.Strings;
 
 public class OverviewResults extends ResultsLibrary {
 
-	private static final String typeQualifier = "_Overview.csv";
+	private static final String typeQualifier = Strings.overviewFileSuffix;
 
 	/**
 	 * Constructor for the class OverviewResults.
@@ -26,27 +29,31 @@ public class OverviewResults extends ResultsLibrary {
 	@Override
 	public void load() {
 		FileManager fm = new FileManager();
-		Parameters pars = DesignerPanel.parameterPanel.pars;
+		Parameters pars = PlanningTool.getInstance().getParameters();
 		String location = System.getProperty("user.dir");
 		String fs = File.separator;
 		String source = fs + DirectoryConfiguration.mainDir + fs + "results" + fs + pars.getSimulationName() + fs
-				+ "MPC" + pars.getSteps() + "_" + pars.getOptimizer().toUpperCase() + fs;
+				+ "MPC" + pars.getMPCHorizon() + "_" + pars.getOptimizer().toUpperCase() + fs;
 
-		String qualifier = "_MPC" + pars.getSteps() + "_" + pars.getOptimizer().toUpperCase() + typeQualifier;
+		String qualifier = "_MPC" + pars.getMPCHorizon() + "_" + pars.getOptimizer().toUpperCase() + typeQualifier;
 
 		// Read global optimization results
 		String filename = pars.getSimulationName() + qualifier;
 		filename = location + source + filename;
 
 		try {
-			resultsLibrary.put("Global optimization", new Data(fm.readFromSource(filename), true, Data.BYROW));
+			resultsLibrary.put(Strings.memapOnModeName,
+					new Data(fm.readFromSource(filename), true, Data.BYROW));
+
+			Logger.getInstance().writeInfo("File name for reading overview results: " + filename);
+
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 		}
 
 		// Read building optimization results
 		for (Entry<String, Building> entry : DesignerPanel.buildings.entrySet()) {
-			Building building = entry.getValue();
+			Building building = (Building) entry.getValue();
 			filename = building.getName() + qualifier;
 			filename = location + source + filename;
 			try {

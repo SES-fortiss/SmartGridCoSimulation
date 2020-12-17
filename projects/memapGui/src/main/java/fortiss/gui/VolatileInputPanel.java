@@ -6,7 +6,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -16,23 +15,24 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
+import fortiss.components.Volatile;
 import fortiss.gui.listeners.button.VBrowseListener;
 import fortiss.gui.listeners.selectionitem.VNetworkTypeListener;
 import fortiss.gui.listeners.textfield.VCOEmissionListener;
 import fortiss.gui.listeners.textfield.VCostListener;
 import fortiss.gui.listeners.textfield.VForecastFileListener;
-import fortiss.gui.listeners.textfield.VNameListener;
 import fortiss.gui.listeners.textfield.VMaxPowerListener;
 import fortiss.gui.listeners.textfield.VMinPowerListener;
+import fortiss.gui.listeners.textfield.VNameListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
-import fortiss.media.Icon;
+import fortiss.media.IconStore;
 
 /**
  * Input panel for volatile parameters.
  */
-public class VolatileInputPanel extends JPanel {
+public class VolatileInputPanel extends InformationPanel {
 
 	/** Volatile name */
 	public JTextField txtVName;
@@ -94,39 +94,19 @@ public class VolatileInputPanel extends JPanel {
 	private void initialize() {
 		setBorder(new TitledBorder(null, "Component information", TitledBorder.RIGHT, TitledBorder.TOP, null,
 				Colors.accent2));
-		setLayout(new FormLayout(new ColumnSpec[] {
-				ColumnSpec.decode("15dlu"),
-				ColumnSpec.decode("left:120dlu"),
-				ColumnSpec.decode("15dlu"),
-				ColumnSpec.decode("75dlu:grow"),
-				FormSpecs.RELATED_GAP_COLSPEC,
-				FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("15dlu"),
-				FormSpecs.RELATED_GAP_COLSPEC,},
-			new RowSpec[] {
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
-				FormSpecs.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("default:grow"),}));
+		setLayout(new FormLayout(
+				new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("left:120dlu"),
+						ColumnSpec.decode("15dlu"), ColumnSpec.decode("75dlu:grow"), FormSpecs.RELATED_GAP_COLSPEC,
+						FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("15dlu"),
+						FormSpecs.RELATED_GAP_COLSPEC, },
+				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
+						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
+						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
+						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
+						RowSpec.decode("default:grow"), }));
 
 		lblVolatileProduction = new JLabel("VOLATILE PRODUCTION");
 		lblVolatileProduction.setFont(Fonts.getOswald());
@@ -147,7 +127,8 @@ public class VolatileInputPanel extends JPanel {
 		sVNetworkType = new JComboBox<>();
 		sVNetworkType.setFocusable(false);
 		sVNetworkType.setFocusTraversalKeysEnabled(false);
-		sVNetworkType.setModel(new DefaultComboBoxModel<String>(new String[] { "Heat", "Electricity" }));
+		sVNetworkType.setModel(new DefaultComboBoxModel<String>(
+				new String[] { "Heat", "Electricity" }));
 		sVNetworkType.addItemListener(new VNetworkTypeListener());
 		sVNetworkType.addMouseListener(new VNetworkTypeListener());
 		add(sVNetworkType, "4, 10, 3, 1, fill, default");
@@ -181,11 +162,11 @@ public class VolatileInputPanel extends JPanel {
 
 		JButton btVBrowse = new JButton("");
 		btVBrowse.addMouseListener(new VBrowseListener());
-		btVBrowse.setIcon(Icon.open);
+		btVBrowse.setIcon(IconStore.open);
 		btVBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
 		add(btVBrowse, "6, 16, right, center");
 
-		lbVCost = new JLabel("Cost [cent EUR/kWh]");
+		lbVCost = new JLabel("Fuel cost [EUR/kWh]");
 		add(lbVCost, "2, 18");
 
 		txtVCost = new JTextField();
@@ -194,7 +175,7 @@ public class VolatileInputPanel extends JPanel {
 		add(txtVCost, "4, 18, 3, 1, fill, default");
 		txtVCost.setColumns(10);
 
-		lbVCOEmission = new JLabel("CO2 Emissions [kg/kWh]");
+		lbVCOEmission = new JLabel("CO2 Emissions [kg/kWh]"); //$NON-NLS-1$
 		add(lbVCOEmission, "2, 20");
 
 		txtVCOEmission = new JTextField();
@@ -202,5 +183,17 @@ public class VolatileInputPanel extends JPanel {
 		txtVCOEmission.addFocusListener(new VCOEmissionListener());
 		add(txtVCOEmission, "4, 20, 3, 1, fill, default");
 		txtVCOEmission.setColumns(10);
+	}
+
+	@Override
+	public void update() {
+		Volatile volatileProd = (Volatile) DesignerPanel.selectedComponent;
+		txtVName.setText(volatileProd.getName());
+		sVNetworkType.setSelectedItem(volatileProd.getNetworkType());
+		txtVMinimumPower.setText(Double.toString(volatileProd.getMinimumPower()));
+		txtVMaximumPower.setText(Double.toString(volatileProd.getMaximumPower()));
+		txtVForecastFile.setText(volatileProd.getForecastFile());
+		txtVCost.setText(Double.toString(volatileProd.getCost()));
+		txtVCOEmission.setText(Double.toString(volatileProd.getCOEmission()));
 	}
 }

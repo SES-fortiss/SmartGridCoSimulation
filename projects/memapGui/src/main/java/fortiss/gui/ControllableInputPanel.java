@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
@@ -15,13 +14,14 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
+import fortiss.components.Controllable;
 import fortiss.gui.listeners.selectionitem.CPNetworkTypeListener;
 import fortiss.gui.listeners.textfield.CPCOEmissionListener;
 import fortiss.gui.listeners.textfield.CPCostListener;
 import fortiss.gui.listeners.textfield.CPEfficiencyListener;
-import fortiss.gui.listeners.textfield.CPNameListener;
 import fortiss.gui.listeners.textfield.CPMaxPowerListener;
 import fortiss.gui.listeners.textfield.CPMinPowerListener;
+import fortiss.gui.listeners.textfield.CPNameListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
@@ -29,7 +29,7 @@ import fortiss.gui.style.StyleGenerator;
 /**
  * Input panel for volatile parameters.
  */
-public class ControllableInputPanel extends JPanel {
+public class ControllableInputPanel extends InformationPanel{
 
 	/** Controllable name */
 	public JTextField txtCPName;
@@ -159,7 +159,7 @@ public class ControllableInputPanel extends JPanel {
 		add(txtCPEfficiency, "4, 16, fill, default");
 		txtCPEfficiency.setColumns(10);
 
-		lbCPCost = new JLabel("Cost [cent EUR/kWh]");
+		lbCPCost = new JLabel("Fuel cost [EUR/kWh]");
 		add(lbCPCost, "2, 18");
 
 		txtCPCost = new JTextField();
@@ -176,5 +176,17 @@ public class ControllableInputPanel extends JPanel {
 		txtCPCOEmission.addFocusListener(new CPCOEmissionListener());
 		add(txtCPCOEmission, "4, 20, fill, default");
 		txtCPCOEmission.setColumns(10);
+	}
+
+	@Override
+	public void update() {
+		Controllable controllable = (Controllable) DesignerPanel.selectedComponent;
+		txtCPName.setText(controllable.getName());
+		sCPNetworkType.setSelectedItem(controllable.getNetworkType());
+		txtCPMinimumPower.setText(Double.toString(controllable.getMinimumPower()));
+		txtCPMaximumPower.setText(Double.toString(controllable.getMaximumPower()));
+		txtCPEfficiency.setText(Double.toString(controllable.getEfficiency()));
+		txtCPCost.setText(Double.toString(controllable.getCost()));
+		txtCPCOEmission.setText(Double.toString(controllable.getCOEmission()));
 	}
 }

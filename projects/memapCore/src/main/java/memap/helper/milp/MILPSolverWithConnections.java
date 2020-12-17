@@ -1,6 +1,7 @@
 package memap.helper.milp;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -11,7 +12,9 @@ import lpsolve.LpSolveException;
 import memap.controller.TopologyController;
 import memap.helper.DirectoryConfiguration;
 import memap.helper.MEMAPLogging;
+import memap.helper.MetricsHandler;
 import memap.helper.SolutionHandler;
+import memap.media.Strings;
 import memap.messages.BuildingMessage;
 import memap.messages.OptimizationResultMessage;
 
@@ -152,6 +155,21 @@ public class MILPSolverWithConnections extends MILPSolver {
 		double[] lambdaCO2 = mp.getLambdaCO2();
 
 		workWithResults(optSolution, names, lambda, lambdaCO2, buildingMessages);
+
+		// METRICS FOR RESULTS OVERVIEW
+		MetricsHandler metricsHandler = new MILPMetricsHandler(topologyController, buildingMessages, optResult, optSolution, problem,
+				milpSolHandler, currentTimeStep, nStepsMPC);
+
+		// filename to be created
+		String filename = topologyController.getSimulationName() + "/MPC" + nStepsMPC + "_MILP/";
+		filename += actorName + "_MPC" + nStepsMPC + Strings.milpOverviewFileSuffix;
+
+		try {
+			metricsHandler.calculateOverviewMetrics(filename);
+		} catch (IOException e) {
+			System.err.println("There was an error in the metrics calculation");
+			e.printStackTrace();
+		}
 
 		// Clean up such that all used memory by lp-solve is freed
 		if (problem.getLp() != 0)

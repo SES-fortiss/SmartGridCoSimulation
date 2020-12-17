@@ -5,28 +5,33 @@ import java.util.Map.Entry;
 
 import fortiss.components.Building;
 import fortiss.gui.DesignerPanel;
+import fortiss.gui.style.Colors;
 import fortiss.simulation.PlanningTool;
+import memap.media.Strings;
 
 /**
- * Populates the result panels
+ * Populates the panels of the result overview tab
  */
 public class Reporter {
 
+	PlanningTool planningTool;
 	private ResultsLibrary detailedResult;
 	private ResultsLibrary overviewResult;
 	/** Maps the metrics panels to their name */
-	private HashMap<String, MetricsPanel> metricsPanelMap = new HashMap<String, MetricsPanel>();
-
-	
+	private HashMap<String, MetricsPanel> metricsPanelMap = new HashMap<String, MetricsPanel>();	
 
 	/**
 	 * Create the application.
 	 */
 	public Reporter() {
+		planningTool = PlanningTool.getInstance();
 		setDetailedResult(new DetailedResults());
 		setOverviewResult(new OverviewResults());
 	}
 
+	/**
+	 * This method create the result views. It is called only once after simulation.
+	 */
 	public void showResults() {
 		showDetailedResults();
 		showOverviewResults();
@@ -34,7 +39,7 @@ public class Reporter {
 	
 	private void showDetailedResults() {
 		getDetailedResult().load();
-		PlanningTool.getReporterPanel().populateMenu(getDetailedResult());
+		planningTool.getReporterPanel().populateMenu(getDetailedResult());
 	}
 
 	/**
@@ -43,33 +48,40 @@ public class Reporter {
 	private void showOverviewResults() {
 		getOverviewResult().load();
 
-		ReporterOverviewPanel overviewPanel = PlanningTool.getReporterOverviewPanel();
-		overviewPanel.reset();
-
-		// Add one summary panel
-		SummaryPanel summaryPanel = new SummaryPanel();
-		overviewPanel.addSubpanel(summaryPanel, "Summary");
+		ReporterOverviewPanel reporterOverviewPanel = planningTool.getReporterOverviewPanel();
+		reporterOverviewPanel.reset();
 		
-		// Add one general metrics panel
+		// Add a summary panel
+		SummaryPanel summaryPanel = new SummaryPanel();
+				
+		reporterOverviewPanel.addTitleToSelectionPanel("MEMAP views");	
+		reporterOverviewPanel.addSubpanel(summaryPanel, "Comparison results", true);
+		
+		// Add general metric panels - this is just the memap result panel!
 		MetricsPanel globalMetricsPanel = new MetricsPanel();
-		metricsPanelMap.put("Global optimization", globalMetricsPanel);
-		overviewPanel.addSubpanel(metricsPanelMap.get("Global optimization"), "Optimization with MEMAP");
+		globalMetricsPanel.setBackground(Colors.white);		
+		metricsPanelMap.put(Strings.memapOnModeName, globalMetricsPanel);
+		reporterOverviewPanel.addSubpanel(metricsPanelMap.get(Strings.memapOnModeName), Strings.memapOnModeName);
 
+		// These are the building views
+		reporterOverviewPanel.addEmptyCell();
+		reporterOverviewPanel.addTitleToSelectionPanel("Single building views");		
 		// Add one metrics panel per building
 		for (Entry<String, Building> entry : DesignerPanel.buildings.entrySet()) {
 			Building building = entry.getValue();
-			metricsPanelMap.put(building.getName(), new MetricsPanel());
-			overviewPanel.addSubpanel(metricsPanelMap.get(building.getName()), "Optimization without MEMAP - " + building.getName());
+			
+			MetricsPanel buildingPanel = new MetricsPanel();
+			buildingPanel.setBackground(Colors.white);
+			metricsPanelMap.put(building.getName(), buildingPanel);
+			reporterOverviewPanel.addSubpanel(metricsPanelMap.get(building.getName()), building.getName() + " (opt.)");
 		}
 		
 		MetricsGenerator metricsGenerator;
-		if (DesignerPanel.parameterPanel.pars.getOptimizer().equals("lp")) {
-			metricsGenerator = new LPMetricsGenerator(getDetailedResult(), getOverviewResult());
-		} else {
-			metricsGenerator = new MILPMetricsGenerator(getDetailedResult(), getOverviewResult());
-		} 
 		
+		metricsGenerator = new MetricsGenerator(getDetailedResult(), getOverviewResult());
 		metricsGenerator.populateMetricsPanels(summaryPanel, metricsPanelMap);
+		
+		reporterOverviewPanel.showPanel("Comparison results");
 	}
 
 	/**

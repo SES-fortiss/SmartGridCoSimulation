@@ -12,8 +12,12 @@ import memap.helper.HelperConcat;
 import memap.helper.MetricsHandler;
 import memap.helper.SolutionHandler;
 import memap.helper.configurationOptions.Optimizer;
+import memap.main.SimulationProgress;
+import memap.main.Status;
 import memap.main.TopologyConfig;
+import memap.media.Strings;
 import memap.messages.BuildingMessage;
+import memap.messages.BuildingMessageHandler;
 import memap.messages.OptimizationResultMessage;
 
 public class LPSolver {
@@ -66,14 +70,15 @@ public class LPSolver {
 				if (buildingMessageList != null) {
 					problem = mb.multipleBuildings(getBuildingMessageList());
 				} else {
-					System.err.println(this.getClass()
-							+ ": trying to solve LPwithConnections, but buildingMessageListIsEmpty, will do it  without Connections");
 					problem = mb.singleBuilding(buildingMessage);
 				}
 			}
 
 			LPOptimizationStarter os = new LPOptimizationStarter(topologyController);
-			double[] optSolution = os.runLinProg(problem);
+
+			double[] optSolution = null;
+
+			optSolution = os.runLinProg(problem);
 
 			// Determination of costs
 			double buildingCostPerTimestep = 0;
@@ -93,20 +98,42 @@ public class LPSolver {
 
 			// Creation of the result vector
 			double[] currentStep = { 0 + currentTimeStep };
-			double[] currentDemand = solHandler.getDemandForThisTimestep(problem.b_eq, nStepsMPC);
 			double[] currentOptVector = solHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
 			double[] currentSOC = solHandler.getCurrentSOC(buildingMessage.storageList);
 			double[] totalCostsValue = { costTotal };
 			double[] co2emissionsValue = { CO2Total };
 			double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep) };
 
-			String[] timeStep = { "Time step" };
-			String[] currentDemandNames = solHandler.getNamesForDemand();
+			String[] timeStep = { Strings.timeStep };
 			String[] currentOptVectorNames = solHandler.getVectorNamesForThisTimeStep(problem.namesUB, nStepsMPC);
 			String[] currentSOCNames = solHandler.getNamesForSOC(buildingMessage.storageList);
-			String[] energyPrice = { "Energy price [EUR]" };
-			String[] totalCosts = { "Total costs [EUR]" };
-			String[] co2emissions = { "CO2 emissions [kg CO2/kWh]" };
+			String[] energyPrice = { Strings.energyPriceAndUnit };
+			String[] totalCosts = { Strings.totalCostAndUnit };
+			String[] co2emissions = { Strings.co2EmissionsAndUnit };
+
+			double[] currentDemand = null;
+			String[] currentDemandNames = null;
+
+			if (buildingMessageList != null) {
+				// With connections
+				BuildingMessageHandler buildingMessageHandler = new BuildingMessageHandler();
+				double[] demandVector = buildingMessageHandler.getCombinedDemandVector(buildingMessageList, nStepsMPC);
+				currentDemand = solHandler.getDemandForThisTimestep(demandVector, nStepsMPC);
+				currentDemandNames = solHandler.getNamesForDemand(buildingMessageList, nStepsMPC);
+
+				// Small modification to calculate the aggregated demand of the buildings.
+				double[] resultWithTotalHeatDemand = new double[currentDemand.length + 1];
+				for (int i = 0; i < currentDemand.length - 1; i++) {
+					resultWithTotalHeatDemand[0] += currentDemand[i];
+					resultWithTotalHeatDemand[i + 1] = currentDemand[i];
+				}
+				resultWithTotalHeatDemand[currentDemand.length] = currentDemand[currentDemand.length - 1];
+				currentDemand = resultWithTotalHeatDemand;
+			} else {
+				// Without connections
+				currentDemand = solHandler.getDemandForThisTimestep(problem.b_eq, nStepsMPC);
+				currentDemandNames = solHandler.getNamesForDemandSingleBuilding();
+			}
 
 			String[] namesResult = HelperConcat.concatAllObjects(timeStep, currentDemandNames, currentOptVectorNames,
 					currentSOCNames, energyPrice, totalCosts, co2emissions);
@@ -122,14 +149,14 @@ public class LPSolver {
 			}
 			vectorResultStr[0] = ((Integer) currentTimeStep).toString();
 
-			System.out.println("LP: " + this.actorName + " Names: " + Arrays.toString(namesResult));
-			System.out.println("LP: " + this.actorName + " Result: " + Arrays.toString(vectorResultStr));
+			//System.out.println("LP: " + this.actorName + " Names: " + Arrays.toString(namesResult));
+			//System.out.println("LP: " + this.actorName + " Result: " + Arrays.toString(vectorResultStr));
 
 			// Save
 			buildingsSolutionPerTimeStep[currentTimeStep] = vectorResult;
 
 			String saveString = topologyController.getSimulationName() + "/MPC" + nStepsMPC + "_LP/";
-			saveString += actorName + "_MPC" + nStepsMPC + "_LP_Solutions.csv";
+			saveString += actorName + "_MPC" + nStepsMPC + Strings.lpSolutionFileSuffix;
 
 			if (currentTimeStep == (topologyConfig.getNrOfIterations() - 1)) {
 				solHandler.exportMatrix(buildingsSolutionPerTimeStep, saveString, namesResult);
@@ -148,18 +175,29 @@ public class LPSolver {
 			}
 
 			// METRICS FOR RESULTS OVERVIEW
-			MetricsHandler mc = new LPMetricsHandler(buildingMessage, optResult, optSolution, problem,
-					currentTimeStep, nStepsMPC);
-
+			MetricsHandler mc = null;
+			
+			if (buildingMessageList != null) {
+				mc = new LPMetricsHandler(buildingMessageList, optResult, optSolution, problem, currentTimeStep,
+						nStepsMPC);
+	
+				
+			} else {
+				mc = new LPMetricsHandler(buildingMessage, optResult, optSolution, problem, currentTimeStep,
+						nStepsMPC);
+			}
+			
 			// filename to be created
 			String filename = topologyController.getSimulationName() + "/MPC" + nStepsMPC + "_LP/";
-			filename += actorName + "_MPC" + nStepsMPC + "_LP_Overview.csv";
+			filename += actorName + "_MPC" + nStepsMPC + Strings.lpOverviewFileSuffix;
 
 			mc.calculateOverviewMetrics(filename);
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println(actorName + " cannot solve the optimization");
+			String error = getClass().getName() + ": " + actorName + " cannot solve the optimization";
+			SimulationProgress.getInstance().setStatus(Status.ERROR, error);
+			System.err.println(error);
 			System.out.println("names: " + Arrays.toString(problem.namesUB));
 			System.out.println("b: " + Arrays.toString(problem.b_eq));
 			System.out.println("ub: " + Arrays.toString(problem.x_ub));

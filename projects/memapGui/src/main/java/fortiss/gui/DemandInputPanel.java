@@ -19,6 +19,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
+import fortiss.components.Demand;
 import fortiss.datastructures.Data;
 import fortiss.gui.listeners.button.DBrowseListener;
 import fortiss.gui.listeners.button.DPlotListener;
@@ -28,14 +29,15 @@ import fortiss.gui.listeners.textfield.DNameListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
-import fortiss.media.Icon;
+import fortiss.media.IconStore;
+import fortiss.simulation.helper.Logger;
 import memap.examples.ExampleFiles;
 import memap.helper.profilehandler.TimedConsumerData;
 
 /**
  * Input panel for demand parameters.
  */
-public class DemandInputPanel extends JPanel {
+public class DemandInputPanel extends InformationPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -104,18 +106,11 @@ public class DemandInputPanel extends JPanel {
 
 		panel = new JPanel();
 		add(panel, "1, 2, fill, fill");
-		panel.setLayout(new FormLayout(new ColumnSpec[] { 
-				ColumnSpec.decode("15dlu"), 
-				ColumnSpec.decode("120dlu"),
-				ColumnSpec.decode("15dlu"), 
-				ColumnSpec.decode("75dlu:grow"), 
-				FormSpecs.RELATED_GAP_COLSPEC,
-				FormSpecs.DEFAULT_COLSPEC, 
-				FormSpecs.RELATED_GAP_COLSPEC, 
-				FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC, 
-				ColumnSpec.decode("15dlu"), 
-				FormSpecs.RELATED_GAP_COLSPEC, },
+		panel.setLayout(new FormLayout(
+				new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("120dlu"), ColumnSpec.decode("15dlu"),
+						ColumnSpec.decode("75dlu:grow"), FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
+						FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC,
+						ColumnSpec.decode("15dlu"), FormSpecs.RELATED_GAP_COLSPEC, },
 				new RowSpec[] { FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
 						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
@@ -149,13 +144,13 @@ public class DemandInputPanel extends JPanel {
 		JButton btDBrowse = new JButton("");
 		panel.add(btDBrowse, "6, 9, right, center");
 		btDBrowse.addMouseListener(new DBrowseListener());
-		btDBrowse.setIcon(Icon.open);
+		btDBrowse.setIcon(IconStore.open);
 		btDBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
 		btDBrowse.setContentAreaFilled(false);
 
 		JButton btDPlot = new JButton("");
 		panel.add(btDPlot, "8, 9");
-		btDPlot.setIcon(Icon.visualize);
+		btDPlot.setIcon(IconStore.visualize);
 		btDPlot.setBorder(new EmptyBorder(3, 3, 3, 3));
 		btDPlot.setContentAreaFilled(false);
 		btDPlot.addMouseListener(new DPlotListener());
@@ -165,7 +160,7 @@ public class DemandInputPanel extends JPanel {
 		panel.add(lblCsvInstructions, "2, 13, 2, 1, left, default");
 
 		lblCsvformat = new JLabel("");
-		lblCsvformat.setIcon(Icon.csvFormat);
+		lblCsvformat.setIcon(IconStore.csvFormat);
 		panel.add(lblCsvformat, "4, 13, 6, 1, right, center");
 
 		lblCsvWarning = new JLabel(
@@ -184,34 +179,40 @@ public class DemandInputPanel extends JPanel {
 	 * and set plotter to <code>false</code>
 	 */
 	public void setData(String location) {
-		
+
 		String str_electricity = "Series" + 2;
 		String str_heat = "Series" + 1;
-		
-		if (location != null && location.isEmpty()) {
+
+		if (location == null || location.isEmpty()) {
 			loadEmptyData();
 		} else {
 			try {
 				FileManager fm = new FileManager();
-				this.data = new Data(fm.readFromSource(location), false, Data.BYCOLUMN);
-				
-			} catch (IOException | ParseException e) {													
+				ExampleFiles ef = new ExampleFiles();
+				if (ef.isExample(location)) {
+					this.data = new Data(fm.readFromResources(ef.getFile(location)), false, Data.BYCOLUMN);
+				} else {
+					this.data = new Data(fm.readFromSource(location), false, Data.BYCOLUMN);
+				}
+			} catch (IOException | ParseException e) {
 				try {
-					System.out.println("DataReader first version format style error, trying the new version of the CSVReader instead.");
-					FileManager fm = new FileManager();			
+					Logger.getInstance().writeWarning(
+							"DataReader first version format style error, trying the new version of the CSVReader instead.");
+					FileManager fm = new FileManager();
 					TimedConsumerData timedData = new TimedConsumerData(fm.readFromSource(location));
 					this.data = new Data(timedData);
-					
+
 					str_electricity = "Electricity";
-					str_heat = "Heat";					
-					
+					str_heat = "Heat";
+
 				} catch (IOException | ParseException e1) {
-					System.out.println("<INFO> Data for demand at " + location + " could not be read. Using zeros only.");
+					Logger.getInstance()
+							.writeWarning("Data for demand at " + location + " could not be read. Using zeros only.");
 					e.printStackTrace();
 					e1.printStackTrace();
 					loadEmptyData();
 				}
-				
+
 			}
 		}
 
@@ -228,14 +229,22 @@ public class DemandInputPanel extends JPanel {
 		ExampleFiles ef = new ExampleFiles();
 
 		try {
-			this.data = new Data(fm.readFromResources(ef.getFile("EXAMPLE0")), false, Data.BYCOLUMN);
+			this.data = new Data(fm.readFromResources(ef.getFile("CONSUMPTIONEXAMPLE0")), false, Data.BYCOLUMN);
 		} catch (IOException | ParseException e1) {
 			data = null;
-			System.err.println("Resources error. Default consumption file not found.");
+			Logger.getInstance().writeError("Default consumption file not found in resources.");
 			e1.printStackTrace();
 		}
 		txtDConsumption.setText("");
-		DesignerPanel.buildings.get(DesignerPanel.selectedBuilding).getDemand().get(DesignerPanel.currentComponent)
-				.setConsumptionProfile("");
+		((Demand) DesignerPanel.selectedComponent).setConsumptionProfile("");
+	}
+
+	@Override
+	public void update() {
+		Demand demand = (Demand) DesignerPanel.selectedComponent;
+		txtDName.setText(demand.getName());
+		txtDConsumption.setText(demand.getConsumptionProfile());
+		plotPanel.clearSeries();
+		setData(demand.getConsumptionProfile());
 	}
 }

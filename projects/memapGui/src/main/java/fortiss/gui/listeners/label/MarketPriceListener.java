@@ -4,6 +4,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import fortiss.gui.DesignerPanel;
+import fortiss.simulation.Parameters;
+import fortiss.simulation.PlanningTool;
 
 public class MarketPriceListener extends MouseAdapter {
 
@@ -12,13 +14,14 @@ public class MarketPriceListener extends MouseAdapter {
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if (DesignerPanel.parameterPanel.pars.isFixedPrice()) {
+		Parameters pars = PlanningTool.getInstance().getParameters();
+		if (pars.isFixedPrice()) {
 			// If Market price is fixed
-			DesignerPanel.parameterPanel.pars.setFixedPrice(false);
+			pars.setFixedPrice(false);
 		} else {
 			// If Market price is variable
-			DesignerPanel.parameterPanel.pars.setFixedPrice(true);
+			pars.setFixedPrice(true);
 		}
-		DesignerPanel.parameterPanel.updateMarketPriceOptions();
+		DesignerPanel.parameterPanel.updateMarketPriceOptions(pars);
 	}
 }

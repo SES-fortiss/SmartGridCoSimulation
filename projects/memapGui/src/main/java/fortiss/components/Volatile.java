@@ -1,16 +1,27 @@
 package fortiss.components;
 
+import com.google.gson.annotations.Expose;
+
+import fortiss.gui.icons.ComponentIcon;
+import fortiss.media.IconStore;
+
 /**
  * Volatile is the class for representing volatile Producer objects. Example:
  * PV, SolarThermic
  */
-public class Volatile {
-	private String name;
+public class Volatile extends Component {
+	
+	@Expose
 	private String networkType; // Values: Heat or Electricity
+	@Expose
 	private double minimumPower;
+	@Expose
 	private double maximumPower;
+	@Expose
 	private String forecastFile;
+	@Expose
 	private double cost;
+	@Expose
 	private double coEmission;
 
 	/**
@@ -24,23 +35,16 @@ public class Volatile {
 	 * @param cost         a positive double [EUR]
 	 * @param coEmission   CO2 Emissions measured in [g/kWh]
 	 */
-	public Volatile(String name, String networkType, double minimumPower, double maximumPower, String forecastFile, double cost,
+	public Volatile(Building building, String name, String networkType, double minimumPower, double maximumPower, String forecastFile, double cost,
 			double coEmission) {
-		this.setName(name);
-		this.setNetworkType(networkType);
-		this.setMinimumPower(minimumPower);
-		this.setMaximumPower(maximumPower);
-		this.setForecastFile(forecastFile);
-		this.setCost(cost);
-		this.setCOEmission(coEmission);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String producerId) {
-		this.name = producerId;
+		super(name, building);
+		setNetworkType(networkType);
+		setMinimumPower(minimumPower);
+		setMaximumPower(maximumPower);
+		setForecastFile(forecastFile);
+		setCost(cost);
+		setCOEmission(coEmission);
+		setIcon(new ComponentIcon(this, "volatile", IconStore.sVolatile, IconStore.uVolatile));
 	}
 
 	public String getNetworkType() {

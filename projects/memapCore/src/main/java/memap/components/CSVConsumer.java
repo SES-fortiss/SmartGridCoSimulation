@@ -87,7 +87,7 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 			FileManager fm = new FileManager();
 			if (csvFile.isEmpty()) {
 				
-				OriginalCSVHandler ocsv = new OriginalCSVHandler(fm.getBuffer("EXAMPLE0"), topologyConfig);
+				OriginalCSVHandler ocsv = new OriginalCSVHandler(fm.getBuffer("CONSUMPTIONEXAMPLE0"), topologyConfig);
 				electricityProfile = ocsv.getElectricityProfile();
 				heatProfile = ocsv.getHeatProfile();
 				
@@ -102,7 +102,7 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 			}
 		} catch (IOException | ParseException e) {
 			
-			System.err.println("Error reading or parsing CSV data from " + csvFile + " - we try a second format now.");			
+			System.out.println("Reading new format of " + csvFile);			
 			try {
 				// If the first reader does not work, we try a second format style, that is specified as another scenario
 				

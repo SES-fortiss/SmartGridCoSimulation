@@ -82,7 +82,7 @@ public class EchoSocket extends WebSocketAdapter {
 	    Runnable displayRunnable = new Runnable() {
 		public void run() {
 		    JsonObject connectionStatus = js.getErrorCode();
-		    Iterator<BuildingController> iterator = js.getTopology().managedBuildings.iterator();
+		    Iterator<BuildingController> iterator = js.getTopology().managedBuildings.values().iterator();
 		    getRemote().sendStringByFuture("empty");
 		    getRemote().sendStringByFuture("Connection Status:");
 		    Iterator<String> key = connectionStatus.keySet().iterator();

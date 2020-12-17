@@ -26,11 +26,13 @@ import memap.messages.planning.VolatileProducerMessage;
  */
 public class MILPProblemWithConnections extends MILPProblem {
 	
-	HashMap<BuildingMessage, Integer> mapBuildingMessageToIndex = new HashMap<>();
-	HashMap<ConnectionMessage, Integer> mapConnectionToIndex = new HashMap<>();
+	HashMap<BuildingMessage, Integer> mapBuildingMessageToIndex;
+	HashMap<ConnectionMessage, Integer> mapConnectionToIndex;
 	
 	public MILPProblemWithConnections(TopologyController topologyController, int currentTimeStep, int nStepsMPC, int nCols) {
 		super(topologyController, currentTimeStep, nStepsMPC, nCols);
+		mapBuildingMessageToIndex = new HashMap<BuildingMessage, Integer>();
+		mapConnectionToIndex = new HashMap<ConnectionMessage, Integer>();
 	}
 	
 	public LpSolve createNames(LpSolve problem, ArrayList<BuildingMessage> buildingMessages) throws LpSolveException {		
@@ -71,14 +73,6 @@ public class MILPProblemWithConnections extends MILPProblem {
         
         MILPHelper.addMarkets(problem, mihelper);
         
-        for (BuildingMessage bm : buildingMessages) {			
-			int indexBuilding = mapBuildingMessageToIndex.get(bm)-1;
-			updateLambdaEURbuilding(bm, indexBuilding);
-			updateLambdaCO2building(bm, indexBuilding);			
-		}        
-        updateLambdaEURMarket();
-		updateLambdaCO2Market();
-        
 		return problem;
 	}	
 	
@@ -101,7 +95,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 
 			for (int i = 0; i < demand.length / 2; i++) {	
 				demandHEAT[i + b_counter*nStepsMPC] = demand[i];
-				demandELEC[i] = demand[i + nStepsMPC];
+				demandELEC[i] += demand[i + nStepsMPC];
 			}
 			
 			b_counter++;
@@ -267,6 +261,16 @@ public class MILPProblemWithConnections extends MILPProblem {
         		System.out.println("Adding markets --> rowELEC: " + Arrays.toString(rowELEC) + " EQ: " + demandELEC[i]);
 			}       	     	        	
 		}
+        
+        for (BuildingMessage bm : buildingMessages) {			
+            
+			int indexBuilding = mapBuildingMessageToIndex.get(bm)-1;
+			updateLambdaEURbuilding(bm, indexBuilding);
+			updateLambdaCO2building(bm, indexBuilding);			
+		}        
+        updateLambdaEURMarket();
+		updateLambdaCO2Market();
+		
 		return problem;
 	}
 

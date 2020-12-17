@@ -7,7 +7,8 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Point;
 
-import javax.swing.JLabel;
+import fortiss.gui.icons.BuildingIcon;
+import fortiss.simulation.helper.PositionManager;
 
 /**
  * 
@@ -201,7 +202,8 @@ public class DragLayout implements LayoutManager {
 					Point p = component.getLocation();
 					Dimension d = getActualSize(component);
 					component.setBounds(p.x + x, p.y + y, d.width, d.height);
-					PositionManager.updateBuildingPosition(((JLabel) component).getText(), (JLabel) component);
+					PositionManager pm = PositionManager.getInstance();
+					pm.updateCenterPositionOf(((BuildingIcon) component).getText(), (BuildingIcon) component);
 				}
 			}
 		}

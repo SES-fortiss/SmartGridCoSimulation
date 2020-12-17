@@ -1,12 +1,10 @@
 package fortiss.simulation;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
 import fortiss.gui.TrackerPanel;
-import fortiss.simulation.listeners.helper.ProgressManager;
+import fortiss.simulation.helper.ProgressManager;
 import memap.controller.GuiController;
-import memap.helper.DirectoryConfiguration;
 
 public class SimulationSetup extends SimulationState {
 
@@ -17,18 +15,17 @@ public class SimulationSetup extends SimulationState {
 	 */
 	@Override
 	public void execute(ProgressManager pm) {
-		PlanningTool.showTracker();
+		PlanningTool planningTool = PlanningTool.getInstance();
+		planningTool.closeReporter();
+		planningTool.showTracker();
 
-		TrackerPanel loadingScreen = PlanningTool.getTrackerPanel();
+		TrackerPanel loadingScreen = planningTool.getTrackerPanel();
 		loadingScreen.setIndeterminate(true);
 		loadingScreen.setMessage("Setting up the topology");
 		loadingScreen.repaint();
 
-		String fs = File.separator;
-		String location = System.getProperty("user.dir") + fs + DirectoryConfiguration.mainDir + fs
-				+ DirectoryConfiguration.configDir + fs + "parameterConfig.json";
-		GuiController gc = new GuiController(location);
-		PlanningTool.setGuiController(gc);
+		GuiController gc = new GuiController(planningTool.getWorkingFile());
+		planningTool.setGuiController(gc);
 
 		try {
 			gc.setUp();

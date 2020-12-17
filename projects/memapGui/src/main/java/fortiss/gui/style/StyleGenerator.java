@@ -2,12 +2,13 @@ package fortiss.gui.style;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
+import java.awt.Insets;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.FontUIResource;
 
-import fortiss.media.Icon;
+import fortiss.media.IconStore;
 
 /**
  * Manages the style configuration for the application
@@ -54,7 +55,9 @@ abstract public class StyleGenerator {
 		UIManager.put("ProgressBar.font", defaultFont);
 		UIManager.put("ScrollPane.font", defaultFont);
 		UIManager.put("Viewport.font", defaultFont);
-		UIManager.put("TabbedPane.font", defaultFont);		
+		UIManager.put("TabbedPane.font", defaultFont);
+		UIManager.put("TabbedPane.contentBorderInsets", new Insets(0,0,0,0));
+		UIManager.put("TabbedPane.tabsOverlapBorder", true);
 		UIManager.put("Table.font", defaultFont);
 		UIManager.put("TableHeader.font", defaultFont);
 		UIManager.put("TextField.font", defaultFont);
@@ -66,9 +69,9 @@ abstract public class StyleGenerator {
 		UIManager.put("ToolBar.font", defaultFont);
 		UIManager.put("ToolTip.font", defaultFont);
 		UIManager.put("Tree.font", defaultFont);
-		UIManager.put("Tree.closedIcon", Icon.closedNode);
-		UIManager.put("Tree.openIcon", Icon.openNode);
-		UIManager.put("Tree.leafIcon", Icon.itemNode);
+		UIManager.put("Tree.closedIcon", IconStore.closedNode);
+		UIManager.put("Tree.openIcon", IconStore.openNode);
+		UIManager.put("Tree.leafIcon", IconStore.itemNode);
 		
 	}
 

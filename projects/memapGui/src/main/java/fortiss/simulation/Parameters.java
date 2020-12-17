@@ -1,12 +1,11 @@
 package fortiss.simulation;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+
+import com.google.gson.annotations.Expose;
 
 import fortiss.gui.DesignerPanel;
-import fortiss.media.Icon;
+import fortiss.media.IconStore;
 
 /**
  * Stores the parameter configuration selected by the user and the default
@@ -42,32 +41,36 @@ public class Parameters {
 		}
 	};
 
-	/** paths to descriptor files */
-	private Set<File> descriptorFiles = new HashSet<File>();
 	/** Simulation name */
+	@Expose
 	private String simulationName;
 	/** length MemapSimulation steps. An integer */
+	@Expose
 	private int length;
 	/** steps MPC horizon. An integer */
+	@Expose
 	private int steps;
 	/** days Number of days to be simulated */
+	@Expose
 	private int days;
 	/** hasfixedPrice a boolean. Fixed (true)/ variable (false) */
+	@Expose
 	private boolean hasfixedPrice;
 	/** path to a file that describe variability in market prices */
+	@Expose
 	private String marketPriceFile;
 	/** A fixed value for market price */
+	@Expose
 	private double fixedMarketPrice = 0;
-	/** memapON a boolean. On(true)/ off (false) */
-	private boolean memapON;
 	/** optCriteria a String. Optimization criteria: {cost, co2} */
+	@Expose
 	private String optCriteria;
 	/** optimizer a String. Optimizer: {LP, MILP} */
+	@Expose
 	private String optimizer;
 	/** loggingMode a String. loggingMode: {allLogs, fileLogs, resultLogs} */
+	@Expose
 	private String loggingMode;
-	/** lastSavedFile remembers the last save of a file this allows to reset the session during next startup */
-	private String lastSavedFile;
 
 	/**
 	 * Constructor for class Parameters
@@ -81,11 +84,8 @@ public class Parameters {
 		setFixedMarketPrice(0.275);
 		setMarketPriceFile("");
 		setOptimizer(optimizerOptions.get(0));
-		setMemapON(false);
 		setOptCriteria(criteriaOptions.get(0));
 		setLoggingMode(loggingOptions.get(0));
-		setLastSavedFile("");
-		clearDescriptorFile();
 	}
 
 	public String getSimulationName() {
@@ -96,7 +96,7 @@ public class Parameters {
 		this.simulationName = simulationName;
 	}
 	
-	public int getLength() {
+	public int getStepsPerDay() {
 		return length;
 	}
 
@@ -104,7 +104,7 @@ public class Parameters {
 		this.length = length;
 	}
 
-	public int getSteps() {
+	public int getMPCHorizon() {
 		return steps;
 	}
 
@@ -141,19 +141,11 @@ public class Parameters {
 
 		if (index == optimizerOptions.size() - 1) {
 			setOptimizer(optimizerOptions.get(0));
-			DesignerPanel.parameterPanel.lbOptimizer2.setIcon(Icon.optimizer.get(0));
+			DesignerPanel.parameterPanel.lbOptimizer2.setIcon(IconStore.optimizer.get(0));
 		} else {
 			setOptimizer(optimizerOptions.get(index + 1));
-			DesignerPanel.parameterPanel.lbOptimizer2.setIcon(Icon.optimizer.get(index + 1));
+			DesignerPanel.parameterPanel.lbOptimizer2.setIcon(IconStore.optimizer.get(index + 1));
 		}
-	}
-
-	public boolean isMemapON() {
-		return memapON;
-	}
-
-	public void setMemapON(boolean memapON) {
-		this.memapON = memapON;
 	}
 
 	public String getOptCriteria() {
@@ -169,23 +161,11 @@ public class Parameters {
 
 		if (index == criteriaOptions.size() - 1) {
 			setOptCriteria(criteriaOptions.get(0));
-			DesignerPanel.parameterPanel.lbOptCriteria2.setIcon(Icon.optCriteria.get(0));
+			DesignerPanel.parameterPanel.lbOptCriteria2.setIcon(IconStore.optCriteria.get(0));
 		} else {
 			setOptCriteria(criteriaOptions.get(index + 1));
-			DesignerPanel.parameterPanel.lbOptCriteria2.setIcon(Icon.optCriteria.get(index + 1));
+			DesignerPanel.parameterPanel.lbOptCriteria2.setIcon(IconStore.optCriteria.get(index + 1));
 		}
-	}
-
-	public Set<File> getDescriptorFiles() {
-		return descriptorFiles;
-	}
-
-	public void addDescriptorFile(File descriptorFile) {
-		descriptorFiles.add(descriptorFile);
-	}
-	
-	public void clearDescriptorFile() {
-		descriptorFiles.clear();
 	}
 
 	public String getMarketPriceFile() {
@@ -217,18 +197,10 @@ public class Parameters {
 
 		if (index == loggingOptions.size() - 1) {
 			setLoggingMode(loggingOptions.get(0));
-			DesignerPanel.parameterPanel.lbLoggingMode2.setIcon(Icon.loggingMode.get(0));
+			DesignerPanel.parameterPanel.lbLoggingMode2.setIcon(IconStore.loggingMode.get(0));
 		} else {
 			setLoggingMode(loggingOptions.get(index + 1));
-			DesignerPanel.parameterPanel.lbLoggingMode2.setIcon(Icon.loggingMode.get(index + 1));
+			DesignerPanel.parameterPanel.lbLoggingMode2.setIcon(IconStore.loggingMode.get(index + 1));
 		}
-	}
-
-	public String getLastSavedFile() {
-		return lastSavedFile;
-	}
-
-	public void setLastSavedFile(String lastSavedFile) {
-		this.lastSavedFile = lastSavedFile;
 	}
 }

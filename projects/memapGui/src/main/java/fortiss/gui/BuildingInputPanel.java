@@ -3,7 +3,6 @@ package fortiss.gui;
 import java.awt.Graphics;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
@@ -13,6 +12,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
+import fortiss.components.Building;
 import fortiss.gui.listeners.textfield.BNameListener;
 import fortiss.gui.listeners.textfield.BPortListener;
 import fortiss.gui.style.Colors;
@@ -22,7 +22,7 @@ import fortiss.gui.style.StyleGenerator;
 /**
  * Input panel for building parameters.
  */
-public class BuildingInputPanel extends JPanel {
+public class BuildingInputPanel extends InformationPanel {
 
 	/** Building name */
 	public JTextField txtBName;
@@ -101,5 +101,12 @@ public class BuildingInputPanel extends JPanel {
 		txtBPort.addKeyListener(new BPortListener());
 		txtBPort.addFocusListener(new BPortListener());
 		add(txtBPort, "4, 10, fill, default");
+	}
+
+	@Override
+	public void update() {
+		Building building = DesignerPanel.selectedBuilding;
+		txtBName.setText(building.getName());
+		txtBPort.setText(String.valueOf(building.getPort()));
 	}
 }

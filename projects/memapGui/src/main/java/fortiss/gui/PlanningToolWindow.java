@@ -17,9 +17,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import fortiss.gui.listeners.window.ExitWindowListener;
+import fortiss.gui.listeners.action.ExitWindowListener;
 import fortiss.gui.style.StyleGenerator;
-import fortiss.media.Icon;
+import fortiss.media.IconStore;
 
 public class PlanningToolWindow extends JFrame {
 
@@ -33,7 +33,7 @@ public class PlanningToolWindow extends JFrame {
 
 		addWindowListener(new ExitWindowListener());
 		setLocationRelativeTo(null);
-		setIconImage(Icon.smallMemapLogo.getImage());
+		setIconImage(IconStore.smallMemapLogo.getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(new BorderLayout());
 
@@ -46,6 +46,7 @@ public class PlanningToolWindow extends JFrame {
 		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		setMaximizedBounds(env.getMaximumWindowBounds());
 		setSize(env.getMaximumWindowBounds().width, env.getMaximumWindowBounds().height);
+		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 

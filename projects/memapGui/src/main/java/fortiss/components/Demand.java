@@ -1,12 +1,18 @@
 package fortiss.components;
 
+import com.google.gson.annotations.Expose;
+
+import fortiss.gui.icons.ComponentIcon;
+import fortiss.media.IconStore;
+
 /**
  * Demand is the class for representing Consumers.
  */
-public class Demand {
-	private String name;
+public class Demand extends Component {
+	
+	@Expose
 	private String consumptionProfile;
-
+	
 	/**
 	 * Constructor for class Demand
 	 * 
@@ -15,17 +21,10 @@ public class Demand {
 	 * @param consumptionProfile a path to an existing file
 	 * @param networkType        a string: Heat or Electricity
 	 */
-	public Demand(String name, String consumptionProfile) {
-		setName(name);
+	public Demand(Building building, String name, String consumptionProfile) {
+		super(name, building);
 		setConsumptionProfile(consumptionProfile);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+		setIcon(new ComponentIcon(this, "demand", IconStore.sDemand, IconStore.uDemand));
 	}
 
 	public String getConsumptionProfile() {
@@ -35,5 +34,5 @@ public class Demand {
 	public void setConsumptionProfile(String consumptionFile) {
 		this.consumptionProfile = consumptionFile;
 	}
-
+	
 }

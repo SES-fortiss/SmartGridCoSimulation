@@ -7,6 +7,8 @@ import memap.messages.planning.ConnectionMessage;
 
 public class Connection extends Device {
 
+	// for deserialization
+	public String sourceBuilding;
 	public String connectedBuilding;
 	public double q_max;
 	public double efficiency;
@@ -18,9 +20,10 @@ public class Connection extends Device {
 	public double[] linprogConnectionInput;
 	public double[] linprogConnectionOutput;
 
-	public Connection(String connectedBuilding, double pipeLengthInMeter, double lossesPer100m, double q_max) {
-		super("connection", 0);
+	public Connection(String sourceBuilding, String connectedBuilding, double pipeLengthInMeter, double lossesPer100m, double q_max) {
+		super("connection_From" + sourceBuilding + "_To"+connectedBuilding, 0);
 
+		this.sourceBuilding = sourceBuilding;
 		this.connectedBuilding = connectedBuilding;
 		this.q_max = q_max;
 		this.operationalPrice = 0.0001;

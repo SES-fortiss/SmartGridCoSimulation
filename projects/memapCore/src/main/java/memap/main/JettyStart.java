@@ -87,9 +87,7 @@ public class JettyStart {
 				}
 				System.out.println("Buiding " + i + " will be added...");
 				BuildingController sampleBuilding = new OpcUaBuildingController(topologyMemapOn, jsonEndpoint, jsonNodes);
-//				BuildingController sampleBuilding2 = new OpcUaBuildingController(topologyMemapOff, jsonEndpoint, jsonNodes);
-				topologyMemapOn.attach(sampleBuilding);
-//				topologyMemapOff.attach(sampleBuilding2);
+				topologyMemapOn.attach(sampleBuilding.getName(), sampleBuilding);
 				errorCode.put((String) jsonEndpoint.get("name"), 0);
 				System.out.println("Building " + i + " was added...");
 

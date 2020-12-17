@@ -1,17 +1,30 @@
 package fortiss.components;
 
+import com.google.gson.annotations.Expose;
+
+import fortiss.gui.icons.ComponentIcon;
+import fortiss.media.IconStore;
+
 /**
  * Coupler is the class for representing Coupler objects. Example: CHP, HeatPump
  */
-public class Coupler {
-	private String name;
+public class Coupler extends Component {
+
+	@Expose
 	private String networkTypeP; // Primary, Values: Heat or Electricity
+	@Expose
 	private String networkTypeS; // Secondary, Values: Heat or Electricity
+	@Expose
 	private double minimumPower;
+	@Expose
 	private double maximumPower;
+	@Expose
 	private double efficiencyPrimary;
+	@Expose
 	private double efficiencySecondary;
+	@Expose
 	private double cost;
+	@Expose
 	private double coEmission;
 
 	/**
@@ -29,25 +42,18 @@ public class Coupler {
 	 * @param cost                cost [EUR]
 	 * @param coEmission          CO2 Emissions measured in [g/kWh]
 	 */
-	public Coupler(String name, String networkTypeP, String networkTypeS, double minimumPower, double maximumPower,
+	public Coupler(Building building, String name, String networkTypeP, String networkTypeS, double minimumPower, double maximumPower,
 			double efficiencyPrimary, double efficiencySecondary, double cost, double coEmission) {
-		this.setName(name);
-		this.setNetworkTypeP(networkTypeP);
-		this.setNetworkTypeS(networkTypeS);
-		this.setMinimumPower(minimumPower);
-		this.setMaximumPower(maximumPower);
-		this.setEfficiencyPrimary(efficiencyPrimary);
-		this.setEfficiencySecondary(efficiencySecondary);
-		this.setCost(cost);
-		this.setCOEmission(coEmission);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+		super(name, building);
+		setNetworkTypeP(networkTypeP);
+		setNetworkTypeS(networkTypeS);
+		setMinimumPower(minimumPower);
+		setMaximumPower(maximumPower);
+		setEfficiencyPrimary(efficiencyPrimary);
+		setEfficiencySecondary(efficiencySecondary);
+		setCost(cost);
+		setCOEmission(coEmission);
+		setIcon(new ComponentIcon(this, "coupler", IconStore.sCoupler, IconStore.uCoupler));
 	}
 
 	public String getNetworkTypeP() {

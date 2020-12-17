@@ -3,9 +3,11 @@ package fortiss.simulation;
 import javax.swing.SwingUtilities;
 
 import fortiss.gui.TrackerPanel;
-import fortiss.simulation.listeners.helper.ProgressManager;
+import fortiss.simulation.helper.Logger;
+import fortiss.simulation.helper.ProgressManager;
 import memap.controller.GuiController;
 import memap.main.SimulationProgress;
+import memap.main.Status;
 
 public class SimulationOptimize extends SimulationState {
 
@@ -22,7 +24,8 @@ public class SimulationOptimize extends SimulationState {
 	 */
 	@Override
 	public void execute(ProgressManager pm) {
-		trackerPanel = PlanningTool.getTrackerPanel();
+		PlanningTool planningTool = PlanningTool.getInstance();
+		trackerPanel = planningTool.getTrackerPanel();
 		sp = SimulationProgress.getInstance();
 		trackerPanel.setMessage("Optimization in progress");
 		trackerPanel.setIndeterminate(false);
@@ -43,6 +46,9 @@ public class SimulationOptimize extends SimulationState {
 					Runnable pb = new Runnable() {
 						@Override
 						public void run() {
+							if (sp.getStatus().equals(Status.ERROR)) {
+								Logger.getInstance().writeError(sp.getError());
+							}
 							trackerPanel.setProgress((int) (sp.getProgress()));
 						}
 					};
@@ -65,9 +71,21 @@ public class SimulationOptimize extends SimulationState {
 		new Thread() {
 			@Override
 			public void run() {
-				GuiController gc = PlanningTool.getGuiController();
+				PlanningTool planningTool = PlanningTool.getInstance();
+				GuiController gc = planningTool.getGuiController();
 				gc.startSimulation();
 				pm.setState(new SimulationDone());
+
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				if (sp.getStatus().equals(Status.ERROR)) {
+					Logger.getInstance().writeError(sp.getError());
+					pm.setState(new SimulationReset());
+				}
 				pm.execute();
 			}
 		}.start();

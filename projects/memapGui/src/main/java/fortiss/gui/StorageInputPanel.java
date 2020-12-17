@@ -5,8 +5,8 @@ import java.awt.Graphics;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
 
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -14,6 +14,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
+import fortiss.components.Storage;
 import fortiss.gui.listeners.selectionitem.SNetworkTypeListener;
 import fortiss.gui.listeners.textfield.SCapacityListener;
 import fortiss.gui.listeners.textfield.SEffINListener;
@@ -25,12 +26,11 @@ import fortiss.gui.listeners.textfield.SStateOfChargeListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
-import javax.swing.border.CompoundBorder;
 
 /**
  * Input panel for storage parameters.
  */
-public class StorageInputPanel extends JPanel {
+public class StorageInputPanel extends InformationPanel {
 
 	/** Storage name */
 	public JTextField txtSName;
@@ -161,7 +161,7 @@ public class StorageInputPanel extends JPanel {
 		txtSCapacity.addFocusListener(new SCapacityListener());
 		add(txtSCapacity, "4, 12");
 		
-		lbSStateOfCharge = new JLabel("State of charge [0-1]");
+		lbSStateOfCharge = new JLabel("State of charge [0-capacity]");
 		add(lbSStateOfCharge, "2, 14");
 		
 		txtSStateOfCharge = new JTextField();
@@ -205,6 +205,19 @@ public class StorageInputPanel extends JPanel {
 		txtSEffOUT.addFocusListener(new SEffOUTListener());
 		add(txtSEffOUT, "4, 22, fill, default");
 		txtSEffOUT.setColumns(10);
+	}
+
+	@Override
+	public void update() {
+		Storage storage = (Storage) DesignerPanel.selectedComponent;
+		txtSName.setText(storage.getName());
+		sSNetworkType.setSelectedItem(storage.getNetworkType());
+		txtSCapacity.setText(Double.toString(storage.getCapacity()));
+		txtSStateOfCharge.setText(Double.toString(storage.getSoc()));
+		txtSMaxCharge.setText(Double.toString(storage.getMaxCharging()));
+		txtSMaxDischarge.setText(Double.toString(storage.getMaxDischarging()));
+		txtSEffIN.setText(Double.toString(storage.getEffIN()));
+		txtSEffOUT.setText(Double.toString(storage.getEffOUT()));
 	}
 
 }

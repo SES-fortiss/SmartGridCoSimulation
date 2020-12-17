@@ -5,6 +5,8 @@ import com.joptimizer.optimizers.LPPrimalDualMethod;
 
 import memap.controller.TopologyController;
 import memap.helper.configurationOptions.OptimizationCriteria;
+import memap.main.SimulationProgress;
+import memap.main.Status;
 
 public class LPOptimizationStarter {
 	
@@ -40,6 +42,7 @@ public class LPOptimizationStarter {
 		try {
 			opt.optimize();
 		} catch (Exception e) {
+			SimulationProgress.getInstance().setStatus(Status.ERROR, getClass().getName() +": infeasible problem");
 			e.printStackTrace();
 		}
 		

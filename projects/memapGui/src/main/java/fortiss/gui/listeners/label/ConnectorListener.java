@@ -13,11 +13,14 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import fortiss.gui.DesignerPanel;
-import fortiss.gui.listeners.helper.ConnectionManager;
-import fortiss.gui.listeners.helper.PositionManager;
+import fortiss.gui.icons.BuildingIcon;
+import fortiss.simulation.helper.ConnectionManager;
+import fortiss.simulation.helper.PositionManager;
 
 public class ConnectorListener extends MouseAdapter implements MouseMotionListener {
 
+	private PositionManager pm = PositionManager.getInstance();
+	private ConnectionManager cm = ConnectionManager.getInstance();
 	private static Rectangle area1 = new Rectangle();
 	public static Point2D p1 = new Point(0, 0);
 	public static Point2D p2 = new Point(0, 0);
@@ -32,14 +35,14 @@ public class ConnectorListener extends MouseAdapter implements MouseMotionListen
 		if (e.getButton() == MouseEvent.BUTTON3) {
 			JLabel icon = (JLabel) e.getSource();
 			area1 = icon.getBounds();
-			p1 = PositionManager.getCentralPoint(icon);
+			p1 = pm.getCentralPoint(icon);
 			DesignerPanel.pl_ems.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 		}
 	}
 
 	/**
 	 * Verifies if the user has made a valid connection. If so, calls
-	 * {@link fortiss.gui.listeners.helper.ConnectionManager#addConnection(JLabel, JLabel)}
+	 * {@link fortiss.simulation.helper.ConnectionManager#addConnection(JLabel, JLabel)}
 	 * and sets {@value fortiss.gui.BuildingPanel#drawing} to <code>false</code>.
 	 * Sets cursor to <code> Cursor.DEFAULT_CURSOR</code>
 	 */
@@ -60,11 +63,11 @@ public class ConnectorListener extends MouseAdapter implements MouseMotionListen
 						.getComponentAt(new Point((int) p2.getX(), (int) p2.getY()));
 
 				if (iconf instanceof JLabel) {
-					p2 = PositionManager.getCentralPoint((JLabel) iconf);
+					p2 = pm.getCentralPoint((JLabel) iconf);
 
 					// Add connection to structure
-					JLabel icon = (JLabel) e.getSource();
-					ConnectionManager.addConnection(icon, (JLabel)iconf);
+					BuildingIcon icon = (BuildingIcon) e.getSource();
+					cm.addConnection(icon, (BuildingIcon) iconf);
 				}
 			}
 			DesignerPanel.pl_ems.repaint();

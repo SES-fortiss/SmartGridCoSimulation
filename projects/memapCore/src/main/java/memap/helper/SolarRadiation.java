@@ -47,7 +47,7 @@ public class SolarRadiation {
 		try {
 			FileManager fm = new FileManager();
 			if (csvFile.isEmpty()) {
-				normalizedSolarProductionProfile = readOriginalFormat(fm.getBuffer("SOLARPRODUCTIONEXAMPLE"));
+				normalizedSolarProductionProfile = readOriginalFormat(fm.getBuffer("FORECASTEXAMPLE"));
 			} else {
 				normalizedSolarProductionProfile = readOriginalFormat(fm.getBuffer(csvFile));
 			}

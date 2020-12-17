@@ -11,6 +11,7 @@ import akka.timeManagement.CurrentTimeStepSubscriber;
 import behavior.BehaviorModel;
 import lpsolve.LpSolveException;
 import memap.controller.TopologyController;
+import memap.helper.MEMAPLogging;
 import memap.helper.SolutionHandler;
 import memap.helper.configurationOptions.OptHierarchy;
 import memap.helper.configurationOptions.Optimizer;
@@ -61,8 +62,8 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 		totalCO2Vector = new double[topologyConfig.getNrOfIterations()];
 		solutionPerTimeStep = new double[topologyConfig.getNrOfIterations()][];
 		nStepsMPC = topologyConfig.getNrStepsMPC();
-		lpSolHandler = new SolutionHandler(nStepsMPC);
-		milpSolHandler = new SolutionHandler(nStepsMPC);
+		lpSolHandler = new SolutionHandler(nStepsMPC, topologyConfig);
+		milpSolHandler = new SolutionHandler(nStepsMPC, topologyConfig);
 	}
 
 	@Override
@@ -108,15 +109,18 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 			}
 		}
 
-		double costTotal = 0;
-		double CO2Total = 0;
-		for (int i = 0; i < totalEURVector.length; i++) {
-			costTotal += totalEURVector[i];
-			CO2Total += totalCO2Vector[i];
+		if (topologyController.getLogging() == MEMAPLogging.ALL) {
+			double costTotal = 0;
+			double CO2Total = 0;
+			for (int i = 0; i < totalEURVector.length; i++) {
+				costTotal += totalEURVector[i];
+				CO2Total += totalCO2Vector[i];
+			}
+			
+			System.out.println(topologyController.getOptimizer() + ": " + this.actorName + " cost = "
+					+ String.format("%.03f", costTotal) + " EUR ; CO2: " + String.format("%.03f", CO2Total) + " kg");			
 		}
-		System.out.println(topologyController.getOptimizer() + ": " + this.actorName + " cost = "
-				+ String.format("%.03f", costTotal) + " EUR ; CO2: " + String.format("%.03f", CO2Total) + " kg");
-
+		
 	}
 
 	@Override

@@ -2,98 +2,141 @@ package fortiss.simulation;
 
 import java.awt.Container;
 import java.awt.EventQueue;
+import java.util.prefs.Preferences;
 
 import fortiss.gui.DesignerPanel;
+import fortiss.gui.LogPanel;
 import fortiss.gui.PlanningToolWindow;
 import fortiss.gui.TrackerPanel;
-import fortiss.media.Icon;
+import fortiss.gui.listeners.helper.ModelInitHelper;
+import fortiss.media.IconStore;
 import fortiss.results.Reporter;
+import fortiss.results.ReporterDetailedResultPanel;
 import fortiss.results.ReporterOverviewPanel;
-import fortiss.results.ReporterPanel;
-import fortiss.simulation.listeners.helper.ProgressManager;
+import fortiss.simulation.helper.Logger;
+import fortiss.simulation.helper.ProgressManager;
 import memap.controller.GuiController;
 
 /** Entry point for the application */
 public class PlanningTool {
 
-	// String constants: They are duplicated in other classes
+	private Preferences preferences = Preferences.userNodeForPackage(this.getClass());
+	private static final String WORKING_FILE = "WORKING_FILE";
 	private static final String DESIGNER_PANEL = "Design tool";
 	private static final String TRACKER_PANEL = "Simulation progress";
 	private static final String OVERVIEW_RESULT_PANEL = "Results overview";
 	private static final String DETAILED_RESULT_PANEL = "Detailed results";
+	private static final String LOG_PANEL = "Log";
+
+	private static PlanningTool planningTool = new PlanningTool();
+
+	/** Parameters of the simulation */
+	private Parameters parameters;
 
 	/** Main frame */
-	private static PlanningToolWindow planningToolWindow;
+	private PlanningToolWindow planningToolWindow;
 	/** Designer panel */
-	private static DesignerPanel designerPanel;
+	private DesignerPanel designerPanel;
 	/** Progress panel */
-	private static TrackerPanel trackerPanel;
+	private TrackerPanel trackerPanel;
 	/** Reporter */
-	private static Reporter reporter;
+	private Reporter reporter;
 	/** Reporter panel */
-	private static ReporterPanel reporterPanel;
+	private ReporterDetailedResultPanel reporterDetailedResultPanel;
 	/** Reporter overview panel */
-	private static ReporterOverviewPanel overviewPanel;
+	private ReporterOverviewPanel overviewPanel;
+	/** Log panel */
+	private LogPanel logPanel;
 	/** GUI controller */
-	private static GuiController guiController;
+	private GuiController guiController;
 
 	public static void main(String[] args) {
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				setPlanningToolWindow(new PlanningToolWindow());
 				ProgressManager.getInstance().execute();
 			}
 		});
+	}
+
+	public static PlanningTool getInstance() {
+		return planningTool;
 	}
 
 	/**
 	 * Initialize the application panels (and manager classes) and add them to the
 	 * main frame's content pane.
 	 */
-	public static void init() {
+	public void init() {
+		setPlanningToolWindow(new PlanningToolWindow());
+
+		setParameters(new Parameters());
+		
 		setDesignerPanel(new DesignerPanel());
 		setTrackerPanel(new TrackerPanel());
+		setLogPanel(new LogPanel());
+		
+		initLastSession();
+
 		setReporter(new Reporter());
 		setReporterOverviewPanel(new ReporterOverviewPanel());
-		setReporterPanel(new ReporterPanel());
+		setReporterPanel(new ReporterDetailedResultPanel());
+	}
+
+	public void initLastSession() {
+		
+		String workingFilePath = getWorkingFile();
+		if (!workingFilePath.isEmpty()) {			
+			new ModelInitHelper().loadFromFile(workingFilePath);
+		} else {
+			Logger.getInstance().writeWarning("No working file found!");
+		}
 	}
 
 	/** Add the designer panel as a tab */
-	public static void addDesignerAsTab() {
-		getPlanningToolWindow().addPanelAsTab(DESIGNER_PANEL, Icon.edit, getDesignerPanel());
+	public void addDesignerAsTab() {
+		getPlanningToolWindow().addPanelAsTab(DESIGNER_PANEL, IconStore.edit, getDesignerPanel());
 	}
 
 	/** Add the results overview panel as a tab */
-	public static void addOverviewResutlsAsTab() {
-		getPlanningToolWindow().addPanelAsTab(OVERVIEW_RESULT_PANEL, Icon.statistics, getReporterOverviewPanel());
+	public void addOverviewResutlsAsTab() {
+		getPlanningToolWindow().addPanelAsTab(OVERVIEW_RESULT_PANEL, IconStore.statistics, getReporterOverviewPanel());
 	}
 
 	/** Add the detailed results panel as a tab */
-	public static void addDetailedResultsAsTab() {
-		getPlanningToolWindow().addPanelAsTab(DETAILED_RESULT_PANEL, Icon.series, getReporterPanel());
+	public void addDetailedResultsAsTab() {
+		getPlanningToolWindow().addPanelAsTab(DETAILED_RESULT_PANEL, IconStore.series, getReporterPanel());
 	}
 
 	/** Add the tracker panel as a tab */
-	public static void addTrackerAsTab() {
-		getPlanningToolWindow().addPanelAsTab(TRACKER_PANEL, Icon.exclamation, getTrackerPanel());
+	public void addTrackerAsTab() {
+		getPlanningToolWindow().addPanelAsTab(TRACKER_PANEL, IconStore.exclamation, getTrackerPanel());
+	}
+	
+	public void addLogAsATab() {
+		getPlanningToolWindow().addPanelAsTab(LOG_PANEL, IconStore.log, getLogPanel());
 	}
 
 	/** Show the designer panel using the information from last session */
-	public static void showDesigner() {
-		getDesignerPanel().initLastSession();
+	public void showDesigner() {
 		addDesignerAsTab();
 	}
 
 	/** Show the tracker panel */
-	public static void showTracker() {
+	public void showTracker() {
 		addTrackerAsTab();
 		getPlanningToolWindow().showTab(getTrackerPanel());
 		repaintAll();
 	}
+	
+	/** Close the tracker panel */
+	public void closeTracker() {
+		getPlanningToolWindow().closeTab(getTrackerPanel());
+		repaintAll();
+	}
 
 	/** Loads the results and show the reporter panel */
-	public static void showReporter() {
+	public void showReporter() {
 		getReporter().showResults();
 
 		getPlanningToolWindow().closeTab(getTrackerPanel());
@@ -102,15 +145,28 @@ public class PlanningTool {
 		getPlanningToolWindow().showTab(getReporterOverviewPanel());
 		repaintAll();
 	}
+	
+	/** Loads the results and show the reporter panel */
+	public void closeReporter() {
+		getPlanningToolWindow().closeTab(getReporterOverviewPanel());
+		getPlanningToolWindow().closeTab(getReporterPanel());
+		repaintAll();
+	}
+	
+	public void showLog() {
+		addLogAsATab();
+		getPlanningToolWindow().showTab(getLogPanel());
+		repaintAll();
+	}
 
 	/** Revalidates and repaints the main frame's content pane */
-	public static void repaintAll() {
+	public void repaintAll() {
 		getPlanningToolWindow().getContentPane().revalidate();
 		getPlanningToolWindow().getContentPane().repaint();
 	}
 
 	/** @return designerPanel */
-	public static DesignerPanel getDesignerPanel() {
+	public DesignerPanel getDesignerPanel() {
 		return designerPanel;
 	}
 
@@ -119,12 +175,12 @@ public class PlanningTool {
 	 * 
 	 * @param designer an object of type {@link DesignerPanel}}
 	 */
-	public static void setDesignerPanel(DesignerPanel designerPanel) {
-		PlanningTool.designerPanel = designerPanel;
+	public void setDesignerPanel(DesignerPanel designerPanel) {
+		this.designerPanel = designerPanel;
 	}
 
 	/** @return trackerPanel */
-	public static TrackerPanel getTrackerPanel() {
+	public TrackerPanel getTrackerPanel() {
 		return trackerPanel;
 	}
 
@@ -133,13 +189,28 @@ public class PlanningTool {
 	 * 
 	 * @param trackerPanel an object of type {@link TrackerPanel}}
 	 */
-	public static void setTrackerPanel(TrackerPanel trackerPanel) {
-		PlanningTool.trackerPanel = trackerPanel;
+	public void setTrackerPanel(TrackerPanel trackerPanel) {
+		this.trackerPanel = trackerPanel;
+	}
+	
+	/**
+	 * @return the logPanel
+	 */
+	public LogPanel getLogPanel() {
+		return logPanel;
+	}
+
+	/**
+	 * @param logPanel the logPanel to set
+	 */
+	public void setLogPanel(LogPanel logPanel) {
+		this.logPanel = logPanel;
+		Logger.getInstance().setLogPanel(logPanel);
 	}
 
 	/** @return reporterPanel */
-	public static ReporterPanel getReporterPanel() {
-		return reporterPanel;
+	public ReporterDetailedResultPanel getReporterPanel() {
+		return reporterDetailedResultPanel;
 	}
 
 	/**
@@ -147,26 +218,27 @@ public class PlanningTool {
 	 * 
 	 * @param overviewPanel an object of type {@link ReporterOverviewPanel}}
 	 */
-	public static void setReporterOverviewPanel(ReporterOverviewPanel overviewPanel) {
-		PlanningTool.overviewPanel = overviewPanel;
+	public void setReporterOverviewPanel(ReporterOverviewPanel overviewPanel) {
+		this.overviewPanel = overviewPanel;
 	}
 
 	/** @return overviewPanel */
-	public static ReporterOverviewPanel getReporterOverviewPanel() {
+	public ReporterOverviewPanel getReporterOverviewPanel() {
 		return overviewPanel;
 	}
 
 	/**
 	 * Set the reporterPanel
 	 * 
-	 * @param reporterPanel an object of type {@link ReporterPanel}}
+	 * @param reporterDetailedResultPanel an object of type
+	 *                                    {@link ReporterDetailedResultPanel}}
 	 */
-	public static void setReporterPanel(ReporterPanel reporter) {
-		PlanningTool.reporterPanel = reporter;
+	public void setReporterPanel(ReporterDetailedResultPanel reporter) {
+		this.reporterDetailedResultPanel = reporter;
 	}
 
 	/** @return guiController */
-	public static GuiController getGuiController() {
+	public GuiController getGuiController() {
 		return guiController;
 	}
 
@@ -175,12 +247,12 @@ public class PlanningTool {
 	 * 
 	 * @param guiController an object of type {@link GuiController}}
 	 */
-	public static void setGuiController(GuiController guiController) {
-		PlanningTool.guiController = guiController;
+	public void setGuiController(GuiController guiController) {
+		this.guiController = guiController;
 	}
 
 	/** @return planningToolWindow */
-	public static PlanningToolWindow getPlanningToolWindow() {
+	public PlanningToolWindow getPlanningToolWindow() {
 		return planningToolWindow;
 	}
 
@@ -189,26 +261,46 @@ public class PlanningTool {
 	 * 
 	 * @param planningToolWindow an object of type {@link PlanningToolWindow}}
 	 */
-	public static void setPlanningToolWindow(PlanningToolWindow planningToolWindow) {
-		PlanningTool.planningToolWindow = planningToolWindow;
+	public void setPlanningToolWindow(PlanningToolWindow planningToolWindow) {
+		this.planningToolWindow = planningToolWindow;
 	}
 
 	/** @return content pane in planningToolWindow */
-	public static Container getMainContentPane() {
+	public Container getMainContentPane() {
 		return getPlanningToolWindow().getContentPane();
 	}
 
-	/**
+	/**key
 	 * Set the reporter
 	 * 
 	 * @param reporter an object of type {@link Reporter}}
 	 */
-	public static void setReporter(Reporter reporter) {
-		PlanningTool.reporter = reporter;
+	public void setReporter(Reporter reporter) {
+		this.reporter = reporter;
 	}
 
 	/** @return reporter */
-	public static Reporter getReporter() {
+	public Reporter getReporter() {
 		return reporter;
 	}
+
+	public Parameters getParameters() {
+		return parameters;
+	}
+
+	/**
+	 * @param parameters the parameters to set
+	 */
+	public void setParameters(Parameters parameters) {
+		this.parameters = parameters;
+	}
+	
+	public void setWorkingFile(String path) {
+		preferences.put(WORKING_FILE, path);
+	}
+	
+	public String getWorkingFile() {
+		return preferences.get(WORKING_FILE, "");
+	}
+	
 }

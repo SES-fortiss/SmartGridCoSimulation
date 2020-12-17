@@ -1,6 +1,6 @@
 package fortiss.simulation;
 
-import fortiss.simulation.listeners.helper.ProgressManager;
+import fortiss.simulation.helper.ProgressManager;
 
 public class SimulationDesing extends SimulationState {
 
@@ -11,6 +11,7 @@ public class SimulationDesing extends SimulationState {
 	 */
 	@Override
 	public void execute(ProgressManager pm) {
-		PlanningTool.showDesigner();
+		PlanningTool planningTool = PlanningTool.getInstance();
+		planningTool.showDesigner();
 	}
 }

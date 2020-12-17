@@ -5,19 +5,19 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-
 import fortiss.results.Menu;
 import fortiss.results.Reporter;
-import fortiss.results.ReporterPanel;
+import fortiss.results.ReporterDetailedResultPanel;
 import fortiss.results.ResultsLibrary;
 import fortiss.simulation.PlanningTool;
+import fortiss.simulation.helper.Logger;
 
 public class MenuListener implements TreeSelectionListener {
 
 	/** A reference to the reporter */
 	Reporter reporter;
 	/** A reference to the reporter panel */
-	ReporterPanel reporterPanel;
+	ReporterDetailedResultPanel reporterPanel;
 	
 	int previouslySelected = 0;
 	
@@ -27,9 +27,10 @@ public class MenuListener implements TreeSelectionListener {
 	 */
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
-		reporter = PlanningTool.getReporter();
+		PlanningTool planningTool = PlanningTool.getInstance();
+		reporter = planningTool.getReporter();
 		ResultsLibrary detailedResult = reporter.getDetailedResult();
-		reporterPanel = PlanningTool.getReporterPanel();
+		reporterPanel = planningTool.getReporterPanel();
 		
 		Menu h = (Menu) e.getSource();
 		
@@ -81,7 +82,7 @@ public class MenuListener implements TreeSelectionListener {
 		try {
 			parent = ((DefaultMutableTreeNode) child.getParentPath().getLastPathComponent()).toString();
 		} catch (Exception e1) {
-			System.out.println(">> There are no results to show.");
+			Logger.getInstance().writeInfo("There are no results to show.");
 		}
 		return parent;
 	}

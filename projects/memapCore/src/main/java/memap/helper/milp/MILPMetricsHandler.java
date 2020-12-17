@@ -3,6 +3,7 @@ package memap.helper.milp;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
@@ -25,7 +26,7 @@ import memap.messages.planning.StorageMessage;
 public class MILPMetricsHandler implements MetricsHandler {
 
 	TopologyConfig topologyConfig = TopologyConfig.getInstance();
-	BuildingMessage buildingMessage;
+	ArrayList<BuildingMessage> buildingMessages;
 	OptimizationResultMessage optResult;
 	LpSolve problem;
 	SolutionHandler milpSolutionHandler;
@@ -38,7 +39,22 @@ public class MILPMetricsHandler implements MetricsHandler {
 	public MILPMetricsHandler(TopologyController tc, BuildingMessage buildingMessage,
 			OptimizationResultMessage optResult, double[] optSolution, LpSolve problem,
 			SolutionHandler milpSolutionHandler, int currentTimeStep, int nStepsMPC) {
-		this.buildingMessage = buildingMessage;
+		buildingMessages = new ArrayList<BuildingMessage>();
+		this.buildingMessages.add(buildingMessage);
+		this.optResult = optResult;
+		this.problem = problem;
+		this.milpSolutionHandler = milpSolutionHandler;
+		this.optSolution = optSolution;
+		this.currentTimeStep = currentTimeStep;
+		this.nStepsMPC = nStepsMPC;
+
+		this.tc = tc;
+	}
+
+	public MILPMetricsHandler(TopologyController tc, ArrayList<BuildingMessage> buildingMessages,
+			OptimizationResultMessage optResult, double[] optSolution, LpSolve problem,
+			SolutionHandler milpSolutionHandler, int currentTimeStep, int nStepsMPC) {
+		this.buildingMessages = buildingMessages;
 		this.optResult = optResult;
 		this.problem = problem;
 		this.milpSolutionHandler = milpSolutionHandler;
@@ -59,9 +75,13 @@ public class MILPMetricsHandler implements MetricsHandler {
 		 * are also counted twice because they are associated with boolean variables
 		 * that indicate whether they are active
 		 */
-		int nrContributors = (buildingMessage.getNrOfControllableProducers() * 2)
-				+ (buildingMessage.getNrOfVolatileProducers()) + (buildingMessage.getNrOfCouplers() * 2)
-				+ (buildingMessage.getNrOfStorages() * 2) + (2);
+
+		int nrContributors = 0;
+		for (BuildingMessage buildingMessage : buildingMessages) {
+			nrContributors += (buildingMessage.getNrOfControllableProducers() * 2)
+					+ (buildingMessage.getNrOfVolatileProducers()) + (buildingMessage.getNrOfCouplers() * 2)
+					+ (buildingMessage.getNrOfStorages() * 2);
+		}
 
 		// initialize metrics
 		if (currentTimeStep == 0) {
@@ -72,7 +92,7 @@ public class MILPMetricsHandler implements MetricsHandler {
 		String[] solutionNames = getSolutionNames(nrContributors);
 
 		for (int i = 0; i < nrContributors; i++) {
-			double [] efficiencies = getEfficiencyFor(solutionNames[i]);
+			double[] efficiencies = getEfficiencyFor(solutionNames[i]);
 			double heatEfficiency = efficiencies[0];
 			double electricityEfficiency = efficiencies[1];
 			double[] heatContribution = optResult.metricsMap.get("H_" + solutionNames[i]);
@@ -103,41 +123,49 @@ public class MILPMetricsHandler implements MetricsHandler {
 	 */
 	private double[] getEfficiencyFor(String componentName) {
 
-		double[] efficiency = {0, 0};
-		for (StorageMessage message : buildingMessage.storageList) {
-			if (componentName.equals(message.name + "Discharge")) {
-				if(message.networkType.equals(NetworkType.HEAT)) {
-					efficiency[0] = message.efficiencyDischarge;
-				} else {
-					efficiency[1] = message.efficiencyDischarge;
+		double[] efficiency = { 0, 0 };
+		for (BuildingMessage buildingMessage : buildingMessages) {
+			for (StorageMessage message : buildingMessage.storageList) {
+				if (componentName.equals(message.name + "Discharge")) {
+					if (message.networkType.equals(NetworkType.HEAT)) {
+						efficiency[0] = message.efficiencyDischarge;
+					} else {
+						efficiency[1] = message.efficiencyDischarge;
+					}
 				}
- 			}
-		}
-		for (CouplerMessage message : buildingMessage.couplerList) {
-			if (componentName.equals(message.name)) {
-				efficiency[0] = message.efficiencyHeat;
-				efficiency[1] = message.efficiencyElec;
- 			}
-		}
-		for (ProducerMessage message : buildingMessage.volatileProducerList) {
-			if (componentName.equals(message.name)) {
-				if(message.networkType.equals(NetworkType.HEAT)) {
-					efficiency[0] = message.efficiency;
-				} else {
-					efficiency[1] = message.efficiency;
+				if (componentName.equals(message.name + "Charge")) {
+					if (message.networkType.equals(NetworkType.HEAT)) {
+						efficiency[0] = message.efficiencyCharge;
+					} else {
+						efficiency[1] = message.efficiencyCharge;
+					}
 				}
- 			}
-		}
-		for (ProducerMessage message : buildingMessage.controllableProducerList) {
-			if (componentName.equals(message.name)) {
-				if(message.networkType.equals(NetworkType.HEAT)) {
-					efficiency[0] = message.efficiency;
-				} else {
-					efficiency[1] = message.efficiency;
+			}
+			for (CouplerMessage message : buildingMessage.couplerList) {
+				if (componentName.equals(message.name)) {
+					efficiency[0] = message.efficiencyHeat;
+					efficiency[1] = message.efficiencyElec;
 				}
- 			}
+			}
+			for (ProducerMessage message : buildingMessage.volatileProducerList) {
+				if (componentName.equals(message.name)) {
+					if (message.networkType.equals(NetworkType.HEAT)) {
+						efficiency[0] = message.efficiency;
+					} else {
+						efficiency[1] = message.efficiency;
+					}
+				}
+			}
+			for (ProducerMessage message : buildingMessage.controllableProducerList) {
+				if (componentName.equals(message.name)) {
+					if (message.networkType.equals(NetworkType.HEAT)) {
+						efficiency[0] = message.efficiency;
+					} else {
+						efficiency[1] = message.efficiency;
+					}
+				}
+			}
 		}
-
 		return efficiency;
 	}
 

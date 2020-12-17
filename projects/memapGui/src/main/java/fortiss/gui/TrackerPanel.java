@@ -16,7 +16,7 @@ import com.jgoodies.forms.layout.RowSpec;
 
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
-import fortiss.media.Icon;
+import fortiss.media.IconStore;
 import javax.swing.SwingConstants;
 
 /**
@@ -68,7 +68,7 @@ public class TrackerPanel extends JPanel {
 		JLabel lbLoading = new JLabel();
 		lbLoading.setHorizontalAlignment(SwingConstants.CENTER);
 		add(lbLoading, "4, 4, fill, fill");
-		lbLoading.setIcon(Icon.loading);
+		lbLoading.setIcon(IconStore.loading);
 
 		lbMessage = new JLabel("message");
 		add(lbMessage, "4, 6, center, center");
