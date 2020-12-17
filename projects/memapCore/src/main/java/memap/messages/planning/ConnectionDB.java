@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import memap.helper.configurationOptions.OptHierarchy;
+import memap.main.JettyStart;
 
 
 public class ConnectionDB {
@@ -29,8 +30,8 @@ public class ConnectionDB {
 	public static void addResults(OptHierarchy Hierarchy, String[] namesResult, double[] currentStep, double[] currentDemand, double[] currentOptVector, double[] currentSOC,
 			double[] currentEnergyPrice, double[] totalCostsEUR, double[] totalCO2emissions, int nrOfBuildings)
 	{
-		int num =  nrOfBuildings;
-		System.out.println("Nr Of Buildings: " + num);
+		int num =  JettyStart.numofBuildings;
+//		System.out.println("Nr Of Buildings: " + num);
 		List<String> names = new ArrayList<String>(namesResult.length);
 		Collections.addAll(names, namesResult);
 		ListIterator<String> itr = names.listIterator();
@@ -86,19 +87,19 @@ public class ConnectionDB {
 			list += "','" + priceEl + "','" + priceHt + "','" + cost + "','" + CO2 + "', NOW());";
 			sql1 += list;
 			
-			try (PrintWriter out = new PrintWriter("DB_SQL.txt")) {
-			    out.println(sql1);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			try (PrintWriter out = new PrintWriter("DB_SQL.txt")) {
+//			    out.println(sql1);
+//			} catch (FileNotFoundException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 			
 			
 			try (Connection conn = connectToDB();
 					PreparedStatement pst = conn.prepareStatement(sql1);
 					ResultSet rs = pst.executeQuery()){}
 			catch (SQLException ex) {
-	            System.out.println("DB-Message: " + ex.getMessage());
+//	            System.out.println("DB-Message: " + ex.getMessage());
 	        }
 		}
 	}

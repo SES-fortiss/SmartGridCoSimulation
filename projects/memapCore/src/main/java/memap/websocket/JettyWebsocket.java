@@ -24,14 +24,12 @@ public abstract class JettyWebsocket
 
 	
     public static void main(String[] args)
-    {
+    {	
     	
-    	// Create JAX-RS application.
-//        final ResourceConfig application = new ResourceConfig()
-//                .packages("jersey.jetty.embedded")
-//                .register(JacksonFeature.class);
-    	
-
+    	//Initialize new Server and add a context
+        Server server = new Server(8013);
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        context.setContextPath("/");
     	
         
         // Add REST_INTERFACE
@@ -39,17 +37,10 @@ public abstract class JettyWebsocket
         jerseyServlet.setInitOrder(0);
         // Tells the Jersey Servlet which REST service/class to load.
         jerseyServlet.setInitParameter("jersey.config.server.provider.classnames", EntryPoint.class.getCanonicalName());
-
-        
-        
-      //Initialize new Server and add a context
-        Server server = new Server(8013);
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-//      context.setContextPath("/");
         context.addServlet(jerseyServlet, "/*");
         
 
-/*
+
         // Add websocket servlet Echo
         ServletHolder wsHolder = new ServletHolder("echo",new EchoSocketServlet());
         context.addServlet(wsHolder,"/echo");
@@ -65,7 +56,7 @@ public abstract class JettyWebsocket
         defHolder.setInitParameter("resourceBase",urlBase);
         defHolder.setInitParameter("dirAllowed","true");
         context.addServlet(defHolder,"/");
-*/
+
         
         
         server.setHandler(context);
