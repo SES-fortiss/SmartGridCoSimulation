@@ -482,9 +482,13 @@ public abstract class Metrics {
 
 	protected ArrayList<Double> getTotalsByTimeStep(HashMap<String, ArrayList<Double>> map, int numberOfTimeSteps) {
 		ArrayList<Double> totals = new ArrayList<Double>(Collections.nCopies(numberOfTimeSteps, 0.0));
-		for (Entry<String, ArrayList<Double>> componentEntry : map.entrySet()) {
+		
+		for (Entry<String, ArrayList<Double>> componentEntry : map.entrySet()) { 
 			ArrayList<Double> total = componentEntry.getValue();
-			for (int i = 0; i < total.size(); i++) {
+			
+			// Question can the map size change during runtime? make it immutable?			
+			//for (int i = 0; i < total.size(); i++) {
+			for (int i = 0; i < numberOfTimeSteps; i++) {
 				totals.set(i, totals.get(i) + total.get(i));
 			}
 		}

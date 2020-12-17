@@ -149,8 +149,8 @@ public class LPSolver {
 			}
 			vectorResultStr[0] = ((Integer) currentTimeStep).toString();
 
-			System.out.println("LP: " + this.actorName + " Names: " + Arrays.toString(namesResult));
-			System.out.println("LP: " + this.actorName + " Result: " + Arrays.toString(vectorResultStr));
+			//System.out.println("LP: " + this.actorName + " Names: " + Arrays.toString(namesResult));
+			//System.out.println("LP: " + this.actorName + " Result: " + Arrays.toString(vectorResultStr));
 
 			// Save
 			buildingsSolutionPerTimeStep[currentTimeStep] = vectorResult;

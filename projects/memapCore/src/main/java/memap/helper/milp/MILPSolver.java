@@ -135,7 +135,7 @@ public class MILPSolver {
 
 		// to calculate the total costs --> what does that say?
 		
-		System.out.println("buildingCostPerTimestep: " + buildingCostPerTimestep);
+		// System.out.println("buildingCostPerTimestep: " + buildingCostPerTimestep);
 		
 		// is that the total costs of the planned schedule?
 		// is that the cost
@@ -148,7 +148,7 @@ public class MILPSolver {
 			CO2Total += buildingStepCO2MILP[i];
 		}
 		
-		System.out.println("costTotal: " + costTotal);
+		// System.out.println("costTotal: " + costTotal);
 
 		// Creation of the result vector
 		double[] currentStep = { currentTimeStep };
