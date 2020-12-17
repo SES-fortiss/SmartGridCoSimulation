@@ -3,9 +3,13 @@ package memap.websocket;
 import java.net.URL;
 import java.util.Objects;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.ServerProperties;
+import org.glassfish.jersey.servlet.ServletContainer;
 
 /**
  * 
@@ -21,14 +25,31 @@ public abstract class JettyWebsocket
 	
     public static void main(String[] args)
     {
-    	//Initialize new Server and add a context
+    	
+    	// Create JAX-RS application.
+//        final ResourceConfig application = new ResourceConfig()
+//                .packages("jersey.jetty.embedded")
+//                .register(JacksonFeature.class);
+    	
+
+    	
+        
+        // Add REST_INTERFACE
+        ServletHolder jerseyServlet = new ServletHolder(ServletContainer.class);
+        jerseyServlet.setInitOrder(0);
+        // Tells the Jersey Servlet which REST service/class to load.
+        jerseyServlet.setInitParameter("jersey.config.server.provider.classnames", EntryPoint.class.getCanonicalName());
+
+        
+        
+      //Initialize new Server and add a context
         Server server = new Server(8013);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath("/");
-        server.setHandler(context);
+//      context.setContextPath("/");
+        context.addServlet(jerseyServlet, "/*");
         
 
-
+/*
         // Add websocket servlet Echo
         ServletHolder wsHolder = new ServletHolder("echo",new EchoSocketServlet());
         context.addServlet(wsHolder,"/echo");
@@ -44,9 +65,12 @@ public abstract class JettyWebsocket
         defHolder.setInitParameter("resourceBase",urlBase);
         defHolder.setInitParameter("dirAllowed","true");
         context.addServlet(defHolder,"/");
+*/
         
-       
         
+        server.setHandler(context);
+        
+
         try
         {
         	//Start and Join the Server

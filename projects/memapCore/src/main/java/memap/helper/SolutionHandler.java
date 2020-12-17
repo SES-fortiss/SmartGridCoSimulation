@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import lpsolve.LpSolve;
 import memap.helper.lp.LPOptimizationProblem;
 import memap.messages.BuildingMessage;
 import memap.messages.planning.CouplerMessage;
@@ -453,7 +452,7 @@ public class SolutionHandler {
 				String[] strSplit = result[i].split("\\.");
 				result[i] = strSplit[strSplit.length - 1];
 			}
-			result[i] += " SOC";
+			result[i] = "B"+i + "_" + result[i] + "_SOC";
 		}
 		return result;
 	}

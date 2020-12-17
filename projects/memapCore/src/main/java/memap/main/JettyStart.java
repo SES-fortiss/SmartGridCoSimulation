@@ -67,7 +67,7 @@ public class JettyStart {
 	public void run(JsonArray endpointValues) {
 		topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILP, OptimizationCriteria.EUR,
 				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
-		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 4880, 0);
+		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 7020, 0);
 		System.out.println("MPC set to " + Simulation.N_STEPS_MPC);
 		EnergyPrices.getInstance().init(0.285);
 		EnergyPrices.getInstance().initGas("C:/Git/SESSIM/projects/memapCore/src/main/java/resources/gasprice_hourly.csv");
@@ -82,7 +82,6 @@ public class JettyStart {
 		 */
 	
 		int num = endpointValues.size();
-		
 		/*
 		 * In case the startMessage comes directly from an opcua endpoint aggregator 
 		 * (e.g Holsten Systems UI), this part will use directly the information from the datamodel
@@ -101,7 +100,8 @@ public class JettyStart {
 		setNumofBuildings(num);
 		System.out.println("Number of buildings: " + num);
 		
-		for (int i = 6; i < endpoints.size()-1; i++) {
+//		for (int i = 6; i < endpoints.size()-1; i++) {
+		for (int i = 5; i < 7; i++) {
 			
 			JsonObject jsonEndpoint = (JsonObject) endpoints.get(i);
 

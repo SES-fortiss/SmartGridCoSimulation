@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
 import com.google.common.collect.ImmutableList;
 import memap.components.prototypes.Coupler;
@@ -25,7 +26,9 @@ public class ClientCoupler extends Coupler {
 	double costCO2;
 	
 	public BasicClient client;
-	public List<NodeId> setpointIds = new ArrayList<NodeId>();
+//	public List<NodeId> setpointIds = new ArrayList<NodeId>();
+	public NodeId setpointsId;
+	
 	/**
 	 * @param client
 	 * @param name             coupler name
@@ -40,12 +43,12 @@ public class ClientCoupler extends Coupler {
 	 * @param setpointIds
 	 */
 	public ClientCoupler(BasicClient client, String name, NodeId nodeIdPrimSector, NodeId nodeIdSecSector, NodeId minPowerId, NodeId maxPowerId, NodeId effHeatId, NodeId effElecId,
-			NodeId opCostId, NodeId costCO2Id, List<NodeId> setpointIds, int port) throws InterruptedException, ExecutionException {
+			NodeId opCostId, NodeId costCO2Id, NodeId setpointsId, int port) throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(minPowerId), client.readFinalDoubleValue(maxPowerId), client.readFinalDoubleValue(effHeatId),
 				client.readFinalDoubleValue(effElecId), port);
 		
 		this.client = client;
-		this.setpointIds = setpointIds;
+		this.setpointsId = setpointsId;
 		this.primaryNetwork = this.setNetworkType(client, nodeIdPrimSector);
 		this.secondaryNetwork = this.setNetworkType(client, nodeIdSecSector);
 		//primaryNetwork = setNetworkType(client, nodeIdPrimSector);
@@ -78,10 +81,23 @@ public class ClientCoupler extends Coupler {
 			for (String key : optResult.resultMap.keySet()) {
 				if (key.equals(actorName)) {
 					optimizationAdvice = optResult.resultMap.get(key);
-					for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC(); i++) {
-						DataValue data = new DataValue(new Variant(optimizationAdvice[i]), null, null);					
-						client.writeValue(setpointIds.get(i), data);
-					}			
+					try {
+						if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, setpointsId).getValue().getValue().getClass().isArray()) {
+							DataValue data = new DataValue(new Variant(optimizationAdvice), null, null);
+							client.writeValue(setpointsId, data);
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ExecutionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+//					for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC(); i++) {
+//						DataValue data = new DataValue(new Variant(optimizationAdvice[i]), null, null);					
+//						client.writeValue(setpointIds.get(i), data);
+//					}			
 				}
 
 			}

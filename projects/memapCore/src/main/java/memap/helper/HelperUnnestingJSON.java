@@ -26,8 +26,14 @@ public class HelperUnnestingJSON {
 		Map<String, Object> allnodes = new HashMap<String, Object>(); // to collect all buried NodeIDs
 		
 		String devKey = Integer.toString(deviceNumber+1);
-		JsonArray readDevice = (JsonArray) device.get(devKey);
-		goThroughArray(allnodes, readDevice);
+		if (device.get(devKey) instanceof JsonArray) {
+			JsonArray readDevice = (JsonArray) device.get(devKey);
+			goThroughArray(allnodes, readDevice);
+		} else if (device.get(devKey) instanceof JsonObject) {
+			JsonObject readDevice = (JsonObject) device.get(devKey);
+			addSubEntriesToMap(allnodes, readDevice);
+		}
+		
 
 		return new JsonObject(allnodes);
 	}

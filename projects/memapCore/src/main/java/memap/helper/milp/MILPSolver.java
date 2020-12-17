@@ -1,6 +1,5 @@
 package memap.helper.milp;
 
-import java.sql.Connection;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -190,9 +189,15 @@ public class MILPSolver {
 		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC,
 				currentEnergyPrice, totalCostsEUR, totalCO2emissions);
 
+		
+		int nrOfBuildings = 1;
+		if (localBuildingMessage == null) {
+			nrOfBuildings =  localBuildingMessages.size();
+		}
+		
 		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
 			ConnectionDB.addResults(topologyController.getOptimizationHierarchy(), namesResult, currentStep, currentDemand, currentOptVector, currentSOC,
-				currentEnergyPrice, totalCostsEUR, totalCO2emissions);
+				currentEnergyPrice, totalCostsEUR, totalCO2emissions, nrOfBuildings);
 		}
 		
 
@@ -204,7 +209,7 @@ public class MILPSolver {
 		}
 		System.out.println("MILP: " + this.actorName + " Names: " + Arrays.toString(namesResult));
 		System.out.println("MILP: " + this.actorName + " Result: " + Arrays.toString(vectorResult));
-
+		
 		// Save
 		buildingsSolutionPerTimeStepMILP[currentTimeStep] = vectorResult;
 
