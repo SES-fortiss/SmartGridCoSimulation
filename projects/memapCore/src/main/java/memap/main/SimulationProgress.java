@@ -46,11 +46,11 @@ public class SimulationProgress implements CurrentTimeStepSubscriber {
 		// The progress of the fastest thread is stored, but it does not trigger a
 		// progress update
 		if (currentTimeStep > fastProgress) {
-			fastProgress = currentTimeStep;
+			fastProgress = currentTimeStep+1;
 		} else if (currentTimeStep < fastProgress) { // Do nothing if ==
 			// The progress off the slowest thread is stored, and the overall progress is
 			// updated
-			slowProgress = currentTimeStep;
+			slowProgress = currentTimeStep+1;
 			progress = (fastProgress + slowProgress) / 2;
 		}
 	}

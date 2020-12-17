@@ -74,13 +74,18 @@ public class SimulationOptimize extends SimulationState {
 				PlanningTool planningTool = PlanningTool.getInstance();
 				GuiController gc = planningTool.getGuiController();
 				gc.startSimulation();
-				pm.setState(new SimulationDone());
-
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+				
+				while (sp.getProgress() <= 99.999 && sp.getStatus().equals(Status.OK)) {
+					double currentProgress = sp.getProgress();
+					System.out.println("One Simulation stopped, but second still running. Progress: " + currentProgress);
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
+				 				
+				pm.setState(new SimulationDone());
 
 				if (sp.getStatus().equals(Status.ERROR)) {
 					Logger.getInstance().writeError(sp.getError());
