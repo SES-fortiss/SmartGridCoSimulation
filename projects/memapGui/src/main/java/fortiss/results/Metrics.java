@@ -521,7 +521,8 @@ public abstract class Metrics {
 
 	protected ArrayList<Double> abs(ArrayList<Double> data) {
 		ArrayList<Double> positiveData = new ArrayList<Double>();
-		for (double value : data) {
+		// TODO the returned data is null, because the heat source "H_name" is not available in the detailed resource data structure...
+		for (Double value : data) {
 			positiveData.add(Math.abs(value));
 		}
 		return positiveData;

@@ -152,7 +152,7 @@ public class LPMetricsHandler implements MetricsHandler {
 		 */
 		location = location + source;
 
-		System.out.println("Try file location: " + location);
+		System.out.println("WRITE solutions, LP, try file location" + location);
 		FileWriter csvWriter = new FileWriter(location);
 
 		for (Entry<String, double[]> entry : optResult.metricsMap.entrySet()) {
