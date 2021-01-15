@@ -9,8 +9,10 @@
 
 package org.fortiss.powerflowsim.simulation.helper;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.jblas.ComplexDouble;
 import org.jblas.ComplexDoubleMatrix;
 import org.jblas.DoubleMatrix;
@@ -21,7 +23,7 @@ import cern.colt.matrix.tdcomplex.DComplexMatrix2D;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 
 /**
- * This class is intended to support the conversion of CERN Matrices to JBLAS
+ * This class supports the conversion of CERN Matrices to JBLAS
  * Matrices and vice versa to speed up the calculation
  * 
  * @author Denis Bytschkow
@@ -29,7 +31,7 @@ import cern.colt.matrix.tdouble.DoubleMatrix2D;
  */
 public class ConvertHelper {
 	
-	private final static Logger log = Logger.getLogger( ConvertHelper.class );
+	private final static Logger log = LogManager.getLogger(ConvertHelper.class );
 	
 	public static ComplexDoubleMatrix convertFromCERN(DComplexMatrix2D input){		
 		// the first version will not be optimized
@@ -51,7 +53,10 @@ public class ConvertHelper {
 	}
 	
 	public static ComplexDoubleMatrix convertFromCERN(DComplexMatrix1D input){
-		log.setLevel(Level.OFF);
+		// previous solution only as reminder 
+		// log.setLevel(Level.OFF);
+		Configurator.setLevel(log.getName(), Level.OFF);
+
 		log.debug("\nInput: " + input);
 		double[] inputData = input.toArray();
 		DComplexMatrix2D matrix = DComplexFactory2D.dense.make(inputData.length/2, 1, inputData);

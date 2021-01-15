@@ -14,13 +14,15 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.eclipse.emf.ecore.EPackage;
 import org.fortiss.powerflowsim.util.Utils;
 
 public class Importer {
 
-	public static Logger log = Logger.getRootLogger();
+	public static Logger log = LogManager.getRootLogger();
 
 	public static void initPackages() {
 		ClassLoader classLoader = org.fortiss.powerflowsim.GUI.class.getClassLoader();

@@ -11,7 +11,8 @@ package org.fortiss.powerflowsim;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.fortiss.powerflowsim.exporters.GLMExporter;
 import org.fortiss.powerflowsim.importers.RDFImporter;
 import org.fortiss.powerflowsim.importers.TopologyGenerator;
@@ -29,7 +30,7 @@ import CIM15.IEC61970.Topology.TopologicalNode;
  */
 public final class PowerFlowSim {
 	private CimModel model = null;
-	private static Logger log = Logger.getRootLogger();
+	private static Logger log = LogManager.getRootLogger();
 
 	/**
 	 * creates a new PowerFlowSim Instance

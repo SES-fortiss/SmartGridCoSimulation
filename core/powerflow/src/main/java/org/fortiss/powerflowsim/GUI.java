@@ -39,23 +39,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.fortiss.powerflowsim.exporters.RDFExporter;
 import org.fortiss.powerflowsim.model.ModelUtils;
-import org.fortiss.powerflowsim.util.JTextAreaAppender;
-
-import CIM15.IEC61970.Core.ConductingEquipment;
-import CIM15.IEC61970.Core.ConnectivityNode;
-import CIM15.IEC61970.Core.IdentifiedObject;
-import CIM15.IEC61970.Core.Terminal;
-import CIM15.IEC61970.Topology.TopologicalNode;
-import CIM15.IEC61970.Wires.ACLineSegment;
-import CIM15.IEC61970.Wires.EnergyConsumer;
-import CIM15.IEC61970.Wires.EnergySource;
-import CIM15.IEC61970.Wires.TransformerEnd;
 
 import com.mxgraph.layout.mxPartitionLayout;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
@@ -67,6 +56,16 @@ import com.mxgraph.util.mxEventObject;
 import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
+
+import CIM15.IEC61970.Core.ConductingEquipment;
+import CIM15.IEC61970.Core.ConnectivityNode;
+import CIM15.IEC61970.Core.IdentifiedObject;
+import CIM15.IEC61970.Core.Terminal;
+import CIM15.IEC61970.Topology.TopologicalNode;
+import CIM15.IEC61970.Wires.ACLineSegment;
+import CIM15.IEC61970.Wires.EnergyConsumer;
+import CIM15.IEC61970.Wires.EnergySource;
+import CIM15.IEC61970.Wires.TransformerEnd;
 
 /**
  * 
@@ -83,7 +82,7 @@ public class GUI extends JFrame {
 	private JTable table;
 	private DefaultTableModel tableModel;
 	private JComboBox<String> comboBox;
-	private static Logger log = Logger.getRootLogger();
+	private static Logger log = LogManager.getRootLogger();
 	private final JFileChooser fileChooser = new JFileChooser();
 	private JScrollPane scrollPane;
 	private JTextArea logTextField;
@@ -99,13 +98,31 @@ public class GUI extends JFrame {
 		frame.setVisible(true);
 
 		try {
-			PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
+			
+			/**
+			
+			Note that this code was used with log4j 1.x version of.
+			This library was deprecated and a security alert from github was triggered.
+			Since the code has not been used for a long time, and it only affects the GUI class, 
+			the refactoring of the logging has not been carried out.
+			
+			TODO if the system shall be reused, be aware that logging should be refactored.
+			
+			PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");			
 			ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+			
 			JTextAreaAppender guiAppender = new JTextAreaAppender(frame.logTextField);
 			log.addAppender(consoleAppender);
 			log.addAppender(guiAppender);
+
+			*/
+
 			// ALL | DEBUG | INFO | WARN | ERROR | FATAL | OFF:
-			log.setLevel(Level.ALL);
+
+			// previous solution only as reminder 
+			// log.setLevel(Level.ALL);
+			Configurator.setLevel(log.getName(), Level.ALL);
+			
 		} catch (Exception ex) {
 			System.out.println(ex);
 		}
@@ -603,4 +620,108 @@ public class GUI extends JFrame {
 	public void setTree(JTree tree) {
 		this.tree = tree;
 	}
+	
+	
+	
+	
+	/**
+	 * A Log4J appender that empties into a text area. 
+	 * 
+	 * @author murphy
+	 * TODO currently not used, see also comment above in main method. 
+	 */
+	
+	/**
+	public class JTextAreaAppender extends AppenderSkeleton implements DocumentListener {
+		// --------------------------------------------------------------------------
+		// Fields
+		// --------------------------------------------------------------------------
+
+		// Text area that logging statements are directed to.
+		private JTextArea textArea_;
+
+		// Layout for logging statements.
+		private PatternLayout layout_;
+
+		// --------------------------------------------------------------------------
+		// Constructors
+		// --------------------------------------------------------------------------
+
+		//
+		// Creates a new text area appender.
+		// 
+		// @param textArea
+		//            Text area to connect the appender to.
+		//
+		public JTextAreaAppender(JTextArea textArea) {
+			textArea_ = textArea;
+			textArea_.getDocument().addDocumentListener(this);
+			layout_ = new PatternLayout("%-5p %3x - %m%n");
+		}
+
+		// --------------------------------------------------------------------------
+		// Public
+		// --------------------------------------------------------------------------
+
+		//
+		// Returns the text area.
+		// 
+		// @return JTextArea
+		//
+		public JTextArea getTextArea() {
+			return textArea_;
+		}
+
+		// --------------------------------------------------------------------------
+		// Overrides org.apache.log4j.AppenderSkeleton
+		// --------------------------------------------------------------------------
+
+		//
+		// @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.LoggingEvent)
+		//
+		public void append(LoggingEvent loggingEvent) {
+			textArea_.append(layout_.format(loggingEvent));
+		}
+
+		//
+		// @see org.apache.log4j.Appender#requiresLayout()
+		//
+		public boolean requiresLayout() {
+			return false;
+		}
+
+		//
+		// @see org.apache.log4j.Appender#close()
+		//
+		public void close() {
+		}
+
+		// --------------------------------------------------------------------------
+		// javax.swing.event.DocumentListener Interface
+		// --------------------------------------------------------------------------
+
+		//
+		// @see javax.swing.event.DocumentListener#changedUpdate(javax.swing.event.DocumentEvent)
+		//
+		public void changedUpdate(DocumentEvent event) {
+		}
+
+		//
+		// @see javax.swing.event.DocumentListener#removeUpdate(javax.swing.event.DocumentEvent)
+		//
+		public void removeUpdate(DocumentEvent event) {
+		}
+
+		/**
+		 * Sets the caret position to the end of the text in the text component
+		 * whenever it is updated.
+		 * 
+		 * @see javax.swing.event.DocumentListener#insertUpdate(javax.swing.event.DocumentEvent)
+		 /
+		public void insertUpdate(DocumentEvent event) {
+			// textArea_.scrollToEnd();
+		}
+	}
+	*/
+	
 }

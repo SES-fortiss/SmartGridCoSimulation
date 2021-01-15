@@ -29,10 +29,16 @@
             <groupId>org.swinglabs</groupId>
             <artifactId>swing-layout</artifactId>
         </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.14.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.14.0</version>
+		</dependency>
         <dependency>
             <groupId>org.fortiss</groupId>
             <artifactId>cim15</artifactId>
@@ -70,11 +76,6 @@
                 <groupId>org.swinglabs</groupId>
                 <artifactId>swing-layout</artifactId>
                 <version>1.0.3</version>
-            </dependency>
-            <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>1.2.17</version>
             </dependency>
             <dependency>
             	<groupId>com.github.rwl</groupId>
