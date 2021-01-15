@@ -9,7 +9,8 @@
 
 package org.fortiss.powerflowsim.exporters;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 
@@ -20,7 +21,7 @@ public class Exporter {
 	
 	protected boolean swingSet = false;
 	protected String swingNodeName = "";
-	protected static Logger log = Logger.getRootLogger();
+	protected static Logger log = LogManager.getRootLogger();
 	
 	/**
 	 * Getters and Setters

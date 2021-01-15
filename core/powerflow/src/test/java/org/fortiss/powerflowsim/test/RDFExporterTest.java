@@ -13,10 +13,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.fortiss.powerflowsim.exporters.RDFExporter;
 import org.fortiss.powerflowsim.importers.RDFImporter;
 import org.fortiss.powerflowsim.importers.TopologyGenerator;
@@ -30,15 +30,19 @@ import CIM15.IEC61970.Core.Terminal;
 
 public class RDFExporterTest {
 
-	private static Logger log = Logger.getRootLogger();
+	private static Logger log = LogManager.getRootLogger();
 
 	@Before
 	public void createLogger() {
-		SimpleLayout layout = new SimpleLayout();
-		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		log.addAppender(consoleAppender);
+		//SimpleLayout layout = new SimpleLayout();
+		//ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		//log.addAppender(consoleAppender);
 		// ALL | DEBUG | INFO | WARN | ERROR | FATAL | OFF:
-		log.setLevel(Level.ALL);
+		//log.setLevel(Level.ALL);
+		
+		// previous solution only as reminder 
+		// log.setLevel(Level.WARN);
+		Configurator.setLevel(log.getName(), Level.ALL);
 	}
 
 	@Test

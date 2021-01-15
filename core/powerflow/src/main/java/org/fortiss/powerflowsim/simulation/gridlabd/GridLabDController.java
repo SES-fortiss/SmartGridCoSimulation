@@ -21,7 +21,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.fortiss.powerflowsim.model.CimModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -47,7 +49,7 @@ public class GridLabDController {
 	
 	private static Process gridlab_daemon;
 	private CimModel model;
-	private static Logger log = Logger.getRootLogger();
+	private static Logger log = LogManager.getRootLogger();
 	
 	public GridLabDController(CimModel model) {
 		this.model = model;

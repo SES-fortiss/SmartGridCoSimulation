@@ -9,10 +9,10 @@
 
 package org.fortiss.powerflowsim.test;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.fortiss.powerflowsim.importers.SampleCases;
 import org.fortiss.powerflowsim.model.CimModel;
 import org.fortiss.powerflowsim.simulation.internal.BusBranchModel;
@@ -20,15 +20,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class SimulationModelTest {
-	private static Logger log = Logger.getRootLogger();
+	private static Logger log = LogManager.getRootLogger();
 
 	@Before
 	public void createLogger() {
-		SimpleLayout layout = new SimpleLayout();
-		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		log.addAppender(consoleAppender);
+		//SimpleLayout layout = new SimpleLayout();
+		//ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		//log.addAppender(consoleAppender);
 		// ALL | DEBUG | INFO | WARN | ERROR | FATAL | OFF:
-		log.setLevel(Level.ALL);
+		//log.setLevel(Level.ALL);
+		
+		// previous solution only as reminder 
+		// log.setLevel(Level.WARN);
+		Configurator.setLevel(log.getName(), Level.ALL);
 	}
 
 	@Test
