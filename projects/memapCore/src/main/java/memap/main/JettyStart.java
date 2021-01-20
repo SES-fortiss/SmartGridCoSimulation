@@ -67,18 +67,11 @@ public class JettyStart {
 	public void run(JsonObject memapStartMessage) {
 		topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILP, OptimizationCriteria.EUR,
 				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
-<<<<<<< HEAD
-		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 4880, 0);
-		EnergyPrices.getInstance().init(0.285);
-		EnergyPrices.getInstance().initGas("C:/Git/SESSIM/projects/memapCore/src/main/java/resources/gasprice_15minutes.csv");
-//		EnergyPrices.getInstance().initGas("./gasprice_15minutes.csv");
-=======
 		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 7020, 0);
 		System.out.println("MPC set to " + Simulation.N_STEPS_MPC);
 		EnergyPrices.getInstance().init(0.285);
-//		EnergyPrices.getInstance().initGas("C:/Git/SESSIM/projects/memapCore/src/main/java/resources/gasprice_hourly.csv");
 		EnergyPrices.getInstance().initGas("./gasprice_15minutes.csv");
->>>>>>> feat-PortalConnection
+		
 		//topologyMemapOff = new TopologyController("MemapOff", OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
 		//		ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
 		
@@ -94,29 +87,6 @@ public class JettyStart {
 		 * In case the startMessage comes directly from an opcua endpoint aggregator 
 		 * (e.g Holsten Systems UI), this part will use directly the information from the datamodel
 		 */
-<<<<<<< HEAD
-		JsonArray endpoints = endpointValues;
-//		try {
-//			JsonObject full = (JsonObject) endpointValues.get(0);
-//			JsonObject project = (JsonObject) full.get("project");
-//			endpoints = (JsonArray) project.get("endpoints");
-//			
-//			try (Writer writer = new FileWriter("endpoints.json")) {
-//			    writer.write(gson.toJson(endpoints));
-//			} catch (Exception e) {
-//				System.err.println("Speicher fail!");
-//				e.printStackTrace();
-//			}
-//			
-//			num =  endpoints.size();
-//			
-//			
-//		} catch (Exception e1) {
-//			System.err.println("houses.get(\"endpoints\") hat nicht geklappt");
-//			e1.printStackTrace();
-//		}
-=======
->>>>>>> feat-PortalConnection
 		
 		JsonArray endpoints = null;
 		try {
@@ -134,19 +104,6 @@ public class JettyStart {
 		for (int i = 0; i < endpoints.size(); i++) {
 			
 			JsonObject jsonEndpoint = (JsonObject) endpoints.get(i);
-<<<<<<< HEAD
-			try {
-				String NodeConfig = (String) jsonEndpoint.get("config");
-				JsonObject jsonNodes = null;
-				try {
-					jsonNodes = (JsonObject) Jsoner.deserialize(NodeConfig);
-				} catch (JsonException e) {
-					System.err.println("Topology could not be deserialized");
-					e.printStackTrace();
-				}
-				System.out.println("Building " + (i+1) + " will be added...");
-				BuildingController sampleBuilding = new OpcUaBuildingController(topologyMemapOn, jsonEndpoint, jsonNodes);
-=======
 			JsonObject configNodes = null;
 			
 			try {
@@ -161,7 +118,6 @@ public class JettyStart {
 				
 				System.out.println("Building " + (i+1) + " will be added...");
 				BuildingController sampleBuilding = new OpcUaBuildingController(topologyMemapOn, jsonEndpoint, configNodes);
->>>>>>> feat-PortalConnection
 				//BuildingController sampleBuilding2 = new OpcUaBuildingController(topologyMemapOff, jsonEndpoint, jsonNodes);
 				topologyMemapOn.attach(sampleBuilding);
 				//topologyMemapOff.attach(sampleBuilding2);

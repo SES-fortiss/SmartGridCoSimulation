@@ -34,7 +34,6 @@ public class ClientStorage extends Storage {
 	NetworkType networkType;
 	double opCost;
 	double costCO2;
-	double trigger;
 	public BasicClient client;
 	public NodeId triggerId;;
 	public NodeId calculatedSocId;
@@ -67,7 +66,6 @@ public class ClientStorage extends Storage {
 		this.outputSetpointsId = outputSetpointsId;
 		this.networkType = setNetworkType(client, nodeIdSector);
 		this.triggerId = triggerId;
-		this.trigger = client.readFinalDoubleValue(triggerId);
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
 		this.calculatedSocId = calculatedSocId;

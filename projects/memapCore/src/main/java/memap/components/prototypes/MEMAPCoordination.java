@@ -21,6 +21,7 @@ import memap.helper.lp.LPSolver;
 import memap.helper.milp.MILPSolverNoConnections;
 import memap.helper.milp.MILPSolverWithConnections;
 import memap.helperOPCua.OpcServerContextGenerator;
+import memap.main.Simulation;
 import memap.main.TopologyConfig;
 import memap.messages.BuildingMessage;
 import memap.messages.BuildingMessageHandler;
@@ -129,8 +130,7 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 					+ String.format("%.03f", costTotal) + " EUR ; CO2: " + String.format("%.03f", CO2Total) + " kg");
 			
 			try {
-//				Thread.sleep(10000);
-				Thread.sleep(900000);
+				Thread.sleep(Simulation.PauseInMS);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

@@ -32,7 +32,9 @@ import opcMEMAP.ConfigInterface;
 
 public class Simulation {
 
+	// temporary solution
 	public static int N_STEPS_MPC = 5;
+	public static int PauseInMS = 5000;
 	
 	public static void main(String[] args) throws SQLException {
 		// Show help screen by default
@@ -44,6 +46,11 @@ public class Simulation {
 			if (args.length > 1 ) {
 				try {
 					N_STEPS_MPC = Integer.parseInt(args[1]);
+				} catch(NumberFormatException e) {
+				} 
+			} else if (args.length > 2) {
+				try {
+					PauseInMS = Integer.parseInt(args[2]);
 				} catch(NumberFormatException e) {
 				} 
 			}
