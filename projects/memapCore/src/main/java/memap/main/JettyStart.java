@@ -110,6 +110,12 @@ public class JettyStart {
 				
 				configNodes = (JsonObject) jsonEndpoint.get("config");
 				
+//				try (Writer writer = new FileWriter("configNodes2.json")) {
+//					writer.write(gson.toJson(configNodes));
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+				
 				System.out.println("Building " + (i+1) + " will be added...");
 				BuildingController sampleBuilding = new OpcUaBuildingController(topologyMemapOn, jsonEndpoint, configNodes);
 				//BuildingController sampleBuilding2 = new OpcUaBuildingController(topologyMemapOff, jsonEndpoint, jsonNodes);

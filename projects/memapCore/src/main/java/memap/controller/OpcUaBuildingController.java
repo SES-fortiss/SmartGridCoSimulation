@@ -10,6 +10,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.google.gson.Gson;
 
@@ -133,6 +134,8 @@ public class OpcUaBuildingController implements BuildingController {
 			name = getName();
 			endpointURL = getEndpointURL();
 			endpointDescriptor = getEndpointDescriptor();
+			
+			System.out.println("[" + name + " (" + endpointURL + ") ]");
 		}
 
 		/**
@@ -220,27 +223,21 @@ public class OpcUaBuildingController implements BuildingController {
 			for ( String EMSkey : fullNodesConfig.keySet()) {
 				JsonObject emsNodesConfig = (JsonObject) fullNodesConfig.get(EMSkey);
 				// TODO: Parse string to get LS, Obj, EMS - NUmber)
-				System.out.println("Reading EMS " + EMSkey + "(" + endpointURL + ") ...");			
+				System.out.println("Found EMS " + EMSkey + " (reading...)");			
 
 				
 				for (String key : emsNodesConfig.keySet()) {
 					switch (key) {
 					
 //					case "NO": //"INFO":
-//						JsonArray NOtester = (JsonArray) emsNodesConfig.get("NO");
-//						try (Writer writer = new FileWriter("NOtester.json")) {
-//						    writer.write(gson.toJson(NOtester));
-//						} catch (Exception e) {
-//							e.printStackTrace();
-//						}
-//						
+//						JsonArray NOtester = (JsonArray) emsNodesConfig.get("NO");					
 //						JsonObject info = HelperUnnestingJSON.unnestJsonAry(NOtester);
 //						// JsonObject coupl = HelperUnnestingJSON.unnestJsonObj(i, coupler);
-//						try (Writer writer = new FileWriter("info.json")) {
-//						    writer.write(gson.toJson(info));
-//						} catch (Exception e) {
-//							e.printStackTrace();
-//						}
+////						try (Writer writer = new FileWriter("info.json")) {
+////						    writer.write(gson.toJson(info));
+////						} catch (Exception e) {
+////							e.printStackTrace();
+////						}
 //						
 //						try {
 //							NodeId nid1 = NodeId.parse((String) info.get("nameId"));	
@@ -280,9 +277,9 @@ public class OpcUaBuildingController implements BuildingController {
 										effElecId, opCostId, costCO2Id, setpointsId, 0);
 								attach(cc);
 								cc.setTopologyController(topologyController);
-								System.out.println("Coupler (" + (i+1) + "/" + coupler.keySet().size() + ") added to building " + name);
+								System.out.println("Coupler (" + (i+1) + "/" + coupler.keySet().size() + ") added to " + EMSkey);
 							} catch (Exception e) {
-								System.err.println("WARNING: Could not add coupler " + i + " to building " + name
+								System.err.println("WARNING: Could not add coupler " + i + " to " + EMSkey
 										+ ".\nPlease check " + coupl.toString());
 							}
 						}
@@ -301,9 +298,9 @@ public class OpcUaBuildingController implements BuildingController {
 								ClientDemand cd = new ClientDemand(client, "DEMND" + String.format("%02d",  i), demndSectId, consumptionId, arrayForecastId, demandSetpointId, 0);
 								attach(cd);
 								cd.setTopologyController(topologyController);
-								System.out.println("Demand (" + (i+1) + "/" + demands.keySet().size() + ") added to building " + name);
+								System.out.println("Demand (" + (i+1) + "/" + demands.keySet().size() + ") added to " + EMSkey);
 							} catch (Exception e) {
-								System.err.println("WARNING: Could not add demand " + i + " to building " + name
+								System.err.println("WARNING: Could not add demand " + i + " to " + EMSkey
 										+ ".\nPlease check " + demnd.toString());
 							}
 						}
@@ -326,10 +323,10 @@ public class OpcUaBuildingController implements BuildingController {
 										effId, opCostId, costCO2Id, setpointsId, 0);
 								attach(cp);
 								cp.setTopologyController(topologyController);
-								System.out.println("Controllable producer (" + (i+1) + "/" + controllableProd.keySet().size() + ") added to building " + name);
+								System.out.println("Controllable producer (" + (i+1) + "/" + controllableProd.keySet().size() + ") added to " + EMSkey);
 							} catch (Exception e) {
 								System.err.println(e);
-								System.err.println("WARNING: Could not add controllable producer " + i + " to building " + name
+								System.err.println("WARNING: Could not add controllable producer " + i + " to " + EMSkey
 										+ ".\nPlease check " + cprod.toString());
 							}
 						}
@@ -351,9 +348,9 @@ public class OpcUaBuildingController implements BuildingController {
 										maxPowerId, productionId, opCostId, costCO2Id, 0);
 								attach(cvp);
 								cvp.setTopologyController(topologyController);
-								System.out.println("Volatile producer (" + (i+1) + "/" + volatileProd.keySet().size() + ") added to building " + name);
+								System.out.println("Volatile producer (" + (i+1) + "/" + volatileProd.keySet().size() + ") added to " + EMSkey);
 							} catch (Exception e) {
-								System.err.println("WARNING: Could not add volatile producer " + i + " to building " + name
+								System.err.println("WARNING: Could not add volatile producer " + i + " to " + EMSkey
 										+ ".\nPlease check " + vprod.toString());
 							}
 						}
@@ -383,9 +380,9 @@ public class OpcUaBuildingController implements BuildingController {
 										opCostId, costCO2Id, inputSetpointsId, outputSetpointsId, 0);
 								attach(cs);
 								cs.setTopologyController(topologyController);
-								System.out.println("Storgae (" + (i+1) + "/" + storages.keySet().size() + ") added to building " + name);
+								System.out.println("Storgae (" + (i+1) + "/" + storages.keySet().size() + ") added to " + EMSkey);
 							} catch (Exception e) {
-								System.err.println("WARNING: Could not add storage " + i + " to building " + name
+								System.err.println("WARNING: Could not add storage " + i + " to " + EMSkey
 										+ ".\nPlease check " + strge.toString());
 							}
 						}

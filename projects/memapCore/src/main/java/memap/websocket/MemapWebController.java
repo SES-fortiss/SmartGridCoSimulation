@@ -56,11 +56,13 @@ public class MemapWebController {
 	
 	public void stopMemap() {
 	
-		js.stopSimulation();
+//		js.stopSimulation();
 		SimulationStarter.actorSystemRef.shutdown();
 	    executor.shutdown();
 	    executor = Executors.newScheduledThreadPool(2);
 	    System.out.println("Disconnecting was sucessful");
+//	    System.exit(0);
+	    return;
 
 	}
 	

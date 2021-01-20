@@ -66,4 +66,19 @@ public class EntryPoint {
     		
     }
 
+//    @POST
+//    @Path("exit")
+//    @Consumes(MediaType.TEXT_PLAIN)
+//    public Response receiveStartMessage(String startMessage) throws Exception {
+//    
+//    	String response;
+//    	JsonObject messageJson = (JsonObject) Jsoner.deserialize(startMessage);
+//    	MemapWebController mwc = new MemapWebController(messageJson);
+//
+//		mwc.stopMemap();
+//		response = "Simulation terminated. Client Disconnected.";
+//		System.out.println(response);
+//    
+//    }
+//    }
 }
