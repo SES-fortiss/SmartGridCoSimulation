@@ -39,7 +39,6 @@ public class ClientVolatileProducer extends Producer {
 	double opCost;
 	double costCO2;
 	public BasicClient client;
-	public List<NodeId> setpointIds = new ArrayList<NodeId>();
 
 	VolatileProducerMessage volatileProducerMessage;
 
@@ -56,14 +55,13 @@ public class ClientVolatileProducer extends Producer {
 	 * @param port
 	 */
 	public ClientVolatileProducer(BasicClient client, String name,  NodeId nodeIdSector, NodeId maxPowerId,
-			NodeId currentProductionId, NodeId opCostId, NodeId costCO2Id, List<NodeId> setpointIds, int port)
+			NodeId currentProductionId, NodeId opCostId, NodeId costCO2Id, int port)
 			throws InterruptedException, ExecutionException {
 		super(name, 0.0, client.readFinalDoubleValue(maxPowerId),
 				1.0, port);
 
 		volatileProducerMessage = new VolatileProducerMessage();
 		this.client = client;
-		this.setpointIds = setpointIds;
 		this.networkType = setNetworkType(client, nodeIdSector);
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
@@ -130,19 +128,19 @@ public class ClientVolatileProducer extends Producer {
 	
 	@Override
 	public void handleRequest() {
-		if (requestContentReceived instanceof OptimizationResultMessage) {
-			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
-			for (String key : optResult.resultMap.keySet()) {
-				if (key.equals(actorName)) {
-					optimizationAdvice = optResult.resultMap.get(key);
-					for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC(); i++) {
-						DataValue data = new DataValue(new Variant(optimizationAdvice[i]), null, null);					
-						client.writeValue(setpointIds.get(i), data);						
-					}			
-				}
-
-			}
-		}
+//		if (requestContentReceived instanceof OptimizationResultMessage) {
+//			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
+//			for (String key : optResult.resultMap.keySet()) {
+//				if (key.equals(actorName)) {
+//					optimizationAdvice = optResult.resultMap.get(key);
+//					for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC(); i++) {
+//						DataValue data = new DataValue(new Variant(optimizationAdvice[i]), null, null);					
+//						client.writeValue(setpointIds.get(i), data);						
+//					}			
+//				}
+//
+//			}
+//		}
 	}
 
 	@Override

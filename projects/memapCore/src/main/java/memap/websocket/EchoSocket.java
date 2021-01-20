@@ -162,7 +162,8 @@ public class EchoSocket extends WebSocketAdapter {
 	    // blocks.
 	    Runnable simulationRunnable = new Runnable() {
 		public void run() {
-		    js.run(messageJsonArray);
+			JsonObject messageJsonObject = (JsonObject) messageJsonArray.get(0);
+		    js.run(messageJsonObject);
 		}
 	    };
 
