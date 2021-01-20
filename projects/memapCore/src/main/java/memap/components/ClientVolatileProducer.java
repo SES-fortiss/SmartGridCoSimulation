@@ -3,7 +3,6 @@ package memap.components;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
@@ -25,8 +24,6 @@ import akka.basicMessages.AnswerContent;
 import memap.components.prototypes.Producer;
 import memap.controller.TopologyController;
 import memap.helperOPCua.BasicClient;
-import memap.main.TopologyConfig;
-import memap.messages.OptimizationResultMessage;
 import memap.messages.extension.NetworkType;
 import memap.messages.planning.VolatileProducerMessage;
 

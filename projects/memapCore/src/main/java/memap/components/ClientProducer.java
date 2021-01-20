@@ -1,8 +1,6 @@
 package memap.components;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -10,14 +8,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
-import com.google.common.collect.ImmutableList;
-
-import akka.basicMessages.RequestContent;
 import memap.components.prototypes.Producer;
 import memap.controller.TopologyController;
-import memap.helper.EnergyPrices;
 import memap.helperOPCua.BasicClient;
-import memap.main.TopologyConfig;
 import memap.messages.OptimizationResultMessage;
 import memap.messages.extension.NetworkType;
 

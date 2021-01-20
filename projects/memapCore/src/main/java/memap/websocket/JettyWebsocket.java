@@ -3,12 +3,9 @@ package memap.websocket;
 import java.net.URL;
 import java.util.Objects;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.servlet.ServletContainer;
 
 /**

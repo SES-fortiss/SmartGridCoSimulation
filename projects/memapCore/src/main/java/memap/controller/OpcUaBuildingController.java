@@ -1,7 +1,5 @@
 package memap.controller;
 
-import java.io.FileWriter;
-import java.io.Writer;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -84,7 +82,6 @@ public class OpcUaBuildingController implements BuildingController {
 			JsonObject opcUaNodesConfig) throws IllegalStateException {
 
 		this.topologyController = topologyController;
-		// Initialize ConfigHandlers to access the Jsons
 		this.endpointConfig = opcUaEndpointConfig;
 		this.fullNodesConfig = opcUaNodesConfig;
 		EndpointConfigHandler endpointConfigHandler = new EndpointConfigHandler();
@@ -212,46 +209,35 @@ public class OpcUaBuildingController implements BuildingController {
 	 * 
 	 * TODO: Implement automatic device detection
 	 * 
-	 * @author Adrian.Krueger, Jan.Mayer
+	 * @author Adrian.Krueger, JanAxelMayer
 	 *
 	 */
 	private class NodesConfigHandler {
 		
-		@SuppressWarnings("null")
 		private void initDevices() {
-			
-//			TODO: for (int n = 0; n < fullNodesConfig.size(); n++) {  //Iterate through site, object, EMS ....
 			
 			for ( String EMSkey : fullNodesConfig.keySet()) {
 				JsonObject emsNodesConfig = (JsonObject) fullNodesConfig.get(EMSkey);
-				// TODO: Parse string to get LS, Obj, EMS - NUmber)
 				System.out.println("Found EMS " + EMSkey + " (reading...)");
+				
+				// Trigger for CoSES-Lab
 				NodeId trigger = null;
-
 				
 				for (String key : emsNodesConfig.keySet()) {
 					switch (key) {
 					
-					case "NO": //"INFO":
+					case "NO": //"EMS":
 						JsonArray ems = (JsonArray) ((JsonArray) emsNodesConfig.get("NO")).get(0);	
 
 						try {
 							JsonObject info = HelperUnnestingJSON.unnestJsonAry(ems);
 							NodeId nid0 = NodeId.parse((String) info.get("nameID"));
-//							NodeId nid1 = NodeId.parse((String) info.get("site"));
-//							NodeId nid2 = NodeId.parse((String) info.get("ems"));
-//							NodeId nid3 = NodeId.parse((String) info.get("object"));
 							String EmsName = client.readFinalStringValue(nid0);
-//							String str1 = client.readFinalStringValue(nid1);
-//							String str2 = client.readFinalStringValue(nid2);
-//							String str3 = client.readFinalStringValue(nid3);
-//							nameString = str1 + "EMS" + str2 + "OBJ" + str3;
-//							System.out.println("EMS nameID: " + EmsName);
+							System.out.println("EMS-Description (nameID) = " + EmsName);
 						} catch (Exception e) {
 							System.err.println("WARNING: Could not add name string to building " + name
 									+ ".\nPlease check " + ems.toString());
 						}
-//						
 						break;
 					
 					case "COUPL":
@@ -365,7 +351,7 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId maxDischargingId = NodeId.parse((String) strge.get("MaxPower"));
 								NodeId capacityId = NodeId.parse((String) strge.get("Capacity"));
 								NodeId stateOfChargeId = NodeId.parse((String) strge.get("curSOC"));
-//								NodeId calculatedSocId = NodeId.parse((String) strge.get("calcSOC"));  // For COSES
+//								NodeId calculatedSocId = NodeId.parse((String) strge.get("calcSOC"));  // Only availible in CoSES
 								NodeId calculatedSocId = NodeId.parse((String) strge.get("curSOC"));
 								NodeId storageLossId = NodeId.parse((String) strge.get("StorLossPD"));
 								NodeId opCostId = NodeId.parse((String) strge.get("PrimEnCost"));

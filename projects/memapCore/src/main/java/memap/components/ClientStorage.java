@@ -2,7 +2,6 @@ package memap.components;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -21,7 +20,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateReq
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
-import akka.basicMessages.RequestContent;
 import memap.components.prototypes.Storage;
 import memap.controller.TopologyController;
 import memap.helperOPCua.BasicClient;

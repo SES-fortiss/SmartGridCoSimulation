@@ -1,7 +1,5 @@
 package memap.components.prototypes;
 
-import java.util.List;
-
 import akka.basicMessages.AnswerContent;
 import memap.controller.TopologyController;
 import memap.messages.OptimizationResultMessage;
@@ -63,7 +61,7 @@ public abstract class Storage extends Device {
 	@Override
 	public void handleRequest() {
 		if (requestContentReceived instanceof OptimizationResultMessage) {
-			double stepLengthInHours = topologyConfig.getStepLengthInHours();
+//			double stepLengthInHours = topologyConfig.getStepLengthInHours();
 			OptimizationResultMessage linprogResult = ((OptimizationResultMessage) requestContentReceived);
 
 			String dataKey = actorName + "Discharge";

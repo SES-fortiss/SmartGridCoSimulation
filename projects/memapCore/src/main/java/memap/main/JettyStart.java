@@ -1,15 +1,11 @@
 package memap.main;
 
-import java.io.FileWriter;
-import java.io.Writer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.github.cliftonlabs.json_simple.JsonArray;
-import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
-import com.github.cliftonlabs.json_simple.Jsoner;
 import com.google.gson.Gson;
 
 import memap.controller.BuildingController;
@@ -26,7 +22,7 @@ import memap.helper.configurationOptions.ToolUsage;
  * 
  * JettyStart class initiates new topology controller.
  * 
- * @author freiesleben
+ * @author freiesleben, JanAxelMayer
  */
 
 public class JettyStart {

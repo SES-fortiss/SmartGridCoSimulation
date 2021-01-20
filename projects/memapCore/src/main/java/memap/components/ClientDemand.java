@@ -21,7 +21,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateReq
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
-import akka.basicMessages.RequestContent;
 import akka.timeManagement.CurrentTimeStepSubscriber;
 import memap.components.prototypes.Consumer;
 import memap.controller.TopologyController;

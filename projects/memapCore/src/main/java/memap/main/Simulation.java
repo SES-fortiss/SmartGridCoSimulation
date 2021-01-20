@@ -1,8 +1,6 @@
 package memap.main;
 
-import java.sql.Connection;
 import java.sql.SQLException;
-
 import memap.controller.TopologyController;
 import memap.examples.ExampleLoader;
 import memap.messages.planning.ConnectionDB;
@@ -32,9 +30,11 @@ import opcMEMAP.ConfigInterface;
 
 public class Simulation {
 
+	// Global Input Parameters
 	// temporary solution
 	public static int N_STEPS_MPC = 5;
 	public static int PauseInMS = 5000;
+	// ...
 	
 	public static void main(String[] args) throws SQLException {
 		// Show help screen by default
@@ -61,7 +61,7 @@ public class Simulation {
 	}
 
 	private static void run(TopologyController topologyController) throws SQLException {
-		Connection con = ConnectionDB.connectToDB();
+		ConnectionDB.connectToDB();
 		topologyController.startSimulation();
 	}
 

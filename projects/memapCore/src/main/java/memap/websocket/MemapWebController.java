@@ -1,33 +1,16 @@
 package memap.websocket;
 
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.core.MediaType;
-
-import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
-import com.github.cliftonlabs.json_simple.Jsonable;
-import com.github.cliftonlabs.json_simple.Jsoner;
-
 import memap.main.JettyStart;
 import simulation.SimulationStarter;
-
-import com.google.gson.Gson;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 public class MemapWebController {
 
 	private JsonObject memapStartMessage;
-	private Gson gson = new Gson();
 	
 	JettyStart js = new JettyStart();
 	ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
