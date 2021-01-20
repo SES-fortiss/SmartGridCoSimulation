@@ -3,6 +3,8 @@ package memap.components.prototypes;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import com.google.gson.Gson;
+
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
@@ -14,15 +16,18 @@ import memap.controller.TopologyController;
 import memap.helper.SolutionHandler;
 import memap.helper.configurationOptions.OptHierarchy;
 import memap.helper.configurationOptions.Optimizer;
+import memap.helper.configurationOptions.ToolUsage;
 import memap.helper.lp.LPSolver;
 import memap.helper.milp.MILPSolverNoConnections;
 import memap.helper.milp.MILPSolverWithConnections;
+import memap.helperOPCua.OpcServerContextGenerator;
+import memap.main.Simulation;
 import memap.main.TopologyConfig;
 import memap.messages.BuildingMessage;
 import memap.messages.BuildingMessageHandler;
 import memap.messages.OptimizationResultMessage;
 import memap.messages.extension.ChildSpecification;
-
+import opcMEMAP.MemapOpcServerStarter;
 /**
  * This model optimizes over several buildings for the planning tool.
  * 
@@ -35,7 +40,10 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 	/** Reference to topology configuration */
 	TopologyConfig topologyConfig = TopologyConfig.getInstance();
 	private int currentTimeStep;
-
+	protected Gson gson = new Gson();
+	private MemapOpcServerStarter mServer;
+	public int port = 7013;
+	
 	// some long term values
 	double[] totalEURVector;
 	double[] totalCO2Vector;
@@ -120,6 +128,13 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 
 			System.out.println(topologyController.getOptimizer() + ": " + this.actorName + " cost = "
 					+ String.format("%.03f", costTotal) + " EUR ; CO2: " + String.format("%.03f", CO2Total) + " kg");
+			
+			try {
+				Thread.sleep(Simulation.PauseInMS);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
 		}
 	}
 
@@ -162,6 +177,36 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
+		if (topologyController.getToolUsage() == ToolUsage.SERVER) {			
+			if (currentTimeStep == 0) {
+				if (port != 0) {
+					this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult), port);
+//					try (Writer writer = new FileWriter("Output.json")) {
+//					    writer.write(gson.toJson(optResult));
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+					
+					try {
+						this.mServer.start();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}						
+				OpcServerContextGenerator.generateJson(this.actorName, buildingMessage);
+			}
+			
+			if(port != 0) {
+				try {				
+//					mServer.update(gson.toJson(buildingMessage));
+					this.mServer.update(gson.toJson(optResult));
+//					Thread.sleep(1000);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
 		return buildingMessage;
 	}
 

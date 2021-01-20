@@ -19,6 +19,7 @@ public class ExampleFiles {
 		 */
 		exampleFiles.put("FORECASTEXAMPLE", "Discovergy_PVAnlage15kWp.csv");
 		exampleFiles.put("ELECTRICITYPRICEEXAMPLE", "Strompreise_7Tage_simple.csv");
+		exampleFiles.put("GASPRICEEXAMPLE", "gasprice_hourly.csv");
 	}
 
 	public String getFile(String example) {

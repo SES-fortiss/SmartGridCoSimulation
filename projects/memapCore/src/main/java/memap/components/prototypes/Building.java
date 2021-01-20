@@ -120,7 +120,13 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 			System.out.println(topologyController.getOptimizer() + ": " + this.actorName + " cost = "
 					+ String.format("%.03f", costTotal) + " EUR ; CO2: " + String.format("%.03f", CO2Total) + " kg");			
 		}
-		
+
+//		try {
+//			Thread.sleep(5000);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+
 	}
 
 	@Override
@@ -128,7 +134,8 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
 			if (this.currentTimeStep == 0) {
 				if (port != 0) {
-					this.mServer = new MemapOpcServerStarter(false, gson.toJson(buildingMessage), port);
+//					this.mServer = new MemapOpcServerStarter(false, gson.toJson(buildingMessage), port);
+					this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult), port);
 					try {
 						this.mServer.start();
 					} catch (Exception e) {
@@ -137,10 +144,11 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 				}
 				OpcServerContextGenerator.generateJson(this.actorName, buildingMessage);
 			}
-
-			if (port != 0) {
-				try {
-					mServer.update(gson.toJson(buildingMessage));
+			
+			if(port != 0) {
+				try {				
+//					mServer.update(gson.toJson(buildingMessage));
+					mServer.update(gson.toJson(optResult));
 					Thread.sleep(1000);
 				} catch (Exception e) {
 					e.printStackTrace();

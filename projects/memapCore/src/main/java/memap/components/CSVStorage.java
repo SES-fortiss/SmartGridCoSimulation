@@ -23,7 +23,7 @@ public class CSVStorage extends Storage {
 	 * @param port
 	 */
 	public CSVStorage(String name, double capacity, double stateOfCharge, double max_charging, double max_discharging,
-			double effIN, double effOUT, NetworkType networkType, double opCost, double costCO2, int port) {
+			double effIN, double effOUT, double effOUT, NetworkType networkType, double opCost, double costCO2, int port) {
 		super(name, capacity, stateOfCharge, max_charging, max_discharging, effIN, effOUT, port);
 		this.networkType = networkType;
 		this.opCost = opCost;
@@ -49,6 +49,11 @@ public class CSVStorage extends Storage {
 	@Override
 	public void setTopologyController(TopologyController topologyController) {
 		super.setTopologyController(topologyController);
+	}
+	
+	@Override
+	public Double getStateOfCharge() {
+		return stateOfCharge;
 	}
 
 }

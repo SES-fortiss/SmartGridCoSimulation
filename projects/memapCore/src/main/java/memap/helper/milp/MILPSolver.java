@@ -15,11 +15,13 @@ import memap.helper.MEMAPLogging;
 import memap.helper.SolutionHandler;
 import memap.main.SimulationProgress;
 import memap.main.Status;
+import memap.helper.configurationOptions.ToolUsage;
 import memap.main.TopologyConfig;
 import memap.media.Strings;
 import memap.messages.BuildingMessage;
 import memap.messages.BuildingMessageHandler;
 import memap.messages.OptimizationResultMessage;
+import memap.messages.planning.ConnectionDB;
 
 public class MILPSolver {
 	/** Reference to topologyController ancestor */
@@ -66,16 +68,27 @@ public class MILPSolver {
 
 	public void printNames() throws LpSolveException {
 
-		String[] names = new String[nCols + 1];
+		int nCols2 = problem.getNorigColumns();
+		String[] names = new String[nCols2 + 1];
 		for (int i = 0; i < names.length; i++) {
-			names[i] = problem.getColName(i);
+			names[i] = problem.getOrigcolName(i);
 		}
+		
+		int nRows = problem.getNorigRows();
+		String[] rowNames = new String[nRows + 1];
+		for (int j = 0; j < rowNames.length; j++) {
+			rowNames[j] = problem.getOrigrowName(j);
+		}
+		
 
 		System.out.println("*****************");
 		System.out.println("***** MILP ******");
 		System.out.println("*****************");
-		System.out.println("nCols: " + nCols);
+		System.out.println("nCols2: " + nCols2);
 		System.out.println("Colnames: " + Arrays.toString(names));
+		System.out.println("*****************");
+		System.out.println("nRows: " + nRows);
+		System.out.println("Rownames: " + Arrays.toString(rowNames));
 
 	}
 
@@ -125,7 +138,6 @@ public class MILPSolver {
 	private void workWithResults(double[] optSolution, String[] names, double[] lambda, double[] lambdaCO2) {
 
 		BuildingMessageHandler buildingMessageHandler = new BuildingMessageHandler();
-
 		double buildingCostPerTimestep = 0;
 		double buildingCO2PerTimestep = 0;
 		buildingCostPerTimestep = milpSolHandler.calculateTimeStepCosts(optSolution, lambda);
@@ -152,8 +164,9 @@ public class MILPSolver {
 
 		// Creation of the result vector
 		double[] currentStep = { currentTimeStep };
-		double[] currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
-		double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep) };
+//		double[] currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
+		double[] currentOptVector = milpSolHandler.getEffSolutionForThisTimeStep(singleBuildingMessage, names, optSolution, nStepsMPC);
+		double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep), energyPrices.getGasPriceInEuro(currentTimeStep) };
 		double[] totalCostsEUR = { costTotal };
 		double[] totalCO2emissions = { CO2Total };
 
@@ -199,6 +212,18 @@ public class MILPSolver {
 		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC,
 				currentEnergyPrice, totalCostsEUR, totalCO2emissions);
 
+		
+		int nrOfBuildings = 1;
+		if (singleBuildingMessage == null) {
+			nrOfBuildings =  multipleBuildingMessages.size();
+		}
+		
+		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
+			ConnectionDB.addResults(topologyController.getOptimizationHierarchy(), namesResult, currentStep, currentDemand, currentOptVector, currentSOC,
+				currentEnergyPrice, totalCostsEUR, totalCO2emissions, nrOfBuildings);
+		}
+		
+
 		// Format results vector for printing
 		String[] vectorResultStr = new String[vectorResult.length];
 		DecimalFormat df = new DecimalFormat("0,00", new DecimalFormatSymbols(Locale.GERMAN));
@@ -206,6 +231,10 @@ public class MILPSolver {
 			vectorResultStr[i] = df.format(vectorResult[i]);
 		}
 
+		System.out.println("MILP: " + this.actorName + " Names: " + Arrays.toString(namesResult));
+		System.out.println("MILP: " + this.actorName + " Result: " + Arrays.toString(vectorResult));
+		
+		
 		// Save
 		buildingsSolutionPerTimeStepMILP[currentTimeStep] = vectorResult;
 
@@ -215,20 +244,21 @@ public class MILPSolver {
 			milpSolHandler.exportMatrix(buildingsSolutionPerTimeStepMILP, saveString, namesResult);
 		}
 
+		double[] optSolutionEffcorrected = milpSolHandler.getEffSolutionForThisTimeStep(singleBuildingMessage, names, optSolution, 1);
 		// Request content to send
 		for (int i = 0; i < names.length / nStepsMPC; i++) {
 			double[] values = new double[nStepsMPC];
 
 			for (int j = 0; j < values.length; j++) {
-				values[j] = optSolution[i * nStepsMPC + j];
+				values[j] = optSolutionEffcorrected[i * nStepsMPC + j];
 			}
 
 			// TODO : Improve this work around
 			// as this might be required for controllable gens and couplers
-			String str = names[i * nStepsMPC];
-			String str2 = str.substring(0, str.indexOf("_"));
+			String str = names[i * nStepsMPC].replace("_T0", "");
+//			String str2 = str.substring(0, str.indexOf("_"));
 
-			optResult.resultMap.put(str2, values);
+			optResult.resultMap.put(str, values);
 		}
 
 		// Memory is cleaned up in the child classes 
