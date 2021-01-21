@@ -3,6 +3,7 @@ package linprog;
 import java.util.concurrent.TimeUnit;
 
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 
@@ -47,8 +48,11 @@ public class LinProgSimulation {
 //		topology = TopologyCoSES.createTopology();
 		topology = Topology5Houses.createTopology();
 		SimulationStarter.saveGridTopologyPlot(topology);   
-		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
-        SimulationStarter.startSimulation(actorSystem, 0, NR_OF_ITERATIONS);
+		
+		SimulationStarter simStarter = new SimulationStarter(new GlobalTime());
+		
+		ActorSystem actorSystem = simStarter.initialiseActorSystem(topology);
+		simStarter.startSimulation(actorSystem, 0, NR_OF_ITERATIONS);
 		
 	}
 	

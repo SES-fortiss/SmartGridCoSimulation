@@ -1,6 +1,7 @@
 package linprogMPC;
 
 import linprogMPC.helper.ConsumptionProfiles;
+import akka.timeManagement.GlobalTime;
 import linprogMPC.ActorFactory;
 import topology.ActorTopology;
 
@@ -43,7 +44,6 @@ public class Topology2Houses {
 	private static final double CAPACITY_THERMALSTORAGE = 20;
 	private static final double CAPACITY_BATTERY = 12.;
 	private static final int PORT_UNDEFINED = 0;
-	
 	
 	public static ActorTopology createTopology(){
 		int port = 8081;

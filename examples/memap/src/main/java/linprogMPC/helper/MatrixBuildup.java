@@ -2,9 +2,7 @@ package linprogMPC.helper;
 
 import java.util.ArrayList;
 
-import akka.systemActors.GlobalTime;
 import linprogMPC.Simulation;
-
 import linprogMPC.messages.BuildingSpec;
 import linprogMPC.messages.Consumption;
 import linprogMPC.messages.ProducerSpec;
@@ -18,8 +16,11 @@ public abstract class MatrixBuildup {
 	//  =========================== Matrix Filling ==============================
 	final static int n = Simulation.N_STEPS_MPC;
 	
+	public static int internalTimeStep = 0;	
 		
-	public static OptimizationProblem SingleBuilding(BuildingSpec buildingSpec) {
+	public static OptimizationProblem singleBuilding(BuildingSpec buildingSpec, int timeStep) {
+		
+		internalTimeStep = timeStep;
 		
 		int nrOfStorages = buildingSpec.getNrOfStorages();
 		int nrOfProducers = buildingSpec.getNrOfProducers();
@@ -34,14 +35,14 @@ public abstract class MatrixBuildup {
 		int producersHandled = 0;
 		int storagesHandled = 0;
 		
-		if (GlobalTime.getCurrentTimeStep() == 0) {
+		if (internalTimeStep == 0) {
 			System.out.println(" << " + buildingSpec.name + " >> ");
 		}
 		
 		for(ProducerSpec producerSpec : buildingSpec.producers) {
 			addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, buildingSpec.LDHeating);
 			producersHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (internalTimeStep == 0) {
 				System.out.println("Prod-Nr.: " + producersHandled + ", " + producerSpec.name);
 			}
 		}	
@@ -49,7 +50,7 @@ public abstract class MatrixBuildup {
 		for(StorageSpec storageSpec : buildingSpec.storages) {
 			addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled, buildingSpec.LDHeating);
 			storagesHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (internalTimeStep == 0) {
 				System.out.println("Stor-Nr.: " + storagesHandled + ", " + storageSpec.name);
 			}
 		}
@@ -84,7 +85,7 @@ public abstract class MatrixBuildup {
 		 *  ====== BUILD PRODUCER & STORAGES Matrices =========
 		 */
 //		System.out.println("****************************************************************");		
-		if (GlobalTime.getCurrentTimeStep() == 0) {
+		if (internalTimeStep == 0) {
 			System.out.println(" << MEMAP >> ");
 		}
 		int producersHandled = 0;
@@ -95,7 +96,7 @@ public abstract class MatrixBuildup {
 			for(ProducerSpec producerSpec : buildingSpec.producers) {
 				addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, LDHeating);
 				producersHandled++;
-				if (GlobalTime.getCurrentTimeStep() == 0) {
+				if (internalTimeStep == 0) {
 					System.out.println("Prod-Nr.: " + producersHandled + ", " + buildingSpec.name+ ", " + producerSpec.name);
 				}
 			}	
@@ -103,7 +104,7 @@ public abstract class MatrixBuildup {
 			for(StorageSpec storageSpec : buildingSpec.storages) {
 				addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled, LDHeating);
 				storagesHandled++;
-				if (GlobalTime.getCurrentTimeStep() == 0) {
+				if (internalTimeStep == 0) {
 					System.out.println("Stor-Nr.: " + storagesHandled + ", " + buildingSpec.name+ ", " + storageSpec.name);
 				}
 			}	
@@ -113,7 +114,7 @@ public abstract class MatrixBuildup {
 		for(ProducerSpec producerSpec : producerSpecs) {
 			addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, false);
 			producersHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (internalTimeStep == 0) {
 				System.out.println("Ext. Prod-Nr.: " + producersHandled + ", " + producerSpec.name);
 			}
 		}	
@@ -121,12 +122,12 @@ public abstract class MatrixBuildup {
 		for(StorageSpec storageSpec : storageSpecs) {
 			addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled, false);
 			storagesHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (internalTimeStep == 0) {
 				System.out.println("Ext. Stor-Nr.: " + storagesHandled + ", " + storageSpec.name);
 			}
 		}		
 		
-		if (GlobalTime.getCurrentTimeStep() == 0) {
+		if (internalTimeStep == 0) {
 			System.out.println("****************************************************************");
 		}
 		
@@ -169,7 +170,7 @@ public abstract class MatrixBuildup {
 				}
 			}	
 			
-			int cts = GlobalTime.getCurrentTimeStep();
+			int cts = internalTimeStep;
 			for(int j = 0; j < n; j++) {
 
 				problem.a_eq[n+j][n_index+j] = -1.0;  	// buying of electricity
@@ -226,7 +227,7 @@ public abstract class MatrixBuildup {
 				}
 			}	
 			
-			int cts = GlobalTime.getCurrentTimeStep();
+			int cts = internalTimeStep;
 			for(int j = 0; j < n; j++) {
 
 				problem.a_eq[n+j][n_index+j] = -1.0;  	// buying of electricity
@@ -240,10 +241,7 @@ public abstract class MatrixBuildup {
 //				problem.lambda[n_index+n+j] = -energyPrices.getElectricityPriceInEuro(cts+j)*0.5;   // electricity sell price
 				problem.lambda[n_index+2*n+j] = EnergyPrices.getHeatPriceInEuro(cts+j);				// heat buy price
 				problem.lambda[n_index+3*n+j] = -0.0;											// heat sell price
-			}	
-
-			
+			}				
 		}
 	}
-
 }

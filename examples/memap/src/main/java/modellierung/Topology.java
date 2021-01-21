@@ -9,6 +9,7 @@
 
 package modellierung;
 
+import akka.timeManagement.GlobalTime;
 import topology.ActorTopology;
 
 /**
@@ -23,6 +24,8 @@ public class Topology {
 	
 	private static String simulationName = "MEMAP-Simulation";
 	
+	private static GlobalTime globalTime = new GlobalTime();
+	
 	public static ActorTopology createTopology(){
 		ActorTopology top = new ActorTopology(simulationName);
 		top.addActor("MEMAP", ActorFactory.createAggregatorBehavior());
@@ -32,5 +35,9 @@ public class Topology {
 		top.addActorAsChild("MEMAP/gebaeude4", ActorFactory.createGebaeude4());
 				
 		return top;
+	}
+	
+	public static GlobalTime getGlobalTime() {
+		return globalTime;
 	}
 }
