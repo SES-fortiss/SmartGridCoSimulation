@@ -256,7 +256,8 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId costCO2Id = NodeId.parse((String) coupl.get("CO2PerKWh"));
 								NodeId setpointsId = NodeId.parse((String) coupl.get("SPDevPwr"));
 
-								ClientCoupler cc = new ClientCoupler(client, "COUPL" + String.format("%02d",  i), primarySectId, secondarySectId, minPowerId, maxPowerId, effHeatId,
+								String couplerName = EMSkey + "_COUPL" + String.format("%02d",  i+1);
+								ClientCoupler cc = new ClientCoupler(client, couplerName, primarySectId, secondarySectId, minPowerId, maxPowerId, effHeatId,
 										effElecId, opCostId, costCO2Id, setpointsId, 0);
 								attach(cc);
 								cc.setTopologyController(topologyController);
@@ -278,7 +279,8 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId consumptionId = NodeId.parse((String) demnd.get("currentDem"));
 								NodeId demandSetpointId = NodeId.parse((String) demnd.get("DemndSetPt"));
 								
-								ClientDemand cd = new ClientDemand(client, "DEMND" + String.format("%02d",  i), trigger, demndSectId, consumptionId, arrayForecastId, demandSetpointId, 0);
+								String demandName = EMSkey + "_DEMND" + String.format("%02d",  i+1);
+								ClientDemand cd = new ClientDemand(client, demandName, trigger, demndSectId, consumptionId, arrayForecastId, demandSetpointId, 0);
 								attach(cd);
 								cd.setTopologyController(topologyController);
 								System.out.println("Demand (" + (i+1) + "/" + demands.keySet().size() + ") added to " + EMSkey);
@@ -302,7 +304,8 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId opCostId = NodeId.parse((String) cprod.get("PrimEnCost"));
 								NodeId setpointsId = NodeId.parse((String) cprod.get("SPDevPwr"));
 								
-								ClientProducer cp = new ClientProducer(client, "CPROD" + String.format("%02d",  i), trigger, primarySectId, minPowerId, maxPowerId,
+								String producerName = EMSkey + "_CPROD" + String.format("%02d",  i+1);
+								ClientProducer cp = new ClientProducer(client, producerName, trigger, primarySectId, minPowerId, maxPowerId,
 										effId, opCostId, costCO2Id, setpointsId, 0);
 								attach(cp);
 								cp.setTopologyController(topologyController);
@@ -327,7 +330,9 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId productionId = NodeId.parse((String) vprod.get("curPwrPrim"));
 								NodeId opCostId = NodeId.parse((String) vprod.get("PrimEnCost"));
 								NodeId costCO2Id = NodeId.parse((String) vprod.get("CO2PerKWh"));
-								ClientVolatileProducer cvp = new ClientVolatileProducer(client, "VPROD" + String.format("%02d",  i), primarySectId,
+								
+								String vproducerName = EMSkey + "_VPROD" + String.format("%02d",  i+1);
+								ClientVolatileProducer cvp = new ClientVolatileProducer(client, vproducerName, primarySectId,
 										maxPowerId, productionId, opCostId, costCO2Id, 0);
 								attach(cvp);
 								cvp.setTopologyController(topologyController);
@@ -359,7 +364,8 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId inputSetpointsId = NodeId.parse((String) strge.get("SPCharge"));
 								NodeId outputSetpointsId = NodeId.parse((String) strge.get("SPDisChrg"));
 	
-								ClientStorage cs = new ClientStorage(client, "STRGE" + String.format("%02d",  i), capacityId, trigger, stateOfChargeId, calculatedSocId,
+								String storageName = EMSkey + "_STRGE" + String.format("%02d",  i+1);
+								ClientStorage cs = new ClientStorage(client, storageName, capacityId, trigger, stateOfChargeId, calculatedSocId,
 										maxChargingId, maxDischargingId, effInId, effOutId, storageLossId, primarySectId,
 										opCostId, costCO2Id, inputSetpointsId, outputSetpointsId, 0);
 								attach(cs);

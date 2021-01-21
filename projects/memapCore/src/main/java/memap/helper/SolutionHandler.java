@@ -322,7 +322,7 @@ public class SolutionHandler {
 				String[] strSplit = result[i].split("\\.");
 				result[i] = strSplit[strSplit.length - 1];
 			}
-			result[i] = "B"+i + "_" + result[i] + "_SOC";
+			result[i] =  result[i] + "_SOC";
 		}
 		return result;
 	}

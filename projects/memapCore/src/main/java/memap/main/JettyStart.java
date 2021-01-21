@@ -64,7 +64,7 @@ public class JettyStart {
 		topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILP, OptimizationCriteria.EUR,
 				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
 		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 7020, 0);
-		System.out.println("MPC set to " + Simulation.N_STEPS_MPC);
+		System.out.println(">> MPC set to " + Simulation.N_STEPS_MPC);
 		EnergyPrices.getInstance().init(0.285);
 		EnergyPrices.getInstance().initGas("./gasprice_15minutes.csv");
 		
@@ -95,7 +95,7 @@ public class JettyStart {
 		}
 		
 		setNumofBuildings(num);
-		System.out.println("Number of buildings: " + num);
+		System.out.println(">> Number of buildings: " + num);
 		
 		for (int i = 0; i < endpoints.size(); i++) {
 			
