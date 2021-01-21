@@ -1,7 +1,6 @@
 package linprogMPC.components;
 
 import akka.basicMessages.AnswerContent;
-import akka.systemActors.GlobalTime;
 import linprogMPC.helper.ConsumptionProfiles;
 import linprogMPC.messages.Consumption;
 
@@ -21,7 +20,7 @@ public class Consumer extends Device {
 	public void makeDecision() {
 		double[] vector = new double[2*n];
 //		Calendar currentTime = startTime; 
-		int cts = GlobalTime.getCurrentTimeStep();
+		int cts = timeStep;
 		for (int i = 0; i < n; i++) {
 			vector[i] = -consumptionProfiles.getHeatConsumption(consumerIndex, cts+i);
 			vector[n+i] = -consumptionProfiles.getElectricConsumption(consumerIndex, cts+i);

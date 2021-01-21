@@ -7,11 +7,12 @@ import com.google.gson.Gson;
 
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.RequestContent;
+import akka.timeManagement.CurrentTimeStepSubscriber;
 import behavior.BehaviorModel;
 import linprogMPC.Simulation;
 import memap.external.M2MDisplay;
 
-public abstract class Device extends BehaviorModel {
+public abstract class Device extends BehaviorModel implements CurrentTimeStepSubscriber{
 	
 	protected final String name;
 	
@@ -22,6 +23,8 @@ public abstract class Device extends BehaviorModel {
 	public Calendar startTime;
 	public int n = Simulation.N_STEPS_MPC;
 	
+	protected int timeStep = 0;
+	
 	public Device(String name, int port) {
 		if(name == null) {
 			//TODO throw exception
@@ -30,6 +33,8 @@ public abstract class Device extends BehaviorModel {
 		this.port = port;
 		display = new M2MDisplay(port); // add port in to display a json
 		display.run();
+		
+		Simulation.getGlobalTime().subscribeToCurrentTimeStep(this);
 	}
 
 
@@ -54,6 +59,11 @@ public abstract class Device extends BehaviorModel {
 	public RequestContent returnRequestContentToSend() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public void update(int currentTimeStep) {
+		this.timeStep = currentTimeStep;		
 	}
 
 }

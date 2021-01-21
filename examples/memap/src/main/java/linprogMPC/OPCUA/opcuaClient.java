@@ -64,9 +64,9 @@ public class opcuaClient {
 			SecurityPolicy securityPolicy = memapClient.getSecurityPolicy();
 
 			EndpointDescription[] endpoints;
-
+			
 			try {
-			    endpoints = UaTcpStackClient
+			    endpoints = UaTcpStackClient			    			
 			        .getEndpoints(memapClient.getEndpointUrl())
 			        .get();
 			} catch (Throwable ex) {
