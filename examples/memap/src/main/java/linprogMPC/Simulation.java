@@ -3,6 +3,7 @@ package linprogMPC;
 import java.util.concurrent.TimeUnit;
 
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 
@@ -33,14 +34,23 @@ public class Simulation {
 //	public static LocalDateTime endTime = LocalDateTime.of(2014,7,1,12,0);
 //	public static Duration timeInterval = Duration.ofMinutes(15);
 	
+	private static GlobalTime globalTime = new GlobalTime();
+	
+	public static GlobalTime getGlobalTime(){
+		return globalTime; 
+	}
+	
 	
 	private void run() {
 		// Test-Topology:
 		topology = Topology2Houses.createTopology();
 //		topology = Topology.createTopology();
-		SimulationStarter.saveGridTopologyPlot(topology);   
-		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
-        SimulationStarter.startSimulation(actorSystem, 0, NR_OF_ITERATIONS);
+		SimulationStarter.saveGridTopologyPlot(topology);
+		
+		SimulationStarter simStarter = new SimulationStarter(globalTime);
+		
+		ActorSystem actorSystem = simStarter.initialiseActorSystem(topology);
+		simStarter.startSimulation(actorSystem, 0, NR_OF_ITERATIONS);
         
 	}
 	

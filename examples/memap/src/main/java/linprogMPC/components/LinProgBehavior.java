@@ -11,7 +11,7 @@ import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
+import akka.timeManagement.CurrentTimeStepSubscriber;
 import behavior.BehaviorModel;
 import linprogMPC.Simulation;
 import linprogMPC.helper.MatrixBuildup;
@@ -25,7 +25,7 @@ import linprogMPC.messages.ProducerSpec;
 import linprogMPC.messages.StorageSpec;
 import memap.external.M2MDisplay;
 
-public class LinProgBehavior extends BehaviorModel {
+public class LinProgBehavior extends BehaviorModel implements CurrentTimeStepSubscriber {
 	
 	static double[][] fullXVector = new double[Simulation.NR_OF_ITERATIONS][Simulation.N_STEPS];
 	
@@ -34,6 +34,7 @@ public class LinProgBehavior extends BehaviorModel {
 	static int nrOfStorages = 0;
 	static int nrOfProducers = 0;	 	
 	
+	private int timeStep = 0;
 
 	public OptimizationResult ans = new OptimizationResult();
 	public M2MDisplay display;
@@ -48,6 +49,8 @@ public class LinProgBehavior extends BehaviorModel {
 		display.run();
 		display2 = new M2MDisplay(8079); // add port in to display a json
 		display2.run();
+		
+		Simulation.getGlobalTime().subscribeToCurrentTimeStep(this);
 	}
 
 	@Override
@@ -90,7 +93,7 @@ public class LinProgBehavior extends BehaviorModel {
 		}		
 		
 	
-		if (GlobalTime.getCurrentTimeStep() == 0) {
+		if (timeStep == 0) {
 		 
 			// Calculate total Number of Storages & Producers
 			nrOfStorages += storageSpecs.size();
@@ -124,7 +127,7 @@ public class LinProgBehavior extends BehaviorModel {
 		
 		for(BuildingSpec buildingSpec : buildingSpecs) {
 			
-			OptimizationProblem problem = MatrixBuildup.SingleBuilding(buildingSpec);
+			OptimizationProblem problem = MatrixBuildup.singleBuilding(buildingSpec, timeStep);
 			double[] sol = OptimizationStarter.runLinProg(problem);
 			
 			buildingCostPerTimestep[counter] = SolutionHandler.exportCosts(sol, problem.lambda, "CostGEB" + (counter+1) + ".csv");	
@@ -138,7 +141,7 @@ public class LinProgBehavior extends BehaviorModel {
 		}
 	
 		for (int i=0; i<buildingSpecs.size(); i++) {
-			buildingsTotalCosts[GlobalTime.getCurrentTimeStep()] += buildingCostPerTimestep[i][0];
+			buildingsTotalCosts[timeStep] += buildingCostPerTimestep[i][0];
 		}
 
 		
@@ -155,7 +158,7 @@ public class LinProgBehavior extends BehaviorModel {
 		} 
 		
 		double[] memapCostPerTimestep = SolutionHandler.exportCosts(sol, problem.lambda, "CostVectorMEMAP.csv");
-		costsMEMAP[GlobalTime.getCurrentTimeStep()] = memapCostPerTimestep[0];
+		costsMEMAP[timeStep] = memapCostPerTimestep[0];
 		// Print consumption and calculate energy autarky
 //		double autarkyMEMAP = SolutionHandler.calcAutarky(problem, sol);
 			
@@ -178,7 +181,7 @@ public class LinProgBehavior extends BehaviorModel {
 
 
 		
-		if (GlobalTime.getCurrentTimeStep() == (Simulation.NR_OF_ITERATIONS-1)) {
+		if (timeStep == (Simulation.NR_OF_ITERATIONS-1)) {
 			
 			
 			double totalCostsMEMAP = 0;
@@ -342,5 +345,11 @@ public class LinProgBehavior extends BehaviorModel {
 	public RequestContent returnRequestContentToSend() {
 		return ans;
 	}
+	
+	@Override
+	public void update(int currentTimeStep) {
+		this.timeStep = currentTimeStep;		
+	}
+
 
 }

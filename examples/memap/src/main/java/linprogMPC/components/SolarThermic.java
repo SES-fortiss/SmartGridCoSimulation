@@ -2,7 +2,6 @@ package linprogMPC.components;
 
 import java.util.concurrent.TimeUnit;
 
-import akka.systemActors.GlobalTime;
 import linprog.LinProgSimulation;
 import linprogMPC.helper.SolarRadiation;
 
@@ -26,7 +25,7 @@ public class SolarThermic extends Producer {
 		SolarRadiation solarRadiation = new SolarRadiation();
 		
 //		Calendar currentTime = startTime;
-		int cts = GlobalTime.getCurrentTimeStep();
+		int cts = super.timeStep;
 		for (int i = 0; i < n; i++) {
 			specificationToSend.cost[i] = 0.00001;
 			for (int j = 0; j < n; j++) {
