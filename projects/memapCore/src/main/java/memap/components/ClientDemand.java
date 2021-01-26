@@ -29,6 +29,7 @@ import memap.messages.extension.NetworkType;
 
 public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber {
 	
+	NetworkType networkType;
 	/** Current time step */
 	private int currentTimeStep;
 	public BasicClient client;
@@ -40,7 +41,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 
 	public List<UaMonitoredItem> itemsDemand;
 
-	public final NetworkType networkType;
+	
 	
 	/**
 	 * @param client
@@ -87,8 +88,6 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 			Variant var = value.getValue();
 			if (var.getValue() instanceof Number[]) {
 				consumptionProfile = (Double[]) var.getValue();
-//				Arrays.fill(consumptionProfile, (Math.abs((double[]) value.getValue().getValue())));
-//				System.out.println("Consumption value " + value + " was read: " + consumptionProfile[0]);
 			} else {
 				System.out.println("Value " + value + " is not in Number[] format");
 			}

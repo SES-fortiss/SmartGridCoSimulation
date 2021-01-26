@@ -30,8 +30,10 @@ import opcMEMAP.ConfigInterface;
 
 public class Simulation {
 
-	// Global Input Parameters
-	// temporary solution
+	/* TODO: Global Input Parameters
+	 * temporary solution
+	 * Add TimeStepsPerDay or Stepsize as Input
+	 */
 	public static int N_STEPS_MPC = 5;
 	public static int PauseInMS = 5000;
 	// ...
@@ -43,14 +45,15 @@ public class Simulation {
 
 		if (args.length != 0) {
 			arg = args[0];
-			if (args.length > 1 ) {
+			if (args.length > 2 ) {
 				try {
 					N_STEPS_MPC = Integer.parseInt(args[1]);
+					PauseInMS = Integer.parseInt(args[2]);
 				} catch(NumberFormatException e) {
 				} 
-			} else if (args.length > 2) {
+			} else if (args.length > 1) {
 				try {
-					PauseInMS = Integer.parseInt(args[2]);
+					N_STEPS_MPC = Integer.parseInt(args[1]);
 				} catch(NumberFormatException e) {
 				} 
 			}

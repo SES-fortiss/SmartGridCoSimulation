@@ -3,9 +3,7 @@ package opcMEMAP;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_ANONYMOUS;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_USERNAME;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -56,12 +54,7 @@ public class MyOpcUaServer implements Runnable {
         jsonInterface = createInterfaceFromFile(interfaceString);
       } else {
         jsonInterface = createInterfaceFromJson(interfaceString);
-        
-        try (Writer writer = new FileWriter("interfaceString.json")) {
-		    writer.write(interfaceString);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+
       }
 
 

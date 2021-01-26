@@ -38,8 +38,6 @@ public abstract class ExampleLoader {
 				Optimizer.MILP, OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.RESULTS_ONLY);
 		TopologyConfig.getInstance().init(mpc, 96, 7, 4880, 0);
 		EnergyPrices.getInstance().init(0.285);
-		EnergyPrices.getInstance().initGas("GASPRICEEXAMPLE");
-//		EnergyPrices.getInstance().initGas("./Gaspreise_CoSES.csv");
 		try {
 
 //			FileReader endpoint1 = new FileReader(("src/main/resources/examples/FortissBuilding1Endpoint.json"));

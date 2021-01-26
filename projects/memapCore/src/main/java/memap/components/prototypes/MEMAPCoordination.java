@@ -1,7 +1,5 @@
 package memap.components.prototypes;
 
-import java.io.FileWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -131,11 +129,13 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 			System.out.println(topologyController.getOptimizer() + ": " + this.actorName + " cost = "
 					+ String.format("%.03f", costTotal) + " EUR ; CO2: " + String.format("%.03f", CO2Total) + " kg");
 			
-			System.out.println("... Pause between simulations: " + Simulation.PauseInMS/1000 +  " sec ....");
-			try {
-				Thread.sleep(Simulation.PauseInMS);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			if (topologyController.getToolUsage() == ToolUsage.SERVER) {
+				System.out.println("... Pause between simulations: " + Simulation.PauseInMS/1000 +  " sec ....");
+				try {
+					Thread.sleep(Simulation.PauseInMS);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -180,28 +180,9 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
 		if (topologyController.getToolUsage() == ToolUsage.SERVER) {			
-//			if (currentTimeStep == 0) {
-//				if (port != 0) {
-//					this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult), port);
-//					try {
-//						this.mServer.start();
-//					} catch (Exception e) {
-//						e.printStackTrace();
-//					}
-//				}						
-//				OpcServerContextGenerator.generateJson(this.actorName, buildingMessage);
-//			}
 			if(port != 0) {
 				try {
 					this.mServer.update(gson.toJson(optResult));
-					
-					try (Writer writer = new FileWriter("Output.json")) {
-					    writer.write(gson.toJson(optResult));
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					
-//					Thread.sleep(1000);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

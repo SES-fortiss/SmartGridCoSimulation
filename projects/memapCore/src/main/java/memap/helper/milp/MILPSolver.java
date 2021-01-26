@@ -166,7 +166,7 @@ public class MILPSolver {
 		double[] currentStep = { currentTimeStep };
 //		double[] currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
 		double[] currentOptVector = milpSolHandler.getEffSolutionForThisTimeStep(singleBuildingMessage, names, optSolution, nStepsMPC);
-		double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep), energyPrices.getGasPriceInEuro(currentTimeStep) };
+		double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep) };
 		double[] totalCostsEUR = { costTotal };
 		double[] totalCO2emissions = { CO2Total };
 
@@ -219,7 +219,7 @@ public class MILPSolver {
 		}
 		
 		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
-			ConnectionDB.addResults(topologyController.getOptimizationHierarchy(), namesResult, currentStep, currentDemand, currentOptVector, currentSOC,
+			ConnectionDB.addResults(topologyController.getOptimizationHierarchy(),currentTimeStep, namesResult, currentStep, currentDemand, currentOptVector, currentSOC,
 				currentEnergyPrice, totalCostsEUR, totalCO2emissions, nrOfBuildings);
 		}
 		

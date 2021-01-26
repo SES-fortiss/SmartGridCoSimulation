@@ -20,7 +20,6 @@ public class ClientCoupler extends Coupler {
 	double costCO2;
 	
 	public BasicClient client;
-//	public List<NodeId> setpointIds = new ArrayList<NodeId>();
 	public NodeId setpointsId;
 	
 	/**
@@ -45,8 +44,6 @@ public class ClientCoupler extends Coupler {
 		this.setpointsId = setpointsId;
 		this.primaryNetwork = this.setNetworkType(client, nodeIdPrimSector);
 		this.secondaryNetwork = this.setNetworkType(client, nodeIdSecSector);
-		//primaryNetwork = setNetworkType(client, nodeIdPrimSector);
-		//secondaryNetwork = setNetworkType(client, nodeIdSecSector);
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
 	}
@@ -87,11 +84,7 @@ public class ClientCoupler extends Coupler {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
-//					for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC(); i++) {
-//						DataValue data = new DataValue(new Variant(optimizationAdvice[i]), null, null);					
-//						client.writeValue(setpointIds.get(i), data);
-//					}			
+							
 				}
 
 			}

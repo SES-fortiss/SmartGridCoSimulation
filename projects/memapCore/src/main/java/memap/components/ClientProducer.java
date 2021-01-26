@@ -16,12 +16,11 @@ import memap.messages.extension.NetworkType;
 
 public class ClientProducer extends Producer {
 	
-	public final NetworkType networkType;
+	NetworkType networkType;
 	public double opCost;
 	double trigger;
 	public double costCO2;
 	public BasicClient client;
-//	public List<NodeId> setpointIds = new ArrayList<NodeId>();
 	public NodeId setpointsId;
 	public NodeId triggerId;
 	
@@ -49,7 +48,6 @@ public class ClientProducer extends Producer {
 		this.triggerId = triggerId;
 		this.trigger = client.readFinalDoubleValue(triggerId);
 		this.opCost = client.readFinalDoubleValue(opCostId);
-//		this.opCost = opCostId;
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
 		
 	}
@@ -85,38 +83,12 @@ public class ClientProducer extends Producer {
 					} catch (ExecutionException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					}
-					
-//					for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC(); i++) {
-//						DataValue data = new DataValue(new Variant(optimizationAdvice[i]), null, null);					
-//						client.writeValue(setpointIds.get(i), data);						
-//					}			
+					}	
 				}
 				
 			}
 		}
-		
-//		// Trigger was temporarily used for synchronization with the local EMS before reading the data	
-//		double tr = trigger;
-//		System.out.println(tr + " - CPROD waiting for new trigger....");
-//		while (tr ==  trigger) {
-//			try {
-//				tr = client.readFinalDoubleValue(triggerId);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (ExecutionException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}	
-//		}
-//		trigger = tr;
-//		try {
-//			Thread.sleep(1500);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
 	}
 	
 	/** Passes a reference of an object of class {@link TopologyController} to the parent class */

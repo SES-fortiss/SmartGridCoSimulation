@@ -50,14 +50,12 @@ public class MemapOpcServerStarter {
 				
 		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.execute(myServer);
-        
-		System.out.println("MemapOpcServerStarter.start() - waiting ... ");
+
         while(!myServer.isServerRunning()) {
         	Thread.sleep(200);
         }
         
         setServerStarted(true);
-        System.out.println("MemapOpcServerStarter.start() - done.");
 	}
 	
 	public void update(String json) throws Exception {

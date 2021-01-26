@@ -66,24 +66,14 @@ public class JettyStart {
 		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 7020, 0);
 		System.out.println(">> MPC set to " + Simulation.N_STEPS_MPC);
 		EnergyPrices.getInstance().init(0.285);
-		EnergyPrices.getInstance().initGas("./gasprice_15minutes.csv");
 		
 		//topologyMemapOff = new TopologyController("MemapOff", OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
 		//		ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
 		
 		errorCode = new JsonObject();
-		/*
-		 * Iterating through all the end-point Jsons inputed in the user interface
-		 * generates a building controller for every jsonEndpoint,jsonNodes tuple
-		 * Buildings get attached to the topology
-		 */
-		
+
 		int num = 0;
-		/*
-		 * In case the startMessage comes directly from an opcua endpoint aggregator 
-		 * (e.g Holsten Systems UI), this part will use directly the information from the datamodel
-		 */
-		
+
 		JsonArray endpoints = null;
 		try {
 			JsonObject project = (JsonObject) memapStartMessage.get("project");

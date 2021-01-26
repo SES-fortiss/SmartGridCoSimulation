@@ -30,9 +30,9 @@ import memap.messages.planning.VolatileProducerMessage;
 
 public class ClientVolatileProducer extends Producer {
 	
+	NetworkType networkType;
 	public double productionProfile[];
 	public List<UaMonitoredItem> itemsProduction;
-	public NetworkType networkType;
 	double opCost;
 	double costCO2;
 	public BasicClient client;
@@ -125,19 +125,7 @@ public class ClientVolatileProducer extends Producer {
 	
 	@Override
 	public void handleRequest() {
-//		if (requestContentReceived instanceof OptimizationResultMessage) {
-//			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
-//			for (String key : optResult.resultMap.keySet()) {
-//				if (key.equals(actorName)) {
-//					optimizationAdvice = optResult.resultMap.get(key);
-//					for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC(); i++) {
-//						DataValue data = new DataValue(new Variant(optimizationAdvice[i]), null, null);					
-//						client.writeValue(setpointIds.get(i), data);						
-//					}			
-//				}
-//
-//			}
-//		}
+
 	}
 
 	@Override

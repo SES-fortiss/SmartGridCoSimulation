@@ -59,11 +59,6 @@ public class EnergyPrices {
 	public void init(String MarketPriceCSV) {
 		setElectricityPrices(MarketPriceCSV);
 	}
-
-	public void initGas(String MarketPriceCSV) {
-		gasPrices = new ArrayList<Double>();
-		setGasPrices(gasPrices, MarketPriceCSV);
-	}
 	
 	/** @return the instance of {@link EnergyPrices} */
 	public static EnergyPrices getInstance() {
@@ -90,43 +85,7 @@ public class EnergyPrices {
 			e.printStackTrace();
 		}
 	}
-
-	/**
-	 * Assign values to gasPrices
-	 * 
-	 * @param csvFile
-	 */
-	private void setGasPrices(ArrayList<Double> gasPrices, String csvFile) {
-		try {
-			if (csvFile.isEmpty()) {
-				readEnergyPrices(gasPrices, getBuffer("GASPRICEEXAMPLE"));
-				System.err
-						.println("Variable market price selected but not input file was provided. Using example file");
-			} else {
-				readEnergyPrices(gasPrices, getBuffer(csvFile));
-			}
-		} catch (IOException | ParseException e) {
-			System.err.println("Error reading or parsing CSV data from " + csvFile);
-			SimulationStarter.stopSimulation();
-			e.printStackTrace();
-		}
-	}
 	
-	/**
-	 * Returns the gas price in cents per kWh at any given time step in
-	 * ct/kWh, read from a CSV-file. The prices
-	 * are expected to have a time interval of 15 minutes (see readEnergyPrices)
-	 * 
-	 * @param time the time step for which to get the gas price
-	 * @return gas price in ct/kWh at specified time step
-	 */
-//	public double getGasPriceInEuro(int timestep) {
-//		return 0.0685d;
-//	}
-	public double getGasPriceInEuro(int timestep) {
-		return gasPrices.get(timestep % gasPrices.size());
-	}
-
 	
 	/**
 	 * Returns the heat price in Euro per kWh at any given time step. For now, it
@@ -198,7 +157,7 @@ public class EnergyPrices {
 
 		double[] xi = new double[mpcSteps];
 		for (int j = 0; j < mpcSteps; j++) {
-			xi[j] = 4*j * stepLenghtInHours; // 15 min steps in original data
+			xi[j] = j * stepLenghtInHours;
 		}
 
 		double[] yi = Interpolation.interpLinear(x, y, xi);
