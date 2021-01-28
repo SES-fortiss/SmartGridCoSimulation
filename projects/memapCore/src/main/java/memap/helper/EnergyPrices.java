@@ -21,7 +21,8 @@ public class EnergyPrices {
 
 	/** Electricity price per KWp */
 	private ArrayList<Double> electricityPrices;
-
+	private ArrayList<Double> gasPrices;
+	
 	/**
 	 * Set values to the parameters of {@link EnergyPrices} using a double value.
 	 * Creates a array list with all its entries equal to MarketPrice
@@ -38,6 +39,14 @@ public class EnergyPrices {
 		}
 	}
 
+	
+	public void initGas(double MarketPrice) {
+		gasPrices = new ArrayList<Double>();
+		for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC() * 2; i++) {
+			gasPrices.add(MarketPrice);
+		}
+	}
+	
 	/**
 	 * Set values to the parameters of {@link EnergyPrices} using a CSV. Creates a
 	 * array list reading from the file path MarketPriceCSV
@@ -48,9 +57,9 @@ public class EnergyPrices {
 	 * 
 	 */
 	public void init(String MarketPriceCSV) {
-		setEnergyPrices(MarketPriceCSV);
+		setElectricityPrices(MarketPriceCSV);
 	}
-
+	
 	/** @return the instance of {@link EnergyPrices} */
 	public static EnergyPrices getInstance() {
 		return instance;
@@ -61,14 +70,14 @@ public class EnergyPrices {
 	 * 
 	 * @param csvFile
 	 */
-	private void setEnergyPrices(String csvFile) {
+	private void setElectricityPrices(String csvFile) {
 		try {
 			if (csvFile.isEmpty()) {
-				readElectricityPrices(getBuffer("ELECTRICITYPRICEEXAMPLE"));
+				readEnergyPrices(electricityPrices, getBuffer("ELECTRICITYPRICEEXAMPLE"));
 				System.err
 						.println("Variable market price selected but not input file was provided. Using example file");
 			} else {
-				readElectricityPrices(getBuffer(csvFile));
+				readEnergyPrices(electricityPrices, getBuffer(csvFile));
 			}
 		} catch (IOException | ParseException e) {
 			System.err.println("Error reading or parsing CSV data from " + csvFile);
@@ -76,19 +85,8 @@ public class EnergyPrices {
 			e.printStackTrace();
 		}
 	}
-
-	/**
-	 * Returns the gas price in cents per kWh at any given time step. For now, it
-	 * constantly returns .0017ct/kJ, which equals 6.12 ct/kWh, but here CSV-files
-	 * or web services or other mechanisms could be plugged in.
-	 * 
-	 * @param time the time step for which to get the gas price
-	 * @return gas price in ct/kWh at specified time step
-	 */
-	public double getGasPriceInEuro(int timestep) {
-		return 0.0685d;
-	}
-
+	
+	
 	/**
 	 * Returns the heat price in Euro per kWh at any given time step. For now, it
 	 * constantly returns 5,34 ct/kWh (Stadtwerke Wuerzburg), but here CSV-files or
@@ -103,12 +101,13 @@ public class EnergyPrices {
 		return value;
 	}
 
+	
 	/**
 	 * Returns the electricity price in cents per kWh at any given time step in
 	 * ct/kJ, read from a CSV-file.
 	 * 
 	 * Prices vary between 25-50 ct/kWh within 7days converted to EUR/kWh The prices
-	 * are set to be constant throughout one day
+	 * are expected to have a time interval of 15 minutes (see readEnergyPrices)
 	 * 
 	 * @param time the time step for which to get the electricity price
 	 * @return electricity price in ct/kWh at specified time step
@@ -138,12 +137,11 @@ public class EnergyPrices {
 	 * 
 	 * @return br buffer
 	 */
-	private void readElectricityPrices(BufferedReader br) throws IOException, ParseException {
+	private void readEnergyPrices(ArrayList<Double> energyPrices, BufferedReader br) throws IOException, ParseException {
 		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
 		int mpcSteps = TopologyConfig.getInstance().getNrStepsMPC();
 		double stepLenghtInHours = TopologyConfig.getInstance().getStepLengthInHours();
 		ArrayList<Double> originalValues = new ArrayList<Double>();
-		electricityPrices = new ArrayList<Double>();
 		String row;
 
 		while ((row = br.readLine()) != null) {
@@ -153,7 +151,7 @@ public class EnergyPrices {
 		double[] x = new double[originalValues.size()];
 		double[] y = new double[originalValues.size()];
 		for (int i = 0; i < originalValues.size(); i++) {
-			x[i] = i; // 24h * 7 Days -1 = 167
+			x[i] = i; 
 			y[i] = originalValues.get(i);
 		}
 
@@ -164,7 +162,7 @@ public class EnergyPrices {
 
 		double[] yi = Interpolation.interpLinear(x, y, xi);
 		for (int k = 0; k < yi.length; k++) {
-			electricityPrices.add(yi[k]);
+			energyPrices.add(yi[k]);
 		}
 		br.close();
 	}

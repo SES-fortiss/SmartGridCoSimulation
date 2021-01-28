@@ -84,7 +84,9 @@ public class TopologyController implements Runnable {
 		//for (BuildingController managedBuilding : managedBuildings) {
 		for (BuildingController managedBuilding : managedBuildings.values()) {
 			String buildingName = managedBuilding.getName();
-			Building building = new Building(this, topologyConfig.getPortUndefined());
+      
+//      Building building = new Building(this, topologyConfig.getPortUndefined());
+			Building building = new Building(this, 0);
 
 			ActorTopology buildingHead = new ActorTopology(buildingName);
 			buildingHead.addActor(buildingName, ActorFactory.createDevice(building));

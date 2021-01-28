@@ -296,7 +296,7 @@ public class GuiController {
 			return new CSVStorage(jObject.get("name").getAsString(), jObject.get("capacity").getAsDouble(),
 					jObject.get("soc").getAsDouble(), jObject.get("maxCharging").getAsDouble(),
 					jObject.get("maxDischarging").getAsDouble(), jObject.get("effIN").getAsDouble(),
-					jObject.get("effOUT").getAsDouble(), networkType, 0.0001, 0.0001, 0);
+					jObject.get("effOUT").getAsDouble(), networkType, 0.0001, 0.0001, 0, 0);
 		}
 	}
 

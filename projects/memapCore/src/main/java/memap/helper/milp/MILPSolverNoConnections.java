@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
+import com.google.gson.Gson;
+
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
 import memap.controller.TopologyController;
@@ -27,6 +29,7 @@ public class MILPSolverNoConnections extends MILPSolver {
 	/** Parameters */
 	private MILPProblemNoConnections mp;
 	private BuildingMessage buildingMessage; // for problems without connections
+	protected Gson gson = new Gson();
 
 	public MILPSolverNoConnections(TopologyController topologyController, int currentTimeStep,
 			BuildingMessage buildingMessage, SolutionHandler milpSolHandler, double[] buildingStepCostsMILP,

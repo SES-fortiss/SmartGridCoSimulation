@@ -54,6 +54,7 @@ public class MyOpcUaServer implements Runnable {
         jsonInterface = createInterfaceFromFile(interfaceString);
       } else {
         jsonInterface = createInterfaceFromJson(interfaceString);
+
       }
 
 
@@ -64,16 +65,16 @@ public class MyOpcUaServer implements Runnable {
       server = prepareServerNodesConfiguration(jsonInterface);
       server.startup().get(); // hier wird der Server gestartet.
       
-      System.out.println("Server started: " + server.getApplicationDescription().getProductUri());
+//      System.out.println("Server started: " + server.getApplicationDescription().getProductUri());
       System.out.println("Server started: " + server.getApplicationDescription().getApplicationUri());
-      System.out.println("Server started: " + server.getApplicationDescription().getGatewayServerUri());
-      System.out.println("Server started: " + server.getApplicationDescription().getDiscoveryProfileUri());
+//      System.out.println("Server started: " + server.getApplicationDescription().getGatewayServerUri());
+//      System.out.println("Server started: " + server.getApplicationDescription().getDiscoveryProfileUri());
       
       System.out.println("Server started: " + server.getConfig().getBindAddresses());
       
-      for (String str : server.getConfig().getBindAddresses()) {
-		System.out.println(str);
-	}
+//      for (String str : server.getConfig().getBindAddresses()) {
+//		System.out.println(str);
+//	}
 
       serverStarted = true;
       serverUpdater = new ServerUpdater(server, jsonInterface.getServerReference());

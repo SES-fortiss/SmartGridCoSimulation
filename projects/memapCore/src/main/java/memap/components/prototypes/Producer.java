@@ -14,7 +14,7 @@ public abstract class Producer extends Device {
 	public double efficiency;
 
 	public ProducerMessage producerMessage = new ProducerMessage();
-	public double[] linprogAdvice;
+	public double[] optimizationAdvice;
 
 	public Producer(String name, double minPower, double maxPower, double efficiency, int port) {
 		super(name, port);
@@ -22,7 +22,7 @@ public abstract class Producer extends Device {
 		this.maxPower = maxPower;
 		this.efficiency = efficiency;
 		// Initialization delayed until after topologyConfig initialization
-		linprogAdvice = new double[topologyConfig.getNrStepsMPC()];
+		optimizationAdvice = new double[topologyConfig.getNrStepsMPC()];
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public abstract class Producer extends Device {
 
 			for (String key : linprogResult.resultMap.keySet()) {
 				if (key.contains(actorName)) {
-					linprogAdvice = linprogResult.resultMap.get(key);
+					optimizationAdvice = linprogResult.resultMap.get(key);
 				}
 			}
 		}

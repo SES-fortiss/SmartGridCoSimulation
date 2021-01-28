@@ -27,13 +27,15 @@ import memap.helperOPCua.BasicClient;
 import memap.messages.extension.NetworkType;
 import memap.messages.planning.VolatileProducerMessage;
 
+
 public class ClientVolatileProducer extends Producer {
 	
+	NetworkType networkType;
 	public double productionProfile[];
 	public List<UaMonitoredItem> itemsProduction;
-	public NetworkType networkType;
 	double opCost;
 	double costCO2;
+	public BasicClient client;
 
 	VolatileProducerMessage volatileProducerMessage;
 
@@ -49,14 +51,15 @@ public class ClientVolatileProducer extends Producer {
 	 * @param costCO2Id           CO2 cost [kg CO2/kWh]
 	 * @param port
 	 */
-	public ClientVolatileProducer(BasicClient client, String name, NodeId minPowerId, NodeId maxPowerId, NodeId effId,
-			NodeId currentProductionId, NetworkType networkType, NodeId opCostId, NodeId costCO2Id, int port)
+	public ClientVolatileProducer(BasicClient client, String name,  NodeId nodeIdSector, NodeId maxPowerId,
+			NodeId currentProductionId, NodeId opCostId, NodeId costCO2Id, int port)
 			throws InterruptedException, ExecutionException {
-		super(name, client.readFinalDoubleValue(minPowerId), client.readFinalDoubleValue(maxPowerId),
-				client.readFinalDoubleValue(effId), port);
+		super(name, 0.0, client.readFinalDoubleValue(maxPowerId),
+				1.0, port);
 
 		volatileProducerMessage = new VolatileProducerMessage();
-		this.networkType = networkType;
+		this.client = client;
+		this.networkType = setNetworkType(client, nodeIdSector);
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
 		
@@ -119,6 +122,11 @@ public class ClientVolatileProducer extends Producer {
 		volatileProducerMessage.networkType = networkType;
 		volatileProducerMessage.forecast = productionProfile;
 	}
+	
+	@Override
+	public void handleRequest() {
+
+	}
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
@@ -129,5 +137,10 @@ public class ClientVolatileProducer extends Producer {
 	@Override
 	public void setTopologyController(TopologyController topologyController) {
 		super.setTopologyController(topologyController);
+	}
+
+	@Override
+	public NetworkType setNetworkType(BasicClient client, NodeId nodeIdSector) {
+		return super.setNetworkType(client, nodeIdSector);
 	}
 }

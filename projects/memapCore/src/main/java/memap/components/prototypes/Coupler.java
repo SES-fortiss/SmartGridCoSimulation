@@ -15,7 +15,7 @@ public abstract class Coupler extends Device {
 	public double efficiencyElec;
 	
 	public CouplerMessage couplerMessage = new CouplerMessage();
-	public double[] mpcSignal;
+	public double[] optimizationAdvice;
 
 	public Coupler(String name, double minPower, double maxPower, double efficiencyHeat, double efficiencyElec,
 			int port) {
@@ -25,7 +25,7 @@ public abstract class Coupler extends Device {
 		this.efficiencyHeat = efficiencyHeat;
 		this.efficiencyElec = efficiencyElec;
 		// Initialization delayed until after topologyConfig initialization
-		mpcSignal = new double[topologyConfig.getNrStepsMPC()];
+		optimizationAdvice = new double[topologyConfig.getNrStepsMPC()];
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public abstract class Coupler extends Device {
 			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
 			for (String key : optResult.resultMap.keySet()) {
 				if (key.contains(actorName)) {
-					mpcSignal = optResult.resultMap.get(key);
+					optimizationAdvice = optResult.resultMap.get(key);
 				}
 			}
 		}

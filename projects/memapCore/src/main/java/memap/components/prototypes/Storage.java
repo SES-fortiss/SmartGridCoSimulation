@@ -15,14 +15,18 @@ public abstract class Storage extends Device {
 	public double effIN;
 	public double effOUT;
 	public double stateOfCharge;
+	
+	public double storageLoss;
 
 	public StorageMessage storageMessage = new StorageMessage();
 
 	public double[] linprogStorageInput;
+	public double[] optimizationAdviceInput;
+	public double[] optimizationAdviceOutput;
 	public double[] linprogStorageOutput;
 
 	public Storage(String name, double capacity, double stateOfCharge, double max_charging, double max_discharging,
-			double effIN, double effOUT, int port) {
+			double effIN, double effOUT, double storageLoss,int port) {
 		super(name, port);
 		this.capacity = capacity;
 		this.stateOfCharge = stateOfCharge;
@@ -30,9 +34,11 @@ public abstract class Storage extends Device {
 		this.max_discharging = max_discharging;
 		this.effIN = effIN;
 		this.effOUT = effOUT;
+		this.storageLoss = storageLoss;
+		
 		// Initialization delayed until after topologyConfig initialization
-		linprogStorageInput = new double[topologyConfig.getNrStepsMPC()];
-		linprogStorageOutput = new double[topologyConfig.getNrStepsMPC()];
+		optimizationAdviceInput = new double[topologyConfig.getNrStepsMPC()];
+		optimizationAdviceOutput = new double[topologyConfig.getNrStepsMPC()];
 	}
 
 	@Override
@@ -42,11 +48,20 @@ public abstract class Storage extends Device {
 
 		return storageMessage;
 	}
+	
+	/**
+	 * Implement this method to retrieve the current SOC.
+	 * 
+	 * @param timeStep
+	 * @return State Of Charge
+	 */
+	public abstract Double getStateOfCharge();
+	
 
 	@Override
 	public void handleRequest() {
 		if (requestContentReceived instanceof OptimizationResultMessage) {
-			double stepLengthInHours = topologyConfig.getStepLengthInHours();
+//			double stepLengthInHours = topologyConfig.getStepLengthInHours();
 			OptimizationResultMessage linprogResult = ((OptimizationResultMessage) requestContentReceived);
 
 			String dataKey = actorName + "Discharge";
@@ -63,9 +78,7 @@ public abstract class Storage extends Device {
 				}
 			}
 
-			double soc_alt = stateOfCharge;
-			double leistung = linprogStorageInput[0] * effIN - linprogStorageOutput[0] * 1 / effOUT;
-			stateOfCharge = soc_alt + leistung * stepLengthInHours;
+			stateOfCharge = this.getStateOfCharge();
 		}
 	}
 	

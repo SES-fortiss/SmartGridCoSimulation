@@ -32,15 +32,19 @@ import memap.main.TopologyConfig;
 import memap.messages.extension.NetworkType;
 
 public abstract class ExampleLoader {
-	public static TopologyController OpcUaExample() {
+	public static TopologyController OpcUaExample(int mpc) {
 		
 		TopologyController topologyController = new TopologyController("MemapExample", OptHierarchy.MEMAP,
 				Optimizer.MILP, OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.RESULTS_ONLY);
-		TopologyConfig.getInstance().init(5, 96, 7, 4880, 0);
+		TopologyConfig.getInstance().init(mpc, 96, 7, 4880, 0);
 		EnergyPrices.getInstance().init(0.285);
 		try {
-			FileReader endpoint1 = new FileReader(("src/main/resources/examples/FortissBuilding1Endpoint.json"));
-			FileReader nodes1 = new FileReader(("src/main/resources/examples/FortissBuilding1Nodes.json"));
+
+//			FileReader endpoint1 = new FileReader(("src/main/resources/examples/FortissBuilding1Endpoint.json"));
+//			FileReader nodes1 = new FileReader(("src/main/resources/examples/FortissBuilding1Nodes.json"));
+			FileReader endpoint1 = new FileReader(("src/main/java/resources/examples/FortissBuilding1Endpoint.json"));
+			FileReader nodes1 = new FileReader(("src/main/java/resources/examples/FortissBuilding1Nodes_NewDatamodel.json"));
+
 			JsonObject jsonEndpoint1 = (JsonObject) Jsoner.deserialize(endpoint1);
 			JsonObject jsonNodes1 = (JsonObject) Jsoner.deserialize(nodes1);
 			BuildingController sampleBuilding1 = new OpcUaBuildingController(topologyController, jsonEndpoint1,
@@ -60,8 +64,12 @@ public abstract class ExampleLoader {
 		}
 
 		try {
-			FileReader endpoint2 = new FileReader(("src/main/resources/examples/FortissBuilding2Endpoint.json"));
-			FileReader nodes2 = new FileReader(("src/main/resources/examples/FortissBuilding2Nodes.json"));
+
+//			FileReader endpoint2 = new FileReader(("src/main/resources/examples/FortissBuilding2Endpoint.json"));
+//			FileReader nodes2 = new FileReader(("src/main/resources/examples/FortissBuilding2Nodes.json"));
+			FileReader endpoint2 = new FileReader(("src/main/java/resources/examples/FortissBuilding2Endpoint.json"));
+			FileReader nodes2 = new FileReader(("src/main/java/resources/examples/FortissBuilding2Nodes_NewDatamodel.json"));
+
 			JsonObject jsonEndpoint2 = (JsonObject) Jsoner.deserialize(endpoint2);
 			JsonObject jsonNodes2 = (JsonObject) Jsoner.deserialize(nodes2);
 			BuildingController sampleBuilding2 = new OpcUaBuildingController(topologyController, jsonEndpoint2,
@@ -84,6 +92,7 @@ public abstract class ExampleLoader {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
 
 		return topologyController;
 	}
@@ -105,7 +114,7 @@ public abstract class ExampleLoader {
 		BuildingController building2 = new CSVBuildingController("Building2");
 		Consumer consumer2 = new CSVConsumer("demand2", "CONSUMPTIONEXAMPLE2", 0);
 		Storage battery2 = new CSVStorage("storage2", 30.0, 0.9, 0.9, 0.9, 0.95, 0.95, NetworkType.ELECTRICITY, 0.0001,
-				0.0001, 0);
+				0.0001,0, 0);
 		Producer producer2 = new CSVProducer("producer2", 0, 40.0, 0.89, NetworkType.HEAT, 0.0591, 0.202,
 				PORT_UNDEFINED);
 		building2.attach(producer2);
@@ -121,7 +130,7 @@ public abstract class ExampleLoader {
 		Coupler heatpump3 = new CSVCoupler("heatpump3", 0, 62.0, 2.5, -1, NetworkType.ELECTRICITY, NetworkType.HEAT,
 				0.0591, 0.202, PORT_UNDEFINED);
 		Storage thermalStorage3 = new CSVStorage("thermalStorage3", 300, 0.9, 180, 180, 0.9, 0.9, NetworkType.HEAT,
-				0.0001, 0.0001, PORT_UNDEFINED);
+				0.0001, 0.0001, 0,  PORT_UNDEFINED);
 		building3.attach(pv3);
 		building3.attach(heatpump3);
 		building3.attach(thermalStorage3);

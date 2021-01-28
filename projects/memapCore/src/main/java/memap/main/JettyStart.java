@@ -5,9 +5,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.github.cliftonlabs.json_simple.JsonArray;
-import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
-import com.github.cliftonlabs.json_simple.Jsoner;
+import com.google.gson.Gson;
 
 import memap.controller.BuildingController;
 import memap.controller.OpcUaBuildingController;
@@ -23,17 +22,19 @@ import memap.helper.configurationOptions.ToolUsage;
  * 
  * JettyStart class initiates new topology controller.
  * 
- * @author freiesleben
+ * @author freiesleben, JanAxelMayer
  */
 
 public class JettyStart {
 
 	public TopologyController topologyMemapOn;
-//	public TopologyController topologyMemapOff;
+	//public TopologyController topologyMemapOff;
 	public JsonObject errorCode;
+	protected Gson gson = new Gson();
+	
 	public boolean simLoop = true;
+	public static int numofBuildings = 0;
 	ScheduledExecutorService memapOnOffRegulator = Executors.newScheduledThreadPool(2);
-
 	public TopologyController getTopology() {
 		return topologyMemapOn;
 	}
@@ -45,7 +46,7 @@ public class JettyStart {
 	public void stopSimulation() {
 		simLoop = false;
 		topologyMemapOn.endSimulation();
-//		topologyMemapOff.endSimulation();
+		//topologyMemapOff.endSimulation();
 	}
 
 	/**
@@ -54,42 +55,53 @@ public class JettyStart {
 	 * input. errorCode contains a list of all requested buildings and an error code
 	 * for their status. (Currently 0 = connected, 1 = not connected)
 	 * 
-	 * @param endpointValues JsonArray. Contains the buildingName, the OPC-UA
+	 * @param memapStartMessage JsonArray. Contains the buildingName, the OPC-UA
 	 *                       address, the endpointDescriptor, and the nodesConfig
 	 *                       Json file.
 	 */
 
-	public void run(JsonArray endpointValues) {
+	public void run(JsonObject memapStartMessage) {
 		topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILP, OptimizationCriteria.EUR,
 				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
-		TopologyConfig.getInstance().init(5, 96, 7, 4880, 0);
+		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 7020, 0);
+		System.out.println(">> MPC set to " + Simulation.N_STEPS_MPC);
 		EnergyPrices.getInstance().init(0.285);
-//		topologyMemapOff = new TopologyController("MemapOff", OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
-//				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
+		
+		//topologyMemapOff = new TopologyController("MemapOff", OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
+		//		ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
+		
 		errorCode = new JsonObject();
 
-		/*
-		 * Iterating through all the end-point Jsons inputed in the user interface
-		 * generates a building controller for every jsonEndpoint,jsonNodes tuple
-		 * Buildings get attached to the topology
-		 */
-		System.out.println("Number of buildings: " + endpointValues.size());
-		for (int i = 0; i < endpointValues.size(); i++) {
-			JsonObject jsonEndpoint = (JsonObject) endpointValues.get(i);
+		int num = 0;
+
+		JsonArray endpoints = null;
+		try {
+			JsonObject project = (JsonObject) memapStartMessage.get("project");
+			endpoints = (JsonArray) project.get("endpoints");
+			num =  endpoints.size();	
+		} catch (Exception e1) {
+			System.err.println("JSON Object startMessage has bad format.");
+			e1.printStackTrace();
+		}
+		
+		setNumofBuildings(num);
+		System.out.println(">> Number of buildings: " + num);
+		
+		for (int i = 0; i < endpoints.size(); i++) {
+			
+			JsonObject jsonEndpoint = (JsonObject) endpoints.get(i);
+			JsonObject configNodes = null;
+			
 			try {
-				String NodeConfig = (String) jsonEndpoint.get("config");
-				JsonObject jsonNodes = null;
-				try {
-					jsonNodes = (JsonObject) Jsoner.deserialize(NodeConfig);
-				} catch (JsonException e) {
-					System.err.println("Topology could not be deserialized");
-					e.printStackTrace();
-				}
-				System.out.println("Buiding " + i + " will be added...");
-				BuildingController sampleBuilding = new OpcUaBuildingController(topologyMemapOn, jsonEndpoint, jsonNodes);
+
+				configNodes = (JsonObject) jsonEndpoint.get("config");
+				
+				System.out.println("Building " + (i+1) + " will be added...");
+				BuildingController sampleBuilding = new OpcUaBuildingController(topologyMemapOn, jsonEndpoint, configNodes);
 				topologyMemapOn.attach(sampleBuilding.getName(), sampleBuilding);
+
 				errorCode.put((String) jsonEndpoint.get("name"), 0);
-				System.out.println("Building " + i + " was added...");
+				System.out.println("Building " + (i+1) + " was added...");
 
 			} catch (IllegalStateException e2) {
 				System.err.println("WARNING: Failed to create Client. Building has not been initialised");
@@ -109,18 +121,25 @@ public class JettyStart {
 			public void run() {
 				while (simLoop) {
 					topologyMemapOn.startSimulation();
+					
 				}
 			}
 		};
-//		Runnable simulationMemapOff = new Runnable() {
-//			public void run() {
-//				while (simLoop) {
-//					topologyMemapOff.startSimulation();
-//				}
-//			}
-//		};
+		/*Runnable simulationMemapOff = new Runnable() {
+			public void run() {
+				while (simLoop) {
+					topologyMemapOff.startSimulation();
+				}
+			}
+		};*/
 
 		memapOnOffRegulator.schedule(simulationMemapOn, 0, TimeUnit.SECONDS);
-//		memapOnOffRegulator.schedule(simulationMemapOff, 0, TimeUnit.SECONDS);
+		//memapOnOffRegulator.schedule(simulationMemapOff, 0, TimeUnit.SECONDS);
+	}
+	public void setNumofBuildings(int x) {
+		numofBuildings = x;
+	}
+	public static int getNumofBuildings() {
+		return numofBuildings;
 	}
 }
