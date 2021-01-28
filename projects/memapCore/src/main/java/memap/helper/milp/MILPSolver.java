@@ -164,8 +164,17 @@ public class MILPSolver {
 
 		// Creation of the result vector
 		double[] currentStep = { currentTimeStep };
-//		double[] currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
-		double[] currentOptVector = milpSolHandler.getEffSolutionForThisTimeStep(singleBuildingMessage, names, optSolution, nStepsMPC);
+		
+		// FIXME. Currently there is a bug, because singleBuildingMessage == null, if connections are present! This has to be considered.
+		double[] currentOptVector = null;
+		if (singleBuildingMessage != null) { // Jan's version 
+			currentOptVector = milpSolHandler.getEffSolutionForThisTimeStep(singleBuildingMessage, names, optSolution, nStepsMPC);
+		}
+		
+		if (singleBuildingMessage == null) { // previous solution
+			currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
+		}
+		
 		double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep) };
 		double[] totalCostsEUR = { costTotal };
 		double[] totalCO2emissions = { CO2Total };
@@ -244,7 +253,20 @@ public class MILPSolver {
 			milpSolHandler.exportMatrix(buildingsSolutionPerTimeStepMILP, saveString, namesResult);
 		}
 
-		double[] optSolutionEffcorrected = milpSolHandler.getEffSolutionForThisTimeStep(singleBuildingMessage, names, optSolution, 1);
+		/* FIXME this is workaround due to merge of the branches from server team and planning tool team
+		 * it would be good to get a harmonic solution, where the solution is corrected by efficiencies in both cases, 
+		 * no matter if it is a solution of the problem with connections, or without. 
+		 */
+		double[] optSolutionEffcorrected = null;
+		if (singleBuildingMessage != null) {
+			optSolutionEffcorrected = milpSolHandler.getEffSolutionForThisTimeStep(singleBuildingMessage, names, optSolution, 1);
+		}
+		if (singleBuildingMessage == null) {
+			optSolutionEffcorrected = optSolution;
+		}
+		
+		
+		
 		// Request content to send
 		for (int i = 0; i < names.length / nStepsMPC; i++) {
 			double[] values = new double[nStepsMPC];
