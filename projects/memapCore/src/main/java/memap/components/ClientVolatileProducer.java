@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -31,7 +32,7 @@ import memap.messages.planning.VolatileProducerMessage;
 public class ClientVolatileProducer extends Producer {
 	
 	NetworkType networkType;
-	public double productionProfile[];
+	public Double[] productionProfile;
 	public List<UaMonitoredItem> itemsProduction;
 	double opCost;
 	double costCO2;
@@ -64,7 +65,7 @@ public class ClientVolatileProducer extends Producer {
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
 		
 		// Initialization delayed until after topologyConfig initialization
-		productionProfile = new double[topologyConfig.getNrStepsMPC()];
+		productionProfile = new Double[topologyConfig.getNrStepsMPC()];
 
 		// subscribe to the Value attribute of the server's CurrentTime node
 		ReadValueId readProductionId = new ReadValueId(currentProductionId, AttributeId.Value.uid(), null,
@@ -83,7 +84,9 @@ public class ClientVolatileProducer extends Producer {
 		// The actual consumer. Methods on call are implemented here
 		BiConsumer<UaMonitoredItem, DataValue> volatileProducerProduction = (item, value) -> {
 			Variant var = value.getValue();
-			if (var.getValue() instanceof Double) {
+			if (var.getValue() instanceof Number[]) {
+				productionProfile = (Double[]) var.getValue();
+			} else if (var.getValue() instanceof Double) {
 				Arrays.fill(productionProfile, (Math.abs((Double) value.getValue().getValue())));
 			} else {
 				System.out.println("Value " + value + " is not in double format");
@@ -120,7 +123,9 @@ public class ClientVolatileProducer extends Producer {
 		volatileProducerMessage.operationalCostCO2 = costCO2;
 		volatileProducerMessage.efficiency = efficiency;
 		volatileProducerMessage.networkType = networkType;
-		volatileProducerMessage.forecast = productionProfile;
+		//TODO: Input forecast Array
+		// volatileProducerMessage.setForecastVector()
+		volatileProducerMessage.forecast = ArrayUtils.toPrimitive(productionProfile);
 	}
 	
 	@Override

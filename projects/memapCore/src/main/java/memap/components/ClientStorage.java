@@ -173,9 +173,11 @@ public class ClientStorage extends Storage {
 			double socRef = 0.75;
 			double lossEff = this.storageLoss/(24 * this.capacity * socRef); //
 			
-			double newSOC =  this.stateOfCharge + TopologyConfig.getInstance().getStepLengthInHours()*(optimizationAdviceOutput[0]+optimizationAdviceInput[0] - lossEff*this.stateOfCharge)/this.capacity  ;
+			double newSOC =  this.stateOfCharge + TopologyConfig.getInstance().getStepLengthInHours()*(optimizationAdviceInput[0] - optimizationAdviceOutput[0] - lossEff*this.stateOfCharge)/this.capacity  ;
+			
+			System.out.println(this.actorName + " with Capacity = " + this.capacity + ": charge = " + String.format("%.01f", optimizationAdviceInput[0]) + "(max " + String.format("%.01f", this.max_charging) + "), discharge = " + String.format("%.01f", optimizationAdviceOutput[0]) + ". OldSOC = " + String.format("%.02f", this.stateOfCharge) + ", NewSOC = " + String.format("%.02f", newSOC));
 			DataValue sum = new DataValue(new Variant(newSOC), null, null);
-			client.writeValue(calculatedSocId, sum);
+			//client.writeValue(calculatedSocId, sum);
 			this.stateOfCharge = newSOC;
 		}
 		

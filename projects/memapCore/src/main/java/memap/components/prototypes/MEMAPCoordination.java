@@ -129,14 +129,14 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 			System.out.println(topologyController.getOptimizer() + ": " + this.actorName + " cost = "
 					+ String.format("%.03f", costTotal) + " EUR ; CO2: " + String.format("%.03f", CO2Total) + " kg");
 			
-			if (topologyController.getToolUsage() == ToolUsage.SERVER) {
-				System.out.println("... Pause between simulations: " + Simulation.PauseInMS/1000 +  " sec ....");
-				try {
-					Thread.sleep(Simulation.PauseInMS);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
+//			if (topologyController.getToolUsage() == ToolUsage.SERVER) {
+//				System.out.println("... Pause between simulations: " + Simulation.PauseInMS/1000 +  " sec ....");
+//				try {
+//					Thread.sleep(Simulation.PauseInMS);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			}
 		}
 	}
 
@@ -180,9 +180,9 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
 		if (topologyController.getToolUsage() == ToolUsage.SERVER) {			
-			if(port != 0) {
+			if(port != 0 && optResult != null) {
 				try {
-					this.mServer.update(gson.toJson(optResult));
+//					this.mServer.update(gson.toJson(optResult));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

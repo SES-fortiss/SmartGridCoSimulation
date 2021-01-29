@@ -1,5 +1,9 @@
 package memap.main;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -8,6 +12,7 @@ import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.google.gson.Gson;
 
+import memap.components.prototypes.Device;
 import memap.controller.BuildingController;
 import memap.controller.OpcUaBuildingController;
 import memap.controller.TopologyController;
@@ -28,11 +33,13 @@ import memap.helper.configurationOptions.ToolUsage;
 public class JettyStart {
 
 	public TopologyController topologyMemapOn;
-	//public TopologyController topologyMemapOff;
+	public TopologyController topologyMemapOff;
 	public JsonObject errorCode;
 	protected Gson gson = new Gson();
 	
 	public boolean simLoop = true;
+	public boolean doubleSim = false;
+	
 	public static int numofBuildings = 0;
 	ScheduledExecutorService memapOnOffRegulator = Executors.newScheduledThreadPool(2);
 	public TopologyController getTopology() {
@@ -46,7 +53,9 @@ public class JettyStart {
 	public void stopSimulation() {
 		simLoop = false;
 		topologyMemapOn.endSimulation();
-		//topologyMemapOff.endSimulation();
+		if (doubleSim) {
+			topologyMemapOff.endSimulation();
+		}
 	}
 
 	/**
@@ -61,14 +70,19 @@ public class JettyStart {
 	 */
 
 	public void run(JsonObject memapStartMessage) {
+		
 		topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILP, OptimizationCriteria.EUR,
 				ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
+		
 		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 7020, 0);
 		System.out.println(">> MPC set to " + Simulation.N_STEPS_MPC);
 		EnergyPrices.getInstance().init(0.285);
 		
-		//topologyMemapOff = new TopologyController("MemapOff", OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
-		//		ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
+		if (doubleSim) {
+			topologyMemapOff = new TopologyController("MemapOff", OptHierarchy.BUILDING, Optimizer.MILP, OptimizationCriteria.EUR,
+					ToolUsage.SERVER, MEMAPLogging.ALL);
+		}
+				
 		
 		errorCode = new JsonObject();
 
@@ -99,7 +113,9 @@ public class JettyStart {
 				System.out.println("Building " + (i+1) + " will be added...");
 				BuildingController sampleBuilding = new OpcUaBuildingController(topologyMemapOn, jsonEndpoint, configNodes);
 				topologyMemapOn.attach(sampleBuilding.getName(), sampleBuilding);
-
+				if (doubleSim) {
+					topologyMemapOff.attach(sampleBuilding.getName(), sampleBuilding);
+				}
 				errorCode.put((String) jsonEndpoint.get("name"), 0);
 				System.out.println("Building " + (i+1) + " was added...");
 
@@ -110,31 +126,44 @@ public class JettyStart {
 			}
 		}
 
+		
+		
 		try {
-			Thread.sleep(5000);
+			// Wait so that we get initial values for all devices
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} // Wait so that we get initial values for all devices
+		} 
+		
+		LocalDateTime time = LocalDateTime.now();
+		LocalDateTime nextQuarter = time.truncatedTo(ChronoUnit.HOURS)
+		                                .plusMinutes(15 * (time.getMinute() / 15 +1));
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ssX");
+		System.out.println("");
+		System.out.println(">> Simulation will start at " + nextQuarter);
+		
 
 		// Here, the topology Controller gets started and runs in a loop.
 		Runnable simulationMemapOn = new Runnable() {
 			public void run() {
-				while (simLoop) {
-					topologyMemapOn.startSimulation();
-					
+//				topologyMemapOn.startLiveSimulation(nextQuarter.toLocalDate(), java.time.Duration.ofSeconds(5));		
+				topologyMemapOn.startLiveSimulation(LocalDate.now(), java.time.Duration.ofSeconds(5));		
+				}
+
+		};
+		
+		Runnable simulationMemapOff = new Runnable() {
+			public void run() {
+				if (doubleSim) {
+					topologyMemapOff.startLiveSimulation(LocalDate.now(), java.time.Duration.ofSeconds(5));	
 				}
 			}
 		};
-		/*Runnable simulationMemapOff = new Runnable() {
-			public void run() {
-				while (simLoop) {
-					topologyMemapOff.startSimulation();
-				}
-			}
-		};*/
 
 		memapOnOffRegulator.schedule(simulationMemapOn, 0, TimeUnit.SECONDS);
-		//memapOnOffRegulator.schedule(simulationMemapOff, 0, TimeUnit.SECONDS);
+		if (doubleSim) {
+			memapOnOffRegulator.schedule(simulationMemapOff, 0, TimeUnit.SECONDS);
+		}
 	}
 	public void setNumofBuildings(int x) {
 		numofBuildings = x;

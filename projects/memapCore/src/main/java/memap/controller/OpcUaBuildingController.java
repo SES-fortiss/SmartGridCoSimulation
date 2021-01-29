@@ -83,7 +83,9 @@ public class OpcUaBuildingController implements BuildingController {
 
 		this.topologyController = topologyController;
 		this.endpointConfig = opcUaEndpointConfig;
-		this.fullNodesConfig = opcUaNodesConfig;
+		if (opcUaNodesConfig != null) {
+			this.fullNodesConfig = opcUaNodesConfig;
+		}
 		EndpointConfigHandler endpointConfigHandler = new EndpointConfigHandler();
 		NodesConfigHandler nodesConfigHandler = new NodesConfigHandler();
 		// Initialize the client which connects to the OpcUaServer

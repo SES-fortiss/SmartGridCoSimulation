@@ -280,7 +280,7 @@ public class MILPProblemNoConnections extends MILPProblem {
 			double[] rowCHARGE = new double[nCols + 1];
 			double[] rowDISCHARGE = new double[nCols + 1];
 
-			double maxDischargeCapacity = sm.stateOfCharge;
+			double maxDischargeCapacity = sm.stateOfCharge*sm.capacity;
 			if (maxDischargeCapacity >= sm.capacity) {
 				maxDischargeCapacity = sm.capacity;
 			}
@@ -288,7 +288,7 @@ public class MILPProblemNoConnections extends MILPProblem {
 				maxDischargeCapacity = 0.0001;
 			}
 
-			double maxChargeCapacity = sm.capacity - sm.stateOfCharge;
+			double maxChargeCapacity = sm.capacity - sm.stateOfCharge*sm.capacity;
 			if (maxChargeCapacity <= 0.0) {
 				maxChargeCapacity = 0.0001;
 			}
