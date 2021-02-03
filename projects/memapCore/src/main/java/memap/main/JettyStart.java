@@ -1,6 +1,7 @@
 package memap.main;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -130,15 +131,15 @@ public class JettyStart {
 			e.printStackTrace();
 		} 
 		
-//		LocalDateTime time = LocalDateTime.now();
-//		LocalDateTime nextQuarter = time.truncatedTo(ChronoUnit.HOURS)
-//		                                .plusMinutes(15 * (time.getMinute() / 15 +1));
+		LocalDateTime time = LocalDateTime.now();
+		LocalDateTime nextQuarter = time.truncatedTo(ChronoUnit.HOURS)
+		                                .plusMinutes(15 * (time.getMinute() / 15 +1));
 
 		// Here, the topology Controller gets started and runs in a loop.
 		Runnable simulationMemapOn = new Runnable() {
 			public void run() {
-//				topologyMemapOn.startLiveSimulation(nextQuarter, java.time.Duration.ofSeconds(Simulation.PauseInSec).minusSeconds(5));		
-				topologyMemapOn.startLiveSimulation(LocalDateTime.now(), java.time.Duration.ofSeconds(Simulation.PauseInSec).minusSeconds(5));		
+				topologyMemapOn.startLiveSimulation(nextQuarter, java.time.Duration.ofSeconds(Simulation.PauseInSec).minusSeconds(5));		
+//				topologyMemapOn.startLiveSimulation(LocalDateTime.now(), java.time.Duration.ofSeconds(Simulation.PauseInSec).minusSeconds(5));		
 				}
 
 		};
