@@ -82,6 +82,21 @@ public class StartMessage {
     	this.realTimeMode = true;
     	this.timeInterval = timeInterval;
     }
+    
+    // CoSES mode with realtime
+    public StartMessage (LocalDateTime startTime, Duration timeInterval ){
+    	this.timeStepMode = false;
+    	this.startTimeStep = -1;
+    	this.lastTimeStep = -1;
+    	
+    	this.timeMode = false;
+    	this.startTime = startTime;
+    	this.endTime = null;    	
+    	
+    	this.referenceDay = null;
+    	this.realTimeMode = true;
+    	this.timeInterval = timeInterval;
+    }
 
     @Override
     public String toString() {

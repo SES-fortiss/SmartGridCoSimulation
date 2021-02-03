@@ -1,7 +1,7 @@
 package memap.controller;
 
 import java.time.Duration;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 import akka.actor.ActorSystem;
@@ -71,7 +71,7 @@ public class TopologyController implements Runnable {
 	/** Calls creates the topology and starts the live-simulation 
 	 * @param duration 
 	 * @param startDate */
-	public void startLiveSimulation(LocalDate startDate, Duration duration) {
+	public void startLiveSimulation(LocalDateTime startDate, Duration duration) {
 		createTopology();
 		ActorSystem actorSystem = simulationStarter.initialiseActorSystem(this.top);
 		simulationStarter.startSimulation(actorSystem, startDate, duration);

@@ -148,6 +148,19 @@ public class SimulationStarter {
     	StartMessage message = new StartMessage(localDate, timeInterval);
     	startNow(actorSystem, message);
     }
+	
+	/**
+	 * 
+	 * Option D um System im CoSES Labor zu starten  - EchtzeitDemo
+	 * 
+	 * @param actorSystem
+	 * @param startTime
+	 * @param timeInterval
+	 */
+	public void startSimulation(ActorSystem actorSystem, LocalDateTime startTime, java.time.Duration timeInterval) {
+    	StartMessage message = new StartMessage(startTime, timeInterval);
+    	startNow(actorSystem, message);
+    }
 
 	/**
 	 * @param message

@@ -13,39 +13,33 @@ import java.io.File;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.fortiss.powerflowsim.exporters.RDFExporter;
 
-import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.ReceiveTimeout;
+import akka.actor.UntypedActor;
+import akka.basicActors.BasicActor;
 import akka.basicActors.LoggingMode;
-import akka.japi.pf.ReceiveBuilder;
+import akka.basicMessages.AnswerContent;
 import akka.systemMessages.CompletionMessage;
 import akka.systemMessages.EndSimulationMessage;
 import akka.systemMessages.StartMessage;
 import akka.systemMessages.TimeStepMessage;
 import akka.systemMessages.TimeoutMessage;
 import akka.timeManagement.GlobalTime;
+import behavior.advancedBehaviorModels.AbstractMessageHelper;
 import configuration.GridArchitectConfiguration;
 import powerflowApi.PowerflowApi;
 import powerflowApi.PowerflowMapping;
+import resultLogger.ConstantLogger;
 import simulation.SimulationStarter;
 
-
-/**
- * The actor monitor is the guard actor (the first actor that is created). 
- * It is responsible to take care about the timing progress of the simulation.
- * It handles time steps as well as current time.
- * It tells the ActorSupervisor to start the next iteration.
- * It completes the simulation.
- * 
- * @author bytschkow
- *
- */
-public class ActorMonitor extends AbstractActor {
+public class ActorMonitor extends UntypedActor {
 
 	public LocalDateTime startTime;
 	public LocalDateTime endTime;
@@ -59,9 +53,14 @@ public class ActorMonitor extends AbstractActor {
 
 	private long startTimeStepComputation = System.currentTimeMillis();
 	private long startSimulationComputation;
-	
-	private ActorRef externalRef;
+
+	public final Map<String, AnswerContent[]> behaviorMessageStateMap = new HashMap<String, AnswerContent[]>();
+	private ActorRef inboxRef;
 	private ActorRef actorSupervisorRef;
+
+	// Lucs stuff
+	private int previousErrors;
+	private int previousHistory;
 
 	/** Reference to global time in {@link SimulationStarter} */
 	GlobalTime globalTime;
@@ -71,10 +70,12 @@ public class ActorMonitor extends AbstractActor {
 	 */
 	public ActorMonitor(LoggingMode operationMode) {
 		this.operationMode = operationMode;
+		previousErrors = 0;
+		previousHistory = 0;
 	}
 	
 	/*
-	 * This calls the Constructor for the ActorMonitor
+	 * This is create method for the ActorMonitor
 	 */
 	public static Props create(LoggingMode operationMode) {
 		return Props.create(ActorMonitor.class, operationMode);
@@ -87,77 +88,11 @@ public class ActorMonitor extends AbstractActor {
 
 	@Override
 	public void postStop() {
+		shutDownSimulation();
 		System.out.println("ActorMonitor STOP");
 	}
-	
+
 	@Override
-	public Receive createReceive() {
-		
-		// Note this is executed only once during initialization of an actor.
-		ReceiveBuilder receiveBuilder = ReceiveBuilder.create();
-		
-		receiveBuilder
-			.match(GlobalTime.class, s -> this.globalTime = s)	
-			.match(CompletionMessage.class, this::handleCompletionMessage)
-			.match(TimeoutMessage.class, s -> endSimulation())
-			.match(StartMessage.class, this::startSimulation)
-			.match(ReceiveTimeout.class, s-> System.out.println("ActorMonitor: received Timeout"))			
-			.match(String.class, this::handleString);
-		
-		receiveBuilder.matchAny( o -> System.out.println("ActorMonitor: received unknown message"));
-		
-	    return receiveBuilder.build();
-	}
-	
-	private void handleCompletionMessage(CompletionMessage completionMessage) {		
-		this.actorSupervisorRef = getSender();
-		powerFlowMapping();
-		endTimeStep();
-		increaseTimeStep();
-		startNewTimeStep();
-	}
-	
-	
-	private void handleString(String message) {
-
-		if (message == "Inbox intitialize") {						
-			externalRef = getSender();			
-			getContext().system().actorSelection("/user/ActorSupervisor").tell("Init", getSelf());
-			return;
-		}
-
-		if (message == "System created") {
-			System.out.println("Actor System initiated. Generation took " + (System.currentTimeMillis() - startTimeStepComputation)
-					+ "ms, active Threads: " + Thread.activeCount());
-			System.out.println("****************************************************************");
-			externalRef.tell("System created", getSelf());
-			return;
-		}
-
-		if (message == "TimeStep") {
-			getSender().tell(globalTime.getCurrentTimeStep(), getSelf());
-			return;
-		}
-
-		if (message == "Register") {
-			System.out.println("reg monitor");
-			return;
-		}
-
-		if (message == "Inbox registration for start") {
-			externalRef = getSender();
-			return;
-		}
-
-		if (message == "ShutDown") {				
-			externalRef.tell("Simulation Completed, terminating Actor System", getSelf());
-			return;
-		}
-	}
-
-	// OLD method for reference
-	
-	/*
 	public void onReceive(Object message) throws Exception {
 		// Message exchange with Classes outside the ActorSystem should use the Inbox
 		
@@ -167,7 +102,7 @@ public class ActorMonitor extends AbstractActor {
 		
 		if (message == "Inbox intitialize") {
 			inboxRef = getSender();
-			getContext().system().actorSelection("/user/ActorSupervisor").tell("Init", getSelf());
+			this.getContext().system().actorSelection("/user/ActorSupervisor").tell("Init", getSelf());
 			return;
 		}
 
@@ -225,12 +160,29 @@ public class ActorMonitor extends AbstractActor {
 			return;
 		}
 	}
-	*/
 
 	/**
 	 * 
 	 */
 	private void endTimeStep() {
+
+		/*
+		 * Luc's extension to providing the ErrorStatics
+		 */
+		if (GridArchitectConfiguration.printErrorStatistic) {
+			System.out.println("How many Errors occurred " + (BasicActor.NumberOfErrors - previousErrors));
+			System.out
+					.println("How often was the history used " + (AbstractMessageHelper.historyUsed - previousHistory));
+			System.out.println("History insert Time " + BasicActor.InsertTime + " ms ");
+			System.out.println("History search Time " + AbstractMessageHelper.searchTime + " ms ");
+
+			BasicActor.InsertTime = 0;
+			AbstractMessageHelper.searchTime = 0;
+
+			previousErrors = BasicActor.NumberOfErrors;
+			previousHistory = AbstractMessageHelper.historyUsed;
+		}
+
 		System.out.println("TimeStep " + (globalTime.getCurrentTimeStep()) + " took "
 				+ (System.currentTimeMillis() - startTimeStepComputation) + "ms, active Threads: "
 				+ Thread.activeCount() + "   Starting TimeStep: " + (globalTime.getCurrentTimeStep() + 1));
@@ -249,7 +201,7 @@ public class ActorMonitor extends AbstractActor {
 		}
 
 		if (realTimeMode) {
-			globalTime.setCurrentTime(LocalDateTime.of(referenceDay, LocalTime.now()));
+			globalTime.setCurrentTime(LocalDateTime.now());
 			globalTime.setNextTime(globalTime.getCurrentTime().plusSeconds(timeIntervalINT));
 		}
 
@@ -258,8 +210,19 @@ public class ActorMonitor extends AbstractActor {
 	public void startSimulation(StartMessage message) {
 
 		setGlobalTimeSettings(message);
-		externalRef = getSender();
-
+		long timeToStart = LocalDateTime.now().until(message.startTime, ChronoUnit.MILLIS);
+		
+		if (timeToStart > 0) {
+			System.out.println("");
+			System.out.println(">> Simulation will start in " + timeToStart/60000 + " minutes...");
+			try {
+				Thread.sleep(timeToStart);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		System.out.println("StartMessage: " + message);
 		System.out.println("****************************************************************");
 
@@ -289,12 +252,7 @@ public class ActorMonitor extends AbstractActor {
 		if (message.realTimeMode) {
 			this.realTimeMode = true;
 
-			LocalDate ld = message.referenceDay;
-			System.out.println(ld);
-			LocalTime t = LocalTime.now();
-			System.out.println(t);
-
-			globalTime.setCurrentTime(LocalDateTime.of(ld, t));
+			globalTime.setCurrentTime(message.startTime);
 			globalTime.setPeriod(message.timeInterval);
 			globalTime.setNextTime(globalTime.getCurrentTime().plus(globalTime.getPeriod()));
 
@@ -352,13 +310,17 @@ public class ActorMonitor extends AbstractActor {
 	}
 
 	private void endSimulation() {
-		System.out.println("Simulation Done. Simulation took " + (System.currentTimeMillis() - this.startSimulationComputation) + "ms");
+		System.out.println("Terminating Actor System");
+		System.out.println("Simulation took " + (System.currentTimeMillis() - this.startSimulationComputation) + "ms");
 		System.out.println("****************************************************************");
 
+		ConstantLogger.endSimulation();
+
 		this.actorSupervisorRef.tell(new EndSimulationMessage(), getSelf());
-		
-		// Supervisor wird aufgefordert, den Anschluss vorzubereiten. Das passt auch.
-		// Als Antwort wird "ShutDown" geschickt.
+	}
+
+	private void shutDownSimulation() {
+		this.inboxRef.tell("Simulation Completed, terminating Actor System", getSelf());
 	}
 
 	/**
@@ -383,7 +345,5 @@ public class ActorMonitor extends AbstractActor {
 	public void setLastTimeStep(int value) {
 		globalTime.setLastTimeStep(value);
 	}
-
-
 
 }
