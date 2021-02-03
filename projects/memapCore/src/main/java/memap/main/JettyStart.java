@@ -2,7 +2,6 @@ package memap.main;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -12,7 +11,6 @@ import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.google.gson.Gson;
 
-import memap.components.prototypes.Device;
 import memap.controller.BuildingController;
 import memap.controller.OpcUaBuildingController;
 import memap.controller.TopologyController;
