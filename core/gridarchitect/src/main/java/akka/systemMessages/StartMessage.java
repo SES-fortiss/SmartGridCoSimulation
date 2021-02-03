@@ -90,6 +90,6 @@ public class StartMessage implements Serializable {
     public String toString() {
         return String.format("isRealTime:[%s], startTimeStep:[%s], maxTimeStep:[%s], "
         		+ "startTime:[%s], endTime:[%s], timeInterval:[%s]",
-        		realTimeMode, startTimeStep, lastTimeStep, startTime, endTime, timeInterval);
+        		timeMode, startTimeStep, lastTimeStep, startTime, endTime, timeInterval);
     }
 }
