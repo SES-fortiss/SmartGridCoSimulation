@@ -40,7 +40,7 @@ public class ConnectionDB {
 //		System.out.println("LÄNGE = " + namesResult.length + ", 4. Name: " + names.get(3)+ ", 5. Name: " + names.get(4));
 		
 		switch(Hierarchy) {
-		
+			
 		case MEMAP:
 			tablename = "MEMAP";
 			
@@ -103,10 +103,12 @@ public class ConnectionDB {
 			PreparedStatement pst = conn.prepareStatement(sql1);
 			pst.executeUpdate();
 			System.out.println("Results written to DB.");
+			conn.close();
 		}
 		catch (SQLException ex) {
             System.out.println("DB-Message: " + ex.getMessage());
         }
+
 
 	}
 }

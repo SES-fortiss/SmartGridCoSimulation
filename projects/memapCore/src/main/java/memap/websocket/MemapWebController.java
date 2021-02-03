@@ -5,6 +5,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.github.cliftonlabs.json_simple.JsonObject;
+
 import memap.main.JettyStart;
 import simulation.SimulationStarter;
 
@@ -32,14 +33,11 @@ public class MemapWebController {
 		}
 		};
 		executor.schedule(simulationRunnable, 0, TimeUnit.SECONDS);
-
-
 	}
 	
 	
 	public void stopMemap() {
-	
-//		js.stopSimulation();
+
 		js.simLoop = false;
 		SimulationStarter.actorSystemRef.shutdown();
 	    executor.shutdown();
@@ -51,9 +49,8 @@ public class MemapWebController {
 			e.printStackTrace();
 		}
 	    System.out.println("Disconnecting was sucessful");
-//	    System.exit(0);
-	    return;
 
+	    return;
 	}
 	
 }

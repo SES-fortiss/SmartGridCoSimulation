@@ -35,7 +35,7 @@ public class Simulation {
 	 * Add TimeStepsPerDay or Stepsize as Input
 	 */
 	public static int N_STEPS_MPC = 5;
-	public static int PauseInMS = 5000;
+	public static int PauseInSec = 90;
 	// ...
 	
 	public static void main(String[] args) throws SQLException {
@@ -48,7 +48,7 @@ public class Simulation {
 			if (args.length > 2 ) {
 				try {
 					N_STEPS_MPC = Integer.parseInt(args[1]);
-					PauseInMS = Integer.parseInt(args[2]);
+					PauseInSec = Integer.parseInt(args[2]);
 				} catch(NumberFormatException e) {
 				} 
 			} else if (args.length > 1) {

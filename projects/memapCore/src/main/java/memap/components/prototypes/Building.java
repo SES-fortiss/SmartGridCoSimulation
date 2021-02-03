@@ -19,7 +19,6 @@ import memap.helper.configurationOptions.ToolUsage;
 import memap.helper.lp.LPSolver;
 import memap.helper.milp.MILPSolverNoConnections;
 import memap.helperOPCua.OpcServerContextGenerator;
-import memap.main.Simulation;
 import memap.main.TopologyConfig;
 import memap.messages.BuildingMessage;
 import memap.messages.BuildingMessageHandler;

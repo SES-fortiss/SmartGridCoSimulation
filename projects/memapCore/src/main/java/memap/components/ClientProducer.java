@@ -18,11 +18,9 @@ public class ClientProducer extends Producer {
 	
 	NetworkType networkType;
 	public double opCost;
-	double trigger;
 	public double costCO2;
 	public BasicClient client;
 	public NodeId setpointsId;
-	public NodeId triggerId;
 	
 	/**
 	 * @param client
@@ -36,7 +34,7 @@ public class ClientProducer extends Producer {
 	 * @param setpointsId 
 	 * @param port
 	 */
-	public ClientProducer(BasicClient client, String name, NodeId triggerId, NodeId nodeIdSector, NodeId minPowerId, NodeId maxPowerId, NodeId effId, NodeId opCostId, NodeId costCO2Id, NodeId setpointsId, int port)
+	public ClientProducer(BasicClient client, String name, NodeId nodeIdSector, NodeId minPowerId, NodeId maxPowerId, NodeId effId, NodeId opCostId, NodeId costCO2Id, NodeId setpointsId, int port)
 			throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(minPowerId), client.readFinalDoubleValue(maxPowerId),
 				client.readFinalDoubleValue(effId), port);
@@ -45,8 +43,6 @@ public class ClientProducer extends Producer {
 		this.client = client;
 		this.setpointsId = setpointsId;
 		this.networkType = this.setNetworkType(client, nodeIdSector);
-		this.triggerId = triggerId;
-		this.trigger = client.readFinalDoubleValue(triggerId);
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
 		
