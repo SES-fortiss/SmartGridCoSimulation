@@ -20,10 +20,10 @@ public abstract class Storage extends Device {
 
 	public StorageMessage storageMessage = new StorageMessage();
 
-	public double[] linprogStorageInput;
+	public double[] storageChargeRequest;
 	public double[] optimizationAdviceInput;
 	public double[] optimizationAdviceOutput;
-	public double[] linprogStorageOutput;
+	public double[] storageDischargeRequest;
 
 	public Storage(String name, double capacity, double stateOfCharge, double max_charging, double max_discharging,
 			double effIN, double effOUT, double storageLoss,int port) {
@@ -45,6 +45,8 @@ public abstract class Storage extends Device {
 	public AnswerContent returnAnswerContentToSend() {
 
 		this.storageMessage.id = this.fullActorPath;
+		
+		System.out.println(this.actorName + " Message: " + storageMessage);
 
 		return storageMessage;
 	}
@@ -60,25 +62,26 @@ public abstract class Storage extends Device {
 
 	@Override
 	public void handleRequest() {
+		
 		if (requestContentReceived instanceof OptimizationResultMessage) {
-//			double stepLengthInHours = topologyConfig.getStepLengthInHours();
+			double stepLengthInHours = topologyConfig.getStepLengthInHours();
 			OptimizationResultMessage linprogResult = ((OptimizationResultMessage) requestContentReceived);
 
-			String dataKey = actorName + "Discharge";
-			for (String key : linprogResult.resultMap.keySet()) {		
-				if (key.contains(dataKey)) {
-					linprogStorageOutput = linprogResult.resultMap.get(key);
-				}
+			String dataKey = actorName + "Discharge";			
+			if (linprogResult.resultMap.containsKey(dataKey)) {
+				storageDischargeRequest = linprogResult.resultMap.get(dataKey);
 			}
 			
-			dataKey = actorName + "Charge";
-			for (String key : linprogResult.resultMap.keySet()) {		
-				if (key.contains(dataKey)) {
-					linprogStorageInput = linprogResult.resultMap.get(key);
-				}
+			dataKey = actorName + "Charge";			
+			if (linprogResult.resultMap.containsKey(dataKey)) {
+				storageChargeRequest = linprogResult.resultMap.get(dataKey);
 			}
-
-			stateOfCharge = this.getStateOfCharge();
+			
+			if (storageChargeRequest!= null && storageDischargeRequest!= null) {
+				double soc_alt = stateOfCharge;
+				double leistung = storageChargeRequest[0] * effIN - storageDischargeRequest[0] * 1 / effOUT;
+				stateOfCharge = soc_alt + leistung * stepLengthInHours;
+			}			
 		}
 	}
 	

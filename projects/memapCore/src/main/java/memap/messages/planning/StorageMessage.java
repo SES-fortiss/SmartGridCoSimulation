@@ -1,5 +1,7 @@
 package memap.messages.planning;
 
+import com.google.gson.Gson;
+
 import akka.basicMessages.AnswerContent;
 import memap.messages.extension.NetworkType;
 
@@ -21,5 +23,12 @@ public class StorageMessage implements AnswerContent {
 	public double efficiencyDischarge;
 	
 	public NetworkType networkType;
+	
+	public String toString() {
+		Gson gson = new Gson();
+		String result = "";
+		result = gson.toJson(this);
+		return result;
+	}
 
 }

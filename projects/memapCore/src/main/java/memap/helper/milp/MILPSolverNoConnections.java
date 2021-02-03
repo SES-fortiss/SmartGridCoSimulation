@@ -78,7 +78,7 @@ public class MILPSolverNoConnections extends MILPSolver {
 
 		// Build matrices
 		mp = new MILPProblemNoConnections(topologyController, currentTimeStep, nStepsMPC, nCols);
-
+		
 		// 1) create model and include all names
 		mp.createNames(problem, buildingMessage);
 
