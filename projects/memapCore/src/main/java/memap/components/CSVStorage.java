@@ -53,6 +53,13 @@ public class CSVStorage extends Storage {
 	
 	@Override
 	public Double getStateOfCharge() {
+		
+		double stepLengthInHours = topologyConfig.getStepLengthInHours();
+		
+		double soc_alt = stateOfCharge;
+		double leistung = linprogStorageInput[0] * effIN - linprogStorageOutput[0] * 1 / effOUT;
+		stateOfCharge = soc_alt + leistung * stepLengthInHours;
+		
 		return stateOfCharge;
 	}
 
