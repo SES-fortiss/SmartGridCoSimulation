@@ -45,9 +45,6 @@ public abstract class Storage extends Device {
 	public AnswerContent returnAnswerContentToSend() {
 
 		this.storageMessage.id = this.fullActorPath;
-		
-		System.out.println(this.actorName + " Message: " + storageMessage);
-
 		return storageMessage;
 	}
 	
@@ -81,7 +78,7 @@ public abstract class Storage extends Device {
 				double soc_alt = stateOfCharge;
 				double leistung = storageChargeRequest[0] * effIN - storageDischargeRequest[0] * 1 / effOUT;
 				stateOfCharge = soc_alt + leistung * stepLengthInHours;
-			}			
+			}
 		}
 	}
 	

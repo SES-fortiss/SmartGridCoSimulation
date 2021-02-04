@@ -20,7 +20,7 @@ public class EnergyPrices {
 	private static EnergyPrices instance = new EnergyPrices();
 
 	/** Electricity price per KWp */
-	private ArrayList<Double> electricityPrices;
+	private ArrayList<Double> electricityPrices = new ArrayList<Double>();
 	private ArrayList<Double> gasPrices;
 	
 	/**
@@ -33,7 +33,6 @@ public class EnergyPrices {
 	 * 
 	 */
 	public void init(double MarketPrice) {
-		electricityPrices = new ArrayList<Double>();
 		for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC() * 2; i++) {
 			electricityPrices.add(MarketPrice);
 		}
@@ -71,18 +70,17 @@ public class EnergyPrices {
 	 * @param csvFile
 	 */
 	private void setElectricityPrices(String csvFile) {
-		try {
-			if (csvFile.isEmpty()) {
-				readEnergyPrices(electricityPrices, getBuffer("ELECTRICITYPRICEEXAMPLE"));
-				System.err
-						.println("Variable market price selected but not input file was provided. Using example file");
-			} else {
-				readEnergyPrices(electricityPrices, getBuffer(csvFile));
-			}
+		try {			
+			electricityPrices = readEnergyPrices(electricityPrices, getBuffer(csvFile));					 
 		} catch (IOException | ParseException e) {
-			System.err.println("Error reading or parsing CSV data from " + csvFile);
-			SimulationStarter.stopSimulation();
-			e.printStackTrace();
+			System.err.println("Variable market price selected but input file is not provided. Using example file");
+			try {
+				electricityPrices = readEnergyPrices(electricityPrices, getBuffer("ELECTRICITYPRICEEXAMPLE"));					
+			} catch (Exception e2) {
+				System.err.println("Error reading or parsing electricity price data " + csvFile);
+				SimulationStarter.stopSimulation();
+				e.printStackTrace();
+			}						
 		}
 	}
 	
@@ -137,9 +135,18 @@ public class EnergyPrices {
 	 * 
 	 * @return br buffer
 	 */
-	private void readEnergyPrices(ArrayList<Double> energyPrices, BufferedReader br) throws IOException, ParseException {
+	private ArrayList<Double> readEnergyPrices(ArrayList<Double> energyPrices, BufferedReader br) throws IOException, ParseException {
+
+		/*
+		 * the current logic:
+		 * - x should represent the step length in the data file (intrinsic knowledge)
+		 * - y should represent the price related to x
+		 * - xi should represent the selected time step in the simulation
+		 * - yi should represent the price related to xi
+		 */
+		
 		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
-		int mpcSteps = TopologyConfig.getInstance().getNrStepsMPC();
+
 		double stepLenghtInHours = TopologyConfig.getInstance().getStepLengthInHours();
 		ArrayList<Double> originalValues = new ArrayList<Double>();
 		String row;
@@ -151,9 +158,11 @@ public class EnergyPrices {
 		double[] x = new double[originalValues.size()];
 		double[] y = new double[originalValues.size()];
 		for (int i = 0; i < originalValues.size(); i++) {
-			x[i] = i; 
+			x[i] = i / 4.0 ; 
 			y[i] = originalValues.get(i);
 		}
+		
+		int mpcSteps = y.length -1;
 
 		double[] xi = new double[mpcSteps];
 		for (int j = 0; j < mpcSteps; j++) {
@@ -165,6 +174,8 @@ public class EnergyPrices {
 			energyPrices.add(yi[k]);
 		}
 		br.close();
+		
+		return energyPrices;
 	}
 
 }
