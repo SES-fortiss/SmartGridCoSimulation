@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import memap.components.prototypes.Device;
 import memap.helper.HelperUnnestingJSON;
 import memap.components.ClientDemand;
+import memap.components.ClientEMS;
 import memap.components.ClientCoupler;
 import memap.components.ClientProducer;
 import memap.components.ClientStorage;
@@ -83,7 +84,9 @@ public class OpcUaBuildingController implements BuildingController {
 
 		this.topologyController = topologyController;
 		this.endpointConfig = opcUaEndpointConfig;
-		this.fullNodesConfig = opcUaNodesConfig;
+		if (opcUaNodesConfig != null) {
+			this.fullNodesConfig = opcUaNodesConfig;
+		}
 		EndpointConfigHandler endpointConfigHandler = new EndpointConfigHandler();
 		NodesConfigHandler nodesConfigHandler = new NodesConfigHandler();
 		// Initialize the client which connects to the OpcUaServer
@@ -220,23 +223,24 @@ public class OpcUaBuildingController implements BuildingController {
 				JsonObject emsNodesConfig = (JsonObject) fullNodesConfig.get(EMSkey);
 				System.out.println("Found EMS " + EMSkey + " (reading...)");
 				
-				// Trigger for CoSES-Lab
-				NodeId trigger = null;
-				
 				for (String key : emsNodesConfig.keySet()) {
 					switch (key) {
 					
 					case "NO": //"EMS":
-						JsonArray ems = (JsonArray) ((JsonArray) emsNodesConfig.get("NO")).get(0);	
-
+						JsonArray emsNodes = (JsonArray) ((JsonArray) emsNodesConfig.get("NO")).get(0);	
+						JsonObject info = HelperUnnestingJSON.unnestJsonAry(emsNodes);
 						try {
-							JsonObject info = HelperUnnestingJSON.unnestJsonAry(ems);
 							NodeId nid0 = NodeId.parse((String) info.get("nameID"));
+							NodeId triggerId = NodeId.parse((String) info.get("trigger")); // Trigger for Synchronization , CoSES-Lab
 							String EmsName = client.readFinalStringValue(nid0);
 							System.out.println("EMS-Description (nameID) = " + EmsName);
-						} catch (Exception e) {
+							ClientEMS ems = new ClientEMS(client, EmsName, triggerId, 0);
+							attach(ems);
+							ems.setTopologyController(topologyController);
+							System.out.println("EMS (" + EMSkey + ") added. ");
+							} catch (Exception e) {
 							System.err.println("WARNING: Could not add name string to building " + name
-									+ ".\nPlease check " + ems.toString());
+									+ ".\nPlease check " + info.toString());
 						}
 						break;
 					
@@ -277,10 +281,9 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId demndSectId = NodeId.parse((String) demnd.get("PrimSect"));
 								NodeId arrayForecastId = NodeId.parse((String) demnd.get("DemandFC"));
 								NodeId consumptionId = NodeId.parse((String) demnd.get("currentDem"));
-								NodeId demandSetpointId = NodeId.parse((String) demnd.get("DemndSetPt"));
 								
 								String demandName = EMSkey + "_DEMND" + String.format("%02d",  i+1);
-								ClientDemand cd = new ClientDemand(client, demandName, trigger, demndSectId, consumptionId, arrayForecastId, demandSetpointId, 0);
+								ClientDemand cd = new ClientDemand(client, demandName, demndSectId, consumptionId, arrayForecastId, 0);
 								attach(cd);
 								cd.setTopologyController(topologyController);
 								System.out.println("Demand (" + (i+1) + "/" + demands.keySet().size() + ") added to " + EMSkey);
@@ -305,7 +308,7 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId setpointsId = NodeId.parse((String) cprod.get("SPDevPwr"));
 								
 								String producerName = EMSkey + "_CPROD" + String.format("%02d",  i+1);
-								ClientProducer cp = new ClientProducer(client, producerName, trigger, primarySectId, minPowerId, maxPowerId,
+								ClientProducer cp = new ClientProducer(client, producerName, primarySectId, minPowerId, maxPowerId,
 										effId, opCostId, costCO2Id, setpointsId, 0);
 								attach(cp);
 								cp.setTopologyController(topologyController);
@@ -356,8 +359,8 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId maxDischargingId = NodeId.parse((String) strge.get("MaxPower"));
 								NodeId capacityId = NodeId.parse((String) strge.get("Capacity"));
 								NodeId stateOfChargeId = NodeId.parse((String) strge.get("curSOC"));
-//								NodeId calculatedSocId = NodeId.parse((String) strge.get("calcSOC"));  // Only availible in CoSES
-								NodeId calculatedSocId = NodeId.parse((String) strge.get("curSOC"));
+								NodeId calculatedSocId = NodeId.parse((String) strge.get("calcSOC"));  // Only available in CoSES
+//								NodeId calculatedSocId = NodeId.parse((String) strge.get("curSOC"));
 								NodeId storageLossId = NodeId.parse((String) strge.get("StorLossPD"));
 								NodeId opCostId = NodeId.parse((String) strge.get("PrimEnCost"));
 								NodeId costCO2Id = NodeId.parse((String) strge.get("CO2PerKWh"));
@@ -365,7 +368,7 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId outputSetpointsId = NodeId.parse((String) strge.get("SPDisChrg"));
 	
 								String storageName = EMSkey + "_STRGE" + String.format("%02d",  i+1);
-								ClientStorage cs = new ClientStorage(client, storageName, capacityId, trigger, stateOfChargeId, calculatedSocId,
+								ClientStorage cs = new ClientStorage(client, storageName, capacityId, stateOfChargeId, calculatedSocId,
 										maxChargingId, maxDischargingId, effInId, effOutId, storageLossId, primarySectId,
 										opCostId, costCO2Id, inputSetpointsId, outputSetpointsId, 0);
 								attach(cs);

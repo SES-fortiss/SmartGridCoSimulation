@@ -15,8 +15,8 @@ import memap.main.JettyStart;
 
 
 public class ConnectionDB {
-	private static String memap;
-	//private static String tablename;
+
+	private static String tablename;
 	public static Connection connectToDB() throws SQLException {
 		String url = "jdbc:postgresql://localhost:5432/memap";
 		String user = "postgres";
@@ -36,63 +36,80 @@ public class ConnectionDB {
 		while (itr.hasNext()) {
 			itr.set(itr.next().replaceAll("\\s", ""));
 		}
-		long step;
-		double heatdemand;
-		double elecdemand;
-		double priceEl;
-		double priceHt;
-		double cost;
-		double CO2;
 		
-		step = System.currentTimeMillis() / 1000L;
-		heatdemand = currentDemand[0];
-		elecdemand = currentDemand[1];
-		priceEl = EnergyPrices.getInstance().getElectricityPriceInEuro(currentTimeStep);
-		priceHt = EnergyPrices.getInstance().getHeatPriceInEuro(currentTimeStep);
-		cost = totalCostsEUR[0];
-		CO2 = totalCO2emissions[0];
+//		System.out.println("LÄNGE = " + namesResult.length + ", 4. Name: " + names.get(3)+ ", 5. Name: " + names.get(4));
 		
-		if (Hierarchy ==  OptHierarchy.MEMAP) {
-				memap = "MemapON";
-				num = 1;
-			} else {
-				// which building?
-				memap = "MemapOFF";
-			}
-		for(int b = num; b > 0; b--)
-		{
+		switch(Hierarchy) {
 			
-			String createtable = "CREATE TABLE IF NOT EXISTS " + "Building" + b + memap + "(";
+		case MEMAP:
+			tablename = "MEMAP";
+			
 			String columns = "";
 			String list = "";
-			
 			for(int i=0 ; i < names.size()-3 ; i++)
 			{
-				columns += "B"+ b +"_" + names.get(i) + " DOUBLE PRECISION NULL" + ", ";
-				list += "B"+ b +"_" + names.get(i) + ", ";
+				columns += "MEMAP_" + names.get(i) + " DOUBLE PRECISION NULL" + ", ";
+				list += "MEMAP_" + names.get(i) + ", ";
 			}
-			String sql1 = createtable + columns;
-			sql1 = sql1 + "ElectricityPrice_EUR DOUBLE PRECISION NULL, HeatPrice_EUR DOUBLE PRECISION NULL, TotalCostsEUR DOUBLE PRECISION NULL, TotalCO2emissions DOUBLE PRECISION NULL, timestamp TIMESTAMPTZ NULL);";
-			list = "INSERT INTO " + "Building" + b + memap + "(" + list + "ElectricityPrice_EUR, HeatPrice_EUR, TotalCostsEUR, TotalCO2emissions, timestamp) VALUES('" + step + "','" + heatdemand + "','" + elecdemand;
-			for(double i : currentOptVector) {
-				list += "','" + i;
-			}	
-			for(double j : currentSOC) {
-				list += "','" + j;
-			}
-			list += "','" + priceEl + "','" + priceHt + "','" + cost + "','" + CO2 + "', NOW());";
-			sql1 += list;
 			
-			try {
-				Connection conn = connectToDB();
-				PreparedStatement pst = conn.prepareStatement(sql1);
-				pst.executeUpdate();
-				System.out.println("Results written to DB.");
+			writeResultsToDB(tablename, columns, list, currentTimeStep, currentDemand, currentOptVector, currentSOC, totalCostsEUR, totalCO2emissions);
+			break;
+			
+		case BUILDING:	
+			for(int b = num; b > 0; b--)
+			{
+				tablename = "Building" + b ;
+
+				String bColumns = "";
+				String bList = "";
+				for(int i=0 ; i < names.size()-3 ; i++)
+				{
+					bColumns += "B" + b + "_" + names.get(i).substring(names.get(i).indexOf("_")+1).trim() + " DOUBLE PRECISION NULL" + ", ";
+					bList += "B" + b + "_" + names.get(i).substring(names.get(i).indexOf("_")+1).trim() + ", ";
+				}
+				writeResultsToDB(tablename, bColumns, bList, currentTimeStep, currentDemand, currentOptVector, currentSOC, totalCostsEUR, totalCO2emissions);			
 			}
-			catch (SQLException ex) {
-	            System.out.println("DB-Message: " + ex.getMessage());
-	        }
+			break;
+		}	
+	}
+
+	
+	private static void writeResultsToDB(String tablename, String columns, String list, int currentTimeStep, double[] currentDemand, 
+			double[] currentOptVector, double[] currentSOC, double[] totalCostsEUR, double[] totalCO2emissions) {
+		String createtable = "CREATE TABLE IF NOT EXISTS " + tablename + "(";
+		
+		long step = System.currentTimeMillis() / 1000L;
+		double heatdemand = currentDemand[0];
+		double elecdemand = currentDemand[1];
+		double priceEl = EnergyPrices.getInstance().getElectricityPriceInEuro(currentTimeStep);
+		double priceHt = EnergyPrices.getInstance().getHeatPriceInEuro(currentTimeStep);
+		double cost = totalCostsEUR[0];
+		double CO2 = totalCO2emissions[0];
+		
+		String sql1 = createtable + columns;
+		sql1 = sql1 + "ElectricityPrice_EUR DOUBLE PRECISION NULL, HeatPrice_EUR DOUBLE PRECISION NULL, TotalCostsEUR DOUBLE PRECISION NULL, TotalCO2emissions DOUBLE PRECISION NULL, timestamp TIMESTAMPTZ NULL);";
+		list = "INSERT INTO " + tablename + "(" + list + "ElectricityPrice_EUR, HeatPrice_EUR, TotalCostsEUR, TotalCO2emissions, timestamp) VALUES('" + step + "','" + heatdemand + "','" + elecdemand;
+		for(double i : currentOptVector) {
+			list += "','" + i;
+		}	
+		for(double j : currentSOC) {
+			list += "','" + j;
 		}
+		list += "','" + priceEl + "','" + priceHt + "','" + cost + "','" + CO2 + "', NOW());";
+		sql1 += list;
+		
+		try {
+			Connection conn = connectToDB();
+			PreparedStatement pst = conn.prepareStatement(sql1);
+			pst.executeUpdate();
+			System.out.println("Results written to DB.");
+			conn.close();
+		}
+		catch (SQLException ex) {
+            System.out.println("DB-Message: " + ex.getMessage());
+        }
+
+
 	}
 }
 

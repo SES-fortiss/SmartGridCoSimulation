@@ -33,7 +33,6 @@ public class ClientStorage extends Storage {
 	double opCost;
 	double costCO2;
 	public BasicClient client;
-	public NodeId triggerId;;
 	public NodeId calculatedSocId;
 	public NodeId inputSetpointsId;
 	public NodeId outputSetpointsId;
@@ -53,7 +52,7 @@ public class ClientStorage extends Storage {
 	 * @param costCO2Id        CO2 cost [kg CO2/kWh]
 	 * @param port
 	 */
-	public ClientStorage(BasicClient client, String name, NodeId capacityId, NodeId triggerId, NodeId stateOfCharge, NodeId calculatedSocId, NodeId maxChargingId,
+	public ClientStorage(BasicClient client, String name, NodeId capacityId, NodeId stateOfCharge, NodeId calculatedSocId, NodeId maxChargingId,
 			NodeId maxDischargingId, NodeId effInId, NodeId effOutId, NodeId storageLossId, NodeId nodeIdSector, NodeId opCostId,
 			NodeId costCO2Id, NodeId inputSetpointsId, NodeId outputSetpointsId, int port) throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(capacityId), client.readFinalDoubleValue(stateOfCharge),
@@ -63,7 +62,6 @@ public class ClientStorage extends Storage {
 		this.inputSetpointsId = inputSetpointsId;
 		this.outputSetpointsId = outputSetpointsId;
 		this.networkType = setNetworkType(client, nodeIdSector);
-		this.triggerId = triggerId;
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
 		this.calculatedSocId = calculatedSocId;
@@ -166,17 +164,28 @@ public class ClientStorage extends Storage {
 						e.printStackTrace();
 					}			
 				}
-				
 			}
 			
 			// update theoretical SOC
-			double socRef = 0.75;
-			double lossEff = this.storageLoss/(24 * this.capacity * socRef); //
+			double soc_alt = this.stateOfCharge;
 			
-			double newSOC =  this.stateOfCharge + TopologyConfig.getInstance().getStepLengthInHours()*(optimizationAdviceOutput[0]+optimizationAdviceInput[0] - lossEff*this.stateOfCharge)/this.capacity  ;
-			DataValue sum = new DataValue(new Variant(newSOC), null, null);
+			double refCapacity = 0.75 * this.capacity; //kWh
+			double standByLosses = TopologyConfig.getInstance().getStepLengthInHours()*this.storageLoss / ( 24 * refCapacity ) ; // no dimension
+			double energieDiff = TopologyConfig.getInstance().getStepLengthInHours()* (optimizationAdviceInput[0] - optimizationAdviceOutput[0]);
+			this.stateOfCharge =  soc_alt + (energieDiff / this.capacity ) - soc_alt * standByLosses;
+
+//			System.out.println(this.actorName + " with Capacity = " + this.capacity + ": charge = " 
+//					+ String.format("%.01f", optimizationAdviceInput[0]) + "(max " 
+//					+ String.format("%.01f", this.max_charging) + "), discharge = " 
+//					+ String.format("%.01f", optimizationAdviceOutput[0]) + ", losses = " 
+//					+ String.format("%.01f", soc_alt * standByLosses / this.capacity) + ". OldSOC = " 
+//					+ String.format("%.02f", soc_alt) + ", NewSOC = " 
+//					+ String.format("%.02f", this.stateOfCharge));
+			
+			DataValue sum = new DataValue(new Variant(this.stateOfCharge), null, null);
 			client.writeValue(calculatedSocId, sum);
-			this.stateOfCharge = newSOC;
+			
+
 		}
 		
 //		// Trigger was temporarily used for synchronization with the local EMS before reading the data		

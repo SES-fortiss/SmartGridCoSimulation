@@ -25,10 +25,10 @@ public class EntryPoint {
 
     	if (messageJson.containsKey("disconnect")) {
 			mwc.stopMemap();
-			response = "Simulation terminated. Client Disconnected.";
+			response = "[MEMAP] Simulation terminated. Client Disconnected.";
 			System.out.println(response);
 		} else {
-			response = "[MEMAP] your startMessage will be processed... ";
+			response = "[MEMAP] Your startMessage will be processed... ";
 			mwc.startMemap();
 		}
 

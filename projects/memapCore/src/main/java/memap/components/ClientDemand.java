@@ -34,8 +34,6 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 	private int currentTimeStep;
 	public BasicClient client;
 	public NodeId nodeId;
-	public NodeId triggerId;
-	double trigger;
 	/** Consumption profile values */
 	public Double consumptionProfile[];
 
@@ -53,10 +51,9 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 	 * @param port
 	 */
 
-	public ClientDemand(BasicClient client, String name, NodeId triggerId, NodeId nodeIdSector, NodeId nodeIdConsumption, NodeId arrayForecastId, NodeId demandSetpointId, int port) {
+	public ClientDemand(BasicClient client, String name, NodeId nodeIdSector, NodeId nodeIdConsumption, NodeId arrayForecastId, int port) {
 		super(name, port);
 		this.client = client;
-		this.triggerId = triggerId;
 		networkType = setNetworkType(client, nodeIdSector);
 		
 		
@@ -143,34 +140,6 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		consumptionMessage.networkType = networkType;
 
 		super.updateDisplay(consumptionMessage);
-	}
-	
-	
-	
-	
-	@Override
-	public void handleRequest() {
-		
-		if (triggerId != null) {
-			try {
-				this.trigger = client.readFinalDoubleValue(triggerId);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (ExecutionException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
-			// CoSES: Trigger should be increased only once
-			if (this.networkType == NetworkType.HEAT) {
-				trigger++;
-				
-				DataValue newTrigger = new DataValue(new Variant(trigger), null, null);
-				client.writeValue(triggerId, newTrigger);
-				System.out.println("Trigger written: " + trigger);
-			}
-		}
 	}
 
 

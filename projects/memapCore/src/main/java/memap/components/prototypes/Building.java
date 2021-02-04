@@ -103,13 +103,12 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 			try {
 				milpSolver.createModel();
 				milpSolver.solveMILP(); // and work through results
-
 			} catch (LpSolveException e) {
 				e.printStackTrace();
 			}
 		}
 
-		if (topologyController.getLogging() == MEMAPLogging.ALL) {
+		if (topologyController.getLogging() == MEMAPLogging.ALL || topologyController.getLogging() == MEMAPLogging.RESULTS_ONLY) {
 			double costTotal = 0;
 			double CO2Total = 0;
 			for (int i = 0; i < totalEURVector.length; i++) {
@@ -120,13 +119,7 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 			System.out.println(topologyController.getOptimizer() + ": " + this.actorName + " cost = "
 					+ String.format("%.03f", costTotal) + " EUR ; CO2: " + String.format("%.03f", CO2Total) + " kg");			
 		}
-
-//		try {
-//			Thread.sleep(5000);
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-
+		
 	}
 
 	@Override
@@ -134,8 +127,7 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
 			if (this.currentTimeStep == 0) {
 				if (port != 0) {
-//					this.mServer = new MemapOpcServerStarter(false, gson.toJson(buildingMessage), port);
-					this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult), port);
+					this.mServer = new MemapOpcServerStarter(false, gson.toJson(buildingMessage), port);
 					try {
 						this.mServer.start();
 					} catch (Exception e) {
