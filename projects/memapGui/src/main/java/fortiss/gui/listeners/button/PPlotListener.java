@@ -5,10 +5,10 @@ import java.awt.event.MouseEvent;
 
 import fortiss.gui.DesignerPanel;
 
-public class DPlotListener extends MouseAdapter {
-
+/** Plot listener for the Parameter class*/
+public class PPlotListener extends MouseAdapter {
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		DesignerPanel.demandPanel.plot();
+		DesignerPanel.parameterPanel.plot();
 	}
 }

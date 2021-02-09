@@ -12,9 +12,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import memap.helper.profilehandler.TimeDataPoint;
-import memap.helper.profilehandler.TimedConsumerData;
-
 /**
  * Data represents a set of data series of any kind read from a CSV.
  * It assumes that the data corresponds to a name and an arraylist of doubles.
@@ -43,35 +40,6 @@ public class Data {
 		} else {
 			throw new IllegalArgumentException("Unsupported read mode");
 		}
-	}
-
-	/**
-	 * Second constructor for the class Data.
-	 * It gets two data sets, one for electricity, one for heat.
-	 * No interpolation is carried out. 
-	 * Maybe we can consider it here as well.
-	 * 
-	 */
-	public Data(TimedConsumerData timedData) {
-		
-		// disclaimer, because the timedData includes here only electricity and heat, we hardcode it here as well.
-		
-		String str_electricity = "Electricity";
-		String str_heat = "Heat";
-
-		dataset.put(str_electricity, new ArrayList<Double>());
-		dataset.put(str_heat, new ArrayList<Double>());
-		
-		int length = timedData.getLength();
-		Map<String, ArrayList<TimeDataPoint>> map = timedData.getDatasetMap();
-		
-		ArrayList<TimeDataPoint> electricity = map.get(str_electricity);
-		ArrayList<TimeDataPoint> heat = map.get(str_heat);
-		
-		for (int i = 0; i < length; i++) {
-			dataset.get(str_heat).add(heat.get(i).getValue());
-			dataset.get(str_electricity).add(electricity.get(i).getValue());
-		}		
 	}
 
 	/**

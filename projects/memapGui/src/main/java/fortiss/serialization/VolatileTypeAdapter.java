@@ -33,9 +33,12 @@ public class VolatileTypeAdapter implements JsonSerializer<Volatile>, JsonDeseri
 		String forecastFilePath = volatileProducer.getForecastFile();
 		File forecastFile = new File(forecastFilePath);
 		ExampleFiles ef = new ExampleFiles();
+		
 		if(!forecastFile.exists() && !forecastFilePath.isEmpty() && !ef.isExample(forecastFilePath)) {
-			volatileProducer.setForecastFile("");
+			volatileProducer.setForecastFile(""); // It calls setData()
 			Logger.getInstance().writeWarning("File " + forecastFilePath + " does not exist. Using default file.");
+		} else {// The file exist and the path was set by gson
+			volatileProducer.setData();
 		}
 		
 		return volatileProducer;

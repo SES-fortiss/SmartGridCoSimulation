@@ -24,7 +24,6 @@ public class DBrowseListener extends MouseAdapter {
 			String path = file.getPath();
 			DesignerPanel.demandPanel.txtDConsumption.setText(path);
 			d.setConsumptionProfile(path);
-			DesignerPanel.demandPanel.setData(path);
 		}
 	}
 }

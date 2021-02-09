@@ -52,14 +52,12 @@ public class MenuListener implements TreeSelectionListener {
 			String parent = getParent(clickedPath);
 			reporterPanel.plotPanel.addSeries(getSeriesName(parent, clicked),
 					detailedResult.getDataSeries(parent, clicked));
-			reporterPanel.plotPanel.paintSeries();
 		} else if (currentlySelected < previouslySelected && currentlySelected > 1) {
 			// We are deselecting a series (first condition)
 			// or we are re-selecting one of the series that was previously selected (!second
 			// condition, goes to else)
 			String parent = getParent(clickedPath);
 			reporterPanel.plotPanel.removeSeries(getSeriesName(parent, clicked));
-			reporterPanel.plotPanel.paintSeries();
 		} else {
 			// We are changing one series for another or re-selecting
 			clicked = ((DefaultMutableTreeNode) selectedPath.getLastPathComponent()).toString();
@@ -67,7 +65,6 @@ public class MenuListener implements TreeSelectionListener {
 			reporterPanel.plotPanel.clearSeries();
 			reporterPanel.plotPanel.addSeries(getSeriesName(parent, clicked),
 					detailedResult.getDataSeries(getParent(selectedPath), clicked.toString()));
-			reporterPanel.plotPanel.paintSeries();
 		}
 
 		previouslySelected = currentlySelected;

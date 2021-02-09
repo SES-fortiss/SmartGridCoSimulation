@@ -8,7 +8,7 @@ public class DConsumptionListener extends PathListener {
 	@Override
 	void update(String text) {
 		((Demand) component).setConsumptionProfile(text);
-		DesignerPanel.demandPanel.setData(text);
+		DesignerPanel.demandPanel.update();
 	}
 
 	@Override
