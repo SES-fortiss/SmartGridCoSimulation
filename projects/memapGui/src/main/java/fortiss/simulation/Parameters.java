@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import com.google.gson.annotations.Expose;
 
-import fortiss.datastructures.DataI;
+import fortiss.datastructures.DataInterface;
 import fortiss.datastructures.TimedDataAdapter;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FileManager;
@@ -80,7 +80,7 @@ public class Parameters {
 	@Expose
 	private String loggingMode;
 	/** Data read from price files */
-	private DataI priceData;
+	private DataInterface priceData;
 
 	/**
 	 * Constructor for class Parameters
@@ -190,7 +190,7 @@ public class Parameters {
 	/**
 	 * @return the data
 	 */
-	public DataI getData() {
+	public DataInterface getData() {
 		return priceData;
 	}
 	
@@ -207,7 +207,7 @@ public class Parameters {
 		try {
 			FileManager fm = new FileManager();
 			ExampleFiles ef = new ExampleFiles();
-			String [] labels = new String[] {"Price"};
+			String [] labels = new String[] {"Price [EUR/kWh]"};
 			if (ef.isExample(location)) {
 				this.priceData = new TimedDataAdapter(new TimedData(fm.readFromResources(ef.getFile(location)), labels));
 			} else {

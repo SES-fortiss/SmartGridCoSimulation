@@ -61,7 +61,9 @@ public class TimedData extends LinkedHashMap<String, ArrayList<TimeDataPoint>> {
 
 				// parse data: starts in 2 to avoid date and time columns
 				for (int i = 0; i < columnNames.length; i++) {
-					double value_temp = nf.parse(br_values.get(i + 2)).doubleValue();
+					// nf set the formatter, currently GERMAN, i.e. ","
+					double value_temp = nf.parse(br_values.get(i + 2)).doubleValue();					
+					
 					TimeDataPoint tdp_temp = new TimeDataPoint(ldt, value_temp);
 					this.get(columnNames[i]).add(tdp_temp);
 				}

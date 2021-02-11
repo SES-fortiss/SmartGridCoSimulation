@@ -5,7 +5,7 @@ import java.text.ParseException;
 
 import com.google.gson.annotations.Expose;
 
-import fortiss.datastructures.DataI;
+import fortiss.datastructures.DataInterface;
 import fortiss.datastructures.TimedDataAdapter;
 import fortiss.gui.icons.ComponentIcon;
 import fortiss.gui.listeners.helper.FileManager;
@@ -33,7 +33,7 @@ public class Volatile extends Component {
 	@Expose
 	private double coEmission;
 	/** Data read from forecast profiles file */
-	private DataI data;
+	private DataInterface data;
 
 	/**
 	 * Constructor for class Volatile
@@ -110,7 +110,7 @@ public class Volatile extends Component {
 	/**
 	 * @return the data
 	 */
-	public DataI getData() {
+	public DataInterface getData() {
 		return data;
 	}
 
@@ -119,7 +119,8 @@ public class Volatile extends Component {
 	 */
 	public void setData() {
 		String location = getForecastFile();
-		String[] labels = { "Reading [Wh]", "Power [W]" };
+		//String[] labels = { "Reading [Wh]", "Power [W]" };
+		String[] labels = { "Power [W]" };
 		if (location == null || location.isEmpty()) {
 			location = "FORECASTEXAMPLE"; // Load empty data
 		}

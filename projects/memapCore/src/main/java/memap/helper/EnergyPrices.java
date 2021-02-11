@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import memap.examples.ExampleFiles;
@@ -56,6 +58,11 @@ public class EnergyPrices {
 	 * 
 	 */
 	public void init(String MarketPriceCSV) {
+		
+		// if an empty string is provided, then load standard example.
+		if (MarketPriceCSV.length() <= 1) {
+			MarketPriceCSV = "ELECTRICITYPRICEEXAMPLE";
+		}		
 		setElectricityPrices(MarketPriceCSV);
 	}
 	
@@ -72,10 +79,14 @@ public class EnergyPrices {
 	private void setElectricityPrices(String csvFile) {
 		try {			
 			electricityPrices = readEnergyPrices(electricityPrices, getBuffer(csvFile));					 
-		} catch (IOException | ParseException e) {
-			System.err.println("Variable market price selected but input file is not provided. Using example file");
+		} catch (Exception e) {
+			System.err.println("Variable market price selected but input file [" + csvFile + "] is not provided. Using example file");
 			try {
-				electricityPrices = readEnergyPrices(electricityPrices, getBuffer("ELECTRICITYPRICEEXAMPLE"));					
+				
+				BufferedReader bf = getBuffer("ELECTRICITYPRICEEXAMPLE");				
+				electricityPrices = readEnergyPrices(electricityPrices, bf);
+				
+				
 			} catch (Exception e2) {
 				System.err.println("Error reading or parsing electricity price data " + csvFile);
 				SimulationStarter.stopSimulation();
@@ -121,6 +132,7 @@ public class EnergyPrices {
 	private BufferedReader getBuffer(String csvFile) {
 		FileManager mgr = new FileManager();
 		ExampleFiles examples = new ExampleFiles();
+		
 		if (examples.isExample(csvFile)) {
 			System.out.println(">> Reading from resources: " + csvFile);
 			return mgr.readFromResources(examples.getFile(csvFile));
@@ -152,7 +164,14 @@ public class EnergyPrices {
 		String row;
 
 		while ((row = br.readLine()) != null) {
-			originalValues.add(nf.parse(row).doubleValue());
+			
+			if (row.charAt(0) != '#') // skipping the header which starts with '#'
+			{	
+				List<String> br_values = Arrays.asList(row.split(";"));
+				originalValues.add(nf.parse(br_values.get(2)).doubleValue());
+			}
+			
+			// TODO add the time information, i.e. LocalDateTime.
 		}
 
 		double[] x = new double[originalValues.size()];

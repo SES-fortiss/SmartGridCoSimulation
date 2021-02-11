@@ -5,7 +5,7 @@ import java.text.ParseException;
 
 import com.google.gson.annotations.Expose;
 
-import fortiss.datastructures.DataI;
+import fortiss.datastructures.DataInterface;
 import fortiss.datastructures.TimedDataAdapter;
 import fortiss.gui.icons.ComponentIcon;
 import fortiss.gui.listeners.helper.FileManager;
@@ -22,7 +22,7 @@ public class Demand extends Component {
 	@Expose
 	private String consumptionProfile;
 	/** Data read from consumption profiles file */
-	private DataI data;
+	private DataInterface data;
 
 	/**
 	 * Constructor for class Demand
@@ -50,7 +50,7 @@ public class Demand extends Component {
 	/**
 	 * @return the data
 	 */
-	public DataI getData() {
+	public DataInterface getData() {
 		return data;
 	}
 

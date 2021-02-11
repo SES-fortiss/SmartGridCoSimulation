@@ -1,8 +1,6 @@
 package fortiss.gui;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Locale;
 
 import org.knowm.xchart.XChartPanel;
@@ -53,15 +51,29 @@ public class PlotPanel extends XChartPanel<XYChart> {
 	public void addSeries(String seriesName, ArrayList<Double> series) {
 		if (!getChart().getSeriesMap().containsKey(seriesName)) {
 
+			/** this is commented out. It was required for the function below. 
+			 * Currently this funtion is not used.
 			Comparator<Double> comparator = new Comparator<Double>() {
 				@Override
 				public int compare(Double v1, Double v2) {
 					return v1.compareTo(v2);
 				}
 			};
+			*/
+			
+			//System.out.println("Plotten: ");
+			//System.out.println("SeriesName: " + seriesName);
+			
+			//String listString = series.stream().map(Object::toString)
+            //        .collect(Collectors.joining(", "));
+			
+			//System.out.println("Data: " + listString);
 
 			// Series with maximum value smaller than 0.5 in absolute value are plotted in a
 			// separate axis
+			
+			// FIXME the second yAxis on the right seems not to work therefore this is commented out
+			/*
 			if (Collections.max(series, comparator) < 0.5 && Collections.min(series, comparator) > -0.5
 					&& getChart().getSeriesMap().size() > 0) {
 				XYSeries seriesx = getChart().addSeries(seriesName, series);
@@ -69,21 +81,19 @@ public class PlotPanel extends XChartPanel<XYChart> {
 				seriesx.setMarker(SeriesMarkers.NONE);
 				seriesx.setYAxisGroup(1);
 				getChart().getStyler().setYAxisMax(1, 0.5);
-				getChart().getStyler().setYAxisMin(1, -0.5);
+				getChart().getStyler().setYAxisMin(1, -0.5);			
 			} else {
-				XYSeries seriesx = getChart().addSeries(seriesName, series);
-				seriesx.setLabel(seriesName + "(left)");
-				seriesx.setMarker(SeriesMarkers.NONE);
-				seriesx.setYAxisGroup(0);
-				if (Collections.max(series, comparator) < 0.5 && Collections.min(series, comparator) > -0.5) {
-					getChart().getStyler().setYAxisMax(0, 0.5);
-					getChart().getStyler().setYAxisMin(0, -0.5);
-				} else {
-					getChart().getStyler().setYAxisMax(0, null);
-					getChart().getStyler().setYAxisMin(0, null);
-				}
-			}
-		}
+			*/
+				
+			XYSeries seriesx = getChart().addSeries(seriesName, series);
+			seriesx.setLabel(seriesName + "(left)");
+			seriesx.setMarker(SeriesMarkers.NONE);
+			seriesx.setYAxisGroup(0);
+			getChart().getStyler().setYAxisMax(0, null);
+			getChart().getStyler().setYAxisMin(0, null);
+			getChart().getStyler().setYAxisGroupPosition(0, YAxisPosition.Left);
+			//}
+		}		
 		repaint();
 	}
 

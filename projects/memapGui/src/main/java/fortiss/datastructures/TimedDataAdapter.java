@@ -14,7 +14,7 @@ import memap.helper.profilehandler.TimedData;
  * @param br
  * @return
  */
-public class TimedDataAdapter implements DataI {
+public class TimedDataAdapter implements DataInterface {
 	
 	private TimedData timedData;
 	

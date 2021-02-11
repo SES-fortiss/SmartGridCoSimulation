@@ -12,7 +12,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import fortiss.components.Volatile;
-import fortiss.datastructures.DataI;
+import fortiss.datastructures.DataInterface;
 import fortiss.gui.listeners.button.VBrowseListener;
 import fortiss.gui.listeners.button.VPlotListener;
 import fortiss.gui.listeners.selectionitem.VNetworkTypeListener;
@@ -65,6 +65,12 @@ public class VolatileInputPanel extends InformationPanel {
 	private JLabel lbVCost;
 	/** Volatile CO2 Emission label */
 	private JLabel lbVCOEmission;
+	/** CSV format instructions */
+	private JLabel lblCsvInstructions;
+	/** Example of consumption file format */
+	private JLabel lblCsvformat;
+	/** consumption file (CSV) warning */
+	private JLabel lblCsvWarning;
 	/** Plot panel */
 	private PlotPanel plotPanel = new PlotPanel();
 
@@ -80,9 +86,12 @@ public class VolatileInputPanel extends InformationPanel {
 		lbVNetworkType.setForeground(Colors.normal);
 		lbVMinimumPower.setForeground(Colors.normal);
 		lbVMaximumPower.setForeground(Colors.normal);
-		lbVForecastFile.setForeground(Colors.normal);
+		lbVForecastFile.setForeground(Colors.normal);		
 		lbVCost.setForeground(Colors.normal);
 		lbVCOEmission.setForeground(Colors.normal);
+		lblCsvInstructions.setForeground(Colors.normal);
+		lblCsvformat.setForeground(Colors.normal);
+		lblCsvWarning.setForeground(Colors.normal);
 	}
 
 	public VolatileInputPanel() {
@@ -184,6 +193,26 @@ public class VolatileInputPanel extends InformationPanel {
 		btVPlot.addMouseListener(new VPlotListener());
 		add(btVPlot, "wmax 40");
 		
+		lblCsvInstructions = new JLabel(
+				"<html> <b> Consumption file format: CSV </b> <br/> <br/> ");
+		add(lblCsvInstructions, "spanx, gaptop 30");
+
+		lblCsvformat = new JLabel("");
+		lblCsvformat.setIcon(IconStore.csvFormatVALUES);
+		add(lblCsvformat, "spanx");
+		
+		lblCsvInstructions = new JLabel(
+				"<html> Headers starting with # <br/> "
+				+ "Column 1: DATE of yyyy-mm-dd &emsp; <br/>"
+				+ "Column 2: TIME of hh:mm:ss &emsp; <br/>"
+				+ "Column 3: NORMALIZED VALUES of double with ',' &emsp; ");
+		add(lblCsvInstructions, "spanx, gaptop 10");
+
+
+		lblCsvWarning = new JLabel(
+				"<html><font face=\"verdana\" color=\"red\">&#9888;</font> Note: If no forecast file is selected the default is a 'sunny day'</html>");
+		add(lblCsvWarning, "spanx");
+		
 		plotPanel = new PlotPanel();
 		plotPanel.setFocusable(false);
 		plotPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -197,7 +226,7 @@ public class VolatileInputPanel extends InformationPanel {
 			plotPanel.setPlotted(false);
 		} else {
 			Volatile volatileProducer = (Volatile) DesignerPanel.selectedComponent;
-			DataI data = volatileProducer.getData();
+			DataInterface data = volatileProducer.getData();
 			if (data != null) {	
 				for (String seriesName : data.getSeriesList()) {
 					plotPanel.addSeries(seriesName, data.getSeries(seriesName));

@@ -11,7 +11,7 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
-import fortiss.datastructures.DataI;
+import fortiss.datastructures.DataInterface;
 import fortiss.gui.commands.RunCommand;
 import fortiss.gui.listeners.action.ButtonListener;
 import fortiss.gui.listeners.button.BrowseListener;
@@ -220,7 +220,7 @@ public class ParameterInputPanel extends InformationPanel {
 		plotPanel = new PlotPanel();
 		plotPanel.setFocusable(false);
 		plotPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		add(plotPanel, "spanx, center, gaptop 30, gapbottom 30, hidemode 3");
+		add(plotPanel, "spanx, center, gaptop 20, gapbottom 20, hidemode 3");
 		plotPanel.setVisible(false);
 
 		lbOptimizer = new JLabel("Optimizer");
@@ -261,7 +261,7 @@ public class ParameterInputPanel extends InformationPanel {
 			plotPanel.setPlotted(false);
 		} else {
 			Parameters parameters = PlanningTool.getInstance().getParameters();
-			DataI data = parameters.getData();
+			DataInterface data = parameters.getData();
 			if (data != null) {
 				for (String seriesName : data.getSeriesList()) {
 					plotPanel.addSeries(seriesName, data.getSeries(seriesName));

@@ -11,7 +11,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import fortiss.components.Demand;
-import fortiss.datastructures.DataI;
+import fortiss.datastructures.DataInterface;
 import fortiss.gui.listeners.button.DBrowseListener;
 import fortiss.gui.listeners.button.DPlotListener;
 import fortiss.gui.listeners.textfield.DConsumptionListener;
@@ -115,14 +115,23 @@ public class DemandInputPanel extends InformationPanel {
 		btDPlot.setContentAreaFilled(false);
 		btDPlot.addMouseListener(new DPlotListener());
 		add(btDPlot, "wmax 40");
-
+		
 		lblCsvInstructions = new JLabel(
-				"<html> <b> Consumption file format </b> <br/> <br/> CSV file with no headers <br/> Column 1: Heat &emsp; Column 2: Electricity <br/> Decimal separator: , <br/> Column separator: ;</html>");
+				"<html> <b> Consumption file format: CSV </b> <br/> <br/> ");
 		add(lblCsvInstructions, "spanx, gaptop 30");
 
 		lblCsvformat = new JLabel("");
-		lblCsvformat.setIcon(IconStore.csvFormat);
-		add(lblCsvformat, "spanx, center");
+		lblCsvformat.setIcon(IconStore.csvFormatDEMAND);
+		add(lblCsvformat, "spanx");
+		
+		lblCsvInstructions = new JLabel(
+				"<html> Headers starting with # <br/> "
+				+ "Column 1: DATE of yyyy-mm-dd &emsp; <br/>"
+				+ "Column 2: TIME of hh:mm:ss &emsp; <br/>"
+				+ "Column 3: HEAT of double with ',' &emsp; <br/>"
+				+ "Column 4: ELECTRICITY of double with ',' &emsp; ");
+		add(lblCsvInstructions, "spanx, gaptop 10");
+
 
 		lblCsvWarning = new JLabel(
 				"<html><font face=\"verdana\" color=\"red\">&#9888;</font> Note: If no consumption file is selected the default is zero</html>");
@@ -145,7 +154,7 @@ public class DemandInputPanel extends InformationPanel {
 			plotPanel.setPlotted(false);
 		} else {
 			Demand demand = (Demand) DesignerPanel.selectedComponent;
-			DataI data = demand.getData();
+			DataInterface data = demand.getData();
 			if (data != null) {	
 				for (String seriesName : data.getSeriesList()) {
 					plotPanel.addSeries(seriesName, data.getSeries(seriesName));
