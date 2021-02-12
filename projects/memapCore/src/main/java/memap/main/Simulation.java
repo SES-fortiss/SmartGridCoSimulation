@@ -1,6 +1,9 @@
 package memap.main;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
+
+import memap.controller.GuiController;
 import memap.controller.TopologyController;
 import memap.examples.ExampleLoader;
 import memap.messages.planning.ConnectionDB;
@@ -45,17 +48,23 @@ public class Simulation {
 
 		if (args.length != 0) {
 			arg = args[0];
-			if (args.length > 2 ) {
-				try {
-					N_STEPS_MPC = Integer.parseInt(args[1]);
-					PauseInSec = Integer.parseInt(args[2]);
-				} catch(NumberFormatException e) {
-				} 
-			} else if (args.length > 1) {
-				try {
-					N_STEPS_MPC = Integer.parseInt(args[1]);
-				} catch(NumberFormatException e) {
-				} 
+			if (args.length == 2 ) {
+				String filepath = args[1];
+				if (arg.contains("sim")) {
+					
+					System.out.println("========= START SIMULATION FOR ALEX =========");
+					
+					GuiController gc = new GuiController(  filepath   );
+					try {
+					    gc.setUp();
+					} catch (FileNotFoundException e) {
+					    e.printStackTrace();
+					}
+
+					gc.startSimulation();
+					
+				}
+				
 			}
 		}
 
