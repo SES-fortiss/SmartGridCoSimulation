@@ -12,6 +12,7 @@ package exampleJose;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 
 // This is executed with Eclipse
 public class SimulationJose {
@@ -24,8 +25,10 @@ public class SimulationJose {
 		topology = TopologyJose.createTopology();
 		
 		SimulationStarter.saveGridTopologyPlot(topology);		
-        ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);        
-        SimulationStarter.startSimulation(actorSystem, startTimeStep, maxTimeStep);
+		
+		SimulationStarter simulationStarter = new SimulationStarter(new GlobalTime());
+        ActorSystem actorSystem = simulationStarter.initialiseActorSystem(topology);        
+        simulationStarter.startSimulation(actorSystem, startTimeStep, maxTimeStep);
 	}
 	
 	public static void main(String[] args){

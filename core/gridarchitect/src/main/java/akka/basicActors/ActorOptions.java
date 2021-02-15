@@ -31,6 +31,7 @@ public class ActorOptions {
   public HashSet<String> directConnectionsPathList;
 
   // behavior represents all kinds of behavior
+  // FIXME (comment by bytschkow) behaviour model might be moved to Basic Actor --> less nested java objects = easier to maintain. 
   public BehaviorModel behaviorModel;
   public boolean hasAlreadyBeenSpawned = false;
 

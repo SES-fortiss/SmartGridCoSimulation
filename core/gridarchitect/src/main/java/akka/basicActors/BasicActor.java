@@ -69,9 +69,9 @@ public class BasicActor extends UntypedActor implements CurrentTimeStepSubscribe
 	int currentTimeStep;
 	/** Current day-time */
 	LocalDateTime currentTime;
-
-	public LocalDateTime timeValue;
+	
 	public ArrayList<BasicAnswer> answerListReceived = new ArrayList<BasicAnswer>();
+	public BasicRequest requestReceived;
 
 	// Options is subject for inheritance
 	public ActorOptions actorOptions;
@@ -85,6 +85,9 @@ public class BasicActor extends UntypedActor implements CurrentTimeStepSubscribe
 	public List<ActorRef> downStreamTrace = new ArrayList<ActorRef>();
 	public List<ActorRef> upStreamTrace = new ArrayList<ActorRef>();
 
+	
+	// TODO, unclear variables, maybe old stuff from Luc
+	// can be removed in future.
 	public BasicRequest initializationMessageCache;
 	public boolean overrideReportToParent;
 
@@ -223,7 +226,7 @@ public class BasicActor extends UntypedActor implements CurrentTimeStepSubscribe
 		if (message instanceof BasicRequest) {
 			try {
 				BasicRequest request = (BasicRequest) message;
-				this.timeValue = request.timeValue;
+				this.currentTime = request.timeValue;
 				this.downStreamTrace = new ArrayList<ActorRef>();
 				this.downStreamTrace.addAll(request.actorTrace);
 				this.downStreamTrace.add(getSelf());
@@ -301,6 +304,7 @@ public class BasicActor extends UntypedActor implements CurrentTimeStepSubscribe
 	 * Actor reacts to RequestMessage by its parent (or the GridActorSupervisor)
 	 */
 	void doSomeWork(BasicRequest message) throws Exception {
+		this.requestReceived = message;
 		this.requestContentReceived = message.requestContent;
 		MultipleCommunicationPattern.doSomeWork(this, message);
 	}
@@ -359,7 +363,7 @@ public class BasicActor extends UntypedActor implements CurrentTimeStepSubscribe
 	 ******************************************/
 	public void makeDecision() {
 
-		this.actorOptions.behaviorModel.actualTimeValue = timeValue;
+		this.actorOptions.behaviorModel.actualTimeValue = currentTime;
 		this.actorOptions.behaviorModel.answerListReceived = this.answerListReceived;
 
 		// if errorHandler is not Active, all ErrorCode stuff shall not be executed

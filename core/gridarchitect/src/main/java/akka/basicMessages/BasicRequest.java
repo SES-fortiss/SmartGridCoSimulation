@@ -40,14 +40,6 @@ public class BasicRequest implements Serializable {
 		this.requestContent = null;
 	}
 
-	// TODO Not used. Remove? 
-	/*public BasicRequest() {
-		this.timeStep = globalTime.getCurrentTimeStep();
-		this.timeValue = globalTime.getCurrentTime();
-		this.actorTrace = null;
-		this.requestContent = null;
-	}*/
-
 	@Override
 	public String toString() {
 		return String.format("timeStep:%s, actorTrace:%s, requestContent:%s", timeStep, actorTrace, requestContent/* , recieverPath */);
