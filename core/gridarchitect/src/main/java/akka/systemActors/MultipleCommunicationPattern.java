@@ -132,13 +132,13 @@ public class MultipleCommunicationPattern {
 				}
 				else
 				{
-					request = new BasicRequest(gridActor.getCurrentTimeStep(), gridActor.getCurrentTime(), gridActor.downStreamTrace, mrequest.getCurrentRequestContent());
+					request = new BasicRequest(gridActor.getCurrentTimeStep(), gridActor.getCurrentTime(), gridActor.getTimeStepDuration(), gridActor.downStreamTrace, mrequest.getCurrentRequestContent());
 					executeAskChildrenLogic(gridActor, request);
 				}
 			}
 			else // normal execution without MultiRequestContainer
 			{
-				request = new BasicRequest(gridActor.getCurrentTimeStep(), gridActor.getCurrentTime(), gridActor.downStreamTrace, requestContent);
+				request = new BasicRequest(gridActor.getCurrentTimeStep(), gridActor.getCurrentTime(), gridActor.getTimeStepDuration(), gridActor.downStreamTrace, requestContent);
 				executeAskChildrenLogic(gridActor, request);
 			}
 		}
@@ -340,7 +340,7 @@ public class MultipleCommunicationPattern {
 				if (secondMessage.recieverPath.equals(child.path().toString()))
 				{
 					
-					BasicRequest request = new BasicRequest(gridActor.getCurrentTimeStep(), gridActor.getCurrentTime(), gridActor.downStreamTrace, secondMessage);
+					BasicRequest request = new BasicRequest(gridActor.getCurrentTimeStep(), gridActor.getCurrentTime(), gridActor.getTimeStepDuration(), gridActor.downStreamTrace, secondMessage);
 					ConstantLogger.logMessageSendCounter(request);
 					// wait x ms for response
 					childrenResponseList.add(Patterns.ask(child, request, GridArchitectConfiguration.childrenResponseTime)); 

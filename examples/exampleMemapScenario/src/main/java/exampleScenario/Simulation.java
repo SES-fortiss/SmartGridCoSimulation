@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 
@@ -29,10 +30,13 @@ public class Simulation {
 	
 	public void run(){
 		topology = Topology.createTopology();
-		SimulationStarter.saveGridTopologyPlot(topology);   
-		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
+		SimulationStarter.saveGridTopologyPlot(topology);
+		
+		SimulationStarter simulationStarter = new SimulationStarter(new GlobalTime());
+		
+		ActorSystem actorSystem = simulationStarter.initialiseActorSystem(topology);
         //SimulationStarter.startSimulation(actorSystem,startTime, endTime, timeInterval);
-		SimulationStarter.startSimulation(actorSystem, LocalDate.of(2014,7,1), timeInterval);
+		simulationStarter.startSimulation(actorSystem, LocalDate.of(2014,7,1), timeInterval);
 	}
 	
 	public static void main(String[] args){

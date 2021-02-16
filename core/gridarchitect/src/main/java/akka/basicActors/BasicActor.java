@@ -11,6 +11,7 @@ package akka.basicActors;
 
 import static akka.dispatch.Futures.sequence;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +46,6 @@ import faultStrategy.backEnd.BasicFaultStrategy;
 import resultLogger.ConstantLogger;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
 import topology.ActorTopology;
 
 /**
@@ -69,6 +69,8 @@ public class BasicActor extends UntypedActor implements CurrentTimeStepSubscribe
 	int currentTimeStep;
 	/** Current day-time */
 	LocalDateTime currentTime;
+	/** Period of a time step, if available */
+	Duration timeStepDuration;
 	
 	public ArrayList<BasicAnswer> answerListReceived = new ArrayList<BasicAnswer>();
 	public BasicRequest requestReceived;
@@ -226,7 +228,11 @@ public class BasicActor extends UntypedActor implements CurrentTimeStepSubscribe
 		if (message instanceof BasicRequest) {
 			try {
 				BasicRequest request = (BasicRequest) message;
+				
+				this.currentTimeStep = request.timeStep;
 				this.currentTime = request.timeValue;
+				this.timeStepDuration = request.timeStepDuration;
+				
 				this.downStreamTrace = new ArrayList<ActorRef>();
 				this.downStreamTrace.addAll(request.actorTrace);
 				this.downStreamTrace.add(getSelf());
@@ -268,7 +274,7 @@ public class BasicActor extends UntypedActor implements CurrentTimeStepSubscribe
 			Future<Iterable<Object>> childrenFuturesIterable = sequence(childrenResponseList,
 					this.getContext().system().dispatcher());
 			Await.result(childrenFuturesIterable,
-					Duration.create((GridArchitectConfiguration.childrenResponseTime), TimeUnit.MILLISECONDS));
+					scala.concurrent.duration.Duration.create((GridArchitectConfiguration.childrenResponseTime), TimeUnit.MILLISECONDS));
 		}
 
 	}
@@ -485,6 +491,10 @@ public class BasicActor extends UntypedActor implements CurrentTimeStepSubscribe
 
 	public LocalDateTime getCurrentTime() {
 		return currentTime;
+	}
+	
+	public Duration getTimeStepDuration() {
+		return timeStepDuration;
 	}
 
 	@Override

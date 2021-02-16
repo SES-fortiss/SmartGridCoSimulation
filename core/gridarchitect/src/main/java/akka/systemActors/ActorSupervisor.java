@@ -260,7 +260,7 @@ public class ActorSupervisor extends UntypedActor implements CurrentTimeStepSubs
         
         for (ActorRef child: getContext().getChildren()) {
         	//System.out.println("Request: "+ new BasicRequest(timeStep, actorTrace, null));
-            childrenResponseList.add(ask(child, new BasicRequest(globalTime.getCurrentTimeStep(), globalTime.getCurrentTime(), actorTrace, null), GridArchitectConfiguration.rootActorResponseTime));
+            childrenResponseList.add(ask(child, new BasicRequest(globalTime.getCurrentTimeStep(), globalTime.getCurrentTime(), globalTime.getPeriod(), actorTrace, null), GridArchitectConfiguration.rootActorResponseTime));
             //System.out.println("Supervisor: ASK A CHILD");
         }
         

@@ -1,6 +1,7 @@
 package exampleScenario.components;
 
-import akka.systemActors.GlobalTime;
+import java.time.LocalDateTime;
+
 import exampleScenario.helper.EnergyPrices;
 import exampleScenario.messages.BuildingRequest;
 
@@ -20,6 +21,8 @@ public class HeatPump extends Producer {
 	public void makeDecision() {
 		super.makeDecision();
 		
+		LocalDateTime currentTime = this.actor.getCurrentTime();
+		
 		EnergyPrices energyPrices = new EnergyPrices();		
 		BuildingRequest request;
 		
@@ -28,6 +31,6 @@ public class HeatPump extends Producer {
 			specificationToSend.power_h = request.consumption.getDHWValue() + request.consumption.getHeatValue();
 			if (specificationToSend.power_h > this.qdot_max) specificationToSend.power_h = this.qdot_max;
 		}
-		specificationToSend.cost = energyPrices.getElectricityPriceInCent(GlobalTime.currentTime)*specificationToSend.power_h*(1/efficiency);
+		specificationToSend.cost = energyPrices.getElectricityPriceInCent(currentTime)*specificationToSend.power_h*(1/efficiency);
 	}
 }
