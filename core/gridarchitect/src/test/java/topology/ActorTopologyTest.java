@@ -50,10 +50,6 @@ public class ActorTopologyTest {
         topology.getActorOptions("/unknown/Actor");
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testReplaceActorPathOldEntryIsRemoved() {
-    }
-
     @Test
     public void testReplaceActorPathForSubGridAddition() {
         ActorTopology topology = new ActorTopology("");
