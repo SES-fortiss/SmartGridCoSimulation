@@ -11,7 +11,6 @@ import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.FileManager;
 import fortiss.simulation.Parameters;
 import fortiss.simulation.PlanningTool;
-import fortiss.simulation.helper.Logger;
 import memap.helper.DirectoryConfiguration;
 import memap.media.Strings;
 
@@ -45,7 +44,7 @@ public class OverviewResults extends ResultsLibrary {
 			resultsLibrary.put(Strings.memapOnModeName,
 					new Data(fm.readFromSource(filename), true, Data.BYROW));
 
-			Logger.getInstance().writeInfo("File name for reading overview results: " + filename);
+			//Logger.getInstance().writeInfo(this.getClass().toString() + "File name for reading overview results MEMAPOn: " + filename);
 
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
@@ -58,6 +57,7 @@ public class OverviewResults extends ResultsLibrary {
 			filename = location + source + filename;
 			try {
 				resultsLibrary.put(building.getName(), new Data(fm.readFromSource(filename), true, Data.BYROW));
+				//Logger.getInstance().writeInfo(this.getClass().toString() + "File name for reading overview results building: " + filename);
 			} catch (IOException | ParseException e) {
 				e.printStackTrace();
 			}

@@ -75,7 +75,7 @@ public class SimulationOptimize extends SimulationState {
 				GuiController gc = planningTool.getGuiController();
 				gc.startSimulation();
 				
-				while (sp.getProgress() <= 99.999 && sp.getStatus().equals(Status.OK)) {
+				while (sp.getProgress() <= 99.9999 && sp.getStatus().equals(Status.OK)) {
 					double currentProgress = sp.getProgress();
 					System.out.println("One Simulation stopped, but second still running. Progress: " + currentProgress);
 					try {
@@ -83,6 +83,12 @@ public class SimulationOptimize extends SimulationState {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
+				}
+				
+				try { // maybe there are still some files to be written, which takes a little bit of time.
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 				 				
 				pm.setState(new SimulationDone());

@@ -44,7 +44,7 @@ public class SolutionHandler {
 		 * or or the directory from which the .jar was executed.
 		 */
 		location = location + source;
-		System.out.println("Try file location: " + location);
+		System.out.println("WRITE solutions, SolitionHandler, try file location: " + location);
 		
 		
 	    File destination = new File(location);

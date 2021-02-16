@@ -42,6 +42,9 @@ public class DetailedResults extends ResultsLibrary {
 
 		try {
 			resultsLibrary.put(Strings.memapOnModeName, new Data(fm.readFromSource(filename), true, Data.BYCOLUMN));
+			
+			//Logger.getInstance().writeInfo(this.getClass().toString() + "File name for reading detailed results MEMAPOn: " + filename);
+			
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 		}
@@ -53,6 +56,7 @@ public class DetailedResults extends ResultsLibrary {
 			filename = location + source + filename;
 			try {
 				resultsLibrary.put(building.getName(), new Data(fm.readFromSource(filename), true, Data.BYCOLUMN));
+				//Logger.getInstance().writeInfo(this.getClass().toString() + "File name for reading detailed results building: " + filename);
 			} catch (IOException | ParseException e) {
 				e.printStackTrace();
 			}
