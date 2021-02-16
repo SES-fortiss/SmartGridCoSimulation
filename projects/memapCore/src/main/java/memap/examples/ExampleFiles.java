@@ -13,12 +13,9 @@ public class ExampleFiles {
 		exampleFiles.put("CONSUMPTIONEXAMPLE3", "consumptionExample3.csv");
 		exampleFiles.put("CONSUMPTIONEXAMPLE4", "consumptionExample4.csv");
 		exampleFiles.put("CONSUMPTIONEXAMPLE5", "consumptionExample5.csv");
-		/*
-		 * Production of a 15kWp solar installation
-		 * (source:https://my.discovergy.com/export?)
-		 */
-		exampleFiles.put("FORECASTEXAMPLE", "Discovergy_PVAnlage15kWp.csv");
-		exampleFiles.put("ELECTRICITYPRICEEXAMPLE", "Strompreise_7Tage_simple.csv");
+		exampleFiles.put("CONSUMPTIONEXAMPLE6", "consumptionExample6.csv");
+		exampleFiles.put("FORECASTEXAMPLE", "forecastExample.csv");
+		exampleFiles.put("ELECTRICITYPRICEEXAMPLE", "electricityPriceExample.csv");
 	}
 
 	public String getFile(String example) {

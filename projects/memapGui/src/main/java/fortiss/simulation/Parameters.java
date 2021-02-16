@@ -1,11 +1,19 @@
 package fortiss.simulation;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import com.google.gson.annotations.Expose;
 
+import fortiss.datastructures.DataInterface;
+import fortiss.datastructures.TimedDataAdapter;
 import fortiss.gui.DesignerPanel;
+import fortiss.gui.listeners.helper.FileManager;
 import fortiss.media.IconStore;
+import fortiss.simulation.helper.Logger;
+import memap.examples.ExampleFiles;
+import memap.helper.profilehandler.TimedData;
 
 /**
  * Stores the parameter configuration selected by the user and the default
@@ -71,6 +79,8 @@ public class Parameters {
 	/** loggingMode a String. loggingMode: {allLogs, fileLogs, resultLogs} */
 	@Expose
 	private String loggingMode;
+	/** Data read from price files */
+	private DataInterface priceData;
 
 	/**
 	 * Constructor for class Parameters
@@ -174,6 +184,42 @@ public class Parameters {
 
 	public void setMarketPriceFile(String marketPriceFile) {
 		this.marketPriceFile = marketPriceFile;
+		setData();
+	}
+	
+	/**
+	 * @return the data
+	 */
+	public DataInterface getData() {
+		return priceData;
+	}
+	
+	/**
+	 * @param priceData the data to set
+	 */
+	public void setData() {
+		String location = getMarketPriceFile();
+
+		if (location == null || location.isEmpty()) {
+			location = "ELECTRICITYPRICEEXAMPLE"; // Load empty data
+		}
+		
+		try {
+			FileManager fm = new FileManager();
+			ExampleFiles ef = new ExampleFiles();
+			String [] labels = new String[] {"Price [EUR/kWh]"};
+			if (ef.isExample(location)) {
+				this.priceData = new TimedDataAdapter(new TimedData(fm.readFromResources(ef.getFile(location)), labels));
+			} else {
+				this.priceData = new TimedDataAdapter(new TimedData(fm.readFromSource(location), labels));
+			}
+		} catch (IOException | ParseException e) {
+				Logger.getInstance()
+						.writeWarning("Data for variable market price at \"" + location + "\" could not be read. Using zeros only.");
+				e.printStackTrace();
+				setMarketPriceFile(""); // Fix path and load empty data
+		}
+
 	}
 
 	public double getFixedMarketPrice() {

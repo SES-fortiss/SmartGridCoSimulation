@@ -55,7 +55,13 @@ public class SolarRadiation {
 			
 			try {
 				FileManager fm = new FileManager();
-				normalizedSolarProductionProfile = readScenarioFormat(fm.getBuffer(csvFile));
+				
+				if (csvFile.isEmpty()) {
+					normalizedSolarProductionProfile = readScenarioFormat(fm.getBuffer("FORECASTEXAMPLE"));
+				} else {
+					normalizedSolarProductionProfile = readScenarioFormat(fm.getBuffer(csvFile));
+				}
+				
 			} catch (Exception e2) {
 				System.err.println("Error reading or parsing CSV data from " + csvFile);
 				SimulationStarter.stopSimulation();

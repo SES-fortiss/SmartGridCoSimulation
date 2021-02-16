@@ -1,5 +1,6 @@
 package fortiss.gui;
 
+import java.awt.Cursor;
 import java.awt.Graphics;
 
 import javax.swing.DefaultComboBoxModel;
@@ -10,13 +11,10 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.FormSpecs;
-import com.jgoodies.forms.layout.RowSpec;
-
 import fortiss.components.Volatile;
+import fortiss.datastructures.DataInterface;
 import fortiss.gui.listeners.button.VBrowseListener;
+import fortiss.gui.listeners.button.VPlotListener;
 import fortiss.gui.listeners.selectionitem.VNetworkTypeListener;
 import fortiss.gui.listeners.textfield.VCOEmissionListener;
 import fortiss.gui.listeners.textfield.VCostListener;
@@ -28,12 +26,15 @@ import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.IconStore;
+import net.miginfocom.swing.MigLayout;
 
 /**
  * Input panel for volatile parameters.
  */
 public class VolatileInputPanel extends InformationPanel {
 
+	private static final long serialVersionUID = 1L;
+	
 	/** Volatile name */
 	public JTextField txtVName;
 	/** Volatile minimum power */
@@ -64,8 +65,15 @@ public class VolatileInputPanel extends InformationPanel {
 	private JLabel lbVCost;
 	/** Volatile CO2 Emission label */
 	private JLabel lbVCOEmission;
+	/** CSV format instructions */
+	private JLabel lblCsvInstructions;
+	/** Example of consumption file format */
+	private JLabel lblCsvformat;
+	/** consumption file (CSV) warning */
+	private JLabel lblCsvWarning;
+	/** Plot panel */
+	private PlotPanel plotPanel = new PlotPanel();
 
-	private static final long serialVersionUID = 1L;
 
 	/** Necessary for dark mode on/off implementation */
 	@Override
@@ -78,9 +86,12 @@ public class VolatileInputPanel extends InformationPanel {
 		lbVNetworkType.setForeground(Colors.normal);
 		lbVMinimumPower.setForeground(Colors.normal);
 		lbVMaximumPower.setForeground(Colors.normal);
-		lbVForecastFile.setForeground(Colors.normal);
+		lbVForecastFile.setForeground(Colors.normal);		
 		lbVCost.setForeground(Colors.normal);
 		lbVCOEmission.setForeground(Colors.normal);
+		lblCsvInstructions.setForeground(Colors.normal);
+		lblCsvformat.setForeground(Colors.normal);
+		lblCsvWarning.setForeground(Colors.normal);
 	}
 
 	public VolatileInputPanel() {
@@ -94,35 +105,26 @@ public class VolatileInputPanel extends InformationPanel {
 	private void initialize() {
 		setBorder(new TitledBorder(null, "Component information", TitledBorder.RIGHT, TitledBorder.TOP, null,
 				Colors.accent2));
-		setLayout(new FormLayout(
-				new ColumnSpec[] { ColumnSpec.decode("15dlu"), ColumnSpec.decode("left:120dlu"),
-						ColumnSpec.decode("15dlu"), ColumnSpec.decode("75dlu:grow"), FormSpecs.RELATED_GAP_COLSPEC,
-						FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("15dlu"),
-						FormSpecs.RELATED_GAP_COLSPEC, },
-				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						RowSpec.decode("default:grow"), }));
 
+		setLayout(new MigLayout("insets 30 20 20 20, fillx, wrap 4, hidemode 2, width 99%", 
+				"[left, growprio 50]30[right]10[right, grow 0]5[right, grow 0]", 
+				""));
+		
 		lblVolatileProduction = new JLabel("VOLATILE PRODUCTION");
 		lblVolatileProduction.setFont(Fonts.getOswald());
-		add(lblVolatileProduction, "2, 4, 3, 1, center, center");
+		add(lblVolatileProduction, "spanx, center, gapbottom 30");
 
 		lbVName = new JLabel("Name");
-		add(lbVName, "2, 8");
+		add(lbVName);
 
 		txtVName = new JTextField();
 		txtVName.addKeyListener(new VNameListener());
 		txtVName.addFocusListener(new VNameListener());
-		add(txtVName, "4, 8, 3, 1, fill, default");
 		txtVName.setColumns(10);
+		add(txtVName, "spanx 3, growx");
 
 		lbVNetworkType = new JLabel("Network type");
-		add(lbVNetworkType, "2, 10");
+		add(lbVNetworkType);
 
 		sVNetworkType = new JComboBox<>();
 		sVNetworkType.setFocusable(false);
@@ -131,62 +133,117 @@ public class VolatileInputPanel extends InformationPanel {
 				new String[] { "Heat", "Electricity" }));
 		sVNetworkType.addItemListener(new VNetworkTypeListener());
 		sVNetworkType.addMouseListener(new VNetworkTypeListener());
-		add(sVNetworkType, "4, 10, 3, 1, fill, default");
+		add(sVNetworkType, "spanx 3, growx");
 
 		lbVMinimumPower = new JLabel("Minimum power [kW]");
-		add(lbVMinimumPower, "2, 12");
+		add(lbVMinimumPower);
 
 		txtVMinimumPower = new JTextField();
 		txtVMinimumPower.addKeyListener(new VMinPowerListener());
 		txtVMinimumPower.addFocusListener(new VMinPowerListener());
-		add(txtVMinimumPower, "4, 12, 3, 1, fill, default");
 		txtVMinimumPower.setColumns(10);
+		add(txtVMinimumPower, "spanx 3, growx");
 
 		lbVMaximumPower = new JLabel("Maximum power [kW]");
-		add(lbVMaximumPower, "2, 14");
+		add(lbVMaximumPower);
 
 		txtVMaximumPower = new JTextField();
 		txtVMaximumPower.addKeyListener(new VMaxPowerListener());
 		txtVMaximumPower.addFocusListener(new VMaxPowerListener());
-		add(txtVMaximumPower, "4, 14, 3, 1, fill, default");
 		txtVMaximumPower.setColumns(10);
+		add(txtVMaximumPower, "spanx 3, growx");
 
+		lbVCost = new JLabel("Fuel cost [EUR/kWh]");
+		add(lbVCost);
+
+		txtVCost = new JTextField();
+		txtVCost.addKeyListener(new VCostListener());
+		txtVCost.addFocusListener(new VCostListener());
+		add(txtVCost, "spanx 3, growx");
+		txtVCost.setColumns(10);
+
+		lbVCOEmission = new JLabel("CO2 Emissions [kg/kWh]"); //$NON-NLS-1$
+		add(lbVCOEmission);
+
+		txtVCOEmission = new JTextField();
+		txtVCOEmission.addKeyListener(new VCOEmissionListener());
+		txtVCOEmission.addFocusListener(new VCOEmissionListener());
+		txtVCOEmission.setColumns(10);
+		add(txtVCOEmission, "spanx 3, growx");
+		
 		lbVForecastFile = new JLabel("Forecast file");
-		add(lbVForecastFile, "2, 16");
+		add(lbVForecastFile);
 
 		txtVForecastFile = new JTextField();
 		txtVForecastFile.addKeyListener(new VForecastFileListener());
 		txtVForecastFile.addFocusListener(new VForecastFileListener());
-		add(txtVForecastFile, "4, 16, fill, default");
 		txtVForecastFile.setColumns(10);
+		add(txtVForecastFile, "wmin 200, growx");
 
 		JButton btVBrowse = new JButton("");
 		btVBrowse.addMouseListener(new VBrowseListener());
 		btVBrowse.setIcon(IconStore.open);
 		btVBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
-		add(btVBrowse, "6, 16, right, center");
+		add(btVBrowse, "wmax 40");
+		
+		JButton btVPlot = new JButton("");
+		btVPlot.setIcon(IconStore.visualize);
+		btVPlot.setBorder(new EmptyBorder(3, 3, 3, 3));
+		btVPlot.setContentAreaFilled(false);
+		btVPlot.addMouseListener(new VPlotListener());
+		add(btVPlot, "wmax 40");
+		
+		lblCsvInstructions = new JLabel(
+				"<html> <b> Consumption file format: CSV </b> <br/> <br/> ");
+		add(lblCsvInstructions, "spanx, gaptop 30");
 
-		lbVCost = new JLabel("Fuel cost [EUR/kWh]");
-		add(lbVCost, "2, 18");
+		lblCsvformat = new JLabel("");
+		lblCsvformat.setIcon(IconStore.csvFormatVALUES);
+		add(lblCsvformat, "spanx");
+		
+		lblCsvInstructions = new JLabel(
+				"<html> Headers starting with # <br/> "
+				+ "Column 1: DATE of yyyy-mm-dd &emsp; <br/>"
+				+ "Column 2: TIME of hh:mm:ss &emsp; <br/>"
+				+ "Column 3: NORMALIZED VALUES of double with ',' &emsp; ");
+		add(lblCsvInstructions, "spanx, gaptop 10");
 
-		txtVCost = new JTextField();
-		txtVCost.addKeyListener(new VCostListener());
-		txtVCost.addFocusListener(new VCostListener());
-		add(txtVCost, "4, 18, 3, 1, fill, default");
-		txtVCost.setColumns(10);
 
-		lbVCOEmission = new JLabel("CO2 Emissions [kg/kWh]"); //$NON-NLS-1$
-		add(lbVCOEmission, "2, 20");
-
-		txtVCOEmission = new JTextField();
-		txtVCOEmission.addKeyListener(new VCOEmissionListener());
-		txtVCOEmission.addFocusListener(new VCOEmissionListener());
-		add(txtVCOEmission, "4, 20, 3, 1, fill, default");
-		txtVCOEmission.setColumns(10);
+		lblCsvWarning = new JLabel(
+				"<html><font face=\"verdana\" color=\"red\">&#9888;</font> Note: If no forecast file is selected the default is a 'sunny day'</html>");
+		add(lblCsvWarning, "spanx");
+		
+		plotPanel = new PlotPanel();
+		plotPanel.setFocusable(false);
+		plotPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		add(plotPanel, "spanx, center, gaptop 30");
+		plotPanel.setVisible(false);
 	}
 
+	public void plot() {
+		if (plotPanel.isPlotted()) {
+			plotPanel.setVisible(false);
+			plotPanel.setPlotted(false);
+		} else {
+			Volatile volatileProducer = (Volatile) DesignerPanel.selectedComponent;
+			DataInterface data = volatileProducer.getData();
+			if (data != null) {	
+				for (String seriesName : data.getSeriesList()) {
+					plotPanel.addSeries(seriesName, data.getSeries(seriesName));
+				}
+			}
+			plotPanel.setPlotted(true);
+			plotPanel.setVisible(true);
+		}
+	}
+	
 	@Override
 	public void update() {
+		// hide plot and erase data
+		plotPanel.setVisible(false);
+		plotPanel.setPlotted(false);
+		plotPanel.clearSeries();
+				
 		Volatile volatileProd = (Volatile) DesignerPanel.selectedComponent;
 		txtVName.setText(volatileProd.getName());
 		sVNetworkType.setSelectedItem(volatileProd.getNetworkType());

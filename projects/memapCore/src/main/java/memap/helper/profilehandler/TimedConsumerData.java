@@ -21,6 +21,7 @@ import java.util.Map;
  * @param br
  * @return
  */
+@Deprecated
 public class TimedConsumerData {
 	
 	// disclaimer for code quality, this class uses in some methods some hard coded values.

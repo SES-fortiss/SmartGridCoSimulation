@@ -9,7 +9,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -43,14 +42,6 @@ public class ReporterDetailedResultPanel extends JPanel {
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		if (plotPanel.isPlotted()) {
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					plotPanel.paintSeries();
-				}
-			});
-		}
 		plSelection.setBackground(Colors.background);
 		plSelection.setForeground(Colors.normal);
 		lbInstructions.setForeground(Colors.title);

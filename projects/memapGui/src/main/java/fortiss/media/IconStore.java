@@ -48,7 +48,8 @@ abstract public class IconStore {
 	private static String variableMarketPath = "/variableMarket.png";
 	private static String fixedMarketPath = "/fixedMarket.png";
 	private static String visualizePath = "/visualize.png";
-	private static String vsvFormatPath = "/csvFormat.png";
+	private static String csvFormatDEMANDPath = "/csvFormatDEMAND.png";
+	private static String csvFormatVALUESPath = "/csvFormatVALUES.png";
 	private static String seriesPath = "/series.png";
 	private static String logPath = "/log.png";
 	private static String statisticsPath = "/statistics.png";
@@ -100,8 +101,12 @@ abstract public class IconStore {
 			.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 	public static ImageIcon visualize = new ImageIcon(new ImageIcon(IconStore.class.getResource(visualizePath)).getImage()
 			.getScaledInstance(20, 20, Image.SCALE_SMOOTH));
-	public static ImageIcon csvFormat = new ImageIcon(new ImageIcon(IconStore.class.getResource(vsvFormatPath)).getImage()
-			.getScaledInstance(100, 100, Image.SCALE_SMOOTH));
+	public static ImageIcon csvFormatDEMAND = new ImageIcon(new ImageIcon(IconStore.class.getResource(csvFormatDEMANDPath)).getImage()
+			//.getScaledInstance(100, 100, Image.SCALE_SMOOTH)
+			);
+	public static ImageIcon csvFormatVALUES = new ImageIcon(new ImageIcon(IconStore.class.getResource(csvFormatVALUESPath)).getImage()
+			//.getScaledInstance(100, 100, Image.SCALE_SMOOTH)
+			);
 
 	public static ImageIcon uDemandMenu = new ImageIcon(new ImageIcon(IconStore.class.getResource(uDemandPath)).getImage()
 			.getScaledInstance(25, 35, Image.SCALE_SMOOTH));

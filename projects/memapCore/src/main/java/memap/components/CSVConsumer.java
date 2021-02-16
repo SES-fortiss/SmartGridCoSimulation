@@ -11,8 +11,10 @@ import memap.components.prototypes.Consumer;
 import memap.controller.TopologyController;
 import memap.helper.FileManager;
 import memap.helper.profilehandler.OriginalCSVHandler;
-import memap.helper.profilehandler.TimedConsumerData;
-import memap.helper.profilehandler.TimedConsumerDataHandler;
+import memap.helper.profilehandler.TimedData;
+import memap.helper.profilehandler.TimedDataHandler;
+import memap.main.SimulationProgress;
+import memap.main.Status;
 import memap.messages.extension.NetworkType;
 import simulation.SimulationStarter;
 
@@ -108,10 +110,11 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 				
 				FileManager fm = new FileManager();
 				BufferedReader br = fm.getBuffer(csvFile);
-				TimedConsumerData timedConsumerData = new TimedConsumerData(br);
-				TimedConsumerDataHandler tdh = new TimedConsumerDataHandler(timedConsumerData, topologyConfig);
-				electricityProfile = tdh.getElectricityProfile();
-				heatProfile = tdh.getHeatProfile();
+				String [] columnNames = new String[] {"Heat", "Electricity"};
+				TimedData timedConsumerData = new TimedData(br, columnNames);
+				TimedDataHandler tdh = new TimedDataHandler(timedConsumerData, topologyConfig, columnNames);
+				electricityProfile = tdh.get(columnNames[0]);
+				heatProfile = tdh.get(columnNames[1]);
 				
 				// After the creation of the profiles, we must be sure to consider the MPC Horizon.
 				// We append the first part of the profile again to the end to make sure that MPC data is available.
@@ -123,6 +126,7 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 				}
 				
 			} catch (Exception e2) {
+				SimulationProgress.getInstance().setStatus(Status.ERROR, getClass() + " - wrong format");
 				SimulationStarter.stopSimulation();
 				e.printStackTrace();
 				e2.printStackTrace();
