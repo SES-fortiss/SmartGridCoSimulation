@@ -174,8 +174,8 @@ public class SimulationStarter {
         /*
          *  Send the monitor the address Reference of the inbox and the StartMessage
          */
-        inbox.send(actorSystem.actorFor("/user/ActorMonitor"), "Inbox registration for start"); 
-        actorSystem.actorSelection("/user/ActorMonitor").tell(message, null);    	
+        inbox.send(actorSystem.actorFor("/user/ActorMonitor"), "Inbox registration for start");
+        actorSystem.actorSelection("/user/ActorMonitor").tell(message, null);
        	
         // Inbox receives a message from Monitor when Simulation is completed
         inbox.receive(Duration.create(deadline, TimeUnit.SECONDS));

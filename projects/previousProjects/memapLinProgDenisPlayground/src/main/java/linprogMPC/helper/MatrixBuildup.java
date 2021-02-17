@@ -2,9 +2,7 @@ package linprogMPC.helper;
 
 import java.util.ArrayList;
 
-import akka.systemActors.GlobalTime;
 import linprogMPC.MPCDenisSimulation;
-
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.ConsumptionMessage;
 import linprogMPC.messages.ProducerMessage;
@@ -19,7 +17,7 @@ public abstract class MatrixBuildup {
 	final static int nStepsMPC = MPCDenisSimulation.N_STEPS_MPC;
 	
 		
-	public static OptimizationProblem SingleBuilding(BuildingMessage buildingSpec) {		
+	public static OptimizationProblem getOptProblemForSingleBuilding(BuildingMessage buildingSpec, int currentTimeStep) {		
 		
 		int nrOfStorages = buildingSpec.getNrOfStorages();
 		int nrOfProducers = buildingSpec.getNrOfProducers();
@@ -36,14 +34,14 @@ public abstract class MatrixBuildup {
 		int producersHandled = 0;
 		int storagesHandled = 0;
 		
-		if (GlobalTime.getCurrentTimeStep() == 0) {
+		if (currentTimeStep == 0) {
 			System.out.println(" << " + buildingSpec.name + " >> ");
 		}
 		
 		for(ProducerMessage producerSpec : buildingSpec.producers) {
 			addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, buildingSpec.LDHeating);
 			producersHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (currentTimeStep == 0) {
 				System.out.println("Prod-Nr.: " + producersHandled + ", " + producerSpec.name);
 			}
 		}	
@@ -51,12 +49,12 @@ public abstract class MatrixBuildup {
 		for(StorageMessage storageSpec : buildingSpec.storages) {
 			addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled, buildingSpec.LDHeating);
 			storagesHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (currentTimeStep == 0) {
 				System.out.println("Stor-Nr.: " + storagesHandled + ", " + storageSpec.name);
 			}
 		}
 		
-		addMarkets(problem, producersHandled, storagesHandled, buildingSpec.LDHeating);
+		addMarkets(problem, producersHandled, storagesHandled, buildingSpec.LDHeating, currentTimeStep);
 		
 		return problem;
 	}
@@ -65,9 +63,10 @@ public abstract class MatrixBuildup {
 
 
 
-	public static OptimizationProblem memapMatrices(int nrOfProducers, int nrOfStorages, 
+	public static OptimizationProblem getMemapMatrices(int nrOfProducers, int nrOfStorages, 
 			ArrayList<BuildingMessage> buildingMessageList, ArrayList<ConsumptionMessage> consumptionProfiles, 
-			ArrayList<ProducerMessage> producerMessageList, ArrayList<StorageMessage> storageMessageList, boolean LDHeating) {
+			ArrayList<ProducerMessage> producerMessageList, ArrayList<StorageMessage> storageMessageList, 
+			boolean LDHeating, int currentTimeStep) {
 		
 		OptimizationProblem problem = new OptimizationProblem(nStepsMPC, nrOfProducers, nrOfStorages); // initiert nur die vektoren, matrizen, ohne füllung
 
@@ -90,7 +89,7 @@ public abstract class MatrixBuildup {
 		 *  ====== BUILD PRODUCER & STORAGES Matrices =========
 		 */
 //		System.out.println("****************************************************************");		
-		if (GlobalTime.getCurrentTimeStep() == 0) {
+		if (currentTimeStep == 0) {
 			System.out.println(" << MEMAP >> ");
 		}
 		int producersHandled = 0;
@@ -101,7 +100,7 @@ public abstract class MatrixBuildup {
 			for(ProducerMessage producerSpec : buildingSpec.producers) {
 				addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, LDHeating);
 				producersHandled++;
-				if (GlobalTime.getCurrentTimeStep() == 0) {
+				if (currentTimeStep == 0) {
 					System.out.println("Prod-Nr.: " + producersHandled + ", " + buildingSpec.name+ ", " + producerSpec.name);
 				}
 			}	
@@ -109,7 +108,7 @@ public abstract class MatrixBuildup {
 			for(StorageMessage storageSpec : buildingSpec.storages) {
 				addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled, LDHeating);
 				storagesHandled++;
-				if (GlobalTime.getCurrentTimeStep() == 0) {
+				if (currentTimeStep == 0) {
 					System.out.println("Stor-Nr.: " + storagesHandled + ", " + buildingSpec.name+ ", " + storageSpec.name);
 				}
 			}
@@ -119,7 +118,7 @@ public abstract class MatrixBuildup {
 		for(ProducerMessage producerSpec : producerMessageList) {
 			addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, false);
 			producersHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (currentTimeStep == 0) {
 				System.out.println("Ext. Prod-Nr.: " + producersHandled + ", " + producerSpec.name);
 			}
 		}
@@ -127,14 +126,14 @@ public abstract class MatrixBuildup {
 		for(StorageMessage storageSpec : storageMessageList) {
 			addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled, false);
 			storagesHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (currentTimeStep == 0) {
 				System.out.println("Ext. Stor-Nr.: " + storagesHandled + ", " + storageSpec.name);
 			}
 		}
 		
-		addMarkets(problem, producersHandled, storagesHandled, LDHeating);
+		addMarkets(problem, producersHandled, storagesHandled, LDHeating, currentTimeStep);
 		
-		if (GlobalTime.getCurrentTimeStep() == 0) {
+		if (currentTimeStep == 0) {
 			System.out.println("****************************************************************");
 		}
 		
@@ -180,7 +179,7 @@ public abstract class MatrixBuildup {
 		}
 	}
 	
-	private static void addMarkets(OptimizationProblem problem, int producersHandled, int storagesHandled, boolean lDHeating) {		
+	private static void addMarkets(OptimizationProblem problem, int producersHandled, int storagesHandled, boolean lDHeating, int currentTimeStep) {		
 		// After the last systems was added, more matrices will be added to handle buying and selling of electricity and heat
 		if (producersHandled+storagesHandled == problem.getNumberofProducers()+problem.getNumberofStorages()) {				
 			int n_index = nStepsMPC*(producersHandled+2*storagesHandled);
@@ -198,7 +197,7 @@ public abstract class MatrixBuildup {
 					problem.x_ub[2*nStepsMPC+n_index+i] = 0.0;   
 				}
 			}			
-			int cts = GlobalTime.getCurrentTimeStep();
+			int cts = currentTimeStep;
 			for(int j = 0; j < nStepsMPC; j++) {
 				problem.a_eq[nStepsMPC+j][n_index+j] = -1.0;  			// matrix: buying of electricity
 				problem.a_eq[nStepsMPC+j][n_index+nStepsMPC+j] = 1.0;	// matrix: selling of electricity

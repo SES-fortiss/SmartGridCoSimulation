@@ -11,6 +11,7 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.utils.Async;
 
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 import ethereum.contracts.IntegratedEnergyMarket;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -81,8 +82,11 @@ public class Simulation {
 	private void run() {
 		topology = Topology.createTopology();
 		//SimulationStarter.saveGridTopologyPlot(topology);   
-		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
-        SimulationStarter.startSimulation(actorSystem, 0, NR_OF_ITERATIONS);
+		
+		SimulationStarter simulationStarter = new SimulationStarter(new GlobalTime());
+		
+		ActorSystem actorSystem = simulationStarter.initialiseActorSystem(topology);
+		simulationStarter.startSimulation(actorSystem, 0, NR_OF_ITERATIONS);
 		
 	}
 	

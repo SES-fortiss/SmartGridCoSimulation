@@ -9,18 +9,20 @@
 
 package eCarStreet.coordinator;
 
+import java.time.LocalDateTime;
+
 import akka.basicMessages.AnswerContent;
-import akka.systemActors.GlobalTime;
 
 public class CoordinatorAnswerContent implements AnswerContent{
 	
+	public LocalDateTime currentTime;
 	public double demandTotal;
 	public double demandECars;
 	public double demandHouses;
 	
 	public String toString(){
 		return 
-				GlobalTime.currentTime.getHour() + ":" + GlobalTime.currentTime.getMinute() + ", " + 
+				currentTime.getHour() + ":" + currentTime.getMinute() + ", " + 
 				demandTotal + ", " + 
 				demandECars + ", " +
 				demandHouses;		

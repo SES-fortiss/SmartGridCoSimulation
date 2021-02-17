@@ -21,7 +21,6 @@ import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import ethereum.Simulation;
 import ethereum.contracts.DoubleSidedAuctionMarket;
@@ -98,7 +97,7 @@ public class Timekeeper extends BehaviorModel {
 
 	@Override
 	public void makeDecision() {
-		logger.print(SolarRadiation.getRadiation(GlobalTime.currentTimeStep) + ",");
+		logger.print(SolarRadiation.getRadiation(this.actor.getCurrentTimeStep()) + ",");
 		for(BasicAnswer answer : answerListReceived) {
 			TimestepInfo newInfo = (TimestepInfo) answer.answerContent;
 			String name = newInfo.name;
@@ -171,7 +170,7 @@ public class Timekeeper extends BehaviorModel {
 			logger.print("ERROR");
 		}
 		logger.println();
-		logger.print((GlobalTime.currentTimeStep + 1) + "," + System.currentTimeMillis() + ",");
+		logger.print((this.actor.getCurrentTimeStep() + 1) + "," + System.currentTimeMillis() + ",");
 	}
 	
 	@Override

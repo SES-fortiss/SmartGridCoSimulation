@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
-import akka.systemActors.GlobalTime;
 import linprogMPC.ConfigurationMEMAP;
 import linprogMPC.MILPTopology;
 import linprogMPC.helper.EnergyPrices;
@@ -24,7 +23,7 @@ public class LPSolver {
 	SolutionHandler solHandler;
 	double[] buildingsTotalCosts;
 	double[] buildingsTotalCO2;
-	int actualTimeStep;
+	int currentTimeStep;
 	double[][] buildingsSolutionPerTimeStep;
 	String actorName;
 	OptimizationResultMessage optResult;
@@ -44,7 +43,7 @@ public class LPSolver {
 		this.solHandler = solHandler;
 		this.buildingsTotalCosts = totalEURVector;
 		this.buildingsTotalCO2 = totalCO2Vector;
-		this.actualTimeStep = actualTimeStep;
+		this.currentTimeStep = actualTimeStep;
 		this.buildingsSolutionPerTimeStep = solutionPerTimeStep;
 		this.actorName = actorName;
 		this.optResult = optResult;
@@ -58,15 +57,15 @@ public class LPSolver {
 			LPMatrixBuildup mb = new LPMatrixBuildup();
 			
 			if (ConfigurationMEMAP.chosenOptimizer == ConfigurationMEMAP.Optimizer.LP) {
-				problem = mb.singleBuilding(buildingMessage);
+				problem = mb.singleBuilding(buildingMessage, currentTimeStep);
 			}
 			
 			if (ConfigurationMEMAP.chosenOptimizer == ConfigurationMEMAP.Optimizer.LPwithConnections) {				
 				if(buildingMessageList != null) {
-					problem = mb.multipleBuildings(getBuildingMessageList());
+					problem = mb.multipleBuildings(getBuildingMessageList(), currentTimeStep);
 				} else {
 					System.err.println(this.getClass() + ": trying to solve LPwithConnections, but buildingMessageListIsEmpty, will do it  without Connections" );					
-					problem = mb.singleBuilding(buildingMessage);					
+					problem = mb.singleBuilding(buildingMessage, currentTimeStep);					
 				}
 			}			
 			
@@ -78,11 +77,11 @@ public class LPSolver {
 			double buildingCO2PerTimestep = 0;
 			buildingCostPerTimestep = solHandler.calculateTimeStepCosts(optSolution, problem.lambda);
 			buildingCO2PerTimestep = solHandler.calculateTimeStepCosts(optSolution, problem.lambdaCO2);
-			buildingsTotalCosts[GlobalTime.getCurrentTimeStep()] = buildingCostPerTimestep;
-			buildingsTotalCO2[GlobalTime.getCurrentTimeStep()] = buildingCO2PerTimestep;
+			buildingsTotalCosts[currentTimeStep] = buildingCostPerTimestep;
+			buildingsTotalCO2[currentTimeStep] = buildingCO2PerTimestep;
 
 			// ******** Erstellung des Ergebnisvektors *********************
-			double[] currentStep = {actualTimeStep};
+			double[] currentStep = {currentTimeStep};
 			double[] currentOptVector = solHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
 			double[] currentDemand = solHandler.getDemandForThisTimestep(problem.b_eq, nStepsMPC);
 			double[] currentSOC = solHandler.getCurrentSOC(buildingMessage.storageList);
@@ -90,7 +89,7 @@ public class LPSolver {
 			double[] currentCO2 = {buildingCO2PerTimestep};			
 			double[] currentPosDemand = solHandler.getPositiveDemandForThisTimestep(problem, nStepsMPC);
 			double[] currentEffOptVector = solHandler.getEffSolutionForThisTimeStep(optSolution, problem.etas, nStepsMPC);			
-			double[] electricalPrice = {EnergyPrices.getElectricityPriceInEuro(actualTimeStep)};			
+			double[] electricalPrice = {EnergyPrices.getElectricityPriceInEuro(currentTimeStep)};			
 
 			//double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, electricalPrice);
 			double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, currentCO2, electricalPrice, currentPosDemand, currentEffOptVector);
@@ -121,11 +120,11 @@ public class LPSolver {
 			
 			//********* Speichern
 			
-			buildingsSolutionPerTimeStep[actualTimeStep] = vectorAll;
+			buildingsSolutionPerTimeStep[currentTimeStep] = vectorAll;
 			
 			String saveString = MILPTopology.simulationName + "MPC"+MILPTopology.N_STEPS_MPC+"/";
 			saveString += actorName+"MPC"+nStepsMPC+"Solutions.csv";
-			if (GlobalTime.getCurrentTimeStep() == (MILPTopology.NR_OF_ITERATIONS-1)) {					
+			if (currentTimeStep == (MILPTopology.NR_OF_ITERATIONS-1)) {					
 				solHandler.exportMatrixWithHeader(buildingsSolutionPerTimeStep, saveString, namesAll);
 			}
 			

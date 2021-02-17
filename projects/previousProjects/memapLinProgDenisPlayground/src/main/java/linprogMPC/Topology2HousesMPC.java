@@ -11,12 +11,13 @@ import topology.ActorTopology;
  * @author andreas.thut
  *
  */
+@SuppressWarnings("unused")
 public class Topology2HousesMPC {	
 	
 	private static String simulationName = "LinProg";
 	public static final int NR_OF_CONSUMERS = 5;
 	
-	// Efficiencies
+	// Efficiencies	
 	private static final double EFFICIENCY_CHP_H = .6;
 	private static final double EFFICIENCY_CHP_EL = .25;
 	private static final double EFFICIENCY_THERMALSTORAGE = 1.;

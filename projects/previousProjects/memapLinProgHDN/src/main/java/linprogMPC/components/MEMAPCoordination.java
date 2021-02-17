@@ -110,7 +110,7 @@ public class MEMAPCoordination extends BehaviorModel {
 		LPSolver lpsolver = new LPSolver(
 				buildingMessage, nStepsMPC, lpSolHandler, 
 				totalEURVector, totalCO2Vector, 
-				getActualTimeStep(), solutionPerTimeStep,
+				this.actor.getCurrentTimeStep(), solutionPerTimeStep,
 				this.actorName, optResult);		
 		lpsolver.setBuildingMessageList(buildingMessageList);		
 		lpsolver.solveLPOptProblem();
@@ -120,7 +120,7 @@ public class MEMAPCoordination extends BehaviorModel {
 		LPSolver lpsolver = new LPSolver(
 					buildingMessage, nStepsMPC, lpSolHandler, 
 					totalEURVector, totalCO2Vector, 
-					getActualTimeStep(), solutionPerTimeStep,
+					this.actor.getCurrentTimeStep(), solutionPerTimeStep,
 					this.actorName, optResult);
 		lpsolver.solveLPOptProblem();		
 	}
@@ -129,7 +129,7 @@ public class MEMAPCoordination extends BehaviorModel {
 		MILPSolverNoConnections milpSolver = new MILPSolverNoConnections(
 				buildingMessage, nStepsMPC, milpSolHandler,
 				totalEURVector, totalCO2Vector, 
-				getActualTimeStep(), solutionPerTimeStep,
+				this.actor.getCurrentTimeStep(), solutionPerTimeStep,
 				this.actorName, optResult);
 		try {
 			milpSolver.createModel();				
@@ -143,7 +143,7 @@ public class MEMAPCoordination extends BehaviorModel {
 		MILPSolverWithConnections milpWithConnections = new MILPSolverWithConnections(
 				answerListReceived, nStepsMPC, milpSolHandler, 
 				totalEURVector, totalCO2Vector, 
-				getActualTimeStep(), solutionPerTimeStep, 
+				this.actor.getCurrentTimeStep(), solutionPerTimeStep, 
 				actorName, optResult);				
 		try {
 			milpWithConnections.createModel();

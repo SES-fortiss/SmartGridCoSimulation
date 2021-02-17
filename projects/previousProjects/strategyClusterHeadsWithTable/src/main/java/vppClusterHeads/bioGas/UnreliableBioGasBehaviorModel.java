@@ -9,17 +9,15 @@
 
 package vppClusterHeads.bioGas;
 
-import helper.Swmcsv;
-
 import java.util.LinkedList;
 
-import vppClusterHeads.genericStuff.GenericRequestContent;
-import vppClusterHeads.genericStuff.VPPPlantType;
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
+import helper.Swmcsv;
+import vppClusterHeads.genericStuff.GenericRequestContent;
+import vppClusterHeads.genericStuff.VPPPlantType;
 
 /**
  * 
@@ -63,8 +61,8 @@ public class UnreliableBioGasBehaviorModel extends BehaviorModel {
 
 	public void makeDecision() {
 		
-		actualPower = installedPower*Swmcsv.getSWMProfileBioGas(GlobalTime.currentTime);
-		forecastPower = installedPower*Swmcsv.getSWMProfileBioGas(GlobalTime.nextTime);
+		actualPower = installedPower*Swmcsv.getSWMProfileBioGas(this.actor.getCurrentTime());
+		forecastPower = installedPower*Swmcsv.getSWMProfileBioGas(this.actor.getCurrentTime().plus(this.actor.getTimeStepDuration()));
 		
 		answerContentToSend.scheduledProduction = actualPower;
 		answerContentToSend.forecastPower = forecastPower;

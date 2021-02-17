@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 
 /**
  * 
@@ -33,6 +34,12 @@ public class ECarSimulation {
 	public static String fileName;
 	public static ActorTopology grid;
 	
+	private static long maxTimeSteps = 0;
+	
+	public static long getMaxTimeSteps() {
+		return maxTimeSteps;
+	}
+
 	public static void main(String[] args){
 		run();
 	}
@@ -41,6 +48,15 @@ public class ECarSimulation {
 		startTime = LocalDateTime.of(2014,1,1,11,0);
 		endTime = LocalDateTime.of(2014,1,2,12,0);
 		timeInterval = Duration.ofMinutes(15);
+		
+		
+		Duration simulatationTimeInterval = Duration.between(startTime, endTime);
+		
+		long timeIntervalMillis = timeInterval.toMillis();
+		long simulatationTimeIntervalMillis = simulatationTimeInterval.toMillis();
+		
+		maxTimeSteps = simulatationTimeIntervalMillis / timeIntervalMillis + 1;
+		
 		start();
 	}	
 	
@@ -53,7 +69,12 @@ public class ECarSimulation {
 		grid = ECarStreetTopology.createTopology();	
 		
 		SimulationStarter.saveGridTopologyPlot(grid);
-		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(grid);
-        SimulationStarter.startSimulation(actorSystem, startTime, endTime, timeInterval);	
+		
+		SimulationStarter simulationStarter = new SimulationStarter(new GlobalTime());
+		
+		ActorSystem actorSystem = simulationStarter.initialiseActorSystem(grid);
+        simulationStarter.startSimulation(actorSystem, startTime, endTime, timeInterval);	
 	}
+	
+	
 }

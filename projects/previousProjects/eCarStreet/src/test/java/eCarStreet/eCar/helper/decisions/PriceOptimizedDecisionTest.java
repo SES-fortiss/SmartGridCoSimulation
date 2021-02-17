@@ -26,7 +26,7 @@ public class PriceOptimizedDecisionTest {
 		car.decision = new SimpleDecision();
 		LocalDateTime time = LocalDateTime.now();
 		
-		double result = decision.getDemand(car, time);
+		double result = decision.getDemand(car, time, null);
 
 		System.out.println(result);
 		

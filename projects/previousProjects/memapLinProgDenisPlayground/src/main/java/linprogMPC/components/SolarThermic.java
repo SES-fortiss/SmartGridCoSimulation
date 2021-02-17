@@ -1,6 +1,5 @@
 package linprogMPC.components;
 
-import akka.systemActors.GlobalTime;
 import linprogMPC.helper.SolarRadiation;
 
 public class SolarThermic extends Producer {
@@ -19,7 +18,7 @@ public class SolarThermic extends Producer {
 		super.makeDecision();
 		SolarRadiation solarRadiation = new SolarRadiation();
 		
-		int cts = GlobalTime.getCurrentTimeStep();
+		int cts = this.actor.getCurrentTimeStep();
 		for (int i = 0; i < nStepsMPC; i++) {
 			producerMessage.cost[i] = 0.00001;
 			for (int j = 0; j < nStepsMPC; j++) {

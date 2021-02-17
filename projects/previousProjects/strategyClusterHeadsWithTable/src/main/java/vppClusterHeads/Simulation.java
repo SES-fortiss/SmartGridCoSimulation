@@ -13,6 +13,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 
@@ -43,9 +44,11 @@ public class Simulation {
 		vppgrid = Topology.createTopology();
 		//vppgrid = Topology.createTopologyFromJson("test.txt");
 		SimulationStarter.saveGridTopologyPlot(vppgrid);
+		
+		SimulationStarter simStarter = new SimulationStarter(new GlobalTime());
         
-		actorSystem = SimulationStarter.initialiseActorSystem(vppgrid);
-        SimulationStarter.startSimulation(actorSystem, referenceDay, desiredTimeInterval);
+		actorSystem = simStarter.initialiseActorSystem(vppgrid);
+		simStarter.startSimulation(actorSystem, referenceDay, desiredTimeInterval);
 	}
 	
 	public static void main(String[] args){

@@ -368,8 +368,6 @@ public class BasicActor extends UntypedActor implements CurrentTimeStepSubscribe
 	 * Wrapper method for all defined Behaviors.
 	 ******************************************/
 	public void makeDecision() {
-
-		this.actorOptions.behaviorModel.actualTimeValue = currentTime;
 		this.actorOptions.behaviorModel.answerListReceived = this.answerListReceived;
 
 		// if errorHandler is not Active, all ErrorCode stuff shall not be executed

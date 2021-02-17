@@ -1,13 +1,13 @@
 package linprogMPC.helper.milp;
 
-import static linprogMPC.ConfigurationMEMAP.*;
+import static linprogMPC.ConfigurationMEMAP.chosenGoal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import akka.systemActors.GlobalTime;
 import linprogMPC.ConfigurationMEMAP;
+import linprogMPC.ConfigurationMEMAP.OptimizationGoal;
 import linprogMPC.MILPTopology;
 import linprogMPC.helper.CO2profiles;
 import linprogMPC.helper.EnergyPrices;
@@ -482,12 +482,12 @@ public class MILPProblemWithConnections {
 		return problem;
 	}
 
-	public LpSolve createObjectiveFunction(LpSolve problem, ArrayList<BuildingMessage> buildingMessages) throws LpSolveException {
+	public LpSolve createObjectiveFunction(LpSolve problem, ArrayList<BuildingMessage> buildingMessages, int currentTimeStep) throws LpSolveException {
 		
         int[] colno  = new int[nCols];
         double[] row = new double[nCols];
         
-		int cts = GlobalTime.getCurrentTimeStep();
+		int cts = currentTimeStep;
         int counter = 0;
         
         for (int i = 0; i < nStepsMPC; i++) {        	
@@ -605,7 +605,7 @@ public class MILPProblemWithConnections {
 	 * @param buildingMessage
 	 * @return
 	 */
-	public double[] getLambdaEUR(ArrayList<BuildingMessage> buildingMessages) {
+	public double[] getLambdaEUR(ArrayList<BuildingMessage> buildingMessages, int currentTimeStep) {
 		double[] result = new double[nCols];
 		
 		for (BuildingMessage bm : buildingMessages) {
@@ -653,7 +653,7 @@ public class MILPProblemWithConnections {
 		}
         
 		/* Markets */
-		int cts = GlobalTime.getCurrentTimeStep();		
+		int cts = currentTimeStep;		
 		for (int i = 0; i < nStepsMPC; i++) {
 			int index = nCols - 2*nStepsMPC + i;
 			result[index] = EnergyPrices.getElectricityPriceInEuro(cts+i);

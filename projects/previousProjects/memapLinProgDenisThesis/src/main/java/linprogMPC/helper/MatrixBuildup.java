@@ -2,7 +2,6 @@ package linprogMPC.helper;
 
 import java.util.ArrayList;
 
-import akka.systemActors.GlobalTime;
 import linprogMPC.ThesisTopologySimple;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.extension.NetworkType;
@@ -21,7 +20,7 @@ public class MatrixBuildup {
 		 nStepsMPC = ThesisTopologySimple.N_STEPS_MPC;
 	}
 		
-	public OptimizationProblem singleBuilding(BuildingMessage buildingMessage) {		
+	public OptimizationProblem singleBuilding(BuildingMessage buildingMessage, int currentTimeStep ) {		
 		
 		int nrOfStorages = buildingMessage.getNrOfStorages();
 		int nrOfProducers = buildingMessage.getNrOfProducers();
@@ -41,14 +40,14 @@ public class MatrixBuildup {
 		int storagesHandled = 0;
 		int couplersHandled = 0;
 		
-		if (GlobalTime.getCurrentTimeStep() == 0) {
+		if (currentTimeStep == 0) {
 			System.out.println(" << " + buildingMessage.name + " >> ");
 		}
 		
 		for(ProducerMessage producerMessage : buildingMessage.volatileProducerList) {
 			addProducerToProblem(producerMessage, problem, producersHandled, storagesHandled, couplersHandled);
 			producersHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (currentTimeStep == 0) {
 				System.out.println("Prod-Nr.: " + producersHandled + ", " + producerMessage.name);
 			}
 		}
@@ -56,7 +55,7 @@ public class MatrixBuildup {
 		for(ProducerMessage producerMessage : buildingMessage.controllableProducerList) {
 			addProducerToProblem(producerMessage, problem, producersHandled, storagesHandled, couplersHandled);
 			producersHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (currentTimeStep == 0) {
 				System.out.println("Prod-Nr.: " + producersHandled + ", " + producerMessage.name);
 			}
 		}
@@ -64,7 +63,7 @@ public class MatrixBuildup {
 		for(StorageMessage storageMessage : buildingMessage.storageList) {
 			addStorageToProblem(storageMessage, problem, producersHandled, storagesHandled, couplersHandled);
 			storagesHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (currentTimeStep == 0) {
 				System.out.println("Stor-Nr.: " + storagesHandled + ", " + storageMessage.name);
 			}
 		}
@@ -72,17 +71,17 @@ public class MatrixBuildup {
 		for(CouplerMessage couplerMessage : buildingMessage.couplerList) {
 			addCouplerToProblem(couplerMessage, problem, producersHandled, storagesHandled, couplersHandled);
 			couplersHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (currentTimeStep == 0) {
 				System.out.println("Coupler-Nr.: " + couplersHandled + ", " + couplerMessage.name);
 			}
 		}
 		
-		addMarkets(problem, producersHandled, storagesHandled, couplersHandled, buildingMessage.LDHeating);
+		addMarkets(problem, producersHandled, storagesHandled, couplersHandled, buildingMessage.LDHeating, currentTimeStep);
 		
 		return problem;
 	}
 		
-	public OptimizationProblem multipleBuildings(ArrayList<BuildingMessage> buildingMessageList, boolean LDHeating) {			
+	public OptimizationProblem multipleBuildings(ArrayList<BuildingMessage> buildingMessageList, boolean LDHeating, int currentTimeStep) {			
 		
 		int nrOfProducers = 0;
 		int nrOfStorages = 0;
@@ -114,7 +113,7 @@ public class MatrixBuildup {
 		 *  ====== BUILD PRODUCER & STORAGES Matrices =========
 		 */
 //		System.out.println("****************************************************************");		
-		if (GlobalTime.getCurrentTimeStep() == 0) {
+		if (currentTimeStep == 0) {
 			System.out.println(" << MEMAP >> ");
 		}
 		int producersHandled = 0;
@@ -126,7 +125,7 @@ public class MatrixBuildup {
 			for(ProducerMessage producerSpec : buildingMessage.volatileProducerList) {
 				addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, couplersHandled);
 				producersHandled++;
-				if (GlobalTime.getCurrentTimeStep() == 0) {
+				if (currentTimeStep == 0) {
 					System.out.println("Prod-Nr.: " + producersHandled + ", " + buildingMessage.name+ ", " + producerSpec.name);
 				}
 			}
@@ -134,7 +133,7 @@ public class MatrixBuildup {
 			for(ProducerMessage producerSpec : buildingMessage.controllableProducerList) {
 				addProducerToProblem(producerSpec, problem, producersHandled, storagesHandled, couplersHandled);
 				producersHandled++;
-				if (GlobalTime.getCurrentTimeStep() == 0) {
+				if (currentTimeStep == 0) {
 					System.out.println("Prod-Nr.: " + producersHandled + ", " + buildingMessage.name+ ", " + producerSpec.name);
 				}
 			}	
@@ -142,7 +141,7 @@ public class MatrixBuildup {
 			for(StorageMessage storageSpec : buildingMessage.storageList) {
 				addStorageToProblem(storageSpec, problem, producersHandled, storagesHandled, couplersHandled);
 				storagesHandled++;
-				if (GlobalTime.getCurrentTimeStep() == 0) {
+				if (currentTimeStep == 0) {
 					System.out.println("Stor-Nr.: " + storagesHandled + ", " + buildingMessage.name+ ", " + storageSpec.name);
 				}
 			}
@@ -150,15 +149,15 @@ public class MatrixBuildup {
 			for(CouplerMessage couplerMessage : buildingMessage.couplerList) {
 				addCouplerToProblem(couplerMessage, problem, producersHandled, storagesHandled, couplersHandled);
 				couplersHandled++;
-				if (GlobalTime.getCurrentTimeStep() == 0) {
+				if (currentTimeStep == 0) {
 					System.out.println("Coupler-Nr.: " + couplersHandled + ", " + couplerMessage.name);
 				}
 			}
 		}						
 		
-		addMarkets(problem, producersHandled, storagesHandled, couplersHandled, LDHeating);
+		addMarkets(problem, producersHandled, storagesHandled, couplersHandled, LDHeating, currentTimeStep);
 		
-		if (GlobalTime.getCurrentTimeStep() == 0) {
+		if (currentTimeStep == 0) {
 			System.out.println("****************************************************************");
 		}
 		
@@ -389,7 +388,7 @@ public class MatrixBuildup {
 	private void addMarkets(
 			OptimizationProblem problem, 
 			int producersHandled, int storagesHandled, int couplersHandled, 
-			boolean lDHeating) {		
+			boolean lDHeating, int currentTimeStep) {		
 		// After the last systems was added, more matrices will be added to handle buying and selling of electricity and heat
 		if (producersHandled+storagesHandled+couplersHandled == problem.getNumberofProducers()+problem.getNumberofStorages()+ problem.getNumberofCouplers()) {				
 			int n_index = nStepsMPC*(producersHandled+2*storagesHandled+couplersHandled);
@@ -407,7 +406,7 @@ public class MatrixBuildup {
 					problem.x_ub[2*nStepsMPC+n_index+i] = 0.0;
 				}
 			}			
-			int cts = GlobalTime.getCurrentTimeStep();
+			int cts = currentTimeStep;
 			for(int j = 0; j < nStepsMPC; j++) {				
 				problem.a_eq[nStepsMPC+j][n_index+j] = -1.0;  			// matrix: buying of electricity
 				problem.namesUB[n_index+j] = "ElecBuy";

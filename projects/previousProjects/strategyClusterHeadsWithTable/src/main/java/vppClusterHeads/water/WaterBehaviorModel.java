@@ -11,14 +11,13 @@ package vppClusterHeads.water;
 
 import java.util.LinkedList;
 
-import helper.Swmcsv;
-import vppClusterHeads.genericStuff.GenericAnswerContent;
-import vppClusterHeads.genericStuff.VPPPlantType;
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
+import helper.Swmcsv;
+import vppClusterHeads.genericStuff.GenericAnswerContent;
+import vppClusterHeads.genericStuff.VPPPlantType;
 
 /**
  * 
@@ -56,8 +55,8 @@ public class WaterBehaviorModel extends BehaviorModel {
 
 	@Override
 	public void makeDecision() {		
-		actualPower = installedPower*Swmcsv.getSWMProfileWater(GlobalTime.currentTime);
-		forecastPower = installedPower*Swmcsv.getSWMProfileWater(GlobalTime.nextTime);		
+		actualPower = installedPower*Swmcsv.getSWMProfileWater(this.actor.getCurrentTime());
+		forecastPower = installedPower*Swmcsv.getSWMProfileWater(this.actor.getCurrentTime().plus(this.actor.getTimeStepDuration()));		
 		
     	answerContentToSend.currentPower = actualPower;
     	answerContentToSend.scheduledProduction = actualPower;

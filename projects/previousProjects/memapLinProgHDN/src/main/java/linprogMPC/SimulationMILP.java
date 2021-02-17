@@ -1,6 +1,7 @@
 package linprogMPC;
 import static linprogMPC.ConfigurationMEMAP.*;
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 import linprogMPC.ConfigurationMEMAP.MEMAPLogging;
 import linprogMPC.ConfigurationMEMAP.OptHierarchy;
 import linprogMPC.ConfigurationMEMAP.OptimizationGoal;
@@ -26,8 +27,11 @@ public class SimulationMILP {
 		
 		// **************MEMAP OFF *******************		
 		topology = MILPTopology.createTopology(nMPC);
-		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
-        SimulationStarter.startSimulation(actorSystem, 0, 2);
+		
+		SimulationStarter simulationStarter = new SimulationStarter(new GlobalTime());
+		
+		ActorSystem actorSystem = simulationStarter.initialiseActorSystem(topology);
+		simulationStarter.startSimulation(actorSystem, 0, 2);
 	}
 	
 	public static void main(String[] args){

@@ -9,11 +9,12 @@
 
 package eCarStreet.eCar.helper.decisions;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 import eCarStreet.eCar.ECar;
 
 public interface Decision {
 	
-	public double getDemand(ECar eCar, LocalDateTime time); 
+	public double getDemand(ECar eCar, LocalDateTime time, Duration period); 
 }

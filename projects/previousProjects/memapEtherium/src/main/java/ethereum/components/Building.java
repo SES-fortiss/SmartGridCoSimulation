@@ -22,7 +22,6 @@ import org.web3j.utils.Async;
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import ethereum.Simulation;
 import ethereum.contracts.DoubleSidedAuctionMarket;
@@ -150,7 +149,7 @@ public abstract class Building extends BehaviorModel {
 			nrOfTransactions++;
 			boughtElectricity = contract.getElectricityToConsume().send();
 			nrOfTransactions++;
-			logger.print(GlobalTime.currentTimeStep + "," + currentHeatConsumption + "," + currentElectricityConsumption  + "," + 
+			logger.print(this.actor.getCurrentTimeStep() + "," + currentHeatConsumption + "," + currentElectricityConsumption  + "," + 
 					soldHeat+ "," + boughtHeat+ "," + soldElectricity+ "," + boughtElectricity+ "," + paidDownPayments);
 			System.out.println("["+ name + "] Withdrawing released payments...");
 			TransactionReceipt receipt = contract.withdrawReleasedPayments().send();

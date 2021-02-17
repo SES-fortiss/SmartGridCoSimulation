@@ -3,7 +3,7 @@ package linprogMPC;
 import java.util.concurrent.TimeUnit;
 
 import akka.actor.ActorSystem;
-import cern.colt.matrix.DoubleMatrix2D;
+import akka.timeManagement.GlobalTime;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 
@@ -25,8 +25,11 @@ public class MPCDenisSimulation {
 	
 	private void run() {
 		topology = Topology2HousesMPC.createTopology();
-		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
-        SimulationStarter.startSimulation(actorSystem, 0, NR_OF_ITERATIONS);
+		
+		SimulationStarter simulationStarter = new SimulationStarter(new GlobalTime());
+		
+		ActorSystem actorSystem = simulationStarter.initialiseActorSystem(topology);
+		simulationStarter.startSimulation(actorSystem, 0, NR_OF_ITERATIONS);
 	}
 	
 	public static void main(String[] args){

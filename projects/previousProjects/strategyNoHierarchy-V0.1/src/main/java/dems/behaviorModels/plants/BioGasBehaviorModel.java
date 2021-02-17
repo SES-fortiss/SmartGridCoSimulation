@@ -9,21 +9,21 @@
 
 package dems.behaviorModels.plants;
 
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 
-import helper.MyDateTimeFormatter;
-import helper.MyDoubleFormat;
-import helper.Swmcsv;
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import dems.behaviorType.StrategyBehaviorType;
 import dems.helper.CheckRequest;
 import dems.helper.Costs;
 import dems.messageContents.DEMSRequestContent;
 import dems.messageContents.GenericAnswerContent;
+import helper.MyDateTimeFormatter;
+import helper.MyDoubleFormat;
+import helper.Swmcsv;
 
 /**
  * 
@@ -77,15 +77,19 @@ public class BioGasBehaviorModel extends BehaviorModel {
 			htmlIndividualRequest  = "<br>individualRequest: <br> setPointPower: " + MyDoubleFormat.f.format(setPointPower);
 		} else {
 			individualRequestApplicable = false;
-			setPointPower = installedPower*Swmcsv.getSWMProfileBioGas(GlobalTime.currentTime);
+			setPointPower = installedPower*Swmcsv.getSWMProfileBioGas(this.actor.getCurrentTime());
 			htmlIndividualRequest = "<br>individualRequest: null";
 		}
 	}
 
 	public void makeDecision() {
 		
-		if (GlobalTime.currentTimeStep == 1) {
-			setPointPower = installedPower*Swmcsv.getSWMProfileBioGas(GlobalTime.currentTime);
+		int currentTimeStep = this.actor.getCurrentTimeStep();
+		LocalDateTime currentTime = this.actor.getCurrentTime();
+		LocalDateTime nextTime = currentTime.plus(this.actor.getTimeStepDuration());
+		
+		if (currentTimeStep == 1) {
+			setPointPower = installedPower*Swmcsv.getSWMProfileBioGas(currentTime);
 		}
 		
 		double lastPowerValue = actualPower;		
@@ -95,7 +99,7 @@ public class BioGasBehaviorModel extends BehaviorModel {
 		if (individualRequestApplicable) {
 			
 			double powerChange = setPointPower - lastPowerValue;
-			double maxRampRateAllowed =  installedPower * GlobalTime.period.getSeconds() / 60 * plantType.rampRate / 100;
+			double maxRampRateAllowed =  installedPower * this.actor.getTimeStepDuration().getSeconds() / 60 * plantType.rampRate / 100;
 			
 //			System.out.println("powerChange: " + powerChange);
 //			System.out.println("maxRampRateAllowed: " + maxRampRateAllowed);
@@ -124,7 +128,7 @@ public class BioGasBehaviorModel extends BehaviorModel {
 			actualPower = setPointPower;
 		}
 		
-		expectedPower = installedPower*Swmcsv.getSWMProfileBioGas(GlobalTime.nextTime);
+		expectedPower = installedPower*Swmcsv.getSWMProfileBioGas(nextTime);
 		
 		answerContentToSend.currentProduction = actualPower;
 		answerContentToSend.scheduledProduction = setPointPower;
@@ -138,8 +142,7 @@ public class BioGasBehaviorModel extends BehaviorModel {
 			answerContentToSend.factorConformation = null;
 		}
 				
-		answerContentToSend.time = GlobalTime.currentTimeStep;
-		answerContentToSend.dateTime = GlobalTime.currentTime.format(MyDateTimeFormatter.formatter);
+		answerContentToSend.dateTime = currentTime.format(MyDateTimeFormatter.formatter);
 		answerContentToSend.type = plantType;
 		
 		answerContentToSend.IN = request.toHTML() + htmlIndividualRequest;
