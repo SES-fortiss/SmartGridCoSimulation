@@ -11,14 +11,13 @@ package vppClusterHeads.wind;
 
 import java.util.LinkedList;
 
-import helper.Swmcsv;
-import vppClusterHeads.genericStuff.GenericAnswerContent;
-import vppClusterHeads.genericStuff.VPPPlantType;
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
+import helper.Swmcsv;
+import vppClusterHeads.genericStuff.GenericAnswerContent;
+import vppClusterHeads.genericStuff.VPPPlantType;
 
 /**
  * 
@@ -53,8 +52,8 @@ public class WindBehaviorModel extends BehaviorModel {
 
 	public void makeDecision() {
 		
-		actualPower = installedPower*Swmcsv.getSWMProfileWind(GlobalTime.currentTime) * 10;
-		forecastPower = installedPower*Swmcsv.getSWMProfileWind(GlobalTime.nextTime) * 10;
+		actualPower = installedPower*Swmcsv.getSWMProfileWind(this.actor.getCurrentTime()) * 10;
+		forecastPower = installedPower*Swmcsv.getSWMProfileWind(this.actor.getCurrentTime().plus(this.actor.getTimeStepDuration())) * 10;
 		
     	answerContentToSend.currentPower = actualPower;
     	answerContentToSend.scheduledProduction = actualPower;

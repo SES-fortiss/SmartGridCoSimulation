@@ -1,7 +1,6 @@
 package linprogMPC.components;
 
 import akka.basicMessages.AnswerContent;
-import akka.systemActors.GlobalTime;
 import linprogMPC.components.prototypes.Producer;
 import linprogMPC.helper.SolarRadiation;
 import linprogMPC.messages.extension.NetworkType;
@@ -24,7 +23,7 @@ public class SolarThermic extends Producer {
 
 	@Override
 	public void makeDecision() {		
-		int cts = GlobalTime.getCurrentTimeStep();	
+		int cts = this.actor.getCurrentTimeStep();	
 		volatileProducerMessage.name = this.actorName;
 		volatileProducerMessage.id = this.fullActorPath;
 		volatileProducerMessage.operationalPriceEURO = 0.00001;

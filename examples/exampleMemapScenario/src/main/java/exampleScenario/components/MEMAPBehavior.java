@@ -16,7 +16,6 @@ import com.google.gson.Gson;
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import exampleScenario.external.M2MDisplay;
 import exampleScenario.messages.MEMAPanswer;
@@ -40,7 +39,7 @@ public class MEMAPBehavior extends BehaviorModel {
 	public void makeDecision() {
 		counter++;		
 		answerContent.counter = counter;
-		answerContent.currentTime = GlobalTime.currentTime;
+		answerContent.currentTime = this.actor.getCurrentTime();
 		
 		Gson gson = new Gson();
 		display.update(gson.toJson(answerContent));

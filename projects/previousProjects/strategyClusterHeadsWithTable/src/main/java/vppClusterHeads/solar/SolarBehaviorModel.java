@@ -9,17 +9,15 @@
 
 package vppClusterHeads.solar;
 
-import helper.Swmcsv;
-
 import java.util.LinkedList;
 
-import vppClusterHeads.genericStuff.GenericAnswerContent;
-import vppClusterHeads.genericStuff.VPPPlantType;
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
+import helper.Swmcsv;
+import vppClusterHeads.genericStuff.GenericAnswerContent;
+import vppClusterHeads.genericStuff.VPPPlantType;
 
 /**
  * Modell vom SolarPanel Verhalten (inkl. aller Parameter)
@@ -57,8 +55,8 @@ public class SolarBehaviorModel extends BehaviorModel{
     @Override
     public void makeDecision() {    
     	
-    	actualPower = installedPower * Swmcsv.getSWMProfileSolar(GlobalTime.currentTime);
-    	forecastPower = installedPower * Swmcsv.getSWMProfileSolar(GlobalTime.nextTime);
+    	actualPower = installedPower * Swmcsv.getSWMProfileSolar(this.actor.getCurrentTime());
+    	forecastPower = installedPower * Swmcsv.getSWMProfileSolar(this.actor.getCurrentTime().plus(this.actor.getTimeStepDuration()));
     	
     	answerContentToSend.scheduledProduction = actualPower;
     	

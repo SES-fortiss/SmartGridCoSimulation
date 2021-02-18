@@ -9,10 +9,10 @@
 
 package eCarStreet.eCar;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import akka.systemActors.GlobalTime;
 import eCarStreet.eCar.helper.decisions.Decision;
 
 public class ECar {
@@ -45,16 +45,16 @@ public class ECar {
 	// Maximale Entladegeschwindigkeit in KW (default = normalle Steckdose)	
 	public double maxDischargingSpeed = -3.5;
 	
-	public double getDemandAndCharge(LocalDateTime time){		
-		return decision.getDemand(this, time);
+	public double getDemandAndCharge(LocalDateTime time, Duration period){		
+		return decision.getDemand(this, time, period);
 	}
 
 	/**
 	 * @param carLoad
 	 */
-	public void setPower(double carLoad) {		
+	public void setPower(double carLoad, Duration period) {		
 		double socKWH = SOC * capacity;
-		socKWH += carLoad * GlobalTime.period.getSeconds() / 3600; 
+		socKWH += carLoad * period.getSeconds() / 3600; 
 		SOC = socKWH / capacity;		
 	}
 

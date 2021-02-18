@@ -9,16 +9,17 @@
 
 package eCarStreet.coordinator;
 
-import helper.standardLastProfil.StandardLastProfil;
-
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import akka.basicMessages.BasicAnswer;
-import akka.systemActors.GlobalTime;
+import eCarStreet.ECarSimulation;
 import eCarStreet.eCar.ECar;
 import eCarStreet.house.HouseAnswerContent;
+import helper.standardLastProfil.StandardLastProfil;
 
 /**
  * @author Denis Bytschkow
@@ -42,6 +43,9 @@ public abstract class CoordinatorOptimizeLine {
 	public static int startIndex = -1;
 	public static int endIndex = -1;	
 	
+	public static LocalDateTime currentTime = null;
+	public static Duration period = null;
+	
 	public static ArrayList<Double> prepareRequest(ArrayList<BasicAnswer> answerListReceived){		
 		predicted = 0;
 		double verbrauch = 0;
@@ -64,7 +68,7 @@ public abstract class CoordinatorOptimizeLine {
 			verbrauchList = getVerbrauchListe(verbrauch);
 			vorhandenList = calcVorhandenListe(verbrauchList);
 			
-			double skalierFaktor = 1.0 * GlobalTime.period.getSeconds() / 3600.0;
+			double skalierFaktor = 1.0 * period.getSeconds() / 3600.0;
 			
 			for (int i = 0; i < verbrauchList.size(); i++) {
 				verbrauchListKWH.add(verbrauchList.get(i)*skalierFaktor);
@@ -98,18 +102,18 @@ public abstract class CoordinatorOptimizeLine {
 	private static ArrayList<Double> calculateLoadList(
 			ArrayList<Double> verbrauchListKWH2, double requiredLoad) {
 		
-		LocalTime time = GlobalTime.currentTime.toLocalTime();
+		LocalTime time = currentTime.toLocalTime();
 		
 		ArrayList<Double> result = new ArrayList<Double>();
 		for (int i = 0; i < verbrauchListKWH2.size(); i++) {
 			result.add(0D);
 			if (time.equals(startTime)) startIndex = i;
 			if (time.equals(endTime)) endIndex = i;
-			time = time.plus(GlobalTime.period);
+			time = time.plus(period);
 		}
 		
 		double remainingLoad = -requiredLoad;		
-		double skalierFaktor = 1.0 * GlobalTime.period.getSeconds() / 3600.0;		
+		double skalierFaktor = 1.0 * period.getSeconds() / 3600.0;		
 		
 		do {
 			
@@ -158,8 +162,8 @@ public abstract class CoordinatorOptimizeLine {
 	private static ArrayList<Double> getVerbrauchListe(double verbrauch) {
 		
 		ArrayList<Double> result = new ArrayList<Double>();
-		for (int i = 0; i < GlobalTime.lastTimeStep; i++) {
-			result.add(StandardLastProfil.getH0Demand(verbrauch, GlobalTime.currentTime.plus(GlobalTime.period.multipliedBy(i))));
+		for (int i = 0; i < ECarSimulation.getMaxTimeSteps(); i++) {
+			result.add(StandardLastProfil.getH0Demand(verbrauch, currentTime.plus(period.multipliedBy(i))));
 		}				
 		return result;
 	}
@@ -180,6 +184,17 @@ public abstract class CoordinatorOptimizeLine {
 		*/
 		
 		return remainingLoad;
+	}
+
+	
+	public static void setCurrentTime(LocalDateTime currentTimeIn) {
+		currentTime = currentTimeIn;
+		
+	}
+
+	public static void setCurrentDuration(Duration timeStepDuration) {
+		period = timeStepDuration;
+		
 	}
 
 }

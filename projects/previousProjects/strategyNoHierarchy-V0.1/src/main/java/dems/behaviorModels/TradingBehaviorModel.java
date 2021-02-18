@@ -11,6 +11,10 @@ package dems.behaviorModels;
 
 import java.util.LinkedList;
 
+import akka.advancedMessages.ErrorAnswerContent;
+import akka.basicMessages.AnswerContent;
+import akka.basicMessages.RequestContent;
+import behavior.BehaviorModel;
 import dems.behaviorType.StrategyBehaviorType;
 import dems.helper.CheckRequest;
 import dems.helper.TradingSchedule;
@@ -18,11 +22,6 @@ import dems.messageContents.DEMSRequestContent;
 import dems.messageContents.GenericAnswerContent;
 import helper.MyDateTimeFormatter;
 import helper.MyDoubleFormat;
-import akka.advancedMessages.ErrorAnswerContent;
-import akka.basicMessages.AnswerContent;
-import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
-import behavior.BehaviorModel;
 
 /**
  * 
@@ -80,11 +79,11 @@ public class TradingBehaviorModel extends BehaviorModel {
 		if (individualRequestApplicable){
 			actualPower = setPointPower;
 		} else {
-			actualPower = TradingSchedule.getSchedule(GlobalTime.currentTime);
+			actualPower = TradingSchedule.getSchedule(this.actor.getCurrentTime());
 		}
 		
-		expectedPower = TradingSchedule.getSchedule(GlobalTime.nextTime);
-		cost = TradingSchedule.getCost(GlobalTime.currentTime);
+		expectedPower = TradingSchedule.getSchedule(this.actor.getCurrentTime().plus(this.actor.getTimeStepDuration()));
+		cost = TradingSchedule.getCost(this.actor.getCurrentTime());
 		
 		answerContentToSend.currentProduction = actualPower;
 		answerContentToSend.scheduledProduction = actualPower;
@@ -94,8 +93,7 @@ public class TradingBehaviorModel extends BehaviorModel {
 		answerContentToSend.costs = this.cost;
 		answerContentToSend.type = this.strategyBehaviorType;
 				
-		answerContentToSend.time = GlobalTime.currentTimeStep;
-		answerContentToSend.dateTime = GlobalTime.currentTime.format(MyDateTimeFormatter.formatter);
+		answerContentToSend.dateTime = this.actor.getCurrentTime().format(MyDateTimeFormatter.formatter);
 		
 		answerContentToSend.IN = request.toHTML() + htmlIndividualRequest;
 		answerContentToSend.OUT = answerContentToSend.toHTML();		

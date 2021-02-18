@@ -11,16 +11,15 @@ package akkaAndSolver.behaviorModels;
 
 import java.util.LinkedList;
 
-import helper.SolarProfile;
-import powerflowApi.ActorResults;
-import powerflowApi.PowerflowMapping;
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.advancedMessages.GenericAnswerContent;
 import akka.advancedMessages.GenericRequestContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
+import helper.SolarProfile;
+import powerflowApi.ActorResults;
+import powerflowApi.PowerflowMapping;
 
 /**
  * Class for the solver connection 
@@ -54,10 +53,12 @@ public class SolverBehaviorModel extends BehaviorModel{
 
     // Entscheidung
     @Override
-    public void makeDecision() {   	
-    	    	
-    	actualPower = installedPower*SolarProfile.getSolarProfileSummer(GlobalTime.currentTimeStep);
-    	plannedPower = installedPower*SolarProfile.getSolarProfileSummer(GlobalTime.currentTimeStep+1);
+    public void makeDecision() {
+    	
+    	int currentTimeStep = this.actor.getCurrentTimeStep();
+    	    	    	
+    	actualPower = installedPower*SolarProfile.getSolarProfileSummer(currentTimeStep);
+    	plannedPower = installedPower*SolarProfile.getSolarProfileSummer(currentTimeStep+1);
     	
     	GenericRequestContent request = (GenericRequestContent) requestContentReceived;
 		double factor = request.reductionFactor;

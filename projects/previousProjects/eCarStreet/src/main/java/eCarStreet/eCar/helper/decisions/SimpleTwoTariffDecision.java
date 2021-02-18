@@ -9,6 +9,7 @@
 
 package eCarStreet.eCar.helper.decisions;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -24,7 +25,7 @@ public class SimpleTwoTariffDecision implements Decision {
 	LocalTime endTimeCheapTariff = LocalTime.of(07, 00);
 
 	@Override
-	public double getDemand(ECar eCar, LocalDateTime time) {
+	public double getDemand(ECar eCar, LocalDateTime time, Duration period) {
 		
 		LocalTime localTime = LocalTime.of(time.getHour(), time.getMinute());
 		
@@ -37,7 +38,7 @@ public class SimpleTwoTariffDecision implements Decision {
 			SimpleDecision simpleDecision = new SimpleDecision();
 			
 			
-			return simpleDecision.doCharge(eCar);			
+			return simpleDecision.doCharge(eCar, period);
 		}
 		
 		return 0;

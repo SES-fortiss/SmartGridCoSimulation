@@ -7,7 +7,6 @@
 
 package behavior;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -41,7 +40,6 @@ public abstract class BehaviorModel {
 	public ArrayList<BasicAnswer> answerListReceived;
 
 	public BasicActor actor;
-	public LocalDateTime actualTimeValue;
 	public BasicFaultStrategy currentStrategy;
 
 	@Override

@@ -12,6 +12,7 @@ package _ieeea300BusWithImport;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 import configuration.GridArchitectConfiguration;
 
 public class _ieee300BusWithImportSimulation {
@@ -24,10 +25,12 @@ public class _ieee300BusWithImportSimulation {
 		
 		topology = _ieee300BusTopologyImport.createTopology();
 		
+		SimulationStarter simulationStarter = new SimulationStarter(new GlobalTime());
+		
 		GridArchitectConfiguration.showPowerFlowDetails = true;				
 		SimulationStarter.saveGridTopologyPlot(topology);		
-        ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);        
-        SimulationStarter.startSimulation(actorSystem, startTimeStep, maxTimeStep);        
+        ActorSystem actorSystem = simulationStarter.initialiseActorSystem(topology);        
+        simulationStarter.startSimulation(actorSystem, startTimeStep, maxTimeStep);        
 	}
 	
 	public static void main(String[] args){

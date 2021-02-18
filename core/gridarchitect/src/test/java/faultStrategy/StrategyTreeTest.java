@@ -12,7 +12,7 @@ package faultStrategy;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 

@@ -2,7 +2,6 @@ package linprogMPC.helper.milp;
 
 import java.util.Arrays;
 
-import akka.systemActors.GlobalTime;
 import linprogMPC.ConfigurationMEMAP;
 import linprogMPC.ConfigurationMEMAP.MEMAPLogging;
 import linprogMPC.MILPTopology;
@@ -37,7 +36,7 @@ public class MILPSolverNoConnections {
 	double[] buildingStepCostsMILP;
 	double[] buildingStepCO2MILP;
 	double[][] buildingsSolutionPerTimeStepMILP;
-	int timeStepIndex = 0;	
+	int currentTimeStep = 0;	
 
 	public MILPSolverNoConnections(BuildingMessage buildingMessage, int nStepsMPC)  {
 		this.buildingMessage = buildingMessage;
@@ -52,7 +51,7 @@ public class MILPSolverNoConnections {
 		this.buildingStepCostsMILP = buildingStepCostsMILP;
 		this.buildingStepCO2MILP = buildingStepCO2MILP;
 		this.buildingsSolutionPerTimeStepMILP = buildingsSolutionPerTimeStepMILP2;
-		this.timeStepIndex = actualTimeStep;
+		this.currentTimeStep = actualTimeStep;
 		this.milpSolHandler = milpSolHandler;
 		this.actorName = actorName; 
 		this.optResult = optResult;
@@ -127,7 +126,7 @@ public class MILPSolverNoConnections {
         problem.setAddRowmode(false); /* rowmode should be turned off again when done building the model */
         
 		// 5) Set objective function    	
-    	problem = mp.createObjectiveFunction(problem, buildingMessage);    	
+    	problem = mp.createObjectiveFunction(problem, buildingMessage, currentTimeStep);    	
     	
     	if (logging == ConfigurationMEMAP.MEMAPLogging.ALL || logging == ConfigurationMEMAP.MEMAPLogging.FILES) {
     		problem.writeLp("MILP_MEMAP_FINAL.lp");
@@ -169,25 +168,25 @@ public class MILPSolverNoConnections {
         
 		// ******** Ermittlung der Kosten *********************       
         
-		double[] lambda = mp.getLambdaEUR(buildingMessage);
+		double[] lambda = mp.getLambdaEUR(buildingMessage, currentTimeStep);
 		double[] lambdaCO2 = mp.getLambdaCO2(buildingMessage);	
 		
 		double buildingCostPerTimestep = 0;
 		double buildingCO2PerTimestep = 0;
 		buildingCostPerTimestep = milpSolHandler.calculateTimeStepCosts(optSolution, lambda);
 		buildingCO2PerTimestep = milpSolHandler.calculateTimeStepCosts(optSolution, lambdaCO2); 
-		buildingStepCostsMILP[timeStepIndex] = buildingCostPerTimestep;
-		buildingStepCO2MILP[GlobalTime.getCurrentTimeStep()] = buildingCO2PerTimestep;
+		buildingStepCostsMILP[currentTimeStep] = buildingCostPerTimestep;
+		buildingStepCO2MILP[currentTimeStep] = buildingCO2PerTimestep;
 		
 		// ******** Erstellung des Ergebnisvektors *********************
 		
-		double[] currentStep = {timeStepIndex};
+		double[] currentStep = {currentTimeStep};
 		double[] currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
 		double[] currentDemand = milpSolHandler.getDemandForThisTimestep(buildingMessage.getCombinedDemandVector(), nStepsMPC);		
 		double[] currentSOC = milpSolHandler.getCurrentSOC(buildingMessage.storageList);
 		double[] currentCost = {buildingCostPerTimestep};
 		double[] currentCO2 = {buildingCO2PerTimestep};
-		double[] electricalPrice = {EnergyPrices.getElectricityPriceInEuro(timeStepIndex)};
+		double[] electricalPrice = {EnergyPrices.getElectricityPriceInEuro(currentTimeStep)};
 		
 		//double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, currentCO2, electricalPrice, currentPosDemand, currentEffOptVector);
 		
@@ -205,7 +204,7 @@ public class MILPSolverNoConnections {
 		String[] namesResult = HelperConcat.concatAllObjects(timeStep, demandStrings, currentNamesPartly, storageNames, costName, CO2Name, priceName);
 		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, currentCO2, electricalPrice);						
 		
-		buildingsSolutionPerTimeStepMILP[timeStepIndex] = vectorResult;
+		buildingsSolutionPerTimeStepMILP[currentTimeStep] = vectorResult;
 		
 		System.out.println("MILP: "+ this.actorName + " Names: " + Arrays.toString(namesResult));
 		System.out.println("MILP: "+ this.actorName + " Result: " + Arrays.toString(vectorResult));
@@ -216,7 +215,7 @@ public class MILPSolverNoConnections {
 			//if (!MILPTopology.MEMAP_ON) {
 			String saveString = MILPTopology.simulationName + "MPC"+MILPTopology.N_STEPS_MPC+"/";
 			saveString += actorName+"MPC_MILP"+nStepsMPC+"Solutions.csv";
-			if (GlobalTime.getCurrentTimeStep() == (MILPTopology.NR_OF_ITERATIONS-1)) {					
+			if (currentTimeStep == (MILPTopology.NR_OF_ITERATIONS-1)) {					
 				milpSolHandler.exportMatrixWithHeader(buildingsSolutionPerTimeStepMILP, saveString, namesResult);
 			}
 		}

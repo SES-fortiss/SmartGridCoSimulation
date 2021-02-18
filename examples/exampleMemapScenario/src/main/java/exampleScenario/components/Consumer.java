@@ -1,7 +1,8 @@
 package exampleScenario.components;
 
+import java.time.LocalDateTime;
+
 import akka.basicMessages.AnswerContent;
-import akka.systemActors.GlobalTime;
 import exampleScenario.helper.ReadMemapFiles;
 import exampleScenario.messages.Consumption;
 
@@ -17,12 +18,15 @@ public class Consumer extends Device {
 
 	@Override
 	public void makeDecision() {
+		
+		LocalDateTime currentTime = this.actor.getCurrentTime();
+		
 		double heat_consumption;
 		double electricity_consumption;
 		double dhw_consumption;
-		heat_consumption = consumptionProfiles.getHeizWaerme(GlobalTime.currentTime);
-		electricity_consumption = consumptionProfiles.getStrom(GlobalTime.currentTime);
-		dhw_consumption = consumptionProfiles.getWarmwasser(GlobalTime.currentTime);
+		heat_consumption = consumptionProfiles.getHeizWaerme(currentTime);
+		electricity_consumption = consumptionProfiles.getStrom(currentTime);
+		dhw_consumption = consumptionProfiles.getWarmwasser(currentTime);
 		specificationToSend.setValues(heat_consumption, electricity_consumption, dhw_consumption);
 	}
 

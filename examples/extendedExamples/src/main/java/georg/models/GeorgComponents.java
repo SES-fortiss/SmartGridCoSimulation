@@ -11,14 +11,13 @@ package georg.models;
 
 import java.util.LinkedList;
 
-import georg.models.helper.GeorgSchedule;
-import powerflowApi.ActorResults;
-import powerflowApi.PowerflowMapping;
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
+import georg.models.helper.GeorgSchedule;
+import powerflowApi.ActorResults;
+import powerflowApi.PowerflowMapping;
 
 /**
  * Class for georg's behavior 
@@ -54,7 +53,7 @@ public class GeorgComponents extends BehaviorModel{
     @Override
     public void makeDecision() {   	
 
-    	actualPower = GeorgSchedule.getSchedule(this.actorName, GlobalTime.currentTimeStep);    	
+    	actualPower = GeorgSchedule.getSchedule(this.actorName, this.actor.getCurrentTimeStep());    	
     	answerContentToSend.currentPower = actualPower;   	
     	
     	// TODO einbinden ins Mapping

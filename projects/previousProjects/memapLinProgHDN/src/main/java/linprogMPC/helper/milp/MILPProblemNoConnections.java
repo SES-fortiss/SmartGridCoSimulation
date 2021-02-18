@@ -1,6 +1,5 @@
 package linprogMPC.helper.milp;
 
-import akka.systemActors.GlobalTime;
 import linprogMPC.ConfigurationMEMAP;
 import linprogMPC.MILPTopology;
 import linprogMPC.helper.EnergyPrices;
@@ -369,11 +368,11 @@ public class MILPProblemNoConnections {
 		return problem;
 	}
 
-	public LpSolve createObjectiveFunction(LpSolve problem, BuildingMessage buildingMessage) throws LpSolveException {
+	public LpSolve createObjectiveFunction(LpSolve problem, BuildingMessage buildingMessage, int currentTimeStep) throws LpSolveException {
         int[] colno  = new int[nCols];
         double[] row = new double[nCols];
         
-		int cts = GlobalTime.getCurrentTimeStep();
+		int cts = currentTimeStep;
         
         
         int counter = 0;
@@ -440,7 +439,7 @@ public class MILPProblemNoConnections {
 	 * @param buildingMessage
 	 * @return
 	 */
-	public double[] getLambdaEUR(BuildingMessage buildingMessage) {
+	public double[] getLambdaEUR(BuildingMessage buildingMessage, int currentTimeStep) {
 		double[] result = new double[nCols];
 		
         int controllableHandled = 0;
@@ -484,7 +483,7 @@ public class MILPProblemNoConnections {
 		}
         
 		/* Markets */
-		int cts = GlobalTime.getCurrentTimeStep();		
+		int cts = currentTimeStep;		
 		for (int i = 0; i < nStepsMPC; i++) {			
 			int index = i + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled * 2)  );
 			result[index] = EnergyPrices.getElectricityPriceInEuro(cts+i);

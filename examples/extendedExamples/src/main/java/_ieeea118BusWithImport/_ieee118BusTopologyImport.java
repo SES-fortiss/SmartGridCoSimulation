@@ -11,15 +11,12 @@ package _ieeea118BusWithImport;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
-
 import powerflowApi.helper.IeeeSystemFromFile;
 import topology.ActorTopology;
 
 public class _ieee118BusTopologyImport {
 	
 	public static String simulationName = "IEEE1118BusWithImport";
-	public static Logger log = Logger.getLogger(_ieee118BusTopologyImport.class);	
 	
 	public static ActorTopology createTopology(){		
 		ActorTopology top = new ActorTopology(simulationName);

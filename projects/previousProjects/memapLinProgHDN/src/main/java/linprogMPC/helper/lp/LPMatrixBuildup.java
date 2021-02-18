@@ -3,7 +3,6 @@ package linprogMPC.helper.lp;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import akka.systemActors.GlobalTime;
 import linprogMPC.ConfigurationMEMAP;
 import linprogMPC.MILPTopology;
 import linprogMPC.helper.EnergyPrices;
@@ -38,7 +37,7 @@ public class LPMatrixBuildup {
 		 nStepsMPC = MILPTopology.N_STEPS_MPC;
 	}
 		
-	public LPOptimizationProblem singleBuilding(BuildingMessage buildingMessage) {		
+	public LPOptimizationProblem singleBuilding(BuildingMessage buildingMessage, int currentTimeStep) {		
 		
 		int nrOfStorages = buildingMessage.getNrOfStorages();
 		int nrOfProducers = buildingMessage.getNrOfControllableProducers() + buildingMessage.getNrOfVolatileProducers();
@@ -56,14 +55,14 @@ public class LPMatrixBuildup {
 		int storagesHandled = 0;
 		int couplersHandled = 0;
 		
-		if (GlobalTime.getCurrentTimeStep() == 0 && ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
+		if (currentTimeStep == 0 && ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
 			System.out.println(" << " + buildingMessage.name + " >> ");
 		}
 		
 		for(ProducerMessage producerMessage : buildingMessage.volatileProducerList) {
 			addProducerToProblem(producerMessage, problem, 0, producersHandled, storagesHandled, couplersHandled, 0);
 			producersHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0 && ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
+			if (currentTimeStep == 0 && ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
 				System.out.println("Prod-Nr.: " + producersHandled + ", " + producerMessage.name);
 			}
 		}
@@ -71,7 +70,7 @@ public class LPMatrixBuildup {
 		for(ProducerMessage producerMessage : buildingMessage.controllableProducerList) {
 			addProducerToProblem(producerMessage, problem, 0, producersHandled, storagesHandled, couplersHandled, 0);
 			producersHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0 && ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
+			if (currentTimeStep == 0 && ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
 				System.out.println("Prod-Nr.: " + producersHandled + ", " + producerMessage.name);
 			}
 		}
@@ -79,7 +78,7 @@ public class LPMatrixBuildup {
 		for(StorageMessage storageMessage : buildingMessage.storageList) {
 			addStorageToProblem(storageMessage, problem, 0, producersHandled, storagesHandled, couplersHandled, 0);
 			storagesHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0 && ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
+			if (currentTimeStep == 0 && ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
 				System.out.println("Stor-Nr.: " + storagesHandled + ", " + storageMessage.name);
 			}
 		}
@@ -87,17 +86,17 @@ public class LPMatrixBuildup {
 		for(CouplerMessage couplerMessage : buildingMessage.couplerList) {
 			addCouplerToProblem(couplerMessage, problem, 0, producersHandled, storagesHandled, couplersHandled, 0);
 			couplersHandled++;
-			if (GlobalTime.getCurrentTimeStep() == 0 && ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
+			if (currentTimeStep == 0 && ConfigurationMEMAP.chosenMEMAPLogging == ConfigurationMEMAP.MEMAPLogging.ALL) {
 				System.out.println("Coupler-Nr.: " + couplersHandled + ", " + couplerMessage.name);
 			}
 		}
 		
-		addMarkets(problem, 1, producersHandled, storagesHandled, couplersHandled, 0);
+		addMarkets(problem, 1, producersHandled, storagesHandled, couplersHandled, 0, currentTimeStep);
 		
 		return problem;
 	}
 		
-	public LPOptimizationProblem multipleBuildings(ArrayList<BuildingMessage> buildingMessageList) {
+	public LPOptimizationProblem multipleBuildings(ArrayList<BuildingMessage> buildingMessageList, int currentTimeStep) {
 		
 		int nrOfBuildings = 0;
 		int nrOfProducers = 0;
@@ -158,7 +157,7 @@ public class LPMatrixBuildup {
 		/**
 		 *  ====== BUILD PRODUCER & STORAGES Matrices =========
 		 */
-		if (GlobalTime.getCurrentTimeStep() == 0) {
+		if (currentTimeStep == 0) {
 			System.out.println(" << MEMAP >> ");
 		}
 		int buildingsHandled = 0;
@@ -172,7 +171,7 @@ public class LPMatrixBuildup {
 			for(ProducerMessage producerSpec : buildingMessage.volatileProducerList) {
 				addProducerToProblem(producerSpec, problem, buildingsHandled, producersHandled, storagesHandled, couplersHandled, connectionsHandled);
 				producersHandled++;
-				if (GlobalTime.getCurrentTimeStep() == 0) {
+				if (currentTimeStep == 0) {
 					System.out.println("Prod-Nr.: " + producersHandled + ", " + buildingMessage.name+ ", " + producerSpec.name);
 				}
 			}
@@ -180,7 +179,7 @@ public class LPMatrixBuildup {
 			for(ProducerMessage producerSpec : buildingMessage.controllableProducerList) {
 				addProducerToProblem(producerSpec, problem, buildingsHandled, producersHandled, storagesHandled, couplersHandled, connectionsHandled);
 				producersHandled++;
-				if (GlobalTime.getCurrentTimeStep() == 0) {
+				if (currentTimeStep == 0) {
 					System.out.println("Prod-Nr.: " + producersHandled + ", " + buildingMessage.name+ ", " + producerSpec.name);
 				}
 			}	
@@ -188,7 +187,7 @@ public class LPMatrixBuildup {
 			for(StorageMessage storageSpec : buildingMessage.storageList) {
 				addStorageToProblem(storageSpec, problem, buildingsHandled, producersHandled, storagesHandled, couplersHandled, connectionsHandled);
 				storagesHandled++;
-				if (GlobalTime.getCurrentTimeStep() == 0) {
+				if (currentTimeStep == 0) {
 					System.out.println("Stor-Nr.: " + storagesHandled + ", " + buildingMessage.name+ ", " + storageSpec.name);
 				}
 			}
@@ -196,7 +195,7 @@ public class LPMatrixBuildup {
 			for(CouplerMessage couplerMessage : buildingMessage.couplerList) {
 				addCouplerToProblem(couplerMessage, problem, buildingsHandled, producersHandled, storagesHandled, couplersHandled, connectionsHandled);
 				couplersHandled++;
-				if (GlobalTime.getCurrentTimeStep() == 0) {
+				if (currentTimeStep == 0) {
 					System.out.println("Coupler-Nr.: " + couplersHandled + ", " + couplerMessage.name);
 				}
 			}
@@ -204,7 +203,7 @@ public class LPMatrixBuildup {
 			for(ConnectionMessage connectionMessage : buildingMessage.connectionList) {
 				addConnectionToProblem(connectionMessage, problem, buildingsHandled, producersHandled, storagesHandled, couplersHandled, connectionsHandled);
 				connectionsHandled++;
-				if (GlobalTime.getCurrentTimeStep() == 0) {
+				if (currentTimeStep == 0) {
 					System.out.println("Connection-Nr.: " + connectionsHandled + ", " + connectionMessage.name);
 				}
 			}
@@ -212,9 +211,9 @@ public class LPMatrixBuildup {
 			buildingsHandled++;
 		}						
 		
-		addMarkets(problem, buildingsHandled, producersHandled, storagesHandled, couplersHandled, connectionsHandled);
+		addMarkets(problem, buildingsHandled, producersHandled, storagesHandled, couplersHandled, connectionsHandled, currentTimeStep);
 		
-		if (GlobalTime.getCurrentTimeStep() == 0) {
+		if (currentTimeStep == 0) {
 			System.out.println("****************************************************************");
 		}
 		
@@ -519,12 +518,13 @@ public class LPMatrixBuildup {
 	
 	private void addMarkets(
 			LPOptimizationProblem problem, 
-			int buildingsHandled, int producersHandled, int storagesHandled, int couplersHandled, int connectionsHandled) {		
+			int buildingsHandled, int producersHandled, int storagesHandled, int couplersHandled, int connectionsHandled,
+			int currentTimeStep) {		
 		// After the last systems was added, more matrices will be added to handle buying and selling of electricity and heat
 		if (producersHandled+storagesHandled+couplersHandled+connectionsHandled == problem.getNumberofProducers()+problem.getNumberofStorages()+ problem.getNumberofCouplers()+problem.getNrOfConnections()) {				
 			int n_index = nStepsMPC*(producersHandled+2*storagesHandled+couplersHandled+2*connectionsHandled);
 			int b_index = 0;
-			int cts = GlobalTime.getCurrentTimeStep();
+			int cts = currentTimeStep;
 						
 			for(int i = 0; i < nStepsMPC; i++) {
 				// limits for JOptimizer: selling or buying of electricity

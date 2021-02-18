@@ -9,10 +9,10 @@
 
 package eCarStreet.eCar.helper.decisions;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import akka.systemActors.GlobalTime;
 import eCarStreet.eCar.ECar;
 
 
@@ -30,7 +30,7 @@ public class SimpleDecision implements Decision{
 	 * Die wichtigste Methode: Liefert als Ergebniss die gewünschte Ladeleistung.
 	 */
 	@Override
-	public double getDemand(ECar eCar, LocalDateTime time) {
+	public double getDemand(ECar eCar, LocalDateTime time, Duration period) {
 		
 		LocalTime localTime = LocalTime.of(time.getHour(), time.getMinute());			
 				
@@ -42,7 +42,7 @@ public class SimpleDecision implements Decision{
 		if (localTime.compareTo(eCar.arrivalTime) >= 0 || 
 				localTime.compareTo(eCar.leavingTime) <= 0 ) {			
 			
-			double result = doCharge(eCar);			
+			double result = doCharge(eCar, period);			
 			return result;
 			
 		} else {
@@ -57,12 +57,12 @@ public class SimpleDecision implements Decision{
 	 * @param time
 	 * @return
 	 */
-	public double doCharge(ECar eCar) {
+	public double doCharge(ECar eCar, Duration period) {
 		double chargingPowerinKWh = 0;
 		double startSOCinKWh = eCar.getSOC() * eCar.capacity;
 		double endSOCinKWh = eCar.endSOC * eCar.capacity;
 		double expectedSOCinKWh;
-		double timeFactor = GlobalTime.period.getSeconds() / 3600.0;		
+		double timeFactor = period.getSeconds() / 3600.0;		
 		
 		if (startSOCinKWh < endSOCinKWh){
 						

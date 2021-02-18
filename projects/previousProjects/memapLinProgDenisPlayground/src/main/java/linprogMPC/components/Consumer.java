@@ -1,7 +1,6 @@
 package linprogMPC.components;
 
 import akka.basicMessages.AnswerContent;
-import akka.systemActors.GlobalTime;
 import linprogMPC.helper.ConsumptionProfiles;
 import linprogMPC.messages.ConsumptionMessage;
 
@@ -30,7 +29,7 @@ public class Consumer extends Device {
 	@Override
 	public void makeDecision() {
 		double[] demandVectorB = new double[2*nStepsMPC];
-		int cts = GlobalTime.getCurrentTimeStep();
+		int cts = this.actor.getCurrentTimeStep();
 		for (int i = 0; i < nStepsMPC; i++) {
 			demandVectorB[i] = -consumptionProfiles.getHeatConsumption(consumerIndex, cts+i);
 			demandVectorB[nStepsMPC+i] = -consumptionProfiles.getElectricConsumption(consumerIndex, cts+i);

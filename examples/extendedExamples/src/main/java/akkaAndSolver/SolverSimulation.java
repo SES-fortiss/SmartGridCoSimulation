@@ -12,6 +12,7 @@ package akkaAndSolver;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 
 // This is executed with Eclipse
 public class SolverSimulation {
@@ -25,9 +26,11 @@ public class SolverSimulation {
 		
 		SimulationStarter.saveGridTopologyPlot(topology);				
 		
-        ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
+		SimulationStarter simulationStarter = new SimulationStarter(new GlobalTime());
+		
+        ActorSystem actorSystem = simulationStarter.initialiseActorSystem(topology);
         
-        SimulationStarter.startSimulation(actorSystem, startTimeStep, maxTimeStep);
+        simulationStarter.startSimulation(actorSystem, startTimeStep, maxTimeStep);
 	}
 	
 	public static void main(String[] args){
