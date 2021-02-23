@@ -328,7 +328,6 @@ public class ActorSupervisor extends AbstractActor implements CurrentTimeStepSub
         for (Iterator<Object> i = childrenResponsesIterable.iterator(); i.hasNext();) {
         	BasicAnswer response = (BasicAnswer) i.next();        	
         	
-            this.receivedAllStates = this.receivedAllStates && response.sane;
             //System.out.println(response);
             if (response.upstreamActorTrace.size() > 0){
             	responseTraceMap.put(response.upstreamActorTrace.get(response.upstreamActorTrace.size()-1), response.upstreamActorTrace);

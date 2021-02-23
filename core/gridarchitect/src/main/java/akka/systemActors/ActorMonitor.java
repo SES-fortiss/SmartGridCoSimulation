@@ -35,7 +35,6 @@ import akka.timeManagement.GlobalTime;
 import configuration.GridArchitectConfiguration;
 import powerflowApi.PowerflowApi;
 import powerflowApi.PowerflowMapping;
-import resultLogger.ConstantLogger;
 import simulation.SimulationStarter;
 
 
@@ -362,8 +361,6 @@ public class ActorMonitor extends AbstractActor {
 	private void endSimulation() {
 		System.out.println("Simulation Done. Simulation took " + (System.currentTimeMillis() - this.startSimulationComputation) + "ms");
 		System.out.println("****************************************************************");
-
-		ConstantLogger.endSimulation();
 
 		this.actorSupervisorRef.tell(new EndSimulationMessage(), getSelf());
 		

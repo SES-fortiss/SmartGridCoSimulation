@@ -25,9 +25,6 @@ import akka.systemMessages.StartMessage;
 import akka.timeManagement.GlobalTime;
 import helper.GlobalOptions;
 import helper.HTMLHelper;
-import resultLogger.ConstantLogger;
-import resultLogger.utils.AnswerContent_LoggerInterface;
-import resultLogger.utils.ConstantResultLogger;
 import topology.ActorTopology;
 import visualization.GridD3Json;
 
@@ -51,8 +48,6 @@ public class SimulationStarter {
 	}
 	
 	public ActorSystem initialiseActorSystem(ActorTopology topology) {
-		
-		ConstantLogger.logNumberOfActors(topology);
 		
 		int deadline = 10; // How many seconds to wait for gridInitialization
 
@@ -177,11 +172,6 @@ public class SimulationStarter {
         
         return;
     }
-
-	public static void setResultLogger(AnswerContent_LoggerInterface answerlogger) {
-		ConstantResultLogger myResultLogger = new ConstantResultLogger(answerlogger);
-		ConstantLogger.setResultLogger(myResultLogger);
-	}
 	
 	public static void stopSimulationStatic(){
 		actorSystemRefStatic.terminate();

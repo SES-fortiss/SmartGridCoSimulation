@@ -1,13 +1,11 @@
 package memap.components.prototypes;
 
-import java.util.LinkedList;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
 import memap.controller.TopologyController;
@@ -38,10 +36,6 @@ public abstract class Device extends BehaviorModel {
 			// display.run();
 			System.out.println("Device-Display Port: " + port);
 		}
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
 	}
 
 	@Override

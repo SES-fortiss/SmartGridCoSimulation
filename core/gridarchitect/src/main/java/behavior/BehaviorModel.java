@@ -8,14 +8,11 @@
 package behavior;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicActors.BasicActor;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
-import faultStrategy.backEnd.BasicFaultStrategy;
 
 /**
  * This class represents the basic Parameter of an Actor Behavior. The
@@ -40,7 +37,6 @@ public abstract class BehaviorModel {
 	public ArrayList<BasicAnswer> answerListReceived;
 
 	public BasicActor actor;
-	public BasicFaultStrategy currentStrategy;
 
 	@Override
 	public boolean equals(Object o) {
@@ -54,25 +50,6 @@ public abstract class BehaviorModel {
 	public BehaviorType getBehaviorType() {
 		return behaviorType;
 	}
-
-	public BasicFaultStrategy getCurrentStrategy() {
-		return currentStrategy;
-	}
-
-	public void setCurrentStrategy(BasicFaultStrategy currentStrategy) {
-		this.currentStrategy = currentStrategy;
-	}
-
-	/**
-	 * <strong>handleError()</strong> <br>
-	 * This method shall be implemented by each individual behaviorModel. <br>
-	 * It gets called by the Actor if one child did not reply to the request of the
-	 * current time step. This method might be removed in future <br>
-	 * 
-	 * @param errors a list with all the Errors which were caused
-	 */
-	public abstract void handleError(LinkedList<ErrorAnswerContent> errors);
-
 	/**
 	 * <strong>handleRequest()</strong> <br>
 	 * This method shall be implemented by each individual behaviorModel. <br>
