@@ -12,12 +12,10 @@ package dems.behaviorModels.DEMS;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -344,7 +342,4 @@ public class DEMSPriorityControl extends BehaviorModel{
 		}
     	
 	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 }

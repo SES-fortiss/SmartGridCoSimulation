@@ -9,9 +9,7 @@
 
 package eCarStreet.coordinator;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -64,10 +62,6 @@ public class Coordinator extends BehaviorModel{
 		answer.demandTotal = totalDemand;
 		answer.demandECars = demandECars; 
 		answer.demandHouses = demandHouses;
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
 	}
 
 	@Override

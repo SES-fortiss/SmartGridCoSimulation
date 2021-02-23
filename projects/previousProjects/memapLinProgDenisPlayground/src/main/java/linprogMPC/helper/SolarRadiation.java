@@ -40,7 +40,7 @@ public class SolarRadiation {
 		    readProd(br, solarProductionPerKWp);	
 		} catch (IOException | ParseException e1) {
 				e1.printStackTrace();
-				SimulationStarter.stopSimulation();
+				SimulationStarter.stopSimulationStatic();
 				return null;
 		}
 		

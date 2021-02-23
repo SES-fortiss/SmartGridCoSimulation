@@ -38,7 +38,7 @@ public class Reader {
 		    read(br);			
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
-			SimulationStarter.stopSimulation();
+			SimulationStarter.stopSimulationStatic();
 			return false;
 		}
 		isDataThere = true;		

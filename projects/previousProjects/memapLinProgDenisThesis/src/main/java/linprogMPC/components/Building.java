@@ -2,11 +2,9 @@ package linprogMPC.components;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -314,8 +312,5 @@ public class Building extends BehaviorModel {
 		}		
 		super.stop();
 	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 
 }

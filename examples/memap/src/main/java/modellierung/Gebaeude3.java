@@ -1,10 +1,7 @@
 package modellierung;
 
-import java.util.LinkedList;
-
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
@@ -44,13 +41,6 @@ public class Gebaeude3 extends BehaviorModel {
 		display = new M2MDisplay(8083);
 		display.run();
 	}
-	
-	
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void handleRequest() {
@@ -71,7 +61,7 @@ public class Gebaeude3 extends BehaviorModel {
 	public void makeDecision() {
 		double pricereceived = ((MEMAPmsg) requestContentReceived).preis;
 		
-		verbrauchWaerme = reader.getLoad(actualTimeValue);
+		verbrauchWaerme = reader.getLoad(this.actor.getCurrentTime());
 		
 		kostenProduktion = kostenErzeugung*erzeugungWaerme;
 		einnahmeProduktion = pricereceived*erzeugungWaerme;

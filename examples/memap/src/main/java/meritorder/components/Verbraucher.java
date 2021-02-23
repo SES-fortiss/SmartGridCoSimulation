@@ -1,10 +1,7 @@
 package meritorder.components;
 
-import java.util.LinkedList;
-
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
@@ -34,16 +31,13 @@ public class Verbraucher extends BehaviorModel {
 	}
 
 	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
-
-	@Override
 	public void handleRequest() {}
 
 	@Override
 	public void makeDecision() {
 		answerContentToSend.accepted = Accepted.none;
 		answerContentToSend.price = this.price;
-		answerContentToSend.volume = file.getStrom(actualTimeValue);
+		answerContentToSend.volume = file.getStrom(this.actor.getCurrentTime());
 		display.update(gson.toJson(answerContentToSend));
 	}
 

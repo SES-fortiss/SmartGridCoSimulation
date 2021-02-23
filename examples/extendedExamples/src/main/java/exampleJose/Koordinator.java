@@ -9,9 +9,6 @@
 
 package exampleJose;
 
-import java.util.LinkedList;
-
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -24,9 +21,6 @@ import behavior.BehaviorModel;
 public class Koordinator extends BehaviorModel{
 	
 	public KRequest request = new KRequest();
-
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {		
-	}
 
 	public void handleRequest() {
 		double x = Math.random();

@@ -9,9 +9,6 @@
 
 package eCarStreet.market;
 
-import java.util.LinkedList;
-
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
@@ -26,12 +23,6 @@ public class Market extends BehaviorModel{
 
 	@Override
 	public void makeDecision() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -1,10 +1,7 @@
 package meritorder.components;
 
-import java.util.LinkedList;
-
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
@@ -30,9 +27,6 @@ public class Erzeuger extends BehaviorModel {
 		display = new M2MDisplay(port); // add port in to display a json
 		display.run();
 	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 
 	@Override
 	public void handleRequest() {}

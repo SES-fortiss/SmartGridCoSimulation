@@ -2,12 +2,10 @@ package linprog.components;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -36,12 +34,6 @@ public class LinProgBehavior extends BehaviorModel {
 	public LinProgBehavior() {
 		display = new M2MDisplay(8080); // add port in to display a json
 		display.run();
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

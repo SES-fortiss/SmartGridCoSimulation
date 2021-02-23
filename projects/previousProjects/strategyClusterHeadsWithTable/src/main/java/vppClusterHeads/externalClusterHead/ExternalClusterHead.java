@@ -9,11 +9,8 @@
 
 package vppClusterHeads.externalClusterHead;
 
-import java.util.LinkedList;
-
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
@@ -91,8 +88,5 @@ public class ExternalClusterHead extends BehaviorModel{
 	public RequestContent returnRequestContentToSend() {
 		return requestContentToSend;
 	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 	
 }

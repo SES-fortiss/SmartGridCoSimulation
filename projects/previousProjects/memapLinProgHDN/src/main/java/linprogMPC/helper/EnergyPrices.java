@@ -82,7 +82,7 @@ public class EnergyPrices {
 		    read(br, electricityPrices);	
 		} catch (IOException | ParseException e1) {
 				e1.printStackTrace();
-				SimulationStarter.stopSimulation();
+				SimulationStarter.stopSimulationStatic();
 				return null;
 		}
 		

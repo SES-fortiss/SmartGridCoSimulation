@@ -1,12 +1,11 @@
 package linprogMPC.components;
 
-import static linprogMPC.ConfigurationMEMAP.*;
-
-import java.util.LinkedList;
+import static linprogMPC.ConfigurationMEMAP.chosenOptimizationHierarchy;
+import static linprogMPC.ConfigurationMEMAP.chosenOptimizer;
+import static linprogMPC.ConfigurationMEMAP.chosenToolUsage;
 
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
@@ -164,8 +163,5 @@ public class Building extends BehaviorModel {
 			super.stop();
 		}
 	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 
 }
