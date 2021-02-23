@@ -64,7 +64,7 @@ public class SolarRadiation {
 				
 			} catch (Exception e2) {
 				System.err.println("Error reading or parsing CSV data from " + csvFile);
-				SimulationStarter.stopSimulation();
+				SimulationStarter.stopSimulationStatic();
 				e.printStackTrace();
 				e2.printStackTrace();
 			}

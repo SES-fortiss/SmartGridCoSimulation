@@ -34,7 +34,7 @@ public class FileManager {
 		} catch (IOException e1) {
 			Logger.getInstance().writeError("Error reading " + filename + " from resources");
 			e1.printStackTrace();
-			SimulationStarter.stopSimulation();
+			SimulationStarter.stopSimulationStatic();
 		}
 		return br;
 	}

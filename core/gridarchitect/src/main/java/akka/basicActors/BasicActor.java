@@ -20,16 +20,17 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import actorMessageHistory.MessageHistory;
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Kill;
 import akka.actor.Props;
 import akka.actor.ReceiveTimeout;
-import akka.actor.UntypedActor;
 import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.BasicRequest;
 import akka.basicMessages.RequestContent;
+import akka.japi.pf.ReceiveBuilder;
 import akka.pattern.Patterns;
 import akka.systemActors.MultipleCommunicationPattern;
 import akka.systemMessages.DebugMessage;
@@ -63,26 +64,27 @@ import topology.ActorTopology;
  *
  */
 
-public class BasicActor extends UntypedActor implements CurrentTimeStepSubscriber, CurrentTimeSubscriber {
+public class BasicActor extends AbstractActor implements CurrentTimeStepSubscriber, CurrentTimeSubscriber {
 
-	/** Current time step */
+	/** Current discrete time step */
 	int currentTimeStep;
-	/** Current day-time */
+	/** Current continuous time */
 	LocalDateTime currentTime;
-	/** Period of a time step, if available */
+	/** Period of a time step (optional and used sometimes if required) */
 	Duration timeStepDuration;
 	
-	public ArrayList<BasicAnswer> answerListReceived = new ArrayList<BasicAnswer>();
+	/** received BasicRequest with Time and RequestContent */
 	public BasicRequest requestReceived;
+	/** RequestContent is subject for inheritance */
+	public RequestContent requestContentReceived;
+	
+	/** received Answers of the children */
+	public ArrayList<BasicAnswer> answerListReceived = new ArrayList<BasicAnswer>();
 
 	// Options is subject for inheritance
 	public ActorOptions actorOptions;
 	// AnswerContent is subject for inheritance
 	public AnswerContent answerContent;
-	// RequestContent is subject for inheritance
-	public RequestContent requestContentReceived;
-
-	public boolean reportToParentEnabled = true;
 
 	public List<ActorRef> downStreamTrace = new ArrayList<ActorRef>();
 	public List<ActorRef> upStreamTrace = new ArrayList<ActorRef>();
@@ -92,25 +94,18 @@ public class BasicActor extends UntypedActor implements CurrentTimeStepSubscribe
 	// can be removed in future.
 	public BasicRequest initializationMessageCache;
 	public boolean overrideReportToParent;
+	public boolean reportToParentEnabled = true;
 
 	private String simulationName;
 	private ActorTopology actorTopology;
 
-	// Lucs stuff
+	// Luc's stuff below
 	public MessageHistory messageHistory;
 	public HashMap<Integer, LinkedList<AnswerContent>> allAnswers;
 	private static final boolean debugging = false;
 	// private BasicStrategy strategy;
 	public static Integer NumberOfErrors = 0;
 	public static long InsertTime = 0;
-
-	/**
-	 * here are the methods for the initialization of the actor
-	 * 
-	 */
-
-	// Akka internal method getting called upon actor creation. Use if required
-	// public void preStart() {}
 
 	/**
 	 * This is default create method for the {@link BasicActor}
@@ -125,8 +120,8 @@ public class BasicActor extends UntypedActor implements CurrentTimeStepSubscribe
 		return Props.create(BasicActor.class, simulationName, actorPath, actorTopology);
 	}
 
-	/*
-	 * Constructor eines BasicActors
+	/**
+	 * Constructor of a BasicActors
 	 */
 	public BasicActor(String simulationName, String actorPath, ActorTopology actorTopology) {
 		this.simulationName = simulationName;
@@ -193,11 +188,79 @@ public class BasicActor extends UntypedActor implements CurrentTimeStepSubscribe
 		}
 	}
 
-	/*
-	 * Akka internal method defining the actor Message handling. Messages not
-	 * handled here are discarded.
-	 */
+	
 	@Override
+	  public Receive createReceive() {
+		
+		ReceiveBuilder receiveBuilder = ReceiveBuilder.create();
+		
+		receiveBuilder
+			.match(GlobalTime.class, this::handleGlobalTime)	
+			.match(DisableReportingMessage.class, this::setReportToParent)
+			.match(DebugMessage.class, this::debug)
+			.match(DirectMessage.class, this::handleDirectMessage)
+			.match(BasicRequest.class, this::handleBasicRequest)
+			.match(EndSimulationMessage.class, this::handleEndSimulationMessage)
+			.match(ReceiveTimeout.class, s-> System.out.println("received Timeout"));
+		
+		receiveBuilder.matchAny( o -> System.out.println("received unknown message"));
+		
+	    return receiveBuilder.build();
+	  }
+	
+	private void handleGlobalTime(GlobalTime msg) {
+		msg.subscribeToCurrentTimeStep(this);
+		msg.subscribeToCurrentTime(this);
+	}
+	
+	private void setReportToParent(DisableReportingMessage msg) {
+		this.reportToParentEnabled = false;
+	}
+	
+	private void handleDirectMessage(DirectMessage directMessage) {
+		this.upStreamTrace = new ArrayList<ActorRef>();
+		this.upStreamTrace.addAll(directMessage.actorTrace);
+		this.upStreamTrace.add(getSelf());				
+		MultipleCommunicationPattern.answerSpecificActor(this, getSelf());		
+	}
+	
+	private void handleBasicRequest(BasicRequest request) {
+	  try {					
+			this.currentTimeStep = request.timeStep;
+			this.currentTime = request.timeValue;
+			this.timeStepDuration = request.timeStepDuration;
+			
+			this.downStreamTrace = new ArrayList<ActorRef>();
+			this.downStreamTrace.addAll(request.actorTrace);
+			this.downStreamTrace.add(getSelf());
+
+			doSomeWork(request);
+
+		} catch (Exception e) {
+			System.out.println(getSelf() + "   " + e);
+			getSender().tell(new akka.actor.Status.Failure(e), getSelf());
+		}
+	}
+	
+	/**
+	 * The method delegated the message to all children and
+	 * executes the endSimulation() method of every behaviour model.
+	 * @param endSimMessage
+	 */
+	private void handleEndSimulationMessage(EndSimulationMessage endSimMessage) {
+		try {
+			this.executeAskLogicEndSimulation();
+			this.actorOptions.behaviorModel.endSimulation();
+			getSender().tell(new EndSimulationMessage(), getSelf());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * OLD Akka internal method defining the actor Message handling. 
+	 * This method is kept as a reference for debugging and testing.
+	 * 
 	public void onReceive(Object message) throws Exception {
 
 		if (message instanceof GlobalTime) {
@@ -259,6 +322,7 @@ public class BasicActor extends UntypedActor implements CurrentTimeStepSubscribe
 		}
 
 	}
+	*/
 
 	private void executeAskLogicEndSimulation() throws Exception {
 		if (this.getContext().getChildren().iterator().hasNext()) {
@@ -325,10 +389,11 @@ public class BasicActor extends UntypedActor implements CurrentTimeStepSubscribe
 
 	/*
 	 * Similar to answerParent but for directConnections
-	 */
+	 OBSOLETE IN NEW IMPLEMENTATION
 	private void answerSpecificActor(ActorRef sender) throws Exception {
 		MultipleCommunicationPattern.answerSpecificActor(this, sender);
 	}
+	*/
 
 	/*
 	 * Helper method to avoid an infinite askChildren loop when directConnections

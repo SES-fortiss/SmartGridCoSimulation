@@ -115,7 +115,7 @@ public class LastProfilTennet {
 				read(br2);		
 			} catch (IOException | ParseException e1) {
 				e1.printStackTrace();
-				SimulationStarter.stopSimulation();
+				SimulationStarter.stopSimulationStatic();
 				return false;
 			}
 		}		

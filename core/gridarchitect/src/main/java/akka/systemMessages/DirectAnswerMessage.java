@@ -11,7 +11,6 @@ package akka.systemMessages;
 
 import java.util.List;
 
-import scala.Serializable;
 import akka.actor.ActorRef;
 import akka.basicMessages.BasicAnswer;
 
@@ -22,8 +21,7 @@ import akka.basicMessages.BasicAnswer;
 * Time: 9:29 AM
 * To change this template use File | Settings | File Templates.
 */
-@SuppressWarnings("serial")
-public class DirectAnswerMessage implements Serializable {
+public class DirectAnswerMessage {
     public final int timeStep;
     public final List<ActorRef> actorTrace;
     public final double power;

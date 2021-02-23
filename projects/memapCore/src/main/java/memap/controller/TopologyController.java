@@ -79,7 +79,7 @@ public class TopologyController implements Runnable {
 	
 	/** Stops the simulation */
 	public void endSimulation() {
-		SimulationStarter.stopSimulation();
+		simulationStarter.stopSimulation();
 	}
 
 	/**

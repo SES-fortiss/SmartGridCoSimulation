@@ -127,7 +127,7 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 				
 			} catch (Exception e2) {
 				SimulationProgress.getInstance().setStatus(Status.ERROR, getClass() + " - wrong format");
-				SimulationStarter.stopSimulation();
+				SimulationStarter.stopSimulationStatic();
 				e.printStackTrace();
 				e2.printStackTrace();
 			}

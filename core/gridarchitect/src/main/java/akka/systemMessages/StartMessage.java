@@ -13,16 +13,13 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import scala.Serializable;
-
 /**
  * This is the adapted version of the StartMessage.
  * It allows to handle TimeSteps and RealTime modus.
  * User: Denis
  * 
  */
-@SuppressWarnings("serial")
-public class StartMessage implements Serializable {
+public class StartMessage {
     
 	// If the simulation uses TimeSteps
 	public final boolean timeStepMode;

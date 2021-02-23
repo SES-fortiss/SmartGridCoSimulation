@@ -11,7 +11,6 @@ package akka.basicMessages;
 
 import java.util.List;
 
-import scala.Serializable;
 import akka.actor.ActorRef;
 
 /**
@@ -21,8 +20,7 @@ import akka.actor.ActorRef;
 * Time: 9:29 AM
 * To change this template use File | Settings | File Templates.
 */
-@SuppressWarnings("serial")
-public class BasicAnswer implements Serializable {
+public class BasicAnswer {
     
 	public final int timeStep;
     public final List<ActorRef> upstreamActorTrace;

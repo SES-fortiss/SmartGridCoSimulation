@@ -54,7 +54,7 @@ public class MemapOffMetrics extends Metrics {
 		for (Entry<String, Building> buildingEntry : DesignerPanel.buildings.entrySet()) {
 			Building building = buildingEntry.getValue();
 			
-			System.out.println(" TESTING MEMAP OFF METRICS building.getName(): " + building.getName());
+			//System.out.println(" TESTING MEMAP OFF METRICS building.getName(): " + building.getName());
 			
 			heatProducedBySourceInTime.putAll(calculateHeatProductionBySourceInTime(building.getName(), building));
 		}

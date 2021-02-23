@@ -9,8 +9,6 @@
 
 package akka.systemMessages;
 
-import scala.Serializable;
-
 /**
 * Created with IntelliJ IDEA.
 * User: amack
@@ -18,8 +16,7 @@ import scala.Serializable;
 * Time: 2:13 PM
 * To change this template use File | Settings | File Templates.
 */
-@SuppressWarnings("serial")
-public class DebugMessage implements Serializable{
+public class DebugMessage {
     public final int i;
     public final String debug;
     public final int power;

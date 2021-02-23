@@ -240,8 +240,8 @@ public class MILPSolver {
 			vectorResultStr[i] = df.format(vectorResult[i]);
 		}
 
-		System.out.println("MILP: " + this.actorName + " Names: " + Arrays.toString(namesResult));
-		System.out.println("MILP: " + this.actorName + " Result: " + Arrays.toString(vectorResult));
+		//System.out.println("MILP: " + this.actorName + " Names: " + Arrays.toString(namesResult));
+		//System.out.println("MILP: " + this.actorName + " Result: " + Arrays.toString(vectorResult));
 		
 		
 		// Save
