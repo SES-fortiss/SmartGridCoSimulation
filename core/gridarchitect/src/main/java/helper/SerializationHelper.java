@@ -12,8 +12,6 @@ package helper;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import topology.ActorTopology;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -25,17 +23,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * To change this template use File | Settings | File Templates.
  */
 public class SerializationHelper {
-
-    public static String serializeGridTopology(ActorTopology topology) {
-        ObjectMapper mapper = new ObjectMapper();
-        Writer strWriter = new StringWriter();
-        try {
-            mapper.writeValue(strWriter, topology);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        return strWriter.toString();
-    }
 
     public static String serializeObject(Object object) {
         ObjectMapper mapper = new ObjectMapper();

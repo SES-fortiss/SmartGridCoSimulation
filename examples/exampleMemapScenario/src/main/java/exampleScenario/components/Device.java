@@ -1,8 +1,5 @@
 package exampleScenario.components;
 
-import java.util.LinkedList;
-
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
 
@@ -24,13 +21,6 @@ public abstract class Device extends BehaviorModel {
 		//this.port = port;
 		//display = new M2MDisplay(port); // add port in to display a json
 		//display.run();
-	}
-
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

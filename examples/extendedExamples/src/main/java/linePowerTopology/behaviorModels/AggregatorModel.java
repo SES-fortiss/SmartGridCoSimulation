@@ -9,9 +9,6 @@
 
 package linePowerTopology.behaviorModels;
 
-import java.util.LinkedList;
-
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.advancedMessages.GenericAnswerContent;
 import akka.advancedMessages.GenericRequestContent;
 import akka.basicMessages.AnswerContent;
@@ -99,11 +96,5 @@ public class AggregatorModel extends BehaviorModel{
 	@Override
 	public RequestContent returnRequestContentToSend() {
 		return requestContentToSend;
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		// TODO Auto-generated method stub
-		
 	}
 }

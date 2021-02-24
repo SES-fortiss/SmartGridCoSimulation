@@ -29,7 +29,7 @@ public class FileManager {
 		} catch (IOException e1) {
 			System.err.println("Error reading " + filename + " from resources");
 			e1.printStackTrace();
-			SimulationStarter.stopSimulation();
+			SimulationStarter.stopSimulationStatic();
 		}
 		return br;
 	}

@@ -1,12 +1,10 @@
 package modellierung;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -26,9 +24,6 @@ public class AggregatorBehavior extends BehaviorModel {
 		display = new M2MDisplay(8080);
 		display.run();
 	}
-	
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 
 	@Override
 	public void handleRequest() {}

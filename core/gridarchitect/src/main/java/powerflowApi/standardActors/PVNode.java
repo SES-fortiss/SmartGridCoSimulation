@@ -9,15 +9,12 @@
 
 package powerflowApi.standardActors;
 
-import java.util.LinkedList;
-
-import powerflowApi.ActorResults;
-import powerflowApi.NodeType;
-import powerflowApi.PowerflowMapping;
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
+import powerflowApi.ActorResults;
+import powerflowApi.NodeType;
+import powerflowApi.PowerflowMapping;
 
 /**
  * Class to create a PVNode of the model. The necessary values are <b>active
@@ -72,7 +69,4 @@ public class PVNode extends BehaviorModel {
 	public RequestContent returnRequestContentToSend() {
 		return null;
 	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 }

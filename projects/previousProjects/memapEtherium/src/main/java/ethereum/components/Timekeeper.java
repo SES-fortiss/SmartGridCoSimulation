@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -17,7 +16,6 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.utils.Async;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -81,12 +79,6 @@ public class Timekeeper extends BehaviorModel {
 				+ "clearingStartTime,clearingEndTime,clearingSuccessful,gasUsed,numOffersConfirmed,endTime,blockNumber");
 		logger.println();
 		logger.print("0," + System.currentTimeMillis() + ",");
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

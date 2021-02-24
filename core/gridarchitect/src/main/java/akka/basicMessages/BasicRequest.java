@@ -14,15 +14,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import akka.actor.ActorRef;
-import scala.Serializable;
 
 /**
  * BasicRequest represents the message received from the parent actor.
  * It contains some basic information for the simulation, such as TIME information 
  * and a RequestContent (an interface for any requests content).
  */
-@SuppressWarnings("serial")
-public class BasicRequest implements Serializable {
+public class BasicRequest {
 	
 	public final int timeStep;
 	public final LocalDateTime timeValue;

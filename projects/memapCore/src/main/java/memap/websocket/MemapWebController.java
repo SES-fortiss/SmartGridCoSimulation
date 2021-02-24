@@ -39,7 +39,7 @@ public class MemapWebController {
 	public void stopMemap() {
 
 		js.simLoop = false;
-		SimulationStarter.actorSystemRef.shutdown();
+		SimulationStarter.actorSystemRefStatic.terminate();
 	    executor.shutdown();
 	    executor = Executors.newScheduledThreadPool(2);
 	    try {

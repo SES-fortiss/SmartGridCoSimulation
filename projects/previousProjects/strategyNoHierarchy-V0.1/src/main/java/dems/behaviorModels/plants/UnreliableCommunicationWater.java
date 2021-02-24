@@ -10,9 +10,7 @@
 package dems.behaviorModels.plants;
 
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
@@ -151,7 +149,5 @@ public class UnreliableCommunicationWater extends BehaviorModel {
 		return null;
 	}
 	
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 
 }

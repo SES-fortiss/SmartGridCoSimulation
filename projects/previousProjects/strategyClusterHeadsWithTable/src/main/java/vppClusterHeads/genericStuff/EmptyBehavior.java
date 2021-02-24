@@ -9,9 +9,6 @@
 
 package vppClusterHeads.genericStuff;
 
-import java.util.LinkedList;
-
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
@@ -19,10 +16,6 @@ import behavior.BehaviorModel;
 public class EmptyBehavior extends BehaviorModel{
 	
 	public GenericAnswerContent answerContentToSend = new GenericAnswerContent();
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-	}
 
 	@Override
 	public void handleRequest() {

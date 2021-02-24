@@ -9,9 +9,6 @@
 
 package vppClusterHeads.solar;
 
-import java.util.LinkedList;
-
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
@@ -77,6 +74,4 @@ public class SolarBehaviorModel extends BehaviorModel{
 		return null;
 	}
 	
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 }

@@ -1,10 +1,7 @@
 package linprogMPC.components;
 
-import java.util.LinkedList;
-
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
 import linprogMPC.MPCDenisSimulation;
@@ -32,10 +29,6 @@ public abstract class Device extends BehaviorModel {
 			System.out.println("Device-Display Port: " + port);
 		}
 	}
-
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 
 	@Override
 	public void handleRequest() {}

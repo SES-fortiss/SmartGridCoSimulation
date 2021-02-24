@@ -2,12 +2,10 @@ package linprogMPC.components;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -51,12 +49,6 @@ public class LinProgBehavior extends BehaviorModel implements CurrentTimeStepSub
 		display2.run();
 		
 		Simulation.getGlobalTime().subscribeToCurrentTimeStep(this);
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

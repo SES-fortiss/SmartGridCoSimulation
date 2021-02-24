@@ -3,10 +3,8 @@ package linprogMPC.components;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -40,9 +38,6 @@ public class LinProgBehavior extends BehaviorModel {
 	public SolutionHandler solHandler = new SolutionHandler();
 	
 	public LinProgBehavior() {}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 
 	@Override
 	public void handleRequest() {}

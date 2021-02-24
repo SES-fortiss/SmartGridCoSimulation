@@ -9,8 +9,6 @@
 
 package akka.systemMessages;
 
-import scala.Serializable;
-
 /**
 * Created with IntelliJ IDEA.
 * User: amack
@@ -19,8 +17,7 @@ import scala.Serializable;
 * To change this template use File | Settings | File Templates.
 */
 
-@SuppressWarnings("serial")
-public class CompletionMessage implements Serializable {
+public class CompletionMessage {
     
 	public final Boolean complete;
     public CompletionMessage(Boolean complete) {this.complete = complete;}

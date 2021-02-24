@@ -9,9 +9,6 @@
 
 package vppClusterHeads.wind;
 
-import java.util.LinkedList;
-
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
@@ -67,7 +64,4 @@ public class WindBehaviorModel extends BehaviorModel {
 	public RequestContent returnRequestContentToSend() {
 		return null;
 	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 }

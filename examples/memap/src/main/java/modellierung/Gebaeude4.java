@@ -1,10 +1,7 @@
 package modellierung;
 
-import java.util.LinkedList;
-
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import akka.timeManagement.CurrentTimeStepSubscriber;
@@ -53,10 +50,6 @@ public class Gebaeude4 extends BehaviorModel implements CurrentTimeStepSubscribe
 		display.run();
 		Topology.getGlobalTime().subscribeToCurrentTimeStep(this);
 	}
-	
-	
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 
 	@Override
 	public void handleRequest() {
@@ -78,7 +71,7 @@ public class Gebaeude4 extends BehaviorModel implements CurrentTimeStepSubscribe
 
 		double pricereceived = ((MEMAPmsg) requestContentReceived).preis;
 		
-		verbrauchWaerme = reader.getLoad(actualTimeValue);
+		verbrauchWaerme = reader.getLoad(actor.getCurrentTime());
 		
 		kostenProduktion = kostenErzeugung*erzeugungWaerme;
 		einnahmeProduktion = pricereceived*erzeugungWaerme;

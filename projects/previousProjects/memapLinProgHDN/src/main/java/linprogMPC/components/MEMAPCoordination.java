@@ -4,9 +4,7 @@ import static linprogMPC.ConfigurationMEMAP.chosenOptimizationHierarchy;
 import static linprogMPC.ConfigurationMEMAP.chosenOptimizer;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -47,9 +45,6 @@ public class MEMAPCoordination extends BehaviorModel {
 	private BuildingMessageHandler buildingMessageHandler = new BuildingMessageHandler();
 	
 	public MEMAPCoordination() {}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 
 	@Override
 	public void handleRequest() {}	

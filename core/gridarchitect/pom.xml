@@ -13,18 +13,9 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.2.1</version>
-				<configuration>
-					<mainClass>Simulation.Sessim</mainClass>
-					<arguments>
-					</arguments>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -33,36 +24,22 @@
 		</plugins>
 	</build>
 	<dependencies>
-<dependency>
-    <groupId>com.typesafe.akka</groupId>
-    <artifactId>akka-actor_2.11</artifactId>
-    <version>2.3.6</version>
-</dependency>
-<dependency>
-    <groupId>com.typesafe.akka</groupId>
-    <artifactId>akka-testkit_2.11</artifactId>
-    <version>2.3.6</version>
-</dependency>
+		<dependency>
+		    <groupId>com.typesafe.akka</groupId>
+		    <artifactId>akka-actor_2.13</artifactId>
+			<version>2.6.12</version>		   		  
+		</dependency>
+		<dependency>
+			<!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-testkit -->
+		    <groupId>com.typesafe.akka</groupId>
+		    <artifactId>akka-testkit_2.13</artifactId>
+		    <version>2.6.12</version>
+		    <scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.13.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>1.9.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.0</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
@@ -70,25 +47,9 @@
 			<version>2.1.1</version>
 		</dependency>
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-			<version>2.2.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>net.sf.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>2.3</version>
-		</dependency>
-		<dependency>
 			<groupId>org.fortiss</groupId>
 			<artifactId>powerflow</artifactId>
 			<version>0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.2.4</version>
 		</dependency>
 	</dependencies>
 

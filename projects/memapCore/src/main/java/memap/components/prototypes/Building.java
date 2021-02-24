@@ -1,10 +1,7 @@
 package memap.components.prototypes;
 
-import java.util.LinkedList;
-
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import akka.timeManagement.CurrentTimeStepSubscriber;
@@ -174,10 +171,6 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 			}
 			super.stop();
 		}
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
 	}
 
 	@Override

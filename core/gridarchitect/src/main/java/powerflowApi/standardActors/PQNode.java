@@ -9,15 +9,12 @@
 
 package powerflowApi.standardActors;
 
-import java.util.LinkedList;
-
-import powerflowApi.ActorResults;
-import powerflowApi.NodeType;
-import powerflowApi.PowerflowMapping;
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
+import powerflowApi.ActorResults;
+import powerflowApi.NodeType;
+import powerflowApi.PowerflowMapping;
 
 /**
  * Definition of a PQNode. The necessary values are <b>active
@@ -70,10 +67,5 @@ public class PQNode extends BehaviorModel{
 	@Override
 	public RequestContent returnRequestContentToSend() {
 		return null;
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		
 	}
 }

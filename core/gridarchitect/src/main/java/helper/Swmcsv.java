@@ -17,8 +17,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.junit.Test;
-
 import simulation.SimulationStarter;
 
 /**
@@ -208,7 +206,6 @@ public class Swmcsv {
 					readFile(br2);					
 				} catch (IOException e1) {
 					e1.printStackTrace();
-					SimulationStarter.stopSimulation();
 				}
 		}
 	}
@@ -246,7 +243,7 @@ public class Swmcsv {
 					readFile2(br2);
 				} catch (IOException e1) {
 					e1.printStackTrace();
-					SimulationStarter.stopSimulation();
+					SimulationStarter.stopSimulationStatic();
 				}
 		}
 	}
@@ -275,11 +272,5 @@ public class Swmcsv {
 	    System.out.println("SWM Profiles available");
 	    System.out.println("****************************************************************");
 	    
-	}
-	
-	@Test
-	public void testFindCorrectTimeInterval(){
-		LocalDateTime time = LocalDateTime.of(2013, 01, 14, 12, 01);
-		System.out.println(findCorrectTimeInterval(time));
 	}
 }

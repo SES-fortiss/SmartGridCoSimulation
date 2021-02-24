@@ -10,11 +10,9 @@
 package vppClusterHeads.dems;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -151,9 +149,5 @@ public class DEMS extends BehaviorModel {
 	@Override
 	public RequestContent returnRequestContentToSend() {
 		return requestContentToSend;
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
 	}
 }

@@ -12,12 +12,10 @@ package dems.behaviorModels.DEMS;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Locale;
 
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -246,7 +244,4 @@ public class DEMSNoControl extends BehaviorModel{
 		return requestContentToSend;
 	}
 	
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 }

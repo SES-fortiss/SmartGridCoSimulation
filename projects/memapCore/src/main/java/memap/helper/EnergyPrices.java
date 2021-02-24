@@ -89,7 +89,7 @@ public class EnergyPrices {
 				
 			} catch (Exception e2) {
 				System.err.println("Error reading or parsing electricity price data " + csvFile);
-				SimulationStarter.stopSimulation();
+				SimulationStarter.stopSimulationStatic();
 				e.printStackTrace();
 			}						
 		}

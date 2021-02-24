@@ -9,9 +9,6 @@
 
 package basicExample.aggregator;
 
-import java.util.LinkedList;
-
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -59,10 +56,5 @@ public class AggregatorModel extends BehaviorModel {
 	public RequestContent returnRequestContentToSend() {
 		System.out.println(this.actorName + ": send / access RequestContent");
 		return null;
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		System.out.println("test: handleError()");
 	}
 }

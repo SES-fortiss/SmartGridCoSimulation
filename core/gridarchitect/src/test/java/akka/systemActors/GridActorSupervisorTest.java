@@ -9,27 +9,21 @@
 
 package akka.systemActors;
 
-//import Sessim.Behavior.HackBehavior;
-//import Sessim.Behavior.HackBehaviorOptions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import scala.concurrent.duration.Duration;
-import topology.ActorTopology;
 import akka.ActorFactory;
 import akka.actor.ActorSystem;
-import akka.actor.Inbox;
-import akka.basicActors.LoggingMode;
 import akka.systemMessages.TimeStepMessage;
 import akka.testkit.TestActorRef;
+import topology.ActorTopology;
 
 /**
  * Created with IntelliJ IDEA.
@@ -51,36 +45,29 @@ public class GridActorSupervisorTest {
     public Map<String, Map<String, Object>> childrenOptionsMap = new HashMap<String, Map<String, Object>>();
     public ActorTopology actorTopology;
     public final int maxTimeStep = 100;
-	private Inbox inbox;
 
-    @SuppressWarnings("deprecation")
 	@Before
     public void setUp() {
-        actorTopology = new ActorTopology("TestSystem");
+		/** TODO - a lot of refactoring was ongining. This Test wont execute and need to be fixed.
+    	String name = "TestSystem";
+    	
+        actorTopology = new ActorTopology(name);
         actorTopology.addActor("/user/ActorSupervisor/Child", ActorFactory.createPlainActor());                
 
-        actorSystem  = ActorSystem.create("TestSystem");              
+        actorSystem  = ActorSystem.create(name);              
         
-        actorSupervisorRef = TestActorRef.create(actorSystem, ActorSupervisor.create("TestSystem", LoggingMode.DEBUG, actorTopology), "ActorSupervisor");
-        actorSupervisor = actorSupervisorRef.underlyingActor();               
-        
-        actorMonitorRef = TestActorRef.create(actorSystem, ActorMonitor.create(LoggingMode.UNIT_TEST), "ActorMonitor");
-        actorMonitor = actorMonitorRef.underlyingActor();
-        actorMonitor.operationMode = LoggingMode.UNIT_TEST;
-        
-        inbox = Inbox.create(actorSystem);        
-        inbox.send(actorSystem.actorFor("/user/ActorMonitor"), "Inbox");
-        actorSystem.actorSelection("/user/ActorSupervisor").tell("Init", null);
-        inbox.receive(Duration.create(1, TimeUnit.SECONDS));
+        actorSystem.actorOf(ActorMonitor.create(LoggingMode.DEBUG), "ActorMonitor");		
+		actorSystem.actorOf(ActorSupervisor.create(name, LoggingMode.DEBUG, actorTopology), "ActorSupervisor"); 
         
         System.out.println("setUp()");
+        */
     }
 
 	@Test
     public void testHandleTimeStepMessage() {		
         Assert.assertEquals(0, actorSupervisor.getCurrentTimeStep());                
         TimeStepMessage message = new TimeStepMessage(5);
-        actorSupervisor.handleTimeStepMessage(actorMonitorRef, message);
+        actorSupervisor.handleTimeStepMessage(message);
         Assert.assertEquals(5, actorSupervisor.getCurrentTimeStep());
     }
 
@@ -90,6 +77,7 @@ public class GridActorSupervisorTest {
         actorTopology.addActor("/user/ActorSupervisor/TestGridActor1", ActorFactory.createPlainActor());
         actorTopology.addActor("/user/ActorSupervisor/TestGridActor2", ActorFactory.createPlainActor());
 
+		//TODO actorSupervisior ist null, genau wie ActorMonitor...
         actorSupervisor.initialiseGrid();   
         actorMonitor.startNewTimeStep();
 
@@ -105,6 +93,6 @@ public class GridActorSupervisorTest {
 
     @After
     public void tearDown() {
-        actorSystem.shutdown();
+        actorSystem.terminate();
     }
 }

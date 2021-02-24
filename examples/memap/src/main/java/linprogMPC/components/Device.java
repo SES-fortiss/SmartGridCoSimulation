@@ -1,11 +1,9 @@
 package linprogMPC.components;
 
 import java.util.Calendar;
-import java.util.LinkedList;
 
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.RequestContent;
 import akka.timeManagement.CurrentTimeStepSubscriber;
 import behavior.BehaviorModel;
@@ -35,13 +33,6 @@ public abstract class Device extends BehaviorModel implements CurrentTimeStepSub
 		display.run();
 		
 		Simulation.getGlobalTime().subscribeToCurrentTimeStep(this);
-	}
-
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

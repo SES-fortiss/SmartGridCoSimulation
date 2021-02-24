@@ -9,15 +9,12 @@
 
 package ieee13BusExampleOnePhaseInDevelopment;
 
-import java.util.LinkedList;
-
-import powerflowApi.ActorResults;
-import powerflowApi.PowerflowMapping;
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.advancedMessages.GenericAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
+import powerflowApi.ActorResults;
+import powerflowApi.PowerflowMapping;
 
 /**
  * Class for the solver connection 
@@ -69,10 +66,5 @@ public class NodeBehavior extends BehaviorModel{
 	@Override
 	public RequestContent returnRequestContentToSend() {
 		return null;
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		
 	}
 }

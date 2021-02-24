@@ -11,7 +11,6 @@ package akka.basicMessages;
 
 import java.util.List;
 
-import scala.Serializable;
 import akka.actor.ActorRef;
 
 /**
@@ -21,13 +20,10 @@ import akka.actor.ActorRef;
 * Time: 9:29 AM
 * To change this template use File | Settings | File Templates.
 */
-@SuppressWarnings("serial")
-public class BasicAnswer implements Serializable {
+public class BasicAnswer {
     
 	public final int timeStep;
     public final List<ActorRef> upstreamActorTrace;
-    public final boolean sane;
-    public final boolean overrideReportToParent;
     public final String senderPath;
     public final AnswerContent answerContent;
 
@@ -43,15 +39,11 @@ public class BasicAnswer implements Serializable {
      */
     public BasicAnswer(int timeStep, 
     		List<ActorRef> upstreamActorTrace, 
-    		boolean sane,
-    		boolean overrideReportToParent, 
     		String senderPath, 
     		AnswerContent answerContent) {
     	
         this.timeStep = timeStep;
         this.upstreamActorTrace = upstreamActorTrace;
-        this.sane = sane;
-        this.overrideReportToParent = overrideReportToParent;
         this.senderPath = senderPath;
         this.answerContent = answerContent;
     }
@@ -61,8 +53,6 @@ public class BasicAnswer implements Serializable {
         return "BasicAnswer{" +
                 "timeStep=" + timeStep +
                 ", actorTrace=" + upstreamActorTrace +
-                ", sane=" + sane +
-                ", overrideReportToParent=" + overrideReportToParent +
                 ", senderPath='" + senderPath + '\'' +
                 ", behaviorMessage='" + answerContent + '\'' +
                 '}';

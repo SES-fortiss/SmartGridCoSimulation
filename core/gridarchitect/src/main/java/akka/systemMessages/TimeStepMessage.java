@@ -9,8 +9,6 @@
 
 package akka.systemMessages;
 
-import scala.Serializable;
-
 /**
 * Created with IntelliJ IDEA.
 * User: amack
@@ -18,8 +16,7 @@ import scala.Serializable;
 * Time: 11:53 AM
 * To change this template use File | Settings | File Templates.
 */
-@SuppressWarnings("serial")
-public class TimeStepMessage implements Serializable {
+public class TimeStepMessage {
     public int timeStep;
     public TimeStepMessage(int timeStep) {this.timeStep = timeStep;}
 
