@@ -48,12 +48,18 @@ public class GuiController {
 		topMemapOff = createTopology(OptHierarchy.BUILDING);
 	}
 
-	public void startSimulation() {
+	public void startSimulation() throws InterruptedException {
 		System.out.println("====== START GUI SIMULATON =====");
 
-		Thread helperThread = new Thread(topMemapOff);
-		helperThread.start();
-		topMemapOn.run();
+		Thread memapOffThread = new Thread(topMemapOff);
+		Thread memapOnThread = new Thread(topMemapOn);
+		
+		memapOffThread.start();
+		memapOnThread.start();
+		
+		memapOffThread.join();
+		memapOnThread.join();
+		
 	}
 
 	private TopologyController createTopology(OptHierarchy optimizationHierarchy) {

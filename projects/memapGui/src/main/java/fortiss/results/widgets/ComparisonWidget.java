@@ -40,7 +40,7 @@ public class ComparisonWidget extends JPanel {
 				FormSpecs.DEFAULT_ROWSPEC,
 				FormSpecs.UNRELATED_GAP_ROWSPEC,}));
 		
-		DecimalFormat df = new DecimalFormat("0.0#");
+		DecimalFormat df = new DecimalFormat("#,##0.##");
 		
 		// Computations
 		String memapOn = df.format(memapOnValue);

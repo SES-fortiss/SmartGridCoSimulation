@@ -67,13 +67,12 @@ public class MILPProblem {
 			couplerHandled++;
 		}
 
-		// TODO Check line 76: operationalCostCO2 ? 
 		for (StorageMessage storageMessage : bm.storageList) {
 			for (int i = 0; i < nStepsMPC; i++) {
 				int index = indexBuilding + i + nStepsMPC
 						* ((controllableHandled * 2) + volatileHandled + (couplerHandled * 2) + (storageHandled * 2));
 				lambdaCO2[index] = storageMessage.operationalCostCO2;
-				lambdaCO2[index + nStepsMPC] = storageMessage.operationalCostEUR;
+				lambdaCO2[index + nStepsMPC] = storageMessage.operationalCostCO2;
 			}
 			storageHandled++;
 		}
@@ -83,8 +82,11 @@ public class MILPProblem {
 		/* Markets */
 		for (int i = 0; i < nStepsMPC; i++) {
 			int index = nCols - 2 * nStepsMPC + i;
-			lambdaCO2[index] = 0.474; // buying --> TODO improve maybe later
-			lambdaCO2[index + nStepsMPC] = 0; // selling (same as for LP)
+			lambdaCO2[index] = 0.540; // buying --> TODO improve maybe later, for Stefans Work, normally 0.474						
+			lambdaCO2[index + nStepsMPC] = -0.540; // TODO selling (same as for LP)
+			
+			lambdaCO2[index] = 0.474; // buying --> TODO improve maybe later, for Stefans Work, normally 0.474						
+			lambdaCO2[index + nStepsMPC] = 0; // TODO selling (same as for LP)
 		}
 	}
 
@@ -143,7 +145,10 @@ public class MILPProblem {
 		for (int i = 0; i < nStepsMPC; i++) {
 			int index = nCols - 2 * nStepsMPC + i;
 			lambdaEUR[index] = energyPrices.getElectricityPriceInEuro(cts + i);
+			// TODO be carefull, for Stefans Work hardcoded to 0.1069
 			lambdaEUR[index + nStepsMPC] = -energyPrices.getElectricityPriceInEuro(cts + i) * 0.5;
+			// TODO
+			// lambdaEUR[index + nStepsMPC] = -0.1069;
 		}
 	}
 

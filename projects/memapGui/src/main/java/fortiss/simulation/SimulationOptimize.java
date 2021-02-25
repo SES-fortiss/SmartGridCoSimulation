@@ -14,9 +14,6 @@ public class SimulationOptimize extends SimulationState {
 	/** Reference to the tracker panel */
 	TrackerPanel trackerPanel;
 
-	/** Reference to the simulation progress */
-	private SimulationProgress sp;
-
 	/**
 	 * Start the optimization stage
 	 * 
@@ -26,7 +23,6 @@ public class SimulationOptimize extends SimulationState {
 	public void execute(ProgressManager pm) {
 		PlanningTool planningTool = PlanningTool.getInstance();
 		trackerPanel = planningTool.getTrackerPanel();
-		sp = SimulationProgress.getInstance();
 		trackerPanel.setMessage("Optimization in progress");
 		trackerPanel.setIndeterminate(false);
 
@@ -46,10 +42,10 @@ public class SimulationOptimize extends SimulationState {
 					Runnable pb = new Runnable() {
 						@Override
 						public void run() {
-							if (sp.getStatus().equals(Status.ERROR)) {
-								Logger.getInstance().writeError(sp.getError());
+							if (SimulationProgress.getStatus().equals(Status.ERROR)) {
+								Logger.getInstance().writeError(SimulationProgress.getError());
 							}
-							trackerPanel.setProgress((int) (sp.getProgress()));
+							trackerPanel.setProgress((int) (SimulationProgress.getProgress()));
 						}
 					};
 					SwingUtilities.invokeLater(pb);
@@ -72,29 +68,18 @@ public class SimulationOptimize extends SimulationState {
 			@Override
 			public void run() {
 				PlanningTool planningTool = PlanningTool.getInstance();
-				GuiController gc = planningTool.getGuiController();
-				gc.startSimulation();
+				GuiController gc = planningTool.getGuiController();				
 				
-				while (sp.getProgress() <= 99.9999 && sp.getStatus().equals(Status.OK)) {
-					double currentProgress = sp.getProgress();
-					System.out.println("One Simulation stopped, but second still running. Progress: " + currentProgress);
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
+				try {
+					gc.startSimulation();
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}				
 				
-				try { // maybe there are still some files to be written, which takes a little bit of time.
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				 				
 				pm.setState(new SimulationDone());
 
-				if (sp.getStatus().equals(Status.ERROR)) {
-					Logger.getInstance().writeError(sp.getError());
+				if (SimulationProgress.getStatus().equals(Status.ERROR)) {
+					Logger.getInstance().writeError(SimulationProgress.getError());
 					pm.setState(new SimulationReset());
 				}
 				pm.execute();

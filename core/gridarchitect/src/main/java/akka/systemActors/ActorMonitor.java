@@ -14,8 +14,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.fortiss.powerflowsim.exporters.RDFExporter;
 
@@ -24,7 +22,6 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.ReceiveTimeout;
 import akka.basicActors.LoggingMode;
-import akka.basicMessages.AnswerContent;
 import akka.japi.pf.ReceiveBuilder;
 import akka.systemMessages.CompletionMessage;
 import akka.systemMessages.EndSimulationMessage;
@@ -62,8 +59,6 @@ public class ActorMonitor extends AbstractActor {
 
 	private long startTimeStepComputation = System.currentTimeMillis();
 	private long startSimulationComputation;
-
-	public final Map<String, AnswerContent[]> behaviorMessageStateMap = new HashMap<String, AnswerContent[]>();
 	
 	private ActorRef externalRef;
 	private ActorRef actorSupervisorRef;
@@ -79,7 +74,7 @@ public class ActorMonitor extends AbstractActor {
 	}
 	
 	/*
-	 * This is create method for the ActorMonitor
+	 * This calls the Constructor for the ActorMonitor
 	 */
 	public static Props create(LoggingMode operationMode) {
 		return Props.create(ActorMonitor.class, operationMode);
@@ -97,6 +92,8 @@ public class ActorMonitor extends AbstractActor {
 	
 	@Override
 	public Receive createReceive() {
+		
+		// Note this is executed only once during initialization of an actor.
 		ReceiveBuilder receiveBuilder = ReceiveBuilder.create();
 		
 		receiveBuilder
@@ -112,10 +109,9 @@ public class ActorMonitor extends AbstractActor {
 	    return receiveBuilder.build();
 	}
 	
-	private void handleCompletionMessage(CompletionMessage completionMessage) {
+	private void handleCompletionMessage(CompletionMessage completionMessage) {		
 		this.actorSupervisorRef = getSender();
 		powerFlowMapping();
-
 		endTimeStep();
 		increaseTimeStep();
 		startNewTimeStep();
@@ -124,10 +120,7 @@ public class ActorMonitor extends AbstractActor {
 	
 	private void handleString(String message) {
 
-		if (message == "Inbox intitialize") {
-			
-			//System.out.println("Monitor: Message arived");
-			
+		if (message == "Inbox intitialize") {						
 			externalRef = getSender();			
 			getContext().system().actorSelection("/user/ActorSupervisor").tell("Init", getSelf());
 			return;

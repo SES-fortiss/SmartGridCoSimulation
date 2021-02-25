@@ -7,7 +7,12 @@ public class CO2profiles {
 	
 	// TODO improve later with profile
 	public static double getCO2emissions(int timestep) {
-		return 0.474; // current co2 emission level of Germany		
+		
+		double co2StromDeutschland = 0.474; // nach Statistischen Daten
+		
+		co2StromDeutschland = 0.540; // nach Stefan's Master Arbeit - als Vergleich für Riemerling
+		
+		return co2StromDeutschland; // current co2 emission level of Germany
 	}
 	
 }

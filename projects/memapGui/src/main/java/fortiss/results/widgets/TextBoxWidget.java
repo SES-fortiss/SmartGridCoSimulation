@@ -37,7 +37,7 @@ public class TextBoxWidget extends JPanel {
 				FormSpecs.DEFAULT_ROWSPEC,
 				FormSpecs.UNRELATED_GAP_ROWSPEC,}));
 
-		DecimalFormat df = new DecimalFormat("0.0#");
+		DecimalFormat df = new DecimalFormat("#,##0.##");
 		
 		JLabel titleLabel = new JLabel("    " + title.toUpperCase(), SwingConstants.LEFT);
 		titleLabel.setFont(Fonts.getOswald(FontSize.SMALL));

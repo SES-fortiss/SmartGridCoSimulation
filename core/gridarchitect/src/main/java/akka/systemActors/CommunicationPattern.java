@@ -57,7 +57,8 @@ public class CommunicationPattern {
 						gridActor.getCurrentTimeStep(), 
 						gridActor.getCurrentTime(), 
 						gridActor.getTimeStepDuration(), 
-						gridActor.downStreamTrace, 
+						//gridActor.downStreamTrace,
+						null,
 						requestContent);
 				executeAskChildrenLogic(gridActor, request);
 			}			
@@ -68,7 +69,7 @@ public class CommunicationPattern {
 		
 		// Step 3 make Decision based on Answers received
 		
-		gridActor.upStreamTrace.add(gridActor.getSelf());
+		//TODO gridActor.upStreamTrace.add(gridActor.getSelf());
 		gridActor.makeDecision();
 				
 		// AB HIER wird die Antwort vorbereitet
@@ -76,7 +77,8 @@ public class CommunicationPattern {
 		gridActor.getSender().tell(
 				new BasicAnswer(
 						gridActor.getCurrentTimeStep(), 
-						gridActor.upStreamTrace, 
+						//gridActor.upStreamTrace,
+						null,
 						gridActor.getSelf().path().toString(),
 						gridActor.returnAnswerContentToSend()), 
 				gridActor.getSelf());
@@ -107,10 +109,12 @@ public class CommunicationPattern {
 			gridActor.answerListReceived.add(receivedAnswer);			
 
 			// if multiple levels of hierarchie exist all actors will be included in the list 
+			/*
 			for (ActorRef actor : receivedAnswer.upstreamActorTrace)
 			{
 				gridActor.upStreamTrace.add(actor);
-			}			
+			}
+			*/			
 		}
 	}
 }

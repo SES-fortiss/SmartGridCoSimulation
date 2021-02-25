@@ -10,14 +10,12 @@ public class SimulationProgress implements CurrentTimeStepSubscriber {
 	private static final SimulationProgress sp = new SimulationProgress();
 
 	/** Simulation status */
-	private Status status;
+	private static Status status;
 	/** Error to be printed in the gui */
-	private String error;
+	private static String error;
 
-	private double progress = 0;
-	private double fastProgress = 0;
-	private double slowProgress = 0;
-	private final int max = (TopologyConfig.getInstance().getNrDays()
+	private static double progress = 1.1;
+	private static final int max = (TopologyConfig.getInstance().getNrDays()
 			* TopologyConfig.getInstance().getTimeStepsPerDay());
 
 	private SimulationProgress() {
@@ -25,7 +23,7 @@ public class SimulationProgress implements CurrentTimeStepSubscriber {
 	}
 
 	public void restart() {
-		progress = 0;
+		progress = 1.1;
 		setStatus(Status.OK, "");
 	}
 
@@ -33,7 +31,7 @@ public class SimulationProgress implements CurrentTimeStepSubscriber {
 		return sp;
 	}
 
-	public double getProgress() {
+	public static double getProgress() {
 		return progress * 100 / (max);
 	}
 
@@ -43,22 +41,16 @@ public class SimulationProgress implements CurrentTimeStepSubscriber {
 	 */
 	@Override
 	public void update(int currentTimeStep) {
-		// The progress of the fastest thread is stored, but it does not trigger a
-		// progress update
-		if (currentTimeStep > fastProgress) {
-			fastProgress = currentTimeStep+1;
-		} else if (currentTimeStep < fastProgress) { // Do nothing if ==
-			// The progress off the slowest thread is stored, and the overall progress is
-			// updated
-			slowProgress = currentTimeStep+1;
-			progress = (fastProgress + slowProgress) / 2;
-		}
+		// The progress of the slowest progress is determines the speed		
+		if (currentTimeStep < progress) {
+			progress = currentTimeStep+1.01;
+		}		
 	}
 
 	/**
 	 * @return the status
 	 */
-	public Status getStatus() {
+	public static Status getStatus() {
 		return status;
 	}
 
@@ -66,14 +58,14 @@ public class SimulationProgress implements CurrentTimeStepSubscriber {
 	 * @param status the status to set
 	 */
 	public void setStatus(Status status, String error) {
-		this.status = status;
+		SimulationProgress.status = status;
 		setError(error);
 	}
 
 	/**
 	 * @return the error
 	 */
-	public String getError() {
+	public static String getError() {
 		return error;
 	}
 
@@ -81,7 +73,7 @@ public class SimulationProgress implements CurrentTimeStepSubscriber {
 	 * @param error the error to set
 	 */
 	private void setError(String error) {
-		this.error = error;
+		SimulationProgress.error = error;
 	}
 
 }

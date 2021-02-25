@@ -13,10 +13,7 @@ import static akka.dispatch.Futures.sequence;
 import static akka.pattern.Patterns.ask;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +23,6 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.basicActors.BasicActor;
 import akka.basicActors.LoggingMode;
-import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.BasicRequest;
 import akka.japi.pf.ReceiveBuilder;
 import akka.systemMessages.CompletionMessage;
@@ -53,10 +49,7 @@ import topology.ActorTopology;
  */
 public class ActorSupervisor extends AbstractActor implements CurrentTimeStepSubscriber {
 
-    public boolean receivedAllStates = false;
-    public List<ActorRef> responseTrace = new ArrayList<ActorRef>();
-    
-	public final Map<ActorRef, List<ActorRef>> responseTraceMap = new HashMap<ActorRef, List<ActorRef>>();
+    //public List<ActorRef> responseTrace = new ArrayList<ActorRef>();
 	
     public LoggingMode operationMode;
     public int actorCount = 0;
@@ -109,11 +102,7 @@ public class ActorSupervisor extends AbstractActor implements CurrentTimeStepSub
     @Override
     public String toString() {
         return "GridActorSupervisor{" +
-              //  ", timeStep=" + timeStep +
               ", timeStep=" + globalTime.getCurrentTimeStep() +
-                ", receivedPower=" + receivedAllStates +
-                ", responseTrace=" + responseTrace +
-                ", responseTraceMap=" + responseTraceMap +
                 ", operationMode=" + operationMode +
                 ", actorCount=" + actorCount +
                 ", totalActorCount=" + totalActorCount +
@@ -133,12 +122,16 @@ public class ActorSupervisor extends AbstractActor implements CurrentTimeStepSub
 			.match(EndSimulationMessage.class, this::handleEndSimulation)	
 			.match(String.class, this::handleStringMessage);
 		
-		receiveBuilder.matchAny( o -> System.out.println("ActorMonitor: received unknown message"));
+		receiveBuilder.matchAny( o -> System.out.println("ActorSupervisor: received unknown message"));
 		
 	    return receiveBuilder.build();
 	}
     
-	private void handleStringMessage(String message) {               
+	private void handleStringMessage(String message) {      
+		
+		
+		//System.err.println("ActorSupervisor: handleStringMessage: " + message);
+		
         if (message == "Init") {
         	// System.out.println("ActorSupervisor: " + "Init Message arrived");        	
         	initialiseGrid();
@@ -264,33 +257,28 @@ public class ActorSupervisor extends AbstractActor implements CurrentTimeStepSub
     /*
     *  Forwards the new TimeStep to the first Layer of Actors.
     *  */
+
     public void handleTimeStepMessage(TimeStepMessage message) {
+    	
     	globalTime.setCurrentTimeStep(message.timeStep);
-        this.responseTrace = new ArrayList<ActorRef>();
         try {
             askChildren();
         }
         catch (Exception e) {
         	e.printStackTrace();
-        }    	
+        }
+        
+        this.reportToMonitor();
     }
     
     /*
     * Reports to ActorMonitor as soon as all Actors have completed their decision.
     * */
     public void reportToMonitor() {
-        if (this.receivedAllStates) {
-        	getContext().actorSelection("/user/ActorMonitor").tell(new CompletionMessage(true), getSelf());
-        }
-        else {
-            System.out.println("reportToMonitor false");
-        }
+    	getContext().actorSelection("/user/ActorMonitor").tell(new CompletionMessage(true), getSelf());
     }
-
-    /*
-    * Wrapper for ExecuteResponseLogic.
-    * */
-    public void askChildren(){
+    
+    public void askChildren(){    	
     	
         List<ActorRef> actorTrace = new ArrayList<ActorRef>();
         actorTrace.add(getSelf());
@@ -309,35 +297,26 @@ public class ActorSupervisor extends AbstractActor implements CurrentTimeStepSub
     * Asks first GridActor layer for Decision.
     * */
     
-    private void askChildrenLogic (List<ActorRef> actorTrace) throws Exception{
+    private void askChildrenLogic (List<ActorRef> actorTrace) throws Exception{    	
+        //long startTimeLocal = System.currentTimeMillis();
     	
-        List<Future<Object>> childrenResponseList = new ArrayList<Future<Object>>();                
-        
+        List<Future<Object>> childrenResponseList = new ArrayList<Future<Object>>();
         for (ActorRef child: getContext().getChildren()) {
         	//System.out.println("Request: "+ new BasicRequest(timeStep, actorTrace, null));
             childrenResponseList.add(ask(child, new BasicRequest(globalTime.getCurrentTimeStep(), globalTime.getCurrentTime(), globalTime.getPeriod(), actorTrace, null), GridArchitectConfiguration.rootActorResponseTime));
             //System.out.println("Supervisor: ASK A CHILD");
         }
         
-        //System.out.println("-------------------------");        
+        //long stopTimeLocal = System.currentTimeMillis();
+        //if (getCurrentTimeStep() %20 ==0)
+        //	System.err.println("ActorSupervisor, askChildrenLogic() Teil1-ask: " + (stopTimeLocal - startTimeLocal) + "ms");
+        //startTimeLocal = System.currentTimeMillis();
+        
+        
+        //System.out.println("-------------------------");
         
         Future<Iterable<Object>> childrenFuturesIterable = sequence(childrenResponseList, getContext().system().dispatcher());
-        Iterable<Object> childrenResponsesIterable = Await.result(childrenFuturesIterable, Duration.create(GridArchitectConfiguration.rootActorResponseTime, TimeUnit.MILLISECONDS));        
-
-        this.receivedAllStates = true;
-        for (Iterator<Object> i = childrenResponsesIterable.iterator(); i.hasNext();) {
-        	BasicAnswer response = (BasicAnswer) i.next();        	
-        	
-            //System.out.println(response);
-            if (response.upstreamActorTrace.size() > 0){
-            	responseTraceMap.put(response.upstreamActorTrace.get(response.upstreamActorTrace.size()-1), response.upstreamActorTrace);
-            }
-            
-            for (ActorRef actor: response.upstreamActorTrace) 
-            	this.responseTrace.add(actor);
-        }
-        
-        this.reportToMonitor();
+        Await.result(childrenFuturesIterable, Duration.create(GridArchitectConfiguration.rootActorResponseTime, TimeUnit.MILLISECONDS));
     }
     
     public int getCurrentTimeStep() {

@@ -69,7 +69,7 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 	@Override
 	public void handleRequest() {
 	}
-
+	
 	@Override
 	public void makeDecision() {
 
@@ -171,12 +171,13 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 				}
 			}
 		}
-
+		
 		return buildingMessage;
 	}
 
 	@Override
 	public RequestContent returnRequestContentToSend() {
+		
 		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
 			if (currentTimeStep == 0) {
 				if (port != 0) {

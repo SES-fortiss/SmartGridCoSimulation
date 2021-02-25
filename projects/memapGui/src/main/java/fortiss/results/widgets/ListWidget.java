@@ -39,7 +39,7 @@ public class ListWidget extends JPanel {
 	}
 	
 	public void addRow(String name, double value, String unit) {
-		DecimalFormat df = new DecimalFormat("0.0#");
+		DecimalFormat df = new DecimalFormat("#,##0.##");
 		
 		JLabel nameLabel = new JLabel (name);
 		nameLabel.setFont(Fonts.getOpenSans(FontSize.NORMAL));

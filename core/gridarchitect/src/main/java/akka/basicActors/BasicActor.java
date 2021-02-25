@@ -28,7 +28,6 @@ import akka.basicMessages.RequestContent;
 import akka.japi.pf.ReceiveBuilder;
 import akka.pattern.Patterns;
 import akka.systemActors.CommunicationPattern;
-import akka.systemMessages.DisableReportingMessage;
 import akka.systemMessages.EndSimulationMessage;
 import akka.timeManagement.CurrentTimeStepSubscriber;
 import akka.timeManagement.CurrentTimeSubscriber;
@@ -76,12 +75,12 @@ public class BasicActor extends AbstractActor implements CurrentTimeStepSubscrib
 	// AnswerContent is subject for inheritance
 	public AnswerContent answerContent;
 
-	public List<ActorRef> downStreamTrace = new ArrayList<ActorRef>();
-	public List<ActorRef> upStreamTrace = new ArrayList<ActorRef>();
+	//public List<ActorRef> downStreamTrace = new ArrayList<ActorRef>();
+	//public List<ActorRef> upStreamTrace = new ArrayList<ActorRef>();
 
 	private String simulationName;
 	private ActorTopology actorTopology;
-
+	
 	/**
 	 * This is default create method for the {@link BasicActor}
 	 * 
@@ -113,7 +112,6 @@ public class BasicActor extends AbstractActor implements CurrentTimeStepSubscrib
 		}
 
 		checkChildrenBuilderOptionsMap();
-		initDirectConnections();
 		register();
 	}
 
@@ -183,20 +181,19 @@ public class BasicActor extends AbstractActor implements CurrentTimeStepSubscrib
 		msg.subscribeToCurrentTime(this);
 	}
 	
-	private void handleBasicRequest(BasicRequest request) {
-		
-	  try {					
+	private void handleBasicRequest(BasicRequest request) {		
+		try {					
 			this.currentTimeStep = request.timeStep;
 			this.currentTime = request.timeValue;
 			this.timeStepDuration = request.timeStepDuration;
 			
-			this.downStreamTrace = new ArrayList<ActorRef>();
-			this.downStreamTrace.addAll(request.actorTrace);
-			this.downStreamTrace.add(getSelf());
+			//this.downStreamTrace = new ArrayList<ActorRef>();
+			//this.downStreamTrace.addAll(request.actorTrace);
+			//this.downStreamTrace.add(getSelf());
 
 			this.requestReceived = request;
 			this.requestContentReceived = request.requestContent;						
-			
+						
 			CommunicationPattern.doSomeWork(this);
 
 		} catch (Exception e) {
@@ -318,7 +315,7 @@ public class BasicActor extends AbstractActor implements CurrentTimeStepSubscrib
 	/*
 	 * Helper method to avoid an infinite askChildren loop when directConnections
 	 * are defined sloppy. (Detects a short circuit during runtime)
-	 */
+	 
 	@SuppressWarnings("unlikely-arg-type")
 	public boolean detectCircle() {
 		boolean circle = false;
@@ -328,6 +325,7 @@ public class BasicActor extends AbstractActor implements CurrentTimeStepSubscrib
 			}
 		return circle;
 	}
+	*/
 
 	/**
 	 * This methods gets called by the communicationPattern after the request
@@ -335,8 +333,6 @@ public class BasicActor extends AbstractActor implements CurrentTimeStepSubscrib
 	 * a request to available children
 	 */
 	public void handleRequest() {
-		// System.out.println(this.actorOptions.behaviorModel.actorName+"
-		// "+requestContentReceived);
 		this.actorOptions.behaviorModel.requestContentReceived = this.requestContentReceived;
 		this.actorOptions.behaviorModel.handleRequest();
 	}
@@ -344,7 +340,8 @@ public class BasicActor extends AbstractActor implements CurrentTimeStepSubscrib
 	/*******************************************
 	 * Wrapper method for all defined Behaviors.
 	 ******************************************/
-	public void makeDecision() {
+	
+	public void makeDecision() {		
 		this.actorOptions.behaviorModel.answerListReceived = this.answerListReceived;
 		this.actorOptions.behaviorModel.makeDecision();
 	}
@@ -358,16 +355,6 @@ public class BasicActor extends AbstractActor implements CurrentTimeStepSubscrib
 
 	public RequestContent returnRequestContentToSend() {
 		return this.actorOptions.behaviorModel.returnRequestContentToSend();
-	}
-
-	private void initDirectConnections() {
-		// Disable Reporting um doppelten Versand der Reports zu vermeiden
-		if (!this.actorOptions.directConnectionsPathList.isEmpty()) {
-			for (String dcPath : this.actorOptions.directConnectionsPathList) {
-				getContext().actorSelection(dcPath).tell(new DisableReportingMessage(), getSelf());
-			}
-			System.out.println(getSelf().path() + "disabling ");
-		}
 	}
 
 	public int getCurrentTimeStep() {

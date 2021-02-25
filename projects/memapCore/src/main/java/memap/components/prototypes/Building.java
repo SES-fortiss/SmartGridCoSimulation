@@ -115,8 +115,7 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 			
 			System.out.println(topologyController.getOptimizer() + ": " + this.actorName + " cost = "
 					+ String.format("%.03f", costTotal) + " EUR ; CO2: " + String.format("%.03f", CO2Total) + " kg");			
-		}
-		
+		}		
 	}
 
 	@Override
