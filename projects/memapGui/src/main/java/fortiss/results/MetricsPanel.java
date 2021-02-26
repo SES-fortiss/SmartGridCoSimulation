@@ -34,7 +34,6 @@ public class MetricsPanel extends JPanel {
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		// TODO: Dark mode implementation
 	}
 
 	public void initialize() {

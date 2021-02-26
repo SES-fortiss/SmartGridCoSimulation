@@ -81,8 +81,8 @@ public class ConnectionDB {
 		long step = System.currentTimeMillis() / 1000L;
 		double heatdemand = currentDemand[0];
 		double elecdemand = currentDemand[1];
-		double priceEl = EnergyPrices.getInstance().getElectricityPriceInEuro(currentTimeStep);
-		double priceHt = EnergyPrices.getInstance().getHeatPriceInEuro(currentTimeStep);
+		double priceEl = EnergyPrices.getInstance().getElecBuyingPrice(currentTimeStep);
+		double priceHt = EnergyPrices.getInstance().getHeatBuyingPrice(currentTimeStep);
 		double cost = totalCostsEUR[0];
 		double CO2 = totalCO2emissions[0];
 		

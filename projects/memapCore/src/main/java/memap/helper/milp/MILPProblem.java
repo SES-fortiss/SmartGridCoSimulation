@@ -144,9 +144,9 @@ public class MILPProblem {
 		int cts = currentTimeStep;
 		for (int i = 0; i < nStepsMPC; i++) {
 			int index = nCols - 2 * nStepsMPC + i;
-			lambdaEUR[index] = energyPrices.getElectricityPriceInEuro(cts + i);
+			lambdaEUR[index] = energyPrices.getElecBuyingPrice(cts + i);
 			// TODO be carefull, for Stefans Work hardcoded to 0.1069
-			lambdaEUR[index + nStepsMPC] = -energyPrices.getElectricityPriceInEuro(cts + i) * 0.5;
+			lambdaEUR[index + nStepsMPC] = -energyPrices.getElecSellingPrice(cts + i);
 			// TODO
 			// lambdaEUR[index + nStepsMPC] = -0.1069;
 		}

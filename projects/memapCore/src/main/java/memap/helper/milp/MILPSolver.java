@@ -175,13 +175,16 @@ public class MILPSolver {
 			currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
 		}
 		
-		double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep) };
+		double[] currentEnergyPrices = { energyPrices.getElecBuyingPrice(currentTimeStep),
+				energyPrices.getElecSellingPrice(currentTimeStep),
+				energyPrices.getHeatBuyingPrice(currentTimeStep) };
 		double[] totalCostsEUR = { costTotal };
 		double[] totalCO2emissions = { CO2Total };
 
 		String[] timeStep = { Strings.timeStep };
 		String[] currentOptVectorNames = milpSolHandler.getVectorNamesForThisTimeStep(names, nStepsMPC);
-		String[] energyPrice = { Strings.energyPriceAndUnit };
+		String[] energyPricesNames = { Strings.elecBuyingPriceAndUnit, Strings.elecSellingPriceAndUnit,
+				Strings.heatBuyingPriceAndUnit };
 		String[] totalCosts = { Strings.totalCostAndUnit };
 		String[] co2emissions = { Strings.co2EmissionsAndUnit };
 
@@ -217,9 +220,9 @@ public class MILPSolver {
 		}
 
 		String[] namesResult = HelperConcat.concatAllObjects(timeStep, currentDemandNames, currentOptVectorNames,
-				currentSOCNames, energyPrice, totalCosts, co2emissions);
+				currentSOCNames, energyPricesNames, totalCosts, co2emissions);
 		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC,
-				currentEnergyPrice, totalCostsEUR, totalCO2emissions);
+				currentEnergyPrices, totalCostsEUR, totalCO2emissions);
 
 		
 		int nrOfBuildings = 1;
@@ -229,7 +232,7 @@ public class MILPSolver {
 		
 		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
 			ConnectionDB.addResults(topologyController.getOptimizationHierarchy(),currentTimeStep, namesResult, currentStep, currentDemand, currentOptVector, currentSOC,
-				currentEnergyPrice, totalCostsEUR, totalCO2emissions, nrOfBuildings);
+				currentEnergyPrices, totalCostsEUR, totalCO2emissions, nrOfBuildings);
 		}
 		
 

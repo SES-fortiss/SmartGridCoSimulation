@@ -215,8 +215,6 @@ public abstract class Metrics {
 	}
 
 	/**
-	 * TODO
-	 * 
 	 * @param heatBuy the heatBuy to set
 	 */
 	public void setHeatBuy() {
@@ -231,8 +229,6 @@ public abstract class Metrics {
 	}
 
 	/**
-	 * TODO
-	 * 
 	 * @param heatSell the heatSell to set
 	 */
 	public void setHeatSell() {

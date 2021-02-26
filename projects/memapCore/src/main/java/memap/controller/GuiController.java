@@ -22,8 +22,11 @@ import memap.components.CSVProducer;
 import memap.components.CSVStorage;
 import memap.components.CSVVolatileProducer;
 import memap.components.prototypes.Connection;
+import memap.helper.ElectricityPrice;
 import memap.helper.EnergyPrices;
+import memap.helper.HeatPrice;
 import memap.helper.MEMAPLogging;
+import memap.helper.Price;
 import memap.helper.configurationOptions.OptHierarchy;
 import memap.helper.configurationOptions.OptimizationCriteria;
 import memap.helper.configurationOptions.Optimizer;
@@ -98,21 +101,29 @@ public class GuiController {
 		// Configure simulation parameters
 		TopologyConfig topologyConfig = TopologyConfig.getInstance();
 
-		boolean isFixedPrice = jObject.get("hasfixedPrice").getAsBoolean();
-		double fixedPrice = jObject.get("fixedMarketPrice").getAsDouble();
-		int nrStepsMPC = jObject.get("steps").getAsInt();
-		int timeStepsPerDay = jObject.get("length").getAsInt();
+		int mpcHorizon = jObject.get("mpcHorizon").getAsInt();
+		int timeStepsPerDay = jObject.get("stepsPerDay").getAsInt();
 		int nrDays = jObject.get("days").getAsInt();
-		String variablePriceFile = jObject.get("marketPriceFile").getAsString();
+		
+		// Must come before prices are set!
+		topologyConfig.init(mpcHorizon, timeStepsPerDay, nrDays, 0, 0);
+		
+		JsonObject elecBuyingPriceObj = jObject.get("elecBuyingPrice").getAsJsonObject();
+		JsonObject elecSellingPriceObj = jObject.get("elecSellingPrice").getAsJsonObject();
+		JsonObject heatBuyingPriceObj = jObject.get("heatBuyingPrice").getAsJsonObject();
 
-		topologyConfig.init(nrStepsMPC, timeStepsPerDay, nrDays, 0, 0);
+		Price elecBuyingPrice = new ElectricityPrice(elecBuyingPriceObj.get("fixed").getAsBoolean(),
+				elecBuyingPriceObj.get("price").getAsDouble(), elecBuyingPriceObj.get("priceFilePath").getAsString(),
+				mpcHorizon);
+		Price elecSellingPrice = new ElectricityPrice(elecSellingPriceObj.get("fixed").getAsBoolean(),
+				elecSellingPriceObj.get("price").getAsDouble(), elecSellingPriceObj.get("priceFilePath").getAsString(),
+				mpcHorizon);
+		Price heatBuyingPrice = new HeatPrice(heatBuyingPriceObj.get("fixed").getAsBoolean(),
+				heatBuyingPriceObj.get("price").getAsDouble(), heatBuyingPriceObj.get("priceFilePath").getAsString(),
+				mpcHorizon);
 
 		EnergyPrices energyPrices = EnergyPrices.getInstance();
-		if (isFixedPrice) {
-			energyPrices.init(fixedPrice);
-		} else {
-			energyPrices.init(variablePriceFile);
-		}
+		energyPrices.init(elecBuyingPrice, elecSellingPrice, heatBuyingPrice);
 
 		Optimizer optimizer = null;
 		String optimizerType = jObject.get("optimizer").getAsString();

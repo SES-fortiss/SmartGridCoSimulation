@@ -57,16 +57,6 @@ public class SummaryPanel extends JPanel {
 		performancePanel.setBackground(Colors.gray);
 		parameterWidget.setBackground(Colors.gray);		
 	}
-
-	/**
-	 * 
-	 * TODO
-	 * @param context
-	 * @param title
-	 * @param value
-	 * @param unit
-	 * @param toolTip
-	 */
 	
 	public void addComparisonWidget(String context, String title, double valueMemapOn, double valueMemapOff, String unit, String toolTip) {
 		ComparisonWidget comparisonWidget = new ComparisonWidget(title, valueMemapOn, valueMemapOff, unit);

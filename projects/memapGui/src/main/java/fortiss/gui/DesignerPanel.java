@@ -33,6 +33,7 @@ public class DesignerPanel extends JPanel {
 	// Panels
 	private static TreeMap<String, InformationPanel> informationPanels = new TreeMap<String, InformationPanel>();
 	public static ParameterInputPanel parameterPanel;
+	public static PricesPanel pricesPanel;
 	public static ActionPanel pl_action; // Action panel: LoadListener, run, save, reset
 	public static BuildingInputPanel pl_ems_detail; // Split 1: panel for EMS details
 	public static JPanel pl_comp_detail; // Split 2: panel for components details
@@ -90,6 +91,11 @@ public class DesignerPanel extends JPanel {
 		parameterPanel = new ParameterInputPanel();
 		pl_comp_detail.add(parameterPanel, "parameter");
 		informationPanels.put("parameter", parameterPanel);
+		
+		// Add prices panel
+		pricesPanel = new PricesPanel();
+		pl_comp_detail.add(pricesPanel, "prices");
+		informationPanels.put("prices", pricesPanel);
 
 		// Add initial panel
 		initialPanel = new InitialPanel();

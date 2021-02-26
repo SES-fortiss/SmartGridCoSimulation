@@ -1,116 +1,39 @@
 package memap.helper;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
-import memap.examples.ExampleFiles;
-import memap.helper.profilehandler.Interpolation;
-import memap.main.TopologyConfig;
-import simulation.SimulationStarter;
-
 /**
  * Helper class to return the energy prices.
  */
 public class EnergyPrices {
 
+	/**
+	 * This is a Singleton class. It builds and holds an instance of the
+	 * ElectricityPrices and the HeatPrices classes.
+	 */
 	private static EnergyPrices instance = new EnergyPrices();
 
-	/** Electricity price per KWp */
-	private ArrayList<Double> electricityPrices = new ArrayList<Double>();
-	private ArrayList<Double> gasPrices;
-	
-	/**
-	 * Set values to the parameters of {@link EnergyPrices} using a double value.
-	 * Creates a array list with all its entries equal to MarketPrice
-	 * 
-	 * Note: {@link TopologyConfig} values must be set before calling this method.
-	 * 
-	 * @param MarketPrice a double value
-	 * 
-	 */
-	public void init(double MarketPrice) {
-		for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC() * 2; i++) {
-			electricityPrices.add(MarketPrice);
-		}
-	}
+	private Price elecBuyingPrice;
+	private Price elecSellingPrice;
+	private Price heatBuyingPrices;
 
 	
-	public void initGas(double MarketPrice) {
-		gasPrices = new ArrayList<Double>();
-		for (int i = 0; i < TopologyConfig.getInstance().getNrStepsMPC() * 2; i++) {
-			gasPrices.add(MarketPrice);
-		}
-	}
-	
-	/**
-	 * Set values to the parameters of {@link EnergyPrices} using a CSV. Creates a
-	 * array list reading from the file path MarketPriceCSV
-	 * 
-	 * Note: {@link TopologyConfig} values must be set before calling this method.
-	 * 
-	 * @param MarketPriceCSV a path to a CSV file
-	 * 
-	 */
-	public void init(String MarketPriceCSV) {
-		
-		// if an empty string is provided, then load standard example.
-		if (MarketPriceCSV.length() <= 1) {
-			MarketPriceCSV = "ELECTRICITYPRICEEXAMPLE";
-		}		
-		setElectricityPrices(MarketPriceCSV);
-	}
-	
-	/** @return the instance of {@link EnergyPrices} */
-	public static EnergyPrices getInstance() {
-		return instance;
+	public void init(Price elecBuyingPrice2, Price elecSellingPrice2, Price heatBuyingPrice) {
+		this.elecBuyingPrice = elecBuyingPrice2;
+		this.elecSellingPrice = elecSellingPrice2;
+		this.heatBuyingPrices = heatBuyingPrice;
 	}
 
-	/**
-	 * Assign values to electricityPrices
-	 * 
-	 * @param csvFile
-	 */
-	private void setElectricityPrices(String csvFile) {
-		try {			
-			electricityPrices = readEnergyPrices(electricityPrices, getBuffer(csvFile));					 
-		} catch (Exception e) {
-			System.err.println("Variable market price selected but input file [" + csvFile + "] is not provided. Using example file");
-			try {
-				
-				BufferedReader bf = getBuffer("ELECTRICITYPRICEEXAMPLE");				
-				electricityPrices = readEnergyPrices(electricityPrices, bf);
-				
-				
-			} catch (Exception e2) {
-				System.err.println("Error reading or parsing electricity price data " + csvFile);
-				SimulationStarter.stopSimulationStatic();
-				e.printStackTrace();
-			}						
-		}
-	}
-	
-	
-	/**
-	 * Returns the heat price in Euro per kWh at any given time step. For now, it
-	 * constantly returns 5,34 ct/kWh (Stadtwerke Wuerzburg), but here CSV-files or
-	 * web services or other mechanisms could be plugged in.
-	 * 
-	 * @param time the time step for which to get the gas price
-	 * @return gas price in ct/kWh at specified time step
-	 */
-	public double getHeatPriceInEuro(int timestep) {
-		double value = 0.0534d;
-		value = 0.7;
-		return value;
+	public double getElecBuyingPrice(int timestep) {
+		return elecBuyingPrice.getPriceForTimeStep(timestep);
 	}
 
-	
+	public double getElecSellingPrice(int timestep) {
+		return elecSellingPrice.getPriceForTimeStep(timestep);
+	}
+
+	public double getHeatBuyingPrice(int timestep) {
+		return heatBuyingPrices.getPriceForTimeStep(timestep);
+	}
+
 	/**
 	 * Returns the electricity price in cents per kWh at any given time step in
 	 * ct/kJ, read from a CSV-file.
@@ -120,81 +43,35 @@ public class EnergyPrices {
 	 * 
 	 * @param time the time step for which to get the electricity price
 	 * @return electricity price in ct/kWh at specified time step
-	 */
-	public double getElectricityPriceInEuro(int timestep) {
-		return electricityPrices.get(timestep % electricityPrices.size());
-	}
-
-	/**
-	 * @return a buffer with the data from csv filename
-	 * @param filename CSV file
-	 */
-	private BufferedReader getBuffer(String csvFile) {
-		FileManager mgr = new FileManager();
-		ExampleFiles examples = new ExampleFiles();
-		
-		if (examples.isExample(csvFile)) {
-			System.out.println(">> Reading from resources: " + csvFile);
-			return mgr.readFromResources(examples.getFile(csvFile));
-		} else {
-			System.out.println(">> Reading from source: " + csvFile);
-			return mgr.readFromSource(csvFile);
-		}
-	}
-
-	/**
-	 * Assign values to electricity prices {@link #electricityPrices} from buffer
 	 * 
-	 * @return br buffer
+	 *         Kept for compatibility
 	 */
-	private ArrayList<Double> readEnergyPrices(ArrayList<Double> energyPrices, BufferedReader br) throws IOException, ParseException {
+	//@Deprecated
+	//public double getElectricityPriceInEuro(int timestep) {
+	//	return getElecBuyingPrice(timestep);
+	//}
 
-		/*
-		 * the current logic:
-		 * - x should represent the step length in the data file (intrinsic knowledge)
-		 * - y should represent the price related to x
-		 * - xi should represent the selected time step in the simulation
-		 * - yi should represent the price related to xi
-		 */
-		
-		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
+	/**
+	 * Returns the heat price in Euro per kWh at any given time step. For now, it
+	 * constantly returns 5,34 ct/kWh (Stadtwerke Wuerzburg), but here CSV-files or
+	 * web services or other mechanisms could be plugged in.
+	 * 
+	 * @param time the time step for which to get the gas price
+	 * @return gas price in ct/kWh at specified time step
+	 * 
+	 *         Kept for compatibility. Note that since commit
+	 *         31ea694b186cd3eda7ad8b17649c386864a6f748 the returned value does not
+	 *         coincide with the description.
+	 */
+	/*@Deprecated
+	public double getHeatPriceInEuro(int timestep) {
+		double value = 0.0534d;
+		value = 0.7;
+		return value;
+	}*/
 
-		double stepLenghtInHours = TopologyConfig.getInstance().getStepLengthInHours();
-		ArrayList<Double> originalValues = new ArrayList<Double>();
-		String row;
-
-		while ((row = br.readLine()) != null) {
-			
-			if (row.charAt(0) != '#') // skipping the header which starts with '#'
-			{	
-				List<String> br_values = Arrays.asList(row.split(";"));
-				originalValues.add(nf.parse(br_values.get(2)).doubleValue());
-			}
-			
-			// TODO add the time information, i.e. LocalDateTime.
-		}
-
-		double[] x = new double[originalValues.size()];
-		double[] y = new double[originalValues.size()];
-		for (int i = 0; i < originalValues.size(); i++) {
-			x[i] = i / 4.0 ; 
-			y[i] = originalValues.get(i);
-		}
-		
-		int mpcSteps = y.length -1;
-
-		double[] xi = new double[mpcSteps];
-		for (int j = 0; j < mpcSteps; j++) {
-			xi[j] = j * stepLenghtInHours;
-		}
-
-		double[] yi = Interpolation.interpLinear(x, y, xi);
-		for (int k = 0; k < yi.length; k++) {
-			energyPrices.add(yi[k]);
-		}
-		br.close();
-		
-		return energyPrices;
+	public static EnergyPrices getInstance() {
+		return instance;
 	}
 
 }

@@ -19,6 +19,7 @@ public abstract class TextFieldListener extends KeyAdapter implements FocusListe
 	protected static Building building;
 	protected static Component component;
 	protected static Connection connection;
+	protected JTextField source;
 	private String errorMessage;
 
 	public TextFieldListener(String errorMessage) {
@@ -55,8 +56,8 @@ public abstract class TextFieldListener extends KeyAdapter implements FocusListe
 	 */
 	@Override
 	public void focusLost(FocusEvent e) {
-		JTextField source = (JTextField) e.getSource();
-		String word = ((JTextField) e.getSource()).getText();
+		source = (JTextField) e.getSource();
+		String word = source.getText();
 
 		if (!isValidField(word)) {
 			JOptionPane.showMessageDialog(PlanningTool.getInstance().getMainContentPane(), errorMessage);
@@ -79,7 +80,8 @@ public abstract class TextFieldListener extends KeyAdapter implements FocusListe
 	 */
 	@Override
 	public void keyReleased(KeyEvent e) {
-		String word = ((JTextField) e.getSource()).getText();
+		source = (JTextField) e.getSource();
+		String word = source.getText();
 
 		if (isValidField(word)) {
 			update(word);
@@ -93,7 +95,8 @@ public abstract class TextFieldListener extends KeyAdapter implements FocusListe
 	@Override
 	public void keyTyped(KeyEvent e) {
 		char c = e.getKeyChar();
-		String word = ((JTextField) e.getSource()).getText();
+		source = (JTextField) e.getSource();
+		String word = source.getText();
 
 		if (!isValidCharacter(c, word) || !isValidLength(word)) {
 			DesignerPanel.pl_ems_detail.getToolkit().beep();
