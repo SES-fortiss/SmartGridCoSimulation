@@ -5,7 +5,7 @@ import fortiss.components.Storage;
 public class SStateOfChargeListener extends NumberListener{
 
 	public SStateOfChargeListener() {
-		super(false, true, 10);
+		super(false, true, 0, 1, 10);
 	}
 
 	@Override
