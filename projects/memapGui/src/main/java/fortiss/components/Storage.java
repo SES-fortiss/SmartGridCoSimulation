@@ -10,13 +10,15 @@ import fortiss.media.IconStore;
  * ThermalStorage.
  */
 public class Storage extends Component {
-	
+
 	@Expose
 	private String networkType;
 	@Expose
 	private double capacity;
 	@Expose
 	private double soc;
+	@Expose
+	private double looses;
 	@Expose
 	private double maxCharging;
 	@Expose
@@ -32,18 +34,20 @@ public class Storage extends Component {
 	 * @param name           an alphanumeric string
 	 * @param networkType    a string: Heat or Electricity
 	 * @param capacity       a positive double
-	 * @param soc			 state of charge
+	 * @param soc            state of charge
+	 * @param looses         looses [%/h]. Percentage is in [0, 1]
 	 * @param maxCharging    maximum charging rate. A positive double
 	 * @param maxDischarging maximum discharging rate. A positive double
 	 * @param effIN          charging efficiency. A positive double
 	 * @param effOUT         discharging efficiency. A positive double
 	 */
-	public Storage(Building building, String name, String networkType, double capacity, double soc, double maxCharging, double maxDischarging,
-			double effIN, double effOUT) {
+	public Storage(Building building, String name, String networkType, double capacity, double soc, double looses,
+			double maxCharging, double maxDischarging, double effIN, double effOUT) {
 		super(name, building);
 		setNetworkType(networkType);
 		setCapacity(capacity);
 		setSoc(soc);
+		setLooses(looses);
 		setMaxCharging(maxCharging);
 		setMaxDischarging(maxDischarging);
 		setEffIN(effIN);
@@ -73,6 +77,14 @@ public class Storage extends Component {
 
 	public void setSoc(double soc) {
 		this.soc = soc;
+	}
+
+	public double getLooses() {
+		return looses;
+	}
+
+	public void setLooses(double looses) {
+		this.looses = looses;
 	}
 
 	public double getMaxCharging() {

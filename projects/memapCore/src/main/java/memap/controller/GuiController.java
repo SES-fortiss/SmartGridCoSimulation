@@ -53,13 +53,13 @@ public class GuiController {
 
 		Thread memapOffThread = new Thread(topMemapOff);
 		Thread memapOnThread = new Thread(topMemapOn);
-		
+
 		memapOffThread.start();
 		memapOnThread.start();
-		
+
 		memapOffThread.join();
 		memapOnThread.join();
-		
+
 	}
 
 	private TopologyController createTopology(OptHierarchy optimizationHierarchy) {
@@ -88,7 +88,7 @@ public class GuiController {
 		// Connections
 		JsonElement connections = p.next();
 		ArrayList<Connection> connectionList = gson.fromJson(connections, connectionMapType);
-		
+
 		// Parameters
 		JsonElement parameters = p.next();
 
@@ -146,7 +146,7 @@ public class GuiController {
 
 		TopologyController top = new TopologyController(jObject.get("simulationName").getAsString(), optHierarchy,
 				optimizer, optimizationCriteria, ToolUsage.PLANNING, loggingMode);
-		
+
 		for (JsonElement json : buildings) {
 			BuildingController building = gson.fromJson(json, BuildingController.class);
 			top.attach(building.getName(), building);
@@ -302,7 +302,8 @@ public class GuiController {
 			return new CSVStorage(jObject.get("name").getAsString(), jObject.get("capacity").getAsDouble(),
 					jObject.get("soc").getAsDouble(), jObject.get("maxCharging").getAsDouble(),
 					jObject.get("maxDischarging").getAsDouble(), jObject.get("effIN").getAsDouble(),
-					jObject.get("effOUT").getAsDouble(), networkType, 0.0001, 0.0001, 0, 0);
+					jObject.get("effOUT").getAsDouble(), networkType, 0.0001, 0.0001,
+					jObject.get("losses").getAsDouble(), 0);
 		}
 	}
 
