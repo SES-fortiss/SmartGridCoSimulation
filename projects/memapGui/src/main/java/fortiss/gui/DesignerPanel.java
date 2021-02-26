@@ -14,6 +14,7 @@ import javax.swing.SwingConstants;
 
 import fortiss.components.Building;
 import fortiss.components.Component;
+import fortiss.components.Connection;
 import fortiss.gui.style.Colors;
 
 public class DesignerPanel extends JPanel {
@@ -27,6 +28,7 @@ public class DesignerPanel extends JPanel {
 	public static int buildingCount = buildings.size();
 	public static Building selectedBuilding = null;
 	public static Component selectedComponent = null;
+	public static Connection selectedConnection = null;
 
 	// Panels
 	private static TreeMap<String, InformationPanel> informationPanels = new TreeMap<String, InformationPanel>();

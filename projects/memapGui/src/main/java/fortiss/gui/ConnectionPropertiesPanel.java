@@ -13,6 +13,7 @@ import javax.swing.border.EtchedBorder;
 import fortiss.components.Connection;
 import fortiss.gui.listeners.textfield.ConnectionLengthListener;
 import fortiss.gui.listeners.textfield.ConnectionLossesListener;
+import fortiss.gui.listeners.textfield.ConnectionMaxCapacityListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.simulation.helper.ConnectionManager;
@@ -22,16 +23,16 @@ public class ConnectionPropertiesPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JTextField lengthTextField;
 	private JTextField lossesTextField;
+	private JTextField maxTransportCapacityTextField;
 	private Popup popup;
 
 	public ConnectionPropertiesPanel(Connection connection) {
 		setLayout(new WrapLayout());
 		setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
 
-		setPreferredSize(new Dimension(170, 80));
+		setPreferredSize(new Dimension(170, 100));
 		setMaximumSize(new Dimension(300, 60));
 
-		
 		lengthTextField = new JTextField(String.valueOf(connection.getLength()));
 		lengthTextField.setColumns(4);
 		lengthTextField.setName(String.valueOf(connection.hashCode()));
@@ -42,7 +43,7 @@ public class ConnectionPropertiesPanel extends JPanel {
 		JLabel lblLength = new JLabel("Thermal-Line [m]");
 		add(lblLength);
 
-		lossesTextField = new JTextField(String.valueOf(connection.getLosses() * 100));
+		lossesTextField = new JTextField(String.valueOf(connection.getLosses()));
 		lossesTextField.setColumns(4);
 		lossesTextField.setName(String.valueOf(connection.hashCode()));
 		lossesTextField.addFocusListener(new ConnectionLossesListener());
@@ -51,6 +52,16 @@ public class ConnectionPropertiesPanel extends JPanel {
 
 		JLabel lblLosses = new JLabel("Losses [% /100m]");
 		add(lblLosses);
+		
+		maxTransportCapacityTextField = new JTextField(String.valueOf(connection.getMaxTransportCapacity()));
+		maxTransportCapacityTextField.setColumns(4);
+		maxTransportCapacityTextField.setName(String.valueOf(connection.hashCode()));
+		maxTransportCapacityTextField.addFocusListener(new ConnectionMaxCapacityListener());
+		maxTransportCapacityTextField.addKeyListener(new ConnectionMaxCapacityListener());
+		add(maxTransportCapacityTextField);
+		
+		JLabel lblMaxTransportCapacity = new JLabel("Max. Capacity [kW]");
+		add(lblMaxTransportCapacity);
 
 		JLabel lblEliminate = new JLabel("Eliminate [x]");
 		lblEliminate.setForeground(Colors.accent1);
