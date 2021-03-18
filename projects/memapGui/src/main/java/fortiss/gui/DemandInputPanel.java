@@ -128,8 +128,8 @@ public class DemandInputPanel extends InformationPanel {
 				"<html> Headers starting with # <br/> "
 				+ "Column 1: DATE of yyyy-mm-dd &emsp; <br/>"
 				+ "Column 2: TIME of hh:mm:ss &emsp; <br/>"
-				+ "Column 3: HEAT of double with ',' &emsp; <br/>"
-				+ "Column 4: ELECTRICITY of double with ',' &emsp; ");
+				+ "Column 3: ELECTRICITY of double with ',' &emsp; <br/>"
+				+ "Column 4: HEAT of double with ',' &emsp; ");
 		add(lblCsvInstructions, "spanx, gaptop 10");
 
 
