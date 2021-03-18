@@ -59,7 +59,7 @@ public class Demand extends Component {
 	 */
 	public void setData() {
 		String location = getConsumptionProfile();
-		String[] labels = { "Heat", "Electricity" };
+		String[] labels = { "Electricity", "Heat" };
 
 		if (location == null || location.isEmpty()) {
 			location = "CONSUMPTIONEXAMPLE0"; // Load empty data
