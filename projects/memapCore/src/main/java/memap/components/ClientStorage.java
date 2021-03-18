@@ -166,6 +166,27 @@ public class ClientStorage extends Storage {
 				}
 			}
 			
+			double factor = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 f�r 96 Schritte /Tag
+			double standbyLosses = 0.0021;
+			// Alphas and betas have to be calculated here as well. 
+			// helper parameters, onl depend on time step length and storage parameters
+			double alpha = 1 - standbyLosses * factor;
+			double beta_to = factor/ storageMessage.capacity * storageMessage.efficiencyCharge;
+			double beta_fm = factor/(storageMessage.capacity * storageMessage.efficiencyDischarge);
+			
+			// use a State of Charge in percent, i.e. within [0; 1] (workaround, should be updated)
+			double SOC_perc = this.stateOfCharge/this.capacity;
+			
+			// update the SOC based on the just written setpoints for the storage
+			double SOC_perc_updated = SOC_perc * alpha + beta_to * optimizationAdviceInput[0] - beta_fm * optimizationAdviceOutput[0];
+			
+			// feed the updated SOC back into the original format and value (workaround, should be updated)
+			this.stateOfCharge = SOC_perc_updated * this.capacity;
+			// use the updating/communication procedure used below (just copied)
+			DataValue sum = new DataValue(new Variant(this.stateOfCharge), null, null);
+			client.writeValue(calculatedSocId, sum);
+			
+			/*
 			// update theoretical SOC
 			double soc_alt = this.stateOfCharge;
 			
@@ -184,6 +205,7 @@ public class ClientStorage extends Storage {
 			
 			DataValue sum = new DataValue(new Variant(this.stateOfCharge), null, null);
 			client.writeValue(calculatedSocId, sum);
+			*/
 			
 
 		}
