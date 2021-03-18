@@ -396,6 +396,11 @@ public class MILPProblemWithConnections extends MILPProblem {
 					maxChargeCapacity = sm.capacity;
 				}
 				
+				// HARD CODED STANDBY LOSSES: 0.21% (arbitrary)
+				double standbyLosses = 0.0021;
+				// Redeclare the SOC to reflect an actual SOC in decimal percent [0; 1]
+				double SOC_perc = sm.stateOfCharge / sm.capacity;
+				
 		        for (int i = 0; i < nStepsMPC; i++) {
 		        	int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  		        	
 		        	rowDISCHARGE[index] = 1/sm.efficiencyDischarge*factor;
