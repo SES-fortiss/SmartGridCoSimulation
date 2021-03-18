@@ -166,13 +166,25 @@ public class ClientStorage extends Storage {
 				}
 			}
 			
-			double factor = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 f�r 96 Schritte /Tag
-			double standbyLosses = 0.0021;
+			/** TODO beginning of new code by Johannes **/
+			
+			/** FIXME / suggestion for changes */
+			// Old Code
+			// double factor = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 f�r 96 Schritte /Tag
+			// double standbyLosses = 0.0021; 
+			
+			// New Code (wir haben in der Super Klasse die Variable "storageLoss" definiert, die für alle Storages gilt)
+			
+			double delta_time = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 f�r 96 Schritte /Tag
+			double standbyLosses = super.storageLoss; // in percent for hour -> Example: 0.021 coresponds to 2.1 [%/h]
+			
+			/** END OF FIXME */
+			
 			// Alphas and betas have to be calculated here as well. 
-			// helper parameters, onl depend on time step length and storage parameters
-			double alpha = 1 - standbyLosses * factor;
-			double beta_to = factor/ storageMessage.capacity * storageMessage.efficiencyCharge;
-			double beta_fm = factor/(storageMessage.capacity * storageMessage.efficiencyDischarge);
+			// helper parameters, only depend on time step length and storage parameters
+			double alpha = 1 - standbyLosses * delta_time;
+			double beta_to = delta_time/ storageMessage.capacity * storageMessage.efficiencyCharge;
+			double beta_fm = delta_time/(storageMessage.capacity * storageMessage.efficiencyDischarge);
 			
 			// use a State of Charge in percent, i.e. within [0; 1] (workaround, should be updated)
 			double SOC_perc = this.stateOfCharge/this.capacity;
@@ -185,6 +197,8 @@ public class ClientStorage extends Storage {
 			// use the updating/communication procedure used below (just copied)
 			DataValue sum = new DataValue(new Variant(this.stateOfCharge), null, null);
 			client.writeValue(calculatedSocId, sum);
+			
+			/** TODO end of new code by Johannes **/
 			
 			/*
 			// update theoretical SOC

@@ -373,7 +373,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 	        
 	        int indexBuilding = mapBuildingMessageToIndex.get(bm);
 			
-			double factor = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 f�r 96 Schritte /Tag
+			double delta_time_factor = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 f�r 96 Schritte /Tag
 			
 	        for (StorageMessage sm : bm.storageList) {
 	        	
@@ -395,16 +395,19 @@ public class MILPProblemWithConnections extends MILPProblem {
 				if (maxChargeCapacity >= sm.capacity) {
 					maxChargeCapacity = sm.capacity;
 				}				
-				// Hard coded standby losses: 8.1% (arbitrary)
-				double standbyLosses = 0.2;
+				// TODO Hard coded standby losses: 8.1% (arbitrary) --> changed				
+				double standbyLosses = sm.storageLosses;
+				
+				standbyLosses = 0.1;
+				
 				// Redeclare the SOC to reflect an actual SOC in decimal percent [0; 1]
 				double SOC_perc = sm.stateOfCharge / sm.capacity; 		
 				
 				// New for SOC within 0 and 1 and standby loss consideration:
 				// helper parameters, only depend on time step length and storage parameters
-				double alpha = 1 - standbyLosses * factor; // Units [-]
-				double beta_to = factor/sm.capacity * sm.efficiencyCharge; // Units [h/kWh]
-				double beta_fm = factor/(sm.capacity * sm.efficiencyDischarge); // Units [h/kWh]
+				double alpha = 1 - standbyLosses * delta_time_factor; // Units [-]
+				double beta_to = delta_time_factor/sm.capacity * sm.efficiencyCharge; // Units [h/kWh]
+				double beta_fm = delta_time_factor/(sm.capacity * sm.efficiencyDischarge); // Units [h/kWh]
 				
 				// new temporary constraint rows:
 	            double[] rowCHARGE_new = new double[nCols+1];

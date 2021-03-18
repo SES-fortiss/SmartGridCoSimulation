@@ -22,6 +22,8 @@ public class StorageMessage implements AnswerContent {
 	public double efficiencyCharge;
 	public double efficiencyDischarge;
 	
+	public double storageLosses;
+	
 	public NetworkType networkType;
 	
 	public String toString() {

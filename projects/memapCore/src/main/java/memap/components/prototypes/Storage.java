@@ -16,7 +16,7 @@ public abstract class Storage extends Device {
 	public double effOUT;
 	public double stateOfCharge;
 	
-	public double storageLoss;
+	public double storageLoss = 0.1; // Unit [%/h] Example 0.021 represents 2.1%/h
 
 	public StorageMessage storageMessage = new StorageMessage();
 
@@ -77,7 +77,10 @@ public abstract class Storage extends Device {
 			if (storageChargeRequest!= null && storageDischargeRequest!= null) {
 				double soc_alt = stateOfCharge;
 				double leistung = storageChargeRequest[0] * effIN - storageDischargeRequest[0] * 1 / effOUT;
-				stateOfCharge = soc_alt + leistung * stepLengthInHours;
+				//stateOfCharge = soc_alt + leistung * stepLengthInHours;
+				//stateOfCharge = soc_alt * (1-storageLoss) * stepLengthInHours + leistung * stepLengthInHours;
+				stateOfCharge = soc_alt * (1-storageLoss * stepLengthInHours) + leistung * stepLengthInHours;
+				//stateOfCharge = soc_alt * Math.pow(1-storageLoss, stepLengthInHours) + leistung * stepLengthInHours;
 			}
 		}
 	}

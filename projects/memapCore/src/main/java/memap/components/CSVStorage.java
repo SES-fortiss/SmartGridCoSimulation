@@ -43,6 +43,7 @@ public class CSVStorage extends Storage {
 		storageMessage.efficiencyCharge = effIN;
 		storageMessage.efficiencyDischarge = effOUT;
 		storageMessage.networkType = networkType;
+		storageMessage.storageLosses = storageLoss;
 	}
 	
 	/** Passes a reference of an object of class {@link TopologyController} to the parent class */
