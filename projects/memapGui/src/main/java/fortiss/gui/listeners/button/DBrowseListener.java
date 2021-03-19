@@ -24,6 +24,9 @@ public class DBrowseListener extends MouseAdapter {
 			String path = file.getPath();
 			DesignerPanel.demandPanel.txtDConsumption.setText(path);
 			d.setConsumptionProfile(path);
-		}
+			
+			// TODO may be the plot should be visible by default.
+			DesignerPanel.demandPanel.plot();
+		}		
 	}
 }

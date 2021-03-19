@@ -3,21 +3,21 @@ package fortiss.gui;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import org.knowm.xchart.CategoryChart;
+import org.knowm.xchart.CategoryChartBuilder;
+import org.knowm.xchart.CategorySeries;
+import org.knowm.xchart.CategorySeries.CategorySeriesRenderStyle;
 import org.knowm.xchart.XChartPanel;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.XYSeries;
-import org.knowm.xchart.style.Styler;
+import org.knowm.xchart.style.CategoryStyler;
+import org.knowm.xchart.style.Styler.ChartTheme;
 import org.knowm.xchart.style.Styler.LegendPosition;
 import org.knowm.xchart.style.Styler.YAxisPosition;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
-import fortiss.gui.style.Colors;
-
 /**
  * Plots series of data
  */
-public class PlotPanel extends XChartPanel<XYChart> {
+public class PlotPanel extends XChartPanel<CategoryChart> {
 
 	private static final long serialVersionUID = 1L;
 	/**
@@ -31,15 +31,25 @@ public class PlotPanel extends XChartPanel<XYChart> {
 	 * series list.
 	 */
 	public PlotPanel() {
-		super(new XYChartBuilder().theme(Styler.ChartTheme.XChart).build());
+		super(new CategoryChartBuilder()
+	            .theme(ChartTheme.Matlab)
+	            .build());
+	        
+		//super(new XYChartBuilder().theme(Styler.ChartTheme.Matlab).build());
 		setFocusable(false);
-		getChart().getStyler().setChartBackgroundColor(Colors.background);
-		getChart().getStyler().setYAxisDecimalPattern("#0.00");
-		getChart().getStyler().setLocale(Locale.GERMAN);
-		getChart().getStyler().setYAxisGroupPosition(0, YAxisPosition.Left);
-		getChart().getStyler().setYAxisGroupPosition(1, YAxisPosition.Right);
-		getChart().getStyler().setYAxisTitleVisible(false);
-		getChart().getStyler().setLegendPosition(LegendPosition.OutsideS);
+		
+		CategoryStyler styler = getChart().getStyler();
+
+		styler.setPlotContentSize(0.98);
+		styler.setYAxisDecimalPattern("#0.00");
+		styler.setLocale(Locale.GERMAN);
+		styler.setYAxisTitleVisible(false);
+		styler.setLegendPosition(LegendPosition.InsideNE);
+		styler.setDefaultSeriesRenderStyle(CategorySeriesRenderStyle.Line);
+		styler.setXAxisMaxLabelCount(4);
+		styler.setXAxisLabelRotation(270);
+		styler.setYAxisGroupPosition(0, YAxisPosition.Left);	
+		
 	}
 
 	/**
@@ -48,52 +58,40 @@ public class PlotPanel extends XChartPanel<XYChart> {
 	 * @param series     a data series.
 	 * @param seriesName a name for the data series.
 	 */
-	public void addSeries(String seriesName, ArrayList<Double> series) {
+	public void addSeries(String seriesName, ArrayList<String> xData, ArrayList<Double> yData) {
 		if (!getChart().getSeriesMap().containsKey(seriesName)) {
-
-			/** this is commented out. It was required for the function below. 
-			 * Currently this funtion is not used.
-			Comparator<Double> comparator = new Comparator<Double>() {
-				@Override
-				public int compare(Double v1, Double v2) {
-					return v1.compareTo(v2);
-				}
-			};
+			
+			/** OLD code
+			//XYSeries seriesx = getChart().addSeries(seriesName, series);
+			//seriesx.setLabel(seriesName);
+			//seriesx.setMarker(SeriesMarkers.NONE);
+			//seriesx.setYAxisGroup(0);
 			*/
 			
-			//System.out.println("Plotten: ");
-			//System.out.println("SeriesName: " + seriesName);
-			
-			//String listString = series.stream().map(Object::toString)
-            //        .collect(Collectors.joining(", "));
-			
-			//System.out.println("Data: " + listString);
-
-			// Series with maximum value smaller than 0.5 in absolute value are plotted in a
-			// separate axis
-			
-			// FIXME the second yAxis on the right seems not to work therefore this is commented out
-			/*
-			if (Collections.max(series, comparator) < 0.5 && Collections.min(series, comparator) > -0.5
-					&& getChart().getSeriesMap().size() > 0) {
-				XYSeries seriesx = getChart().addSeries(seriesName, series);
-				seriesx.setLabel(seriesName + "(right)");
-				seriesx.setMarker(SeriesMarkers.NONE);
-				seriesx.setYAxisGroup(1);
-				getChart().getStyler().setYAxisMax(1, 0.5);
-				getChart().getStyler().setYAxisMin(1, -0.5);			
-			} else {
-			*/
+			CategorySeries chartSeries = getChart().addSeries(seriesName, xData, yData);
+									
+			chartSeries.setLabel(seriesName);
+			chartSeries.setMarker(SeriesMarkers.NONE);
+			chartSeries.setYAxisGroup(0);			
+		
+		}
+		
+		double minValuePrice =  yData.stream().min(Double::compare).get();
+		
+		if (minValuePrice > 0) {
+			getChart().getStyler().setYAxisMin(0.0);
+		} else {
+			getChart().getStyler().setYAxisMin(minValuePrice);
+		}
+		
+		double maxValuePrice =  yData.stream().max(Double::compare).get();
+		getChart().getStyler().setYAxisMax(maxValuePrice);
+		
+		if (minValuePrice == maxValuePrice) {
+			getChart().getStyler().setYAxisMax(maxValuePrice+0.01);
+			getChart().getStyler().setYAxisMin(minValuePrice-0.01);			
+		}
 				
-			XYSeries seriesx = getChart().addSeries(seriesName, series);
-			seriesx.setLabel(seriesName + "(left)");
-			seriesx.setMarker(SeriesMarkers.NONE);
-			seriesx.setYAxisGroup(0);
-			getChart().getStyler().setYAxisMax(0, null);
-			getChart().getStyler().setYAxisMin(0, null);
-			getChart().getStyler().setYAxisGroupPosition(0, YAxisPosition.Left);
-			//}
-		}		
 		repaint();
 	}
 
@@ -129,5 +127,18 @@ public class PlotPanel extends XChartPanel<XYChart> {
 	 */
 	public void setPlotted(boolean plotted) {
 		this.plotted = plotted;
+	}
+	
+	public void addEmptySeries() {
+		if (getChart().getSeriesMap() != null && getChart().getSeriesMap().isEmpty() ) {
+			
+			String seriesName = "no data";
+			ArrayList<String> xData = new ArrayList<>();
+			xData.add("0"); 
+			ArrayList<Double> yData = new ArrayList<>();
+			yData.add(0.0);
+			
+			addSeries(seriesName, xData, yData);
+		}
 	}
 }

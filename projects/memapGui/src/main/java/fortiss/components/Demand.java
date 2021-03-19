@@ -57,7 +57,8 @@ public class Demand extends Component {
 	/**
 	 * @param data the data to set
 	 */
-	public void setData() {
+	public void setData() {		
+		
 		String location = getConsumptionProfile();
 		String[] labels = { "Electricity", "Heat" };
 
@@ -81,7 +82,6 @@ public class Demand extends Component {
 			setConsumptionProfile(""); // Fix path and load empty data
 
 		}
-
 	}
 
 }

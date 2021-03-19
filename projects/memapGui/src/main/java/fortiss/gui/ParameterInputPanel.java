@@ -3,6 +3,7 @@ package fortiss.gui;
 import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Graphics;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -14,8 +15,10 @@ import javax.swing.border.TitledBorder;
 import fortiss.datastructures.DataInterface;
 import fortiss.gui.commands.RunCommand;
 import fortiss.gui.listeners.action.ButtonListener;
-import fortiss.gui.listeners.button.BrowseListener;
+import fortiss.gui.listeners.action.HoverMouseListener;
+import fortiss.gui.listeners.button.PBrowseListener;
 import fortiss.gui.listeners.button.PPlotListener;
+import fortiss.gui.listeners.button.PReloadListner;
 import fortiss.gui.listeners.label.LoggingModeListener;
 import fortiss.gui.listeners.label.MarketPriceListener;
 import fortiss.gui.listeners.label.OptimizationCriteriaListener;
@@ -85,9 +88,12 @@ public class ParameterInputPanel extends InformationPanel {
 	/** label for logging Mode */
 	private JLabel lbLoggingMode;
 	/** button to open file selection window */
-	private JButton btBrowse;
+	private JLabel btBrowse;
 	/** button to plot variable price */
-	private JButton btPlot;
+	private JLabel btPlot;
+	/** button to reload selected file */
+	private JLabel btReload;
+	
 	/** Plot panel */
 	private PlotPanel plotPanel = new PlotPanel();
 
@@ -124,7 +130,7 @@ public class ParameterInputPanel extends InformationPanel {
 		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Parameter input", TitledBorder.RIGHT,
 				TitledBorder.TOP, null, Colors.accent2));
 
-		setLayout(new MigLayout("insets 30 20 20 20, fillx, wrap 4, hidemode 2, width 99%",
+		setLayout(new MigLayout("insets 30 20 20 20, fillx, wrap 5, hidemode 2, width 99%",
 				"[left, growprio 50]30[right]10[right, grow 0]5[right, grow 0]", ""));
 
 		Parameters pars = PlanningTool.getInstance().getParameters();
@@ -142,7 +148,7 @@ public class ParameterInputPanel extends InformationPanel {
 		txtSimulationName.addKeyListener(new SimulationNameListener());
 		txtSimulationName.addFocusListener(new SimulationNameListener());
 		txtSimulationName.setColumns(20);
-		add(txtSimulationName, "spanx 3, growx");
+		add(txtSimulationName, "spanx 4, growx");
 
 		lbLength = new JLabel("Steps per day");
 		add(lbLength);
@@ -153,7 +159,7 @@ public class ParameterInputPanel extends InformationPanel {
 		txtLength.addKeyListener(new LengthListener());
 		txtLength.addFocusListener(new LengthListener());
 		txtLength.setColumns(7);
-		add(txtLength, "spanx 3, growx");
+		add(txtLength, "spanx 4, growx");
 
 		lbSteps = new JLabel("MPC horizon");
 		add(lbSteps);
@@ -164,7 +170,7 @@ public class ParameterInputPanel extends InformationPanel {
 		txtSteps.addKeyListener(new StepsListener());
 		txtSteps.addFocusListener(new StepsListener());
 		txtSteps.setColumns(7);
-		add(txtSteps, "spanx 3, growx");
+		add(txtSteps, "spanx 4, growx");
 
 		lbDays = new JLabel("Number of days");
 		add(lbDays);
@@ -175,14 +181,14 @@ public class ParameterInputPanel extends InformationPanel {
 		txtDays.addKeyListener(new DaysListener());
 		txtDays.addFocusListener(new DaysListener());
 		txtDays.setColumns(7);
-		add(txtDays, "spanx 3, growx");
+		add(txtDays, "spanx 4, growx");
 
 		lbPrice = new JLabel("Market electricity price type");
 		add(lbPrice);
 
 		lbMarketPrice = new JLabel("");
 		lbMarketPrice.addMouseListener(new MarketPriceListener());
-		add(lbMarketPrice, "spanx 3");
+		add(lbMarketPrice, "spanx 4");
 
 		lbPriceFixed = new JLabel("Market electricityprice [EUR/kWh]");
 		add(lbPriceFixed, "hidemode 3");
@@ -192,7 +198,7 @@ public class ParameterInputPanel extends InformationPanel {
 		txtFixedValue.addKeyListener(new FixedValueListener());
 		txtFixedValue.addFocusListener(new FixedValueListener());
 		txtFixedValue.setColumns(7);
-		add(txtFixedValue, "spanx 3, growx, hidemode 3");
+		add(txtFixedValue, "spanx 4, growx, hidemode 3");
 
 		lbMarketPriceInstruction = new JLabel("Select a file");
 		add(lbMarketPriceInstruction, "hidemode 3");
@@ -201,20 +207,30 @@ public class ParameterInputPanel extends InformationPanel {
 		txtMarketPriceFile.addKeyListener(new MarketPriceFileListener());
 		txtMarketPriceFile.addFocusListener(new MarketPriceFileListener());
 		txtMarketPriceFile.setColumns(10);
-		add(txtMarketPriceFile, "growx, hidemode 3");
-
-		btBrowse = new JButton("");
-		btBrowse.addMouseListener(new BrowseListener());
+		add(txtMarketPriceFile, "wmin 150, growx, hidemode 3");
+		
+		btBrowse = new JLabel("");
+		btBrowse.addMouseListener(new PBrowseListener());
 		btBrowse.setIcon(IconStore.open);
+		btBrowse.setToolTipText("Load csv file");
+		btBrowse.addMouseListener(new HoverMouseListener());
 		btBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
-		btBrowse.setContentAreaFilled(false);
 		add(btBrowse, "hidemode 3, wmax 40");
+		
+		btReload = new JLabel("");
+		btReload.setIcon(IconStore.reset);
+		btReload.setToolTipText("Reload file");
+		btReload.setBorder(new EmptyBorder(3, 3, 3, 3));
+		btReload.addMouseListener(new HoverMouseListener());
+		btReload.addMouseListener(new PReloadListner());
+		add(btReload, "hidemode 3, wmax 40");
 
-		btPlot = new JButton("");
+		btPlot = new JLabel("");
 		btPlot.setIcon(IconStore.visualize);
 		btPlot.setBorder(new EmptyBorder(3, 3, 3, 3));
-		btPlot.setContentAreaFilled(false);
+		btPlot.setToolTipText("Show data");
 		btPlot.addMouseListener(new PPlotListener());
+		btPlot.addMouseListener(new HoverMouseListener());
 		add(btPlot, "hidemode 3, wmax 40");
 
 		plotPanel = new PlotPanel();
@@ -229,7 +245,7 @@ public class ParameterInputPanel extends InformationPanel {
 		lbOptimizer2 = new JLabel("");
 		lbOptimizer2.setIcon(IconStore.lp);
 		lbOptimizer2.addMouseListener(new OptimizerListener());
-		add(lbOptimizer2, "spanx 3");
+		add(lbOptimizer2, "spanx 4");
 
 		lbOptCriteria = new JLabel("Optimization criteria");
 		add(lbOptCriteria);
@@ -237,7 +253,7 @@ public class ParameterInputPanel extends InformationPanel {
 		lbOptCriteria2 = new JLabel("");
 		lbOptCriteria2.setIcon(IconStore.optCost);
 		lbOptCriteria2.addMouseListener(new OptimizationCriteriaListener());
-		add(lbOptCriteria2, "spanx 3");
+		add(lbOptCriteria2, "spanx 4");
 
 		lbLoggingMode = new JLabel("Logging mode");
 		add(lbLoggingMode);
@@ -245,7 +261,7 @@ public class ParameterInputPanel extends InformationPanel {
 		lbLoggingMode2 = new JLabel("");
 		lbLoggingMode2.setIcon(IconStore.resultLogs);
 		lbLoggingMode2.addMouseListener(new LoggingModeListener());
-		add(lbLoggingMode2, "spanx 3");
+		add(lbLoggingMode2, "spanx 4");
 
 		JButton btAccept = new JButton("Start simulation");
 		btAccept.addMouseListener(new ButtonListener(new RunCommand()));
@@ -256,15 +272,24 @@ public class ParameterInputPanel extends InformationPanel {
 	}
 
 	public void plot() {
+
 		if (plotPanel.isPlotted()) {
 			plotPanel.setVisible(false);
 			plotPanel.setPlotted(false);
 		} else {
+			
+			plotPanel.clearSeries();
 			Parameters parameters = PlanningTool.getInstance().getParameters();
 			DataInterface data = parameters.getData();
 			if (data != null) {
 				for (String seriesName : data.getSeriesList()) {
-					plotPanel.addSeries(seriesName, data.getSeries(seriesName));
+					if (data.getXValues(seriesName).size() < 200) {
+						ArrayList<String> onlyTimes = new ArrayList<>();
+						data.getXValues(seriesName).forEach( s -> onlyTimes.add(s.split("T")[1]));	
+						plotPanel.addSeries(seriesName, onlyTimes, data.getYValues(seriesName));
+					} else {
+						plotPanel.addSeries(seriesName, data.getXValues(seriesName), data.getYValues(seriesName));
+					}
 				}
 			}
 			plotPanel.setPlotted(true);
@@ -285,6 +310,7 @@ public class ParameterInputPanel extends InformationPanel {
 			txtFixedValue.setVisible(true);
 			btBrowse.setVisible(false);
 			btPlot.setVisible(false);
+			btReload.setVisible(false);
 			lbMarketPriceInstruction.setVisible(false);
 			txtMarketPriceFile.setVisible(false);
 			plotPanel.setVisible(false);
@@ -297,6 +323,7 @@ public class ParameterInputPanel extends InformationPanel {
 			txtFixedValue.setVisible(false);
 			btBrowse.setVisible(true);
 			btPlot.setVisible(true);
+			btReload.setVisible(true);
 			lbMarketPriceInstruction.setVisible(true);
 			txtMarketPriceFile.setVisible(true);
 		}

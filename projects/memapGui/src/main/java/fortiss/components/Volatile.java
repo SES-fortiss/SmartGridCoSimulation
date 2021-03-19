@@ -120,7 +120,7 @@ public class Volatile extends Component {
 	public void setData() {
 		String location = getForecastFile();
 		//String[] labels = { "Reading [Wh]", "Power [W]" };
-		String[] labels = { "Power [W]" };
+		String[] labels = { "Normalized Power [%]" };
 		if (location == null || location.isEmpty()) {
 			location = "FORECASTEXAMPLE"; // Load empty data
 		}

@@ -101,8 +101,9 @@ public class ReporterDetailedResultPanel extends JPanel {
 		treeResults.setRowHeight(30);
 		treeResults.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-		// Adds panel for plots
+		// Adds panel for plots, but it has no data yet.
 		plotPanel = new PlotPanel();
+		plotPanel.addEmptySeries();
 		add(plotPanel);
 	}
 	

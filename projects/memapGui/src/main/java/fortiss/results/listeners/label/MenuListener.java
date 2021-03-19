@@ -1,5 +1,7 @@
 package fortiss.results.listeners.label;
 
+import java.util.ArrayList;
+
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -46,11 +48,21 @@ public class MenuListener implements TreeSelectionListener {
 
 		String clicked = ((DefaultMutableTreeNode) clickedPath.getLastPathComponent()).toString();
 		int currentlySelected = h.getSelectionPaths().length;
+		
+		ArrayList<Double> timeSteps = detailedResult.getDataSeries(getParent(clickedPath), "Time step");
+		
+		ArrayList<String> timeStepsString = new ArrayList<>();
+		
+		for (Double value : timeSteps) {
+			timeStepsString.add(""+value);
+		}
 
 		if (currentlySelected > previouslySelected) {
 			// We are adding a series
 			String parent = getParent(clickedPath);
-			reporterPanel.plotPanel.addSeries(getSeriesName(parent, clicked),
+			reporterPanel.plotPanel.addSeries(
+					getSeriesName(parent, clicked),
+					timeStepsString, 
 					detailedResult.getDataSeries(parent, clicked));
 		} else if (currentlySelected < previouslySelected && currentlySelected > 1) {
 			// We are deselecting a series (first condition)
@@ -63,7 +75,9 @@ public class MenuListener implements TreeSelectionListener {
 			clicked = ((DefaultMutableTreeNode) selectedPath.getLastPathComponent()).toString();
 			String parent = getParent(selectedPath);
 			reporterPanel.plotPanel.clearSeries();
-			reporterPanel.plotPanel.addSeries(getSeriesName(parent, clicked),
+			reporterPanel.plotPanel.addSeries(
+					getSeriesName(parent, clicked),
+					timeStepsString,
 					detailedResult.getDataSeries(getParent(selectedPath), clicked.toString()));
 		}
 

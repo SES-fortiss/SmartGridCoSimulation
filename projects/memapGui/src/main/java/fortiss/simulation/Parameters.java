@@ -212,6 +212,8 @@ public class Parameters {
 				this.priceData = new TimedDataAdapter(new TimedData(fm.readFromResources(ef.getFile(location)), labels));
 			} else {
 				this.priceData = new TimedDataAdapter(new TimedData(fm.readFromSource(location), labels));
+				System.out.println(Parameters.class + " new data loaded.");
+				System.out.println(Parameters.class + " data: " + this.priceData.getYValues("Price [EUR/kWh]"));
 			}
 		} catch (IOException | ParseException e) {
 				Logger.getInstance()

@@ -10,7 +10,7 @@ import fortiss.gui.listeners.helper.FileType;
 import fortiss.simulation.Parameters;
 import fortiss.simulation.PlanningTool;
 
-public class BrowseListener extends MouseAdapter {
+public class PBrowseListener extends MouseAdapter {
 
 	/**
 	 * Allow selection of a file to describe market prices variation 
