@@ -1,6 +1,8 @@
 package fortiss.results.listeners.label;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -23,65 +25,52 @@ public class MenuListener implements TreeSelectionListener {
 	
 	int previouslySelected = 0;
 	
+	Set<String> selectedSeriesCurrent;
+	Set<String> selectedSeriesOld;
+	
 	/**
 	 * Identifies the field selected by the user in the results tree and calls
 	 * plotResults. Only leafs can be selected. @see MenuSelectionModel
 	 */
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
+		
 		PlanningTool planningTool = PlanningTool.getInstance();
 		reporter = planningTool.getReporter();
+		
 		ResultsLibrary detailedResult = reporter.getDetailedResult();
 		reporterPanel = planningTool.getReporterPanel();
 		
-		Menu h = (Menu) e.getSource();
+		reporterPanel.plotPanel.clearSeries();
 		
-		// Clicked: selected or deselected path (does not apply for re-selected components)
-		TreePath clickedPath = e.getPath();
-		// Selected: Equals to clicked only for selected components
-		TreePath selectedPath = e.getNewLeadSelectionPath();
-
-		if (selectedPath == null) {
-			reporterPanel.plotPanel.clearSeries();
+		Menu menu = (Menu) e.getSource();
+		selectedSeriesCurrent = new HashSet<String>();
+		
+		if (menu.getSelectionPaths() == null) {
+			reporterPanel.plotPanel.addEmptySeries();
 			return;
 		}
-
-		String clicked = ((DefaultMutableTreeNode) clickedPath.getLastPathComponent()).toString();
-		int currentlySelected = h.getSelectionPaths().length;
 		
-		ArrayList<Double> timeSteps = detailedResult.getDataSeries(getParent(clickedPath), "Time step");
-		
-		ArrayList<String> timeStepsString = new ArrayList<>();
-		
-		for (Double value : timeSteps) {
-			timeStepsString.add(""+value);
-		}
-
-		if (currentlySelected > previouslySelected) {
-			// We are adding a series
+		for (int i = 0; i < menu.getSelectionPaths().length; i++) {
+			
+			TreePath clickedPath = menu.getSelectionPaths()[i];
 			String parent = getParent(clickedPath);
+			String clicked = ((DefaultMutableTreeNode) clickedPath.getLastPathComponent()).toString();
+			
+			// TimeStep Strings for the xAxis
+			ArrayList<Double> timeSteps = detailedResult.getDataSeries(getParent(clickedPath), "Time step");		
+			ArrayList<String> timeStepsString = new ArrayList<>();		
+				for (Double value : timeSteps) {
+					timeStepsString.add(""+value);
+				}
+			
+			String clickedItem = menu.getSelectionPaths()[i].toString();
+			selectedSeriesCurrent.add(clickedItem);			
 			reporterPanel.plotPanel.addSeries(
 					getSeriesName(parent, clicked),
 					timeStepsString, 
 					detailedResult.getDataSeries(parent, clicked));
-		} else if (currentlySelected < previouslySelected && currentlySelected > 1) {
-			// We are deselecting a series (first condition)
-			// or we are re-selecting one of the series that was previously selected (!second
-			// condition, goes to else)
-			String parent = getParent(clickedPath);
-			reporterPanel.plotPanel.removeSeries(getSeriesName(parent, clicked));
-		} else {
-			// We are changing one series for another or re-selecting
-			clicked = ((DefaultMutableTreeNode) selectedPath.getLastPathComponent()).toString();
-			String parent = getParent(selectedPath);
-			reporterPanel.plotPanel.clearSeries();
-			reporterPanel.plotPanel.addSeries(
-					getSeriesName(parent, clicked),
-					timeStepsString,
-					detailedResult.getDataSeries(getParent(selectedPath), clicked.toString()));
 		}
-
-		previouslySelected = currentlySelected;
 	}
 	
 	/**
