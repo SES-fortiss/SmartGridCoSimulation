@@ -8,10 +8,10 @@ import org.knowm.xchart.CategoryChartBuilder;
 import org.knowm.xchart.CategorySeries;
 import org.knowm.xchart.CategorySeries.CategorySeriesRenderStyle;
 import org.knowm.xchart.XChartPanel;
+import org.knowm.xchart.style.AxesChartStyler.TextAlignment;
 import org.knowm.xchart.style.CategoryStyler;
 import org.knowm.xchart.style.Styler.ChartTheme;
 import org.knowm.xchart.style.Styler.LegendPosition;
-import org.knowm.xchart.style.Styler.YAxisPosition;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
 /**
@@ -25,6 +25,9 @@ public class PlotPanel extends XChartPanel<CategoryChart> {
 	 * <code>false</code> otherwise
 	 */
 	private boolean plotted = false;
+	
+	Double max = 0.0;
+	Double min = 0.0;
 
 	/**
 	 * Constructor for the class PlotPanel. Creates Data objects and initializes the
@@ -40,16 +43,16 @@ public class PlotPanel extends XChartPanel<CategoryChart> {
 		
 		CategoryStyler styler = getChart().getStyler();
 
-		styler.setPlotContentSize(0.98);
+		styler.setPlotContentSize(0.95);
 		styler.setYAxisDecimalPattern("#0.00");
 		styler.setLocale(Locale.GERMAN);
-		styler.setYAxisTitleVisible(false);
 		styler.setLegendPosition(LegendPosition.InsideNE);
 		styler.setDefaultSeriesRenderStyle(CategorySeriesRenderStyle.Line);
 		styler.setXAxisMaxLabelCount(4);
 		styler.setXAxisLabelRotation(270);
-		styler.setYAxisGroupPosition(0, YAxisPosition.Left);	
-		
+		styler.setAvailableSpaceFill(0);
+		styler.setOverlapped(true);
+		styler.setXAxisLabelAlignment(TextAlignment.Centre);		
 	}
 
 	/**
@@ -68,30 +71,40 @@ public class PlotPanel extends XChartPanel<CategoryChart> {
 			//seriesx.setYAxisGroup(0);
 			*/
 			
-			CategorySeries chartSeries = getChart().addSeries(seriesName, xData, yData);
-									
+			CategorySeries chartSeries = getChart().addSeries(seriesName, xData, yData);					
 			chartSeries.setLabel(seriesName);
 			chartSeries.setMarker(SeriesMarkers.NONE);
-			chartSeries.setYAxisGroup(0);			
-		
-		}
-		
-		double minValuePrice =  yData.stream().min(Double::compare).get();
-		
-		if (minValuePrice > 0) {
-			getChart().getStyler().setYAxisMin(0.0);
-		} else {
-			getChart().getStyler().setYAxisMin(minValuePrice);
-		}
-		
-		double maxValuePrice =  yData.stream().max(Double::compare).get();
-		getChart().getStyler().setYAxisMax(maxValuePrice);
-		
-		if (minValuePrice == maxValuePrice) {
-			getChart().getStyler().setYAxisMax(maxValuePrice+0.01);
-			getChart().getStyler().setYAxisMin(minValuePrice-0.01);			
-		}
+			
+			min = 0.0;
+			max = 0.0;
+			
+			System.out.println("************************************************");
+			
+			getChart().getSeriesMap().forEach( (key, value) -> {
 				
+				System.out.println(PlotPanel.class + " seriesName: " + key + " Yvalues: " + value.getYData());
+				System.out.println(PlotPanel.class + " seriesName: " + key + " Xvalues: " + value.getXData());
+				System.out.println(PlotPanel.class + " seriesName YAxsis: min=" + value.getYMin()+ "  max=" + value.getYMax());
+				
+				max  = (max > value.getYMax()) ? max : value.getYMax();
+				min  = (min < value.getYMin()) ? min : value.getYMin();
+			});
+			
+			if ( Math.abs(max-min) < 0.1) {
+				
+				System.out.println(PlotPanel.class + " same limits, changing them to larger size.");
+				min = min - 0.1;
+				max = max + 0.1;
+			}
+			
+			getChart().getStyler().setYAxisMax(max);
+			getChart().getStyler().setYAxisMin(min);
+			
+		
+		} else { // UPDATE
+			getChart().updateCategorySeries(seriesName, xData, yData, null);
+		}
+		
 		repaint();
 	}
 
@@ -132,7 +145,7 @@ public class PlotPanel extends XChartPanel<CategoryChart> {
 	public void addEmptySeries() {
 		if (getChart().getSeriesMap() != null && getChart().getSeriesMap().isEmpty() ) {
 			
-			String seriesName = "no data";
+			String seriesName = "no data selected";
 			ArrayList<String> xData = new ArrayList<>();
 			xData.add("0"); 
 			ArrayList<Double> yData = new ArrayList<>();
@@ -140,5 +153,17 @@ public class PlotPanel extends XChartPanel<CategoryChart> {
 			
 			addSeries(seriesName, xData, yData);
 		}
+	}
+	
+	public static boolean isNumeric(String strNum) {
+	    if (strNum == null) {
+	        return false;
+	    }
+	    try {
+	        Double.parseDouble(strNum);
+	    } catch (NumberFormatException nfe) {
+	        return false;
+	    }
+	    return true;
 	}
 }

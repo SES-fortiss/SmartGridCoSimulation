@@ -103,7 +103,6 @@ public class ReporterDetailedResultPanel extends JPanel {
 
 		// Adds panel for plots, but it has no data yet.
 		plotPanel = new PlotPanel();
-		plotPanel.addEmptySeries();
 		add(plotPanel);
 	}
 	
