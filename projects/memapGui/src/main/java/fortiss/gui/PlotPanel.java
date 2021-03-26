@@ -26,8 +26,8 @@ public class PlotPanel extends XChartPanel<CategoryChart> {
 	 */
 	private boolean plotted = false;
 	
-	Double max = 0.0;
-	Double min = 0.0;
+	private Double max = 0.0;
+	private Double min = 0.0;
 
 	/**
 	 * Constructor for the class PlotPanel. Creates Data objects and initializes the
@@ -38,7 +38,6 @@ public class PlotPanel extends XChartPanel<CategoryChart> {
 	            .theme(ChartTheme.Matlab)
 	            .build());
 	        
-		//super(new XYChartBuilder().theme(Styler.ChartTheme.Matlab).build());
 		setFocusable(false);
 		
 		CategoryStyler styler = getChart().getStyler();
@@ -63,13 +62,6 @@ public class PlotPanel extends XChartPanel<CategoryChart> {
 	 */
 	public void addSeries(String seriesName, ArrayList<String> xData, ArrayList<Double> yData) {
 		if (!getChart().getSeriesMap().containsKey(seriesName)) {
-			
-			/** OLD code
-			//XYSeries seriesx = getChart().addSeries(seriesName, series);
-			//seriesx.setLabel(seriesName);
-			//seriesx.setMarker(SeriesMarkers.NONE);
-			//seriesx.setYAxisGroup(0);
-			*/
 			
 			CategorySeries chartSeries = getChart().addSeries(seriesName, xData, yData);					
 			chartSeries.setLabel(seriesName);
