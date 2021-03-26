@@ -398,16 +398,10 @@ public class MILPProblemWithConnections extends MILPProblem {
 				// TODO Hard coded standby losses: 8.1% (arbitrary) --> changed				
 				double standbyLosses = sm.storageLosses;
 				
-				standbyLosses = 0.1;
+				// standbyLosses = 0.1;
 				
 				// Redeclare the SOC to reflect an actual SOC in decimal percent [0; 1]
 				double SOC_perc = sm.stateOfCharge / sm.capacity; 		
-				
-				// New for SOC within 0 and 1 and standby loss consideration:
-				// helper parameters, only depend on time step length and storage parameters
-				double alpha = 1 - standbyLosses * delta_time_factor; // Units [-]
-				double beta_to = delta_time_factor/sm.capacity * sm.efficiencyCharge; // Units [h/kWh]
-				double beta_fm = delta_time_factor/(sm.capacity * sm.efficiencyDischarge); // Units [h/kWh]
 				
 				// new temporary constraint rows:
 	            double[] rowCHARGE_new = new double[nCols+1];
@@ -418,12 +412,12 @@ public class MILPProblemWithConnections extends MILPProblem {
 	            for (int i = 0; i < nStepsMPC; i++) {
 	            	int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  		        	
 		        	// First add the factor for the discharge decision variable (x_fm)
-	            	rowCHARGE_new[index] = - beta_fm * Math.pow(alpha, i);
-	            	rowDISCHARGE_new[index] = beta_fm * Math.pow(alpha,  i);
+	            	rowCHARGE_new[index] = - sm.beta_fm * Math.pow(sm.alpha, i);
+	            	rowDISCHARGE_new[index] = sm.beta_fm * Math.pow(sm.alpha,  i);
 	            	
 	            	// Now add the factor for the charging decision variable x_to:
-	            	rowCHARGE_new[index + nStepsMPC] = beta_to * Math.pow(alpha, i);
-	            	rowDISCHARGE_new[index + nStepsMPC] = - beta_to * Math.pow(alpha, i);
+	            	rowCHARGE_new[index + nStepsMPC] = sm.beta_to * Math.pow(sm.alpha, i);
+	            	rowDISCHARGE_new[index + nStepsMPC] = - sm.beta_to * Math.pow(sm.alpha, i);
 	            	
 	            	// Add the factor vectors to the problem as constraint:
 	            	problem.addConstraint(rowDISCHARGE_new, LpSolve.LE, SOC_perc);
@@ -431,22 +425,6 @@ public class MILPProblemWithConnections extends MILPProblem {
 	            	// Leave the constructed array and fill with next time step in next iteration of i
 	            }
 				
-				
-		        /*
-		        for (int i = 0; i < nStepsMPC; i++) {
-		        	int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  		        	
-		        	rowDISCHARGE[index] = 1/sm.efficiencyDischarge*factor;
-		        	rowCHARGE[index] = -1/sm.efficiencyDischarge*factor;
-		        	
-		        	rowCHARGE[index + nStepsMPC] = sm.efficiencyCharge*factor;
-		        	rowDISCHARGE[index + nStepsMPC] = -sm.efficiencyCharge*factor;
-		        	
-		        	problem.addConstraint(rowDISCHARGE, LpSolve.LE, maxDischargeCapacity);
-		        	problem.addConstraint(rowCHARGE, LpSolve.LE, maxChargeCapacity);
-		        	
-		        	//System.out.println("Adding SOC charging constraints --> rowCHARGE: " + Arrays.toString(rowCHARGE) + " <= " + maxChargeCapacity);
-				}
-				*/
 		        storageHandled++;
 	        }
 			

@@ -175,8 +175,8 @@ public class ClientStorage extends Storage {
 			
 			// New Code (wir haben in der Super Klasse die Variable "storageLoss" definiert, die für alle Storages gilt)
 			
-			double delta_time = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 f�r 96 Schritte /Tag
-			double standbyLosses = super.storageLoss; // in percent for hour -> Example: 0.021 coresponds to 2.1 [%/h]
+			double delta_time = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 fuer 96 Schritte /Tag
+			double standbyLosses = super.storageLoss; // in percent for hour -> Example: 0.021 corresponds to 2.1 [%/h]
 			
 			/** END OF FIXME */
 			
