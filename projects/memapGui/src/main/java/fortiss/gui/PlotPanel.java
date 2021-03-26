@@ -78,13 +78,7 @@ public class PlotPanel extends XChartPanel<CategoryChart> {
 			min = 0.0;
 			max = 0.0;
 			
-			System.out.println("************************************************");
-			
 			getChart().getSeriesMap().forEach( (key, value) -> {
-				
-				//System.out.println(PlotPanel.class + " seriesName: " + key + " Yvalues: " + value.getYData());
-				//System.out.println(PlotPanel.class + " seriesName: " + key + " Xvalues: " + value.getXData());
-				//System.out.println(PlotPanel.class + " seriesName YAxsis: min=" + value.getYMin()+ "  max=" + value.getYMax());
 				
 				max  = (max > value.getYMax()) ? max : value.getYMax();
 				min  = (min < value.getYMin()) ? min : value.getYMin();

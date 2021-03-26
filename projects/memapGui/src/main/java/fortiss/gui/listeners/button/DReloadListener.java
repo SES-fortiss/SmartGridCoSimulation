@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 import fortiss.components.Demand;
 import fortiss.gui.DesignerPanel;
 
-public class DReloadListner extends MouseAdapter {
+public class DReloadListener extends MouseAdapter {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {

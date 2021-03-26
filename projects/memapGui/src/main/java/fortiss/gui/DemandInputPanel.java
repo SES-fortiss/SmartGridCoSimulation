@@ -15,7 +15,7 @@ import fortiss.datastructures.DataInterface;
 import fortiss.gui.listeners.action.HoverMouseListener;
 import fortiss.gui.listeners.button.DBrowseListener;
 import fortiss.gui.listeners.button.DPlotListener;
-import fortiss.gui.listeners.button.DReloadListner;
+import fortiss.gui.listeners.button.DReloadListener;
 import fortiss.gui.listeners.textfield.DConsumptionListener;
 import fortiss.gui.listeners.textfield.DNameListener;
 import fortiss.gui.style.Colors;
@@ -113,7 +113,7 @@ public class DemandInputPanel extends InformationPanel {
 		add(btDBrowse, "wmax 40");
 		
 		JLabel btDReload = new JLabel("");
-		btDReload.addMouseListener(new DReloadListner());
+		btDReload.addMouseListener(new DReloadListener());
 		btDReload.setIcon(IconStore.reset);
 		btDReload.setToolTipText("Reload file");
 		btDReload.setBorder(new EmptyBorder(3, 3, 3, 3));

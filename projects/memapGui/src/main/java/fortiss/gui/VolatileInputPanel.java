@@ -16,7 +16,7 @@ import fortiss.datastructures.DataInterface;
 import fortiss.gui.listeners.action.HoverMouseListener;
 import fortiss.gui.listeners.button.VBrowseListener;
 import fortiss.gui.listeners.button.VPlotListener;
-import fortiss.gui.listeners.button.VReloadListner;
+import fortiss.gui.listeners.button.VReloadListener;
 import fortiss.gui.listeners.selectionitem.VNetworkTypeListener;
 import fortiss.gui.listeners.textfield.VCOEmissionListener;
 import fortiss.gui.listeners.textfield.VCostListener;
@@ -191,7 +191,7 @@ public class VolatileInputPanel extends InformationPanel {
 		add(btDBrowse, "wmax 40");
 		
 		JLabel btDReload = new JLabel("");
-		btDReload.addMouseListener(new VReloadListner());
+		btDReload.addMouseListener(new VReloadListener());
 		btDReload.setIcon(IconStore.reset);
 		btDReload.setToolTipText("Reload file");
 		btDReload.setBorder(new EmptyBorder(3, 3, 3, 3));

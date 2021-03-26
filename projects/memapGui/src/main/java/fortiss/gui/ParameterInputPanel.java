@@ -18,7 +18,7 @@ import fortiss.gui.listeners.action.ButtonListener;
 import fortiss.gui.listeners.action.HoverMouseListener;
 import fortiss.gui.listeners.button.PBrowseListener;
 import fortiss.gui.listeners.button.PPlotListener;
-import fortiss.gui.listeners.button.PReloadListner;
+import fortiss.gui.listeners.button.PReloadListener;
 import fortiss.gui.listeners.label.LoggingModeListener;
 import fortiss.gui.listeners.label.MarketPriceListener;
 import fortiss.gui.listeners.label.OptimizationCriteriaListener;
@@ -222,7 +222,7 @@ public class ParameterInputPanel extends InformationPanel {
 		btReload.setToolTipText("Reload file");
 		btReload.setBorder(new EmptyBorder(3, 3, 3, 3));
 		btReload.addMouseListener(new HoverMouseListener());
-		btReload.addMouseListener(new PReloadListner());
+		btReload.addMouseListener(new PReloadListener());
 		add(btReload, "hidemode 3, wmax 40");
 
 		btPlot = new JLabel("");
