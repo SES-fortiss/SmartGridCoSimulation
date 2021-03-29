@@ -2,9 +2,9 @@ package fortiss.gui;
 
 import java.awt.Cursor;
 import java.awt.Graphics;
+import java.util.ArrayList;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -13,8 +13,10 @@ import javax.swing.border.TitledBorder;
 
 import fortiss.components.Volatile;
 import fortiss.datastructures.DataInterface;
+import fortiss.gui.listeners.action.HoverMouseListener;
 import fortiss.gui.listeners.button.VBrowseListener;
 import fortiss.gui.listeners.button.VPlotListener;
+import fortiss.gui.listeners.button.VReloadListener;
 import fortiss.gui.listeners.selectionitem.VNetworkTypeListener;
 import fortiss.gui.listeners.textfield.VCOEmissionListener;
 import fortiss.gui.listeners.textfield.VCostListener;
@@ -106,7 +108,7 @@ public class VolatileInputPanel extends InformationPanel {
 		setBorder(new TitledBorder(null, "Component information", TitledBorder.RIGHT, TitledBorder.TOP, null,
 				Colors.accent2));
 
-		setLayout(new MigLayout("insets 30 20 20 20, fillx, wrap 4, hidemode 2, width 99%", 
+		setLayout(new MigLayout("insets 30 20 20 20, fillx, wrap 5, hidemode 2, width 99%", 
 				"[left, growprio 50]30[right]10[right, grow 0]5[right, grow 0]", 
 				""));
 		
@@ -121,7 +123,7 @@ public class VolatileInputPanel extends InformationPanel {
 		txtVName.addKeyListener(new VNameListener());
 		txtVName.addFocusListener(new VNameListener());
 		txtVName.setColumns(10);
-		add(txtVName, "spanx 3, growx");
+		add(txtVName, "spanx 4, growx");
 
 		lbVNetworkType = new JLabel("Network type");
 		add(lbVNetworkType);
@@ -133,7 +135,7 @@ public class VolatileInputPanel extends InformationPanel {
 				new String[] { "Heat", "Electricity" }));
 		sVNetworkType.addItemListener(new VNetworkTypeListener());
 		sVNetworkType.addMouseListener(new VNetworkTypeListener());
-		add(sVNetworkType, "spanx 3, growx");
+		add(sVNetworkType, "spanx 4, growx");
 
 		lbVMinimumPower = new JLabel("Minimum power [kW]");
 		add(lbVMinimumPower);
@@ -142,7 +144,7 @@ public class VolatileInputPanel extends InformationPanel {
 		txtVMinimumPower.addKeyListener(new VMinPowerListener());
 		txtVMinimumPower.addFocusListener(new VMinPowerListener());
 		txtVMinimumPower.setColumns(10);
-		add(txtVMinimumPower, "spanx 3, growx");
+		add(txtVMinimumPower, "spanx 4, growx");
 
 		lbVMaximumPower = new JLabel("Maximum power [kW]");
 		add(lbVMaximumPower);
@@ -151,7 +153,7 @@ public class VolatileInputPanel extends InformationPanel {
 		txtVMaximumPower.addKeyListener(new VMaxPowerListener());
 		txtVMaximumPower.addFocusListener(new VMaxPowerListener());
 		txtVMaximumPower.setColumns(10);
-		add(txtVMaximumPower, "spanx 3, growx");
+		add(txtVMaximumPower, "spanx 4, growx");
 
 		lbVCost = new JLabel("Fuel cost [EUR/kWh]");
 		add(lbVCost);
@@ -159,7 +161,7 @@ public class VolatileInputPanel extends InformationPanel {
 		txtVCost = new JTextField();
 		txtVCost.addKeyListener(new VCostListener());
 		txtVCost.addFocusListener(new VCostListener());
-		add(txtVCost, "spanx 3, growx");
+		add(txtVCost, "spanx 4, growx");
 		txtVCost.setColumns(10);
 
 		lbVCOEmission = new JLabel("CO2 Emissions [kg/kWh]"); //$NON-NLS-1$
@@ -169,7 +171,7 @@ public class VolatileInputPanel extends InformationPanel {
 		txtVCOEmission.addKeyListener(new VCOEmissionListener());
 		txtVCOEmission.addFocusListener(new VCOEmissionListener());
 		txtVCOEmission.setColumns(10);
-		add(txtVCOEmission, "spanx 3, growx");
+		add(txtVCOEmission, "spanx 4, growx");
 		
 		lbVForecastFile = new JLabel("Forecast file");
 		add(lbVForecastFile);
@@ -180,18 +182,29 @@ public class VolatileInputPanel extends InformationPanel {
 		txtVForecastFile.setColumns(10);
 		add(txtVForecastFile, "wmin 200, growx");
 
-		JButton btVBrowse = new JButton("");
-		btVBrowse.addMouseListener(new VBrowseListener());
-		btVBrowse.setIcon(IconStore.open);
-		btVBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
-		add(btVBrowse, "wmax 40");
+		JLabel btDBrowse = new JLabel("");
+		btDBrowse.addMouseListener(new VBrowseListener());
+		btDBrowse.setIcon(IconStore.open);
+		btDBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
+		btDBrowse.setToolTipText("Load csv file");
+		btDBrowse.addMouseListener(new HoverMouseListener());
+		add(btDBrowse, "wmax 40");
 		
-		JButton btVPlot = new JButton("");
-		btVPlot.setIcon(IconStore.visualize);
-		btVPlot.setBorder(new EmptyBorder(3, 3, 3, 3));
-		btVPlot.setContentAreaFilled(false);
-		btVPlot.addMouseListener(new VPlotListener());
-		add(btVPlot, "wmax 40");
+		JLabel btDReload = new JLabel("");
+		btDReload.addMouseListener(new VReloadListener());
+		btDReload.setIcon(IconStore.reset);
+		btDReload.setToolTipText("Reload file");
+		btDReload.setBorder(new EmptyBorder(3, 3, 3, 3));
+		btDReload.addMouseListener(new HoverMouseListener());
+		add(btDReload, "wmax 40");
+
+		JLabel btDPlot = new JLabel("");
+		btDPlot.setIcon(IconStore.visualize);
+		btDPlot.setToolTipText("Show data");
+		btDPlot.setBorder(new EmptyBorder(3, 3, 3, 3));
+		btDPlot.addMouseListener(new VPlotListener());
+		btDPlot.addMouseListener(new HoverMouseListener());
+		add(btDPlot, "wmax 40");
 		
 		lblCsvInstructions = new JLabel(
 				"<html> <b> Consumption file format: CSV </b> <br/> <br/> ");
@@ -203,9 +216,9 @@ public class VolatileInputPanel extends InformationPanel {
 		
 		lblCsvInstructions = new JLabel(
 				"<html> Headers starting with # <br/> "
-				+ "Column 1: DATE of yyyy-mm-dd &emsp; <br/>"
-				+ "Column 2: TIME of hh:mm:ss &emsp; <br/>"
-				+ "Column 3: NORMALIZED VALUES of double with ',' &emsp; ");
+				+ "Column 1: DATE with format: yyyy-mm-dd &emsp; <br/>"
+				+ "Column 2: TIME with format: hh:mm:ss &emsp; <br/>"
+				+ "Column 3: NORMALIZED VALUES with format: double with ',' &emsp; ");
 		add(lblCsvInstructions, "spanx, gaptop 10");
 
 
@@ -225,11 +238,18 @@ public class VolatileInputPanel extends InformationPanel {
 			plotPanel.setVisible(false);
 			plotPanel.setPlotted(false);
 		} else {
+			plotPanel.clearSeries();
 			Volatile volatileProducer = (Volatile) DesignerPanel.selectedComponent;
 			DataInterface data = volatileProducer.getData();
-			if (data != null) {	
+			if (data != null) {													
 				for (String seriesName : data.getSeriesList()) {
-					plotPanel.addSeries(seriesName, data.getSeries(seriesName));
+					if (data.getXValues(seriesName).size() < 200) {
+						ArrayList<String> onlyTimes = new ArrayList<>();
+						data.getXValues(seriesName).forEach( s -> onlyTimes.add(s.split("T")[1]));	
+						plotPanel.addSeries(seriesName, onlyTimes, data.getYValues(seriesName));
+					} else {
+						plotPanel.addSeries(seriesName, data.getXValues(seriesName), data.getYValues(seriesName));
+					}
 				}
 			}
 			plotPanel.setPlotted(true);

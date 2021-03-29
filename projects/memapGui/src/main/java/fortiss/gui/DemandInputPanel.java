@@ -2,8 +2,8 @@ package fortiss.gui;
 
 import java.awt.Cursor;
 import java.awt.Graphics;
+import java.util.ArrayList;
 
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
@@ -12,8 +12,10 @@ import javax.swing.border.TitledBorder;
 
 import fortiss.components.Demand;
 import fortiss.datastructures.DataInterface;
+import fortiss.gui.listeners.action.HoverMouseListener;
 import fortiss.gui.listeners.button.DBrowseListener;
 import fortiss.gui.listeners.button.DPlotListener;
+import fortiss.gui.listeners.button.DReloadListener;
 import fortiss.gui.listeners.textfield.DConsumptionListener;
 import fortiss.gui.listeners.textfield.DNameListener;
 import fortiss.gui.style.Colors;
@@ -75,7 +77,7 @@ public class DemandInputPanel extends InformationPanel {
 		setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Component information",
 				TitledBorder.RIGHT, TitledBorder.TOP, null, Colors.accent2));
 
-		setLayout(new MigLayout("insets 30 20 20 20, fillx, wrap 4, hidemode 2, width 99%", 
+		setLayout(new MigLayout("insets 30 20 20 20, fillx, wrap 5, hidemode 2, width 99%", 
 				"[left, growprio 50]30[right]10[right, grow 0]5[right, grow 0]", 
 				""));
 		
@@ -91,7 +93,7 @@ public class DemandInputPanel extends InformationPanel {
 		txtDName.addKeyListener(new DNameListener());
 		txtDName.addFocusListener(new DNameListener());
 		txtDName.setColumns(10);
-		add(txtDName, "spanx 3, growx");
+		add(txtDName, "spanx 4, growx");
 
 		lbDConsumption = new JLabel("Consumption profile");
 		add(lbDConsumption);
@@ -102,18 +104,28 @@ public class DemandInputPanel extends InformationPanel {
 		txtDConsumption.setColumns(10);
 		add(txtDConsumption, "wmin 200, growx");
 
-		JButton btDBrowse = new JButton("");
+		JLabel btDBrowse = new JLabel("");
 		btDBrowse.addMouseListener(new DBrowseListener());
 		btDBrowse.setIcon(IconStore.open);
 		btDBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
-		btDBrowse.setContentAreaFilled(false);
+		btDBrowse.setToolTipText("Load csv file");
+		btDBrowse.addMouseListener(new HoverMouseListener());
 		add(btDBrowse, "wmax 40");
+		
+		JLabel btDReload = new JLabel("");
+		btDReload.addMouseListener(new DReloadListener());
+		btDReload.setIcon(IconStore.reset);
+		btDReload.setToolTipText("Reload file");
+		btDReload.setBorder(new EmptyBorder(3, 3, 3, 3));
+		btDReload.addMouseListener(new HoverMouseListener());
+		add(btDReload, "wmax 40");
 
-		JButton btDPlot = new JButton("");
+		JLabel btDPlot = new JLabel("");
 		btDPlot.setIcon(IconStore.visualize);
+		btDPlot.setToolTipText("Show data");
 		btDPlot.setBorder(new EmptyBorder(3, 3, 3, 3));
-		btDPlot.setContentAreaFilled(false);
 		btDPlot.addMouseListener(new DPlotListener());
+		btDPlot.addMouseListener(new HoverMouseListener());
 		add(btDPlot, "wmax 40");
 		
 		lblCsvInstructions = new JLabel(
@@ -126,10 +138,10 @@ public class DemandInputPanel extends InformationPanel {
 		
 		lblCsvInstructions = new JLabel(
 				"<html> Headers starting with # <br/> "
-				+ "Column 1: DATE of yyyy-mm-dd &emsp; <br/>"
-				+ "Column 2: TIME of hh:mm:ss &emsp; <br/>"
-				+ "Column 3: ELECTRICITY of double with ',' &emsp; <br/>"
-				+ "Column 4: HEAT of double with ',' &emsp; ");
+				+ "Column 1: DATE with format: 'yyyy-mm-dd' &emsp; <br/>"
+				+ "Column 2: TIME with format: 'hh:mm:ss' &emsp; <br/>"
+				+ "Column 3: ELECTRICITY with format: double with decimal ',' &emsp; <br/>"
+				+ "Column 4: HEAT with format: double with decimal ',' &emsp; ");
 		add(lblCsvInstructions, "spanx, gaptop 10");
 
 
@@ -152,12 +164,21 @@ public class DemandInputPanel extends InformationPanel {
 		if (plotPanel.isPlotted()) {
 			plotPanel.setVisible(false);
 			plotPanel.setPlotted(false);
-		} else {
+		} else {			
+			plotPanel.clearSeries();
+			
 			Demand demand = (Demand) DesignerPanel.selectedComponent;
 			DataInterface data = demand.getData();
 			if (data != null) {	
 				for (String seriesName : data.getSeriesList()) {
-					plotPanel.addSeries(seriesName, data.getSeries(seriesName));
+					
+					if (data.getXValues(seriesName).size() < 200) {
+						ArrayList<String> onlyTimes = new ArrayList<>();
+						data.getXValues(seriesName).forEach( s -> onlyTimes.add(s.split("T")[1]));	
+						plotPanel.addSeries(seriesName, onlyTimes, data.getYValues(seriesName));
+					} else {
+						plotPanel.addSeries(seriesName, data.getXValues(seriesName), data.getYValues(seriesName));
+					}
 				}
 			}
 			plotPanel.setPlotted(true);

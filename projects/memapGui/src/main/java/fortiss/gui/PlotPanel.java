@@ -3,21 +3,21 @@ package fortiss.gui;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import org.knowm.xchart.CategoryChart;
+import org.knowm.xchart.CategoryChartBuilder;
+import org.knowm.xchart.CategorySeries;
+import org.knowm.xchart.CategorySeries.CategorySeriesRenderStyle;
 import org.knowm.xchart.XChartPanel;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.XYSeries;
-import org.knowm.xchart.style.Styler;
+import org.knowm.xchart.style.AxesChartStyler.TextAlignment;
+import org.knowm.xchart.style.CategoryStyler;
+import org.knowm.xchart.style.Styler.ChartTheme;
 import org.knowm.xchart.style.Styler.LegendPosition;
-import org.knowm.xchart.style.Styler.YAxisPosition;
 import org.knowm.xchart.style.markers.SeriesMarkers;
-
-import fortiss.gui.style.Colors;
 
 /**
  * Plots series of data
  */
-public class PlotPanel extends XChartPanel<XYChart> {
+public class PlotPanel extends XChartPanel<CategoryChart> {
 
 	private static final long serialVersionUID = 1L;
 	/**
@@ -25,21 +25,33 @@ public class PlotPanel extends XChartPanel<XYChart> {
 	 * <code>false</code> otherwise
 	 */
 	private boolean plotted = false;
+	
+	private Double max = 0.0;
+	private Double min = 0.0;
 
 	/**
 	 * Constructor for the class PlotPanel. Creates Data objects and initializes the
 	 * series list.
 	 */
 	public PlotPanel() {
-		super(new XYChartBuilder().theme(Styler.ChartTheme.XChart).build());
+		super(new CategoryChartBuilder()
+	            .theme(ChartTheme.Matlab)
+	            .build());
+	        
 		setFocusable(false);
-		getChart().getStyler().setChartBackgroundColor(Colors.background);
-		getChart().getStyler().setYAxisDecimalPattern("#0.00");
-		getChart().getStyler().setLocale(Locale.GERMAN);
-		getChart().getStyler().setYAxisGroupPosition(0, YAxisPosition.Left);
-		getChart().getStyler().setYAxisGroupPosition(1, YAxisPosition.Right);
-		getChart().getStyler().setYAxisTitleVisible(false);
-		getChart().getStyler().setLegendPosition(LegendPosition.OutsideS);
+		
+		CategoryStyler styler = getChart().getStyler();
+
+		styler.setPlotContentSize(0.95);
+		styler.setYAxisDecimalPattern("#0.00");
+		styler.setLocale(Locale.GERMAN);
+		styler.setLegendPosition(LegendPosition.InsideNE);
+		styler.setDefaultSeriesRenderStyle(CategorySeriesRenderStyle.Line);
+		styler.setXAxisMaxLabelCount(4);
+		styler.setXAxisLabelRotation(270);
+		styler.setAvailableSpaceFill(0);
+		styler.setOverlapped(true);
+		styler.setXAxisLabelAlignment(TextAlignment.Centre);		
 	}
 
 	/**
@@ -48,52 +60,37 @@ public class PlotPanel extends XChartPanel<XYChart> {
 	 * @param series     a data series.
 	 * @param seriesName a name for the data series.
 	 */
-	public void addSeries(String seriesName, ArrayList<Double> series) {
+	public void addSeries(String seriesName, ArrayList<String> xData, ArrayList<Double> yData) {
 		if (!getChart().getSeriesMap().containsKey(seriesName)) {
-
-			/** this is commented out. It was required for the function below. 
-			 * Currently this funtion is not used.
-			Comparator<Double> comparator = new Comparator<Double>() {
-				@Override
-				public int compare(Double v1, Double v2) {
-					return v1.compareTo(v2);
-				}
-			};
-			*/
 			
-			//System.out.println("Plotten: ");
-			//System.out.println("SeriesName: " + seriesName);
+			CategorySeries chartSeries = getChart().addSeries(seriesName, xData, yData);					
+			chartSeries.setLabel(seriesName);
+			chartSeries.setMarker(SeriesMarkers.NONE);
 			
-			//String listString = series.stream().map(Object::toString)
-            //        .collect(Collectors.joining(", "));
+			min = 0.0;
+			max = 0.0;
 			
-			//System.out.println("Data: " + listString);
-
-			// Series with maximum value smaller than 0.5 in absolute value are plotted in a
-			// separate axis
-			
-			// FIXME the second yAxis on the right seems not to work therefore this is commented out
-			/*
-			if (Collections.max(series, comparator) < 0.5 && Collections.min(series, comparator) > -0.5
-					&& getChart().getSeriesMap().size() > 0) {
-				XYSeries seriesx = getChart().addSeries(seriesName, series);
-				seriesx.setLabel(seriesName + "(right)");
-				seriesx.setMarker(SeriesMarkers.NONE);
-				seriesx.setYAxisGroup(1);
-				getChart().getStyler().setYAxisMax(1, 0.5);
-				getChart().getStyler().setYAxisMin(1, -0.5);			
-			} else {
-			*/
+			getChart().getSeriesMap().forEach( (key, value) -> {
 				
-			XYSeries seriesx = getChart().addSeries(seriesName, series);
-			seriesx.setLabel(seriesName + "(left)");
-			seriesx.setMarker(SeriesMarkers.NONE);
-			seriesx.setYAxisGroup(0);
-			getChart().getStyler().setYAxisMax(0, null);
-			getChart().getStyler().setYAxisMin(0, null);
-			getChart().getStyler().setYAxisGroupPosition(0, YAxisPosition.Left);
-			//}
-		}		
+				max  = (max > value.getYMax()) ? max : value.getYMax();
+				min  = (min < value.getYMin()) ? min : value.getYMin();
+			});
+			
+			if ( Math.abs(max-min) < 0.1) {
+				
+				System.out.println(PlotPanel.class + " same limits, changing them to larger size.");
+				min = min - 0.1;
+				max = max + 0.1;
+			}
+			
+			getChart().getStyler().setYAxisMax(max);
+			getChart().getStyler().setYAxisMin(min);
+			
+		
+		} else { // UPDATE
+			getChart().updateCategorySeries(seriesName, xData, yData, null);
+		}
+		
 		repaint();
 	}
 
@@ -129,5 +126,30 @@ public class PlotPanel extends XChartPanel<XYChart> {
 	 */
 	public void setPlotted(boolean plotted) {
 		this.plotted = plotted;
+	}
+	
+	public void addEmptySeries() {
+		if (getChart().getSeriesMap() != null && getChart().getSeriesMap().isEmpty() ) {
+			
+			String seriesName = "no data selected";
+			ArrayList<String> xData = new ArrayList<>();
+			xData.add("0"); 
+			ArrayList<Double> yData = new ArrayList<>();
+			yData.add(0.0);
+			
+			addSeries(seriesName, xData, yData);
+		}
+	}
+	
+	public static boolean isNumeric(String strNum) {
+	    if (strNum == null) {
+	        return false;
+	    }
+	    try {
+	        Double.parseDouble(strNum);
+	    } catch (NumberFormatException nfe) {
+	        return false;
+	    }
+	    return true;
 	}
 }

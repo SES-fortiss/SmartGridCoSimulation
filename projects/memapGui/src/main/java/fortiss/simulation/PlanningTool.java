@@ -138,6 +138,9 @@ public class PlanningTool {
 	/** Loads the results and show the reporter panel */
 	public void showReporter() {
 		getReporter().showResults();
+		
+		getReporterPanel().plotPanel.clearSeries();
+		getReporterPanel().plotPanel.addEmptySeries();
 
 		getPlanningToolWindow().closeTab(getTrackerPanel());
 		addOverviewResutlsAsTab();
