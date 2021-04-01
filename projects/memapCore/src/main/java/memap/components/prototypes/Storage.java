@@ -16,7 +16,10 @@ public abstract class Storage extends Device {
 	public double effOUT;
 	public double stateOfCharge;
 	
-	public double storageLoss; // Unit [kWh/24h]
+	public double storageLoss; // Unit [%/h] Example 0.021 represents 2.1%/h
+	public double alpha; // time constant parameter that includes self discharging/standby losses
+	public double beta_to; // parameter that captures charging losses
+	public double beta_fm; // parameter that captures discharging losses
 
 	public StorageMessage storageMessage = new StorageMessage();
 
@@ -34,7 +37,13 @@ public abstract class Storage extends Device {
 		this.max_discharging = max_discharging;
 		this.effIN = effIN;
 		this.effOUT = effOUT;
-		this.storageLoss = storageLoss; // Unit [kWh/24h] at SOC=0.75
+		// TODO remove hard coding.
+		// this.storageLoss = storageLoss;
+		
+		this.storageLoss = 0.01;
+		this.alpha = 1 - this.storageLoss * topologyConfig.getStepLengthInHours();
+		this.beta_to = topologyConfig.getStepLengthInHours() / this.capacity * this.effIN;
+		this.beta_fm = topologyConfig.getStepLengthInHours() / (this.capacity * this.effOUT);
 		
 		// Initialization delayed until after topologyConfig initialization
 		optimizationAdviceInput = new double[topologyConfig.getNrStepsMPC()];
@@ -77,10 +86,10 @@ public abstract class Storage extends Device {
 			if (storageChargeRequest!= null && storageDischargeRequest!= null) {
 				double soc_alt = stateOfCharge;
 				double leistung = storageChargeRequest[0] * effIN - storageDischargeRequest[0] * 1 / effOUT;
-				// Linear equation:
-				stateOfCharge = soc_alt * (1 - this.storageLoss * stepLengthInHours) + leistung * stepLengthInHours;
+				// Linear equation (beta values not used since SOC is not in percent but in kWh):
+				stateOfCharge = soc_alt * this.alpha + leistung * stepLengthInHours;
 				
-				// Exponential equation:
+				// Exponential equation works:
 				//stateOfCharge = soc_alt * Math.pow(1-storageLoss, stepLengthInHours) + leistung * stepLengthInHours;
 			}
 		}
