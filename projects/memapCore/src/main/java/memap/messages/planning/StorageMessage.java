@@ -24,10 +24,6 @@ public class StorageMessage implements AnswerContent {
 	
 	public double storageLosses;
 	
-	public double alpha;
-	public double beta_to;
-	public double beta_fm;
-	
 	public NetworkType networkType;
 	
 	public String toString() {
