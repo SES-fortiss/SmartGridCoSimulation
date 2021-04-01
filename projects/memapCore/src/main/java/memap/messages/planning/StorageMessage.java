@@ -22,11 +22,7 @@ public class StorageMessage implements AnswerContent {
 	public double efficiencyCharge;
 	public double efficiencyDischarge;
 	
-	public double storageLosses;
-	
-	public double alpha;
-	public double beta_to;
-	public double beta_fm;
+	public double storageLosses; //Input-Unit, mostly given as [kWh/24h] at SOC=0.75
 	
 	public NetworkType networkType;
 	
