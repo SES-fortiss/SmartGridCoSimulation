@@ -127,6 +127,7 @@ public class ClientStorage extends Storage {
 		storageMessage.efficiencyCharge = effIN;
 		storageMessage.efficiencyDischarge = effOUT;
 		storageMessage.networkType = networkType;
+		storageMessage.storageLosses = storageLoss;
 	}
 	
 	@Override
@@ -173,21 +174,21 @@ public class ClientStorage extends Storage {
 			// double factor = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 f�r 96 Schritte /Tag
 			// double standbyLosses = 0.0021; 
 			
-			// New Code (wir haben in der Super Klasse die Variable "storageLoss" definiert, die für alle Storages gilt)
+			// use a State of Charge in percent, i.e. within [0; 1] (workaround, should be updated)
+			double SOC_perc = this.stateOfCharge/this.capacity;
 			
-			double delta_time = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 fuer 96 Schritte /Tag
-			double standbyLosses = super.storageLoss; // in percent for hour -> Example: 0.021 corresponds to 2.1 [%/h]
+			// New Code (wir haben in der Super Klasse die Variable "storageLoss" definiert, die für alle Storages gilt)
+			double delta_time = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 fuer 96 Schritte /Tag 
+			// in percent for hour -> Example: 0.021 corresponds to 2.1 [%/h]:
+			double standbyEta = super.storageLoss / (storageMessage.capacity * SOC_perc); 
 			
 			/** END OF FIXME */
 			
 			// Alphas and betas have to be calculated here as well. 
 			// helper parameters, only depend on time step length and storage parameters
-			double alpha = 1 - standbyLosses * delta_time;
+			double alpha = 1 - standbyEta * delta_time;
 			double beta_to = delta_time/ storageMessage.capacity * storageMessage.efficiencyCharge;
 			double beta_fm = delta_time/(storageMessage.capacity * storageMessage.efficiencyDischarge);
-			
-			// use a State of Charge in percent, i.e. within [0; 1] (workaround, should be updated)
-			double SOC_perc = this.stateOfCharge/this.capacity;
 			
 			// update the SOC based on the just written setpoints for the storage
 			double SOC_perc_updated = SOC_perc * alpha + beta_to * optimizationAdviceInput[0] - beta_fm * optimizationAdviceOutput[0];
