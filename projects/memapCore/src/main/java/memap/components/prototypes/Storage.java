@@ -37,10 +37,8 @@ public abstract class Storage extends Device {
 		this.max_discharging = max_discharging;
 		this.effIN = effIN;
 		this.effOUT = effOUT;
-		// TODO remove hard coding.
-		// this.storageLoss = storageLoss;
-		
-		this.storageLoss = 0.1;
+		this.storageLoss = storageLoss;
+
 		
 		// Initialization delayed until after topologyConfig initialization
 		optimizationAdviceInput = new double[topologyConfig.getNrStepsMPC()];
@@ -62,35 +60,6 @@ public abstract class Storage extends Device {
 	 */
 	public abstract Double getStateOfCharge();
 	
-
-	@Override
-	public void handleRequest() {
-		
-		if (requestContentReceived instanceof OptimizationResultMessage) {
-			double stepLengthInHours = topologyConfig.getStepLengthInHours();
-			OptimizationResultMessage linprogResult = ((OptimizationResultMessage) requestContentReceived);
-
-			String dataKey = actorName + "Discharge";			
-			if (linprogResult.resultMap.containsKey(dataKey)) {
-				storageDischargeRequest = linprogResult.resultMap.get(dataKey);
-			}
-			
-			dataKey = actorName + "Charge";			
-			if (linprogResult.resultMap.containsKey(dataKey)) {
-				storageChargeRequest = linprogResult.resultMap.get(dataKey);
-			}
-			
-			if (storageChargeRequest!= null && storageDischargeRequest!= null) {
-				double soc_alt = stateOfCharge;
-				double leistung = storageChargeRequest[0] * effIN - storageDischargeRequest[0] * 1 / effOUT;
-				// Linear equation (beta values not used since SOC is not in percent but in kWh):
-				stateOfCharge = soc_alt * (1 - this.storageLoss * stepLengthInHours) + leistung * stepLengthInHours;
-				
-				// Exponential equation works:
-				//stateOfCharge = soc_alt * Math.pow(1-storageLoss, stepLengthInHours) + leistung * stepLengthInHours;
-			}
-		}
-	}
 	
 	@Override
 	public void setTopologyController(TopologyController topologyController) {

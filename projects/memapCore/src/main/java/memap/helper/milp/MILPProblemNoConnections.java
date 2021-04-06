@@ -277,10 +277,10 @@ public class MILPProblemNoConnections extends MILPProblem {
 
 		for (StorageMessage sm : buildingMessage.storageList) {
 
-			// double[] rowCHARGE = new double[nCols + 1];
-			// double[] rowDISCHARGE = new double[nCols + 1];
+			double[] rowCHARGE = new double[nCols + 1];
+			double[] rowDISCHARGE = new double[nCols + 1];
 
-			double maxDischargeCapacity = sm.stateOfCharge;
+			double maxDischargeCapacity = sm.storageEnergyContent;
 			if (maxDischargeCapacity >= sm.capacity) {
 				maxDischargeCapacity = sm.capacity;
 			}
@@ -288,7 +288,7 @@ public class MILPProblemNoConnections extends MILPProblem {
 				maxDischargeCapacity = 0.0001;
 			}
 
-			double maxChargeCapacity = sm.capacity - sm.stateOfCharge;
+			double maxChargeCapacity = sm.capacity - sm.storageEnergyContent;
 			if (maxChargeCapacity <= 0.0) {
 				maxChargeCapacity = 0.0001;
 			}
@@ -296,6 +296,7 @@ public class MILPProblemNoConnections extends MILPProblem {
 				maxChargeCapacity = sm.capacity;
 			}
 			
+			/*
 			// Hard coded standby losses
 			double standbyLosses = 0.2;
 			// Redeclare the SOC to reflect an actual SOC in decimal percent [0; 1]
@@ -328,8 +329,9 @@ public class MILPProblemNoConnections extends MILPProblem {
             	problem.addConstraint(rowCHARGE_new, LpSolve.LE, (1-SOC_perc));
             	// Leave the constructed array and fill with next time step in next iteration of i
             }
-
-            /*
+            */
+			
+			
 			for (int i = 0; i < nStepsMPC; i++) {
 				int index = i + 1 + nStepsMPC
 						* ((controllableHandled * 2) + volatileHandled + (couplerHandled * 2) + (storageHandled * 2));
@@ -345,7 +347,7 @@ public class MILPProblemNoConnections extends MILPProblem {
 				// System.out.println("Adding SOC charging constraints --> rowCHARGE: " +
 				// Arrays.toString(rowCHARGE) + " <= " + maxChargeCapacity);
 			}
-			*/
+			
 			storageHandled++;
 		}
 		return problem;
