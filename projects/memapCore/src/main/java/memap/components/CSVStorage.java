@@ -30,6 +30,10 @@ public class CSVStorage extends Storage {
 		this.opCost = opCost;
 		this.costCO2 = costCO2;
 		
+		// Because in GUI the value for StateOfCharge is input as kWh [0-capacity] 
+		// and passed as soc in class CSVStorageDeserializer in GuiController.java,
+		// it has to be changed to energy content at this point:
+		storageEnergyContent = stateOfCharge;
 		// To be deleted, when implemented in GUI
 		this.storageLoss = 0.1;
 	}
@@ -41,7 +45,8 @@ public class CSVStorage extends Storage {
 		storageMessage.operationalCostEUR = opCost;
 		storageMessage.operationalCostCO2 = costCO2;
 		storageMessage.capacity = capacity;
-		storageMessage.stateOfCharge = stateOfCharge;
+		storageMessage.stateOfCharge = storageEnergyContent / capacity;
+		storageMessage.storageEnergyContent = storageEnergyContent;
 		storageMessage.maxLoad = max_charging;
 		storageMessage.maxDischarge = max_discharging;
 		storageMessage.efficiencyCharge = effIN;

@@ -15,6 +15,7 @@ public abstract class Storage extends Device {
 	public double effIN;
 	public double effOUT;
 	public double stateOfCharge;
+	public double storageEnergyContent;
 	
 	public double storageLoss; // Unit [%/h] Example 0.021 represents 2.1%/h
 	public double alpha; // time constant parameter that includes self discharging/standby losses
