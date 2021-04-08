@@ -9,7 +9,7 @@ public class CSVStorage extends Storage {
 	
 	NetworkType networkType;
 	double opCost;
-	double costCO2;
+	double costCO2;	
 
 	/**
 	 * @param name            storage name
@@ -31,12 +31,13 @@ public class CSVStorage extends Storage {
 		this.opCost = opCost;
 		this.costCO2 = costCO2;
 		
+		// TODO adapt according GUI later on
 		// Because in GUI the value for StateOfCharge is input as kWh [0-capacity] 
 		// and passed as soc in class CSVStorageDeserializer in GuiController.java,
 		// it has to be changed to energy content at this point:
 		storageEnergyContent = stateOfCharge;
 		// TODO To be deleted, when implemented in GUI
-		this.storageLoss = 0.1;
+		this.storageLoss = 0.05;
 	}
 
 	@Override
@@ -47,16 +48,17 @@ public class CSVStorage extends Storage {
 		storageMessage.operationalCostCO2 = costCO2;
 		storageMessage.capacity = capacity;
 		
-		/** TODO NEW Stuff */
-		storageMessage.stateOfCharge = storageEnergyContent / capacity;
-		storageMessage.storageEnergyContent = storageEnergyContent;
-		
 		storageMessage.maxLoad = max_charging;
 		storageMessage.maxDischarge = max_discharging;
 		storageMessage.efficiencyCharge = effIN;
 		storageMessage.efficiencyDischarge = effOUT;
 		storageMessage.networkType = networkType;
-		storageMessage.storageLosses = storageLoss;
+				
+		/** TODO NEW Stuff */
+		storageMessage.stateOfCharge = storageEnergyContent / capacity;
+		storageMessage.storageEnergyContent = storageEnergyContent;
+		storageMessage.storageLosses = storageLoss;		
+		storageMessage.storageLossUnit = storageLossUnit;
 	}
 	
 	

@@ -2,8 +2,8 @@ package memap.components.prototypes;
 
 import akka.basicMessages.AnswerContent;
 import memap.controller.TopologyController;
-import memap.messages.OptimizationResultMessage;
 import memap.messages.planning.StorageMessage;
+import memap.messages.planning.StorageMessage.STORAGELOSS_UNITS;
 
 public abstract class Storage extends Device {
 
@@ -15,10 +15,11 @@ public abstract class Storage extends Device {
 	public double effIN;
 	public double effOUT;
 	
-	/** NEW Stuff */
+	/** TODO NEW Stuff */
 	public double stateOfCharge;
-	public double storageEnergyContent;	
-	public double storageLoss; // Unit [%/h] Example 0.021 represents 2.1%/h
+	public double storageEnergyContent;
+	public double storageLoss; 
+	public STORAGELOSS_UNITS storageLossUnit = STORAGELOSS_UNITS.PERCENT_HOUR; // Unit [%/h] Example 0.021 represents 2.1%/h
 
 	public StorageMessage storageMessage = new StorageMessage();
 
