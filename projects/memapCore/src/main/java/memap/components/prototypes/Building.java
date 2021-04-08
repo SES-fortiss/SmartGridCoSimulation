@@ -130,7 +130,7 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 						e.printStackTrace();
 					}
 				}
-				OpcServerContextGenerator.generateJson(this.actorName, buildingMessage);
+//				OpcServerContextGenerator.generateJson(this.actorName, buildingMessage);
 			}
 			
 			if(port != 0) {

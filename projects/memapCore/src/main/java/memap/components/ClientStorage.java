@@ -122,11 +122,13 @@ public class ClientStorage extends Storage {
 		storageMessage.operationalCostCO2 = costCO2;
 		storageMessage.capacity = capacity;
 		storageMessage.stateOfCharge = stateOfCharge;
+		storageMessage.storageEnergyContent = stateOfCharge * capacity;
 		storageMessage.maxLoad = max_charging;
 		storageMessage.maxDischarge = max_discharging;
 		storageMessage.efficiencyCharge = effIN;
 		storageMessage.efficiencyDischarge = effOUT;
 		storageMessage.networkType = networkType;
+		storageMessage.storageLosses = storageLoss;
 	}
 	
 	@Override
@@ -166,48 +168,30 @@ public class ClientStorage extends Storage {
 				}
 			}
 			
-			// update theoretical SOC
-			double soc_alt = this.stateOfCharge;
+			// With instantiation of a ClientStorage (by the OpcUaBuildingController.java), 
+			// the value for storageLoss is read from the OpcUa server (see line 60).
 			
-			double refCapacity = 0.75 * this.capacity; //kWh
-			double standByLosses = TopologyConfig.getInstance().getStepLengthInHours()*this.storageLoss / ( 24 * refCapacity ) ; // no dimension
-			double energieDiff = TopologyConfig.getInstance().getStepLengthInHours()* (optimizationAdviceInput[0] - optimizationAdviceOutput[0]);
-			this.stateOfCharge =  soc_alt + (energieDiff / this.capacity ) - soc_alt * standByLosses;
-
-//			System.out.println(this.actorName + " with Capacity = " + this.capacity + ": charge = " 
-//					+ String.format("%.01f", optimizationAdviceInput[0]) + "(max " 
-//					+ String.format("%.01f", this.max_charging) + "), discharge = " 
-//					+ String.format("%.01f", optimizationAdviceOutput[0]) + ", losses = " 
-//					+ String.format("%.01f", soc_alt * standByLosses / this.capacity) + ". OldSOC = " 
-//					+ String.format("%.02f", soc_alt) + ", NewSOC = " 
-//					+ String.format("%.02f", this.stateOfCharge));
+			double delta_time = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 (for 96 steps/day)
+			double standbyLosses = storageLoss; // in percent for hour -> Example: 0.021 corresponds to 2.1 [%/h]
 			
-			DataValue sum = new DataValue(new Variant(this.stateOfCharge), null, null);
-			client.writeValue(calculatedSocId, sum);
 			
-
+			// Alphas and betas have to be calculated here as well. 
+			// helper parameters, only depend on time step length and storage parameters
+			double alpha = 1 - standbyLosses * delta_time;
+			double beta_to = delta_time/ storageMessage.capacity * storageMessage.efficiencyCharge;
+			double beta_fm = delta_time/(storageMessage.capacity * storageMessage.efficiencyDischarge);
+			
+			// update the SOC based on the just written setpoints for the storage
+			double SOC_perc_updated = this.stateOfCharge * alpha + beta_to * optimizationAdviceInput[0] - beta_fm * optimizationAdviceOutput[0];
+			
+			// feed the updated SOC back into the original format and value (workaround, should be updated)
+			this.stateOfCharge =  SOC_perc_updated;
+			
+			// use the updating/communication procedure used below (just copied)
+			DataValue solCalc = new DataValue(new Variant(this.stateOfCharge), null, null);
+			client.writeValue(calculatedSocId, solCalc);
+			
 		}
-		
-//		// Trigger was temporarily used for synchronization with the local EMS before reading the data		
-//		double tr = trigger;
-//		while (tr ==  trigger) {
-//			try {
-//				tr = client.readFinalDoubleValue(this.triggerId);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (ExecutionException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		trigger = tr;
-//		try {
-//			Thread.sleep(1500);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	}
 	
 	/** Passes a reference of an object of class {@link TopologyController} to the parent class */

@@ -15,12 +15,15 @@ public class StorageMessage implements AnswerContent {
 	
 	public double capacity;
 	public double stateOfCharge;
+	public double storageEnergyContent;
 	
 	public double maxLoad;
 	public double maxDischarge;
 	
 	public double efficiencyCharge;
 	public double efficiencyDischarge;
+	
+	public double storageLosses;
 	
 	public NetworkType networkType;
 	

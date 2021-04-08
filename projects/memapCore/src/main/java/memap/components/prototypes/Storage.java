@@ -14,9 +14,11 @@ public abstract class Storage extends Device {
 	public double max_discharging;
 	public double effIN;
 	public double effOUT;
-	public double stateOfCharge;
 	
-	public double storageLoss;
+	/** NEW Stuff */
+	public double stateOfCharge;
+	public double storageEnergyContent;	
+	public double storageLoss; // Unit [%/h] Example 0.021 represents 2.1%/h
 
 	public StorageMessage storageMessage = new StorageMessage();
 
@@ -35,6 +37,7 @@ public abstract class Storage extends Device {
 		this.effIN = effIN;
 		this.effOUT = effOUT;
 		this.storageLoss = storageLoss;
+
 		
 		// Initialization delayed until after topologyConfig initialization
 		optimizationAdviceInput = new double[topologyConfig.getNrStepsMPC()];
@@ -56,31 +59,6 @@ public abstract class Storage extends Device {
 	 */
 	public abstract Double getStateOfCharge();
 	
-
-	@Override
-	public void handleRequest() {
-		
-		if (requestContentReceived instanceof OptimizationResultMessage) {
-			double stepLengthInHours = topologyConfig.getStepLengthInHours();
-			OptimizationResultMessage linprogResult = ((OptimizationResultMessage) requestContentReceived);
-
-			String dataKey = actorName + "Discharge";			
-			if (linprogResult.resultMap.containsKey(dataKey)) {
-				storageDischargeRequest = linprogResult.resultMap.get(dataKey);
-			}
-			
-			dataKey = actorName + "Charge";			
-			if (linprogResult.resultMap.containsKey(dataKey)) {
-				storageChargeRequest = linprogResult.resultMap.get(dataKey);
-			}
-			
-			if (storageChargeRequest!= null && storageDischargeRequest!= null) {
-				double soc_alt = stateOfCharge;
-				double leistung = storageChargeRequest[0] * effIN - storageDischargeRequest[0] * 1 / effOUT;
-				stateOfCharge = soc_alt + leistung * stepLengthInHours;
-			}
-		}
-	}
 	
 	@Override
 	public void setTopologyController(TopologyController topologyController) {

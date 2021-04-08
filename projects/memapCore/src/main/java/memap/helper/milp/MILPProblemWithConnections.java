@@ -379,8 +379,8 @@ public class MILPProblemWithConnections extends MILPProblem {
 	        	
 	            double[] rowCHARGE = new double[nCols+1];
 	            double[] rowDISCHARGE = new double[nCols+1];
-	        	        	        	
-				double maxDischargeCapacity = sm.stateOfCharge;
+
+				double maxDischargeCapacity = sm.storageEnergyContent;
 				if (maxDischargeCapacity >= sm.capacity) {
 					maxDischargeCapacity = sm.capacity;
 				}
@@ -388,27 +388,65 @@ public class MILPProblemWithConnections extends MILPProblem {
 					maxDischargeCapacity = 0.0001;
 				}
 				
-				double maxChargeCapacity = sm.capacity - sm.stateOfCharge;
+				double maxChargeCapacity = sm.capacity - sm.storageEnergyContent;
 				if (maxChargeCapacity <= 0.0) {
 					maxChargeCapacity = 0.0001;
 				}
 				if (maxChargeCapacity >= sm.capacity) {
 					maxChargeCapacity = sm.capacity;
-				}
+				}	
+				
+				
+				// TODO Hard coded standby losses: 8.1% (arbitrary) --> changed				
+				// double standbyLosses = sm.storageLosses;
 				
 		        for (int i = 0; i < nStepsMPC; i++) {
 		        	int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  		        	
 		        	rowDISCHARGE[index] = 1/sm.efficiencyDischarge*factor;
 		        	rowCHARGE[index] = -1/sm.efficiencyDischarge*factor;
-		        	
+
 		        	rowCHARGE[index + nStepsMPC] = sm.efficiencyCharge*factor;
 		        	rowDISCHARGE[index + nStepsMPC] = -sm.efficiencyCharge*factor;
-		        	
+
 		        	problem.addConstraint(rowDISCHARGE, LpSolve.LE, maxDischargeCapacity);
 		        	problem.addConstraint(rowCHARGE, LpSolve.LE, maxChargeCapacity);
-		        	
+
 		        	//System.out.println("Adding SOC charging constraints --> rowCHARGE: " + Arrays.toString(rowCHARGE) + " <= " + maxChargeCapacity);
 				}
+				
+				/*
+				// standbyLosses = 0.1;
+				
+				// Redeclare the SOC to reflect an actual SOC in decimal percent [0; 1]
+				double SOC_perc = sm.stateOfCharge / sm.capacity; 		
+				
+				double alpha  = 1 - standbyLosses * topologyConfig.getStepLengthInHours();
+				double beta_to = topologyConfig.getStepLengthInHours() / sm.capacity * sm.efficiencyCharge;
+				double beta_fm = topologyConfig.getStepLengthInHours() / (sm.capacity * sm.efficiencyDischarge);
+				
+				// new temporary constraint rows:
+	            double[] rowCHARGE_new = new double[nCols+1];
+	            double[] rowDISCHARGE_new = new double[nCols+1];
+	            
+	            
+	            // create new SOC constraints. They are not based on energy/capacity but solely on SOC, i.e. between 0 and 1
+	            for (int i = 0; i < nStepsMPC; i++) {
+	            	int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  		        	
+		        	// First add the factor for the discharge decision variable (x_fm)
+	            	rowCHARGE_new[index] = - beta_fm * Math.pow(alpha, i);
+	            	rowDISCHARGE_new[index] = beta_fm * Math.pow(alpha,  i);
+	            	
+	            	// Now add the factor for the charging decision variable x_to:
+	            	rowCHARGE_new[index + nStepsMPC] = beta_to * Math.pow(alpha, i);
+	            	rowDISCHARGE_new[index + nStepsMPC] = - beta_to * Math.pow(alpha, i);
+	            	
+	            	// Add the factor vectors to the problem as constraint:
+	            	problem.addConstraint(rowDISCHARGE_new, LpSolve.LE, (SOC_perc * Math.pow(alpha, i))); //(52)
+	            	problem.addConstraint(rowCHARGE_new, LpSolve.LE, (1-(SOC_perc * Math.pow(alpha, i)))); // (51)
+	            	// Leave the constructed array and fill with next time step in next iteration of i
+	            }
+			System.out.println("Hello World!");
+			*/
 		        storageHandled++;
 	        }
 			
