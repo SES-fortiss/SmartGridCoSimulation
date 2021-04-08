@@ -26,6 +26,7 @@ public class CSVStorage extends Storage {
 	public CSVStorage(String name, double capacity, double stateOfCharge, double max_charging, double max_discharging,
 			double effIN, double effOUT, NetworkType networkType, double opCost, double costCO2, double storageLoss, int port) {
 		super(name, capacity, stateOfCharge, max_charging, max_discharging, effIN, effOUT, storageLoss, port);
+		
 		this.networkType = networkType;
 		this.opCost = opCost;
 		this.costCO2 = costCO2;
@@ -34,7 +35,7 @@ public class CSVStorage extends Storage {
 		// and passed as soc in class CSVStorageDeserializer in GuiController.java,
 		// it has to be changed to energy content at this point:
 		storageEnergyContent = stateOfCharge;
-		// To be deleted, when implemented in GUI
+		// TODO To be deleted, when implemented in GUI
 		this.storageLoss = 0.1;
 	}
 
@@ -45,8 +46,11 @@ public class CSVStorage extends Storage {
 		storageMessage.operationalCostEUR = opCost;
 		storageMessage.operationalCostCO2 = costCO2;
 		storageMessage.capacity = capacity;
+		
+		/** TODO NEW Stuff */
 		storageMessage.stateOfCharge = storageEnergyContent / capacity;
 		storageMessage.storageEnergyContent = storageEnergyContent;
+		
 		storageMessage.maxLoad = max_charging;
 		storageMessage.maxDischarge = max_discharging;
 		storageMessage.efficiencyCharge = effIN;
@@ -60,6 +64,7 @@ public class CSVStorage extends Storage {
 	public void handleRequest() {
 		
 		if (requestContentReceived instanceof OptimizationResultMessage) {
+			
 			double stepLengthInHours = topologyConfig.getStepLengthInHours();
 			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
 
@@ -78,6 +83,11 @@ public class CSVStorage extends Storage {
 				double leistung = storageChargeRequest[0] * effIN - storageDischargeRequest[0] * 1 / effOUT;
 				// Linear equation (beta values not used since SOC is not in percent but in kWh):
 				stateOfCharge = soc_alt * (1 - this.storageLoss * stepLengthInHours) + leistung * stepLengthInHours;
+				
+				// TODO adaptations by DENIS
+				double storageEnergyContent_alt = storageEnergyContent;
+				storageEnergyContent = storageEnergyContent_alt * (1 - this.storageLoss * stepLengthInHours) + leistung * stepLengthInHours;
+				stateOfCharge = storageEnergyContent / capacity;
 				
 				// Exponential equation works:
 				//stateOfCharge = soc_alt * Math.pow(1-storageLoss, stepLengthInHours) + leistung * stepLengthInHours;

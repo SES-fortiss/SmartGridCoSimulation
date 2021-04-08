@@ -14,13 +14,11 @@ public abstract class Storage extends Device {
 	public double max_discharging;
 	public double effIN;
 	public double effOUT;
-	public double stateOfCharge;
-	public double storageEnergyContent;
 	
+	/** NEW Stuff */
+	public double stateOfCharge;
+	public double storageEnergyContent;	
 	public double storageLoss; // Unit [%/h] Example 0.021 represents 2.1%/h
-	public double alpha; // time constant parameter that includes self discharging/standby losses
-	public double beta_to; // parameter that captures charging losses
-	public double beta_fm; // parameter that captures discharging losses
 
 	public StorageMessage storageMessage = new StorageMessage();
 
