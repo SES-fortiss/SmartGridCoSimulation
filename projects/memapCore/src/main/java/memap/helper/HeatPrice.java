@@ -3,8 +3,8 @@ package memap.helper;
 public class HeatPrice extends Price {
 
 	private static final String DEFAULT_FILE = "HEATPRICEEXAMPLE";
-	static final String [] labels = { "Price [EUR/kg CO2]" };
-	private static final String units = "[EUR/kg CO2]";
+	private static final String [] labels = { "Price [EUR/kWh]" };
+	private static final String units = "[EUR/kWh]";
 
 	public HeatPrice(double price, int mpcHorizon) {
 		super(price, mpcHorizon);
