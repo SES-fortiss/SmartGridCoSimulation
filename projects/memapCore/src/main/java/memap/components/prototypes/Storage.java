@@ -2,7 +2,6 @@ package memap.components.prototypes;
 
 import akka.basicMessages.AnswerContent;
 import memap.controller.TopologyController;
-import memap.messages.OptimizationResultMessage;
 import memap.messages.planning.StorageMessage;
 
 public abstract class Storage extends Device {

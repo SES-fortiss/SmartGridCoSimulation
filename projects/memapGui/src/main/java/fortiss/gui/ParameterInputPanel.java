@@ -2,7 +2,6 @@ package fortiss.gui;
 
 import java.awt.ComponentOrientation;
 import java.awt.Graphics;
-import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -20,9 +19,9 @@ import fortiss.gui.listeners.label.LoggingModeListener;
 import fortiss.gui.listeners.label.OptimizationCriteriaListener;
 import fortiss.gui.listeners.label.OptimizerListener;
 import fortiss.gui.listeners.textfield.DaysListener;
-import fortiss.gui.listeners.textfield.StepsPerDayListener;
-import fortiss.gui.listeners.textfield.SimulationNameListener;
 import fortiss.gui.listeners.textfield.MPCHorizonListener;
+import fortiss.gui.listeners.textfield.SimulationNameListener;
+import fortiss.gui.listeners.textfield.StepsPerDayListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;

@@ -22,8 +22,18 @@ public class UntimedData implements DataInterface {
 	}
 	
 	@Override
-	public ArrayList<Double> getSeries(String seriesName) {
+	public ArrayList<Double> getYValues(String seriesName) {
 		return dataset.get(seriesName);
+	}
+	
+	@Override
+	public ArrayList<String> getXValues(String seriesName) {
+		ArrayList<String> xValues = new ArrayList<String>();
+		int size = dataset.get(seriesName).size();
+		for(int i = 0; i < size; i++) {
+			xValues.add("T" + String.valueOf(i));
+		}
+		return xValues;
 	}
 
 	@Override

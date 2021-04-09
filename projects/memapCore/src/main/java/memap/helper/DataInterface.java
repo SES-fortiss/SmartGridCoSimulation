@@ -6,7 +6,8 @@ import java.util.Set;
 public interface DataInterface {
 
 	/** Returns an array list with Double values*/
-	ArrayList<Double> getSeries(String seriesName);
+	ArrayList<Double> getYValues(String seriesName);
+	ArrayList<String> getXValues(String seriesName);
 	Set<String> getSeriesList();
 	
 }

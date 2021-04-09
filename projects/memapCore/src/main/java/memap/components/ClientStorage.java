@@ -23,7 +23,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import memap.components.prototypes.Storage;
 import memap.controller.TopologyController;
 import memap.helperOPCua.BasicClient;
-import memap.main.TopologyConfig;
 import memap.messages.OptimizationResultMessage;
 import memap.messages.extension.NetworkType;
 

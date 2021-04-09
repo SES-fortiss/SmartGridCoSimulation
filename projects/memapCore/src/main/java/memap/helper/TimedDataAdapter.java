@@ -18,10 +18,19 @@ public class TimedDataAdapter implements DataInterface {
 	}
 
 	@Override
-	public ArrayList<Double> getSeries(String seriesName) {
+	public ArrayList<Double> getYValues(String seriesName) {
 		ArrayList<Double> series = new ArrayList<Double>();
 		for(TimeDataPoint point : timedData.get(seriesName)) {
 			series.add(point.getValue());
+		}
+		return series;
+	}
+	
+	@Override
+	public ArrayList<String> getXValues(String seriesName) {
+		ArrayList<String> series = new ArrayList<String>();
+		for(TimeDataPoint point : timedData.get(seriesName)) {
+			series.add(point.getDateTime().toString());
 		}
 		return series;
 	}

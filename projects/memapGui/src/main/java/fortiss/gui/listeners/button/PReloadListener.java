@@ -16,5 +16,6 @@ public class PReloadListener extends MouseAdapter {
 		PriceBoard priceBoard = (PriceBoard) button.getParent();
 		priceBoard.getPrice().setDataFromFile();
 		priceBoard.plot();
+		priceBoard.plot();
 	}
 }

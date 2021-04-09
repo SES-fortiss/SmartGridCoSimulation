@@ -1,6 +1,7 @@
 package fortiss.gui;
 
 import java.awt.ComponentOrientation;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -59,7 +60,7 @@ public class PriceBoard extends JPanel implements OptionObserver {
 
 		JLabel lblTitle = new JLabel(title);
 		lblTitle.setFont(Fonts.getOswald(FontSize.SMALL));
-		add(lblTitle, "spanx 3");
+		add(lblTitle, "spanx 2");
 		
 		btDataPlot = new JLabel("");
 		btDataPlot.setIcon(IconStore.visualize);
@@ -148,14 +149,20 @@ public class PriceBoard extends JPanel implements OptionObserver {
 	}
 	
 	public void plot() {
-		DataInterface dataInterface = getPrice().getPrices();
+		DataInterface data = getPrice().getPrices();
 		if (plotPanel.isPlotted()) {
 			plotPanel.setVisible(false);
 			plotPanel.setPlotted(false);
 		} else {
-			if (dataInterface != null) {
-				for (String seriesName : dataInterface.getSeriesList()) {
-					plotPanel.addSeries(seriesName, dataInterface.getSeries(seriesName));
+			if (data != null) {
+				for (String seriesName : data.getSeriesList()) {
+					if (data.getXValues(seriesName).size() < 200) {
+						ArrayList<String> onlyTimes = new ArrayList<>();
+						data.getXValues(seriesName).forEach( s -> onlyTimes.add(s.split("T")[1]));	
+						plotPanel.addSeries(seriesName, onlyTimes, data.getYValues(seriesName));
+					} else {
+						plotPanel.addSeries(seriesName, data.getXValues(seriesName), data.getYValues(seriesName));
+					}
 				}
 			}
 			plotPanel.setPlotted(true);
