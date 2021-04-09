@@ -10,12 +10,12 @@ public class SLooses extends NumberListener{
 
 	@Override
 	void update(String text) {
-		((Storage) component).setLooses(Double.parseDouble(text));
+		((Storage) component).setLosses(Double.parseDouble(text));
 	}
 
 	@Override
 	String getAttribute() {
-		double soc = ((Storage) component).getLooses();
+		double soc = ((Storage) component).getLosses();
 		return String.valueOf(soc);
 	}
 	

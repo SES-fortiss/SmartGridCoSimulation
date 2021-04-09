@@ -200,7 +200,7 @@ public class StorageInputPanel extends InformationPanel {
 		sSNetworkType.setSelectedItem(storage.getNetworkType());
 		txtSCapacity.setText(Double.toString(storage.getCapacity()));
 		txtSStateOfCharge.setText(Double.toString(storage.getSoc()));
-		txtSLooses.setText(Double.toString(storage.getLooses()));
+		txtSLooses.setText(Double.toString(storage.getLosses()));
 		txtSMaxCharge.setText(Double.toString(storage.getMaxCharging()));
 		txtSMaxDischarge.setText(Double.toString(storage.getMaxDischarging()));
 		txtSEffIN.setText(Double.toString(storage.getEffIN()));

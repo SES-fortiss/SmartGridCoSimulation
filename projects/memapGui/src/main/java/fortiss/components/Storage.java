@@ -18,7 +18,7 @@ public class Storage extends Component {
 	@Expose
 	private double soc;
 	@Expose
-	private double looses;
+	private double losses;
 	@Expose
 	private double maxCharging;
 	@Expose
@@ -35,19 +35,19 @@ public class Storage extends Component {
 	 * @param networkType    a string: Heat or Electricity
 	 * @param capacity       a positive double
 	 * @param soc            state of charge
-	 * @param looses         looses [%/h]. Percentage is in [0, 1]
+	 * @param losses         losses [%/h]. Percentage is in [0, 1]
 	 * @param maxCharging    maximum charging rate. A positive double
 	 * @param maxDischarging maximum discharging rate. A positive double
 	 * @param effIN          charging efficiency. A positive double
 	 * @param effOUT         discharging efficiency. A positive double
 	 */
-	public Storage(Building building, String name, String networkType, double capacity, double soc, double looses,
+	public Storage(Building building, String name, String networkType, double capacity, double soc, double losses,
 			double maxCharging, double maxDischarging, double effIN, double effOUT) {
 		super(name, building);
 		setNetworkType(networkType);
 		setCapacity(capacity);
 		setSoc(soc);
-		setLooses(looses);
+		setLosses(losses);
 		setMaxCharging(maxCharging);
 		setMaxDischarging(maxDischarging);
 		setEffIN(effIN);
@@ -79,12 +79,13 @@ public class Storage extends Component {
 		this.soc = soc;
 	}
 
-	public double getLooses() {
-		return looses;
+	public double getLosses() {
+		return losses;
 	}
 
-	public void setLooses(double looses) {
-		this.looses = looses;
+	public void setLosses(double losses) {
+		// TODO, we might add units for losses in future. We should assure that it is written here correctly.
+		this.losses = losses;
 	}
 
 	public double getMaxCharging() {
