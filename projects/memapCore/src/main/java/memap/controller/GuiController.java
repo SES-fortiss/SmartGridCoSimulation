@@ -199,7 +199,7 @@ public class GuiController {
 			JsonObject jObject = (JsonObject) jsonElement;
 
 			// Creating the building
-			BuildingController building = new CSVBuildingController(jObject.get("name").getAsString());
+			BuildingController building = new CSVBuildingController(jObject.get("formattedName").getAsString());
 
 			// Attaching devices
 			JsonArray couplers = (JsonArray) jObject.get("coupler_list");
@@ -261,7 +261,7 @@ public class GuiController {
 			NetworkType secondaryNetworkType = (primaryNetworkType.equals(NetworkType.HEAT)) ? NetworkType.ELECTRICITY
 					: NetworkType.HEAT;
 
-			return new CSVCoupler(jObject.get("name").getAsString(), jObject.get("minimumPower").getAsDouble(),
+			return new CSVCoupler(jObject.get("formattedName").getAsString(), jObject.get("minimumPower").getAsDouble(),
 					jObject.get("maximumPower").getAsDouble(), jObject.get("efficiencyPrimary").getAsDouble(),
 					jObject.get("efficiencySecondary").getAsDouble(), primaryNetworkType, secondaryNetworkType,
 					jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
@@ -278,7 +278,7 @@ public class GuiController {
 			NetworkType networkType = (networkT.equals("Heat")) ? networkType = NetworkType.HEAT
 					: NetworkType.ELECTRICITY;
 
-			return new CSVProducer(jObject.get("name").getAsString(), jObject.get("minimumPower").getAsDouble(),
+			return new CSVProducer(jObject.get("formattedName").getAsString(), jObject.get("minimumPower").getAsDouble(),
 					jObject.get("maximumPower").getAsDouble(), jObject.get("efficiency").getAsDouble(), networkType,
 					jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
 		}
@@ -294,7 +294,7 @@ public class GuiController {
 			NetworkType networkType = (networkT.equals("Heat")) ? networkType = NetworkType.HEAT
 					: NetworkType.ELECTRICITY;
 
-			return new CSVVolatileProducer(jObject.get("name").getAsString(), jObject.get("forecastFile").getAsString(),
+			return new CSVVolatileProducer(jObject.get("formattedName").getAsString(), jObject.get("forecastFile").getAsString(),
 					jObject.get("minimumPower").getAsDouble(), jObject.get("maximumPower").getAsDouble(), networkType,
 					jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
 		}
@@ -310,7 +310,7 @@ public class GuiController {
 			NetworkType networkType = (networkT.equals("Heat")) ? networkType = NetworkType.HEAT
 					: NetworkType.ELECTRICITY;
 
-			return new CSVStorage(jObject.get("name").getAsString(), jObject.get("capacity").getAsDouble(),
+			return new CSVStorage(jObject.get("formattedName").getAsString(), jObject.get("capacity").getAsDouble(),
 					jObject.get("soc").getAsDouble(), jObject.get("maxCharging").getAsDouble(),
 					jObject.get("maxDischarging").getAsDouble(), jObject.get("effIN").getAsDouble(),
 					jObject.get("effOUT").getAsDouble(), networkType, 0.0001, 0.0001,
@@ -324,7 +324,7 @@ public class GuiController {
 				throws JsonParseException {
 			JsonObject jObject = (JsonObject) jsonElement;
 
-			return new CSVConsumer(jObject.get("name").getAsString(), jObject.get("consumptionProfile").getAsString(),
+			return new CSVConsumer(jObject.get("formattedName").getAsString(), jObject.get("consumptionProfile").getAsString(),
 					0);
 		}
 	}

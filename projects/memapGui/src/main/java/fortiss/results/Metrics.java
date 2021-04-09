@@ -580,20 +580,20 @@ public abstract class Metrics {
 
 		if (building != null) {
 			for (Coupler coupler : building.getCoupler()) {
-				ArrayList<Double> heatContributedPerTimeStep = getHeatContributedBy(context, coupler.getName());
-				heatProductionBySourceInTime.put(building.getName() + "_" + coupler.getName(),
+				ArrayList<Double> heatContributedPerTimeStep = getHeatContributedBy(context, coupler.getFormattedName());
+				heatProductionBySourceInTime.put(building.getName() + " - " + coupler.getName(),
 						heatContributedPerTimeStep);
 			}
 			for (Volatile volatileProducer : building.getVolatile()) {
 				ArrayList<Double> heatContributedPerTimeStep = getHeatContributedBy(context,
-						volatileProducer.getName());
-				heatProductionBySourceInTime.put(building.getName() + "_" + volatileProducer.getName(),
+						volatileProducer.getFormattedName());
+				heatProductionBySourceInTime.put(building.getName() + " - " + volatileProducer.getName(),
 						heatContributedPerTimeStep);
 			}
 			for (Controllable controllableProducer : building.getControllable()) {
 				ArrayList<Double> heatContributedPerTimeStep = getHeatContributedBy(context,
-						controllableProducer.getName());
-				heatProductionBySourceInTime.put(building.getName() + "_" + controllableProducer.getName(),
+						controllableProducer.getFormattedName());
+				heatProductionBySourceInTime.put(building.getName() + " - " + controllableProducer.getName(),
 						heatContributedPerTimeStep);
 			}
 		}
@@ -620,20 +620,20 @@ public abstract class Metrics {
 		if (building != null) {
 			for (Coupler coupler : building.getCoupler()) {
 				ArrayList<Double> electricityContributedPerTimeStep = getElectricityContributedBy(context,
-						coupler.getName());
-				electricityProductionBySourceInTime.put(building.getName() + "_" + coupler.getName(),
+						coupler.getFormattedName());
+				electricityProductionBySourceInTime.put(building.getName() + " - " + coupler.getName(),
 						electricityContributedPerTimeStep);
 			}
 			for (Volatile volatileProducer : building.getVolatile()) {
 				ArrayList<Double> electricityContributedPerTimeStep = getElectricityContributedBy(context,
-						volatileProducer.getName());
-				electricityProductionBySourceInTime.put(building.getName() + "_" + volatileProducer.getName(),
+						volatileProducer.getFormattedName());
+				electricityProductionBySourceInTime.put(building.getName() + " - " + volatileProducer.getName(),
 						electricityContributedPerTimeStep);
 			}
 			for (Controllable controllableProducer : building.getControllable()) {
 				ArrayList<Double> electricityContributedPerTimeStep = getElectricityContributedBy(context,
-						controllableProducer.getName());
-				electricityProductionBySourceInTime.put(building.getName() + "_" + controllableProducer.getName(),
+						controllableProducer.getFormattedName());
+				electricityProductionBySourceInTime.put(building.getName() + " - " + controllableProducer.getName(),
 						electricityContributedPerTimeStep);
 			}
 		}
@@ -655,8 +655,8 @@ public abstract class Metrics {
 			Building building) {
 		HashMap<String, ArrayList<Double>> heatDischargedByStorageInTime = new HashMap<String, ArrayList<Double>>();
 		for (Storage storage : building.getStorage()) {
-			heatDischargedByStorageInTime.put(building.getName() + "_" + storage.getName(),
-					getHeatContributedBy(context, storage.getName() + "Discharge"));
+			heatDischargedByStorageInTime.put(building.getName() + " - " + storage.getName(),
+					getHeatContributedBy(context, storage.getFormattedName() + "Discharge"));
 		}
 		return heatDischargedByStorageInTime;
 	}
@@ -676,8 +676,8 @@ public abstract class Metrics {
 			Building building) {
 		HashMap<String, ArrayList<Double>> electricityDischargedByStorageInTime = new HashMap<String, ArrayList<Double>>();
 		for (Storage storage : building.getStorage()) {
-			electricityDischargedByStorageInTime.put(building.getName() + "_" + storage.getName(),
-					getElectricityContributedBy(context, storage.getName() + "Discharge"));
+			electricityDischargedByStorageInTime.put(building.getName() + " - " + storage.getName(),
+					getElectricityContributedBy(context, storage.getFormattedName() + "Discharge"));
 		}
 		return electricityDischargedByStorageInTime;
 	}
@@ -696,8 +696,8 @@ public abstract class Metrics {
 	protected HashMap<String, ArrayList<Double>> calculateHeatChargeByStorageInTime(String context, Building building) {
 		HashMap<String, ArrayList<Double>> heatChargedByStorageInTime = new HashMap<String, ArrayList<Double>>();
 		for (Storage storage : building.getStorage()) {
-			heatChargedByStorageInTime.put(building.getName() + "_" + storage.getName(),
-					getHeatContributedBy(context, storage.getName() + "Charge"));
+			heatChargedByStorageInTime.put(building.getName() + " - " + storage.getName(),
+					getHeatContributedBy(context, storage.getFormattedName() + "Charge"));
 		}
 		return heatChargedByStorageInTime;
 	}
@@ -717,8 +717,8 @@ public abstract class Metrics {
 			Building building) {
 		HashMap<String, ArrayList<Double>> electricityChargedByStorageInTime = new HashMap<String, ArrayList<Double>>();
 		for (Storage storage : building.getStorage()) {
-			electricityChargedByStorageInTime.put(building.getName() + "_" + storage.getName(),
-					getElectricityContributedBy(context, storage.getName() + "Charge"));
+			electricityChargedByStorageInTime.put(building.getName() + " - " + storage.getName(),
+					getElectricityContributedBy(context, storage.getFormattedName() + "Charge"));
 		}
 		return electricityChargedByStorageInTime;
 	}
