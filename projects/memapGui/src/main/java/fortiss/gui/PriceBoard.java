@@ -100,7 +100,7 @@ public class PriceBoard extends JPanel implements OptionObserver {
 		add(lbPriceFileInstruction, "hidemode 3");
 
 		txtPriceFile = new JTextField("");
-		txtPriceFile.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		//txtPriceFile.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		txtPriceFile.addKeyListener(new PriceFileListener());
 		txtPriceFile.addFocusListener(new PriceFileListener());
 		txtPriceFile.setColumns(30);
