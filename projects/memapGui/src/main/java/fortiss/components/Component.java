@@ -25,6 +25,7 @@ public abstract class Component {
 	}
 	
 	public String getFormattedName() {
+		if (formattedName == null) return name;
 		return formattedName;
 	}
 

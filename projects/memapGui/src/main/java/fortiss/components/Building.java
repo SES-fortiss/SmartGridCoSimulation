@@ -59,7 +59,8 @@ public class Building {
 		return name;
 	}
 	
-	public String getFormattedName() {
+	public String getFormattedName() {		
+		if (formattedName == null) return name;		
 		return formattedName;
 	}
 
