@@ -38,7 +38,6 @@ public class WindowSnipper {
 			
 			ImageIO.write(image, "jpg", file);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

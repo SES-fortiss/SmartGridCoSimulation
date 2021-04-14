@@ -1,19 +1,14 @@
 package fortiss.simulation;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 
 import com.google.gson.annotations.Expose;
 
-import fortiss.datastructures.DataInterface;
-import fortiss.datastructures.TimedDataAdapter;
 import fortiss.gui.DesignerPanel;
-import fortiss.gui.listeners.helper.FileManager;
+import fortiss.gui.listeners.helper.ElectricityPrice;
+import fortiss.gui.listeners.helper.HeatPrice;
+import fortiss.gui.listeners.helper.Price;
 import fortiss.media.IconStore;
-import fortiss.simulation.helper.Logger;
-import memap.examples.ExampleFiles;
-import memap.helper.profilehandler.TimedData;
 
 /**
  * Stores the parameter configuration selected by the user and the default
@@ -29,7 +24,7 @@ public class Parameters {
 			add("co2");
 		}
 	};
-	
+
 	/** optimizerOptions List of optimizers available */
 	@SuppressWarnings("serial")
 	private transient ArrayList<String> optimizerOptions = new ArrayList<String>() {
@@ -38,7 +33,7 @@ public class Parameters {
 			add("milp");
 		}
 	};
-	
+
 	/** loggingOptions List of logging modes available */
 	@SuppressWarnings("serial")
 	private transient ArrayList<String> loggingOptions = new ArrayList<String>() {
@@ -54,22 +49,13 @@ public class Parameters {
 	private String simulationName;
 	/** length MemapSimulation steps. An integer */
 	@Expose
-	private int length;
+	private int stepsPerDay;
 	/** steps MPC horizon. An integer */
 	@Expose
-	private int steps;
+	private int mpcHorizon;
 	/** days Number of days to be simulated */
 	@Expose
 	private int days;
-	/** hasfixedPrice a boolean. Fixed (true)/ variable (false) */
-	@Expose
-	private boolean hasfixedPrice;
-	/** path to a file that describe variability in market prices */
-	@Expose
-	private String marketPriceFile;
-	/** A fixed value for market price */
-	@Expose
-	private double fixedMarketPrice = 0;
 	/** optCriteria a String. Optimization criteria: {cost, co2} */
 	@Expose
 	private String optCriteria;
@@ -79,23 +65,44 @@ public class Parameters {
 	/** loggingMode a String. loggingMode: {allLogs, fileLogs, resultLogs} */
 	@Expose
 	private String loggingMode;
-	/** Data read from price files */
-	private DataInterface priceData;
+	@Expose
+	private Price elecSellingPrice;
+	@Expose
+	private Price elecBuyingPrice;
+	@Expose
+	private Price heatBuyingPrice;
 
 	/**
 	 * Constructor for class Parameters
 	 */
 	public Parameters() {
 		setSimulationName("InteractiveMEMAP");
-		setLength(24);
-		setSteps(2);
+		setStepsPerDay(24);
+		// Initially setter is not called, so that the prices are not updated
+		this.mpcHorizon = 2;
 		setDays(1);
-		setFixedPrice(true);
-		setFixedMarketPrice(0.275);
-		setMarketPriceFile("");
 		setOptimizer(optimizerOptions.get(0));
 		setOptCriteria(criteriaOptions.get(0));
 		setLoggingMode(loggingOptions.get(0));
+		setElecBuyingPrice(new ElectricityPrice(0.275, mpcHorizon));
+		setElecSellingPrice(new ElectricityPrice(0.275, mpcHorizon));
+		setHeatBuyingPrice(new HeatPrice(0.275, mpcHorizon));
+	}
+
+	public Parameters(String simulationName, int simulationSteps, int mpcHorizon, int days, String optCriteria,
+			String optimizer, String loggingMode, Price elecBuyingPrice, Price elecSellingPrice,
+			Price heatBuyingPrice) {
+		setSimulationName(simulationName);
+		setStepsPerDay(simulationSteps);
+		// Initially setter is not called, so that the prices are not updated
+		this.mpcHorizon = 2;
+		setDays(days);
+		setOptimizer(optimizer);
+		setOptCriteria(optCriteria);
+		setLoggingMode(loggingMode);
+		setElecBuyingPrice(elecBuyingPrice);
+		setElecSellingPrice(elecSellingPrice);
+		setHeatBuyingPrice(heatBuyingPrice);
 	}
 
 	public String getSimulationName() {
@@ -105,21 +112,24 @@ public class Parameters {
 	public void setSimulationName(String simulationName) {
 		this.simulationName = simulationName;
 	}
-	
+
 	public int getStepsPerDay() {
-		return length;
+		return stepsPerDay;
 	}
 
-	public void setLength(int length) {
-		this.length = length;
+	public void setStepsPerDay(int stepsPerDay) {
+		this.stepsPerDay = stepsPerDay;
 	}
 
 	public int getMPCHorizon() {
-		return steps;
+		return mpcHorizon;
 	}
 
-	public void setSteps(int nstep) {
-		this.steps = nstep;
+	public void setMPCHorizon(int mpcHorizon) {
+		this.mpcHorizon = mpcHorizon;
+		elecBuyingPrice.updateMPCHorizon(mpcHorizon);
+		elecSellingPrice.updateMPCHorizon(mpcHorizon);
+		heatBuyingPrice.updateMPCHorizon(mpcHorizon);
 	}
 
 	public int getDays() {
@@ -130,14 +140,6 @@ public class Parameters {
 		this.days = days;
 	}
 
-	public boolean isFixedPrice() {
-		return hasfixedPrice;
-	}
-
-	public void setFixedPrice(boolean price) {
-		this.hasfixedPrice = price;
-	}
-
 	public String getOptimizer() {
 		return optimizer;
 	}
@@ -145,7 +147,7 @@ public class Parameters {
 	private void setOptimizer(String optimizer) {
 		this.optimizer = optimizer;
 	}
-	
+
 	public void nextOptimizer() {
 		int index = optimizerOptions.indexOf(optimizer);
 
@@ -178,58 +180,6 @@ public class Parameters {
 		}
 	}
 
-	public String getMarketPriceFile() {
-		return marketPriceFile;
-	}
-
-	public void setMarketPriceFile(String marketPriceFile) {
-		this.marketPriceFile = marketPriceFile;
-		setData();
-	}
-	
-	/**
-	 * @return the data
-	 */
-	public DataInterface getData() {
-		return priceData;
-	}
-	
-	/**
-	 * @param priceData the data to set
-	 */
-	public void setData() {
-		String location = getMarketPriceFile();
-
-		if (location == null || location.isEmpty()) {
-			location = "ELECTRICITYPRICEEXAMPLE"; // Load empty data
-		}
-		
-		try {
-			FileManager fm = new FileManager();
-			ExampleFiles ef = new ExampleFiles();
-			String [] labels = new String[] {"Price [EUR/kWh]"};
-			if (ef.isExample(location)) {
-				this.priceData = new TimedDataAdapter(new TimedData(fm.readFromResources(ef.getFile(location)), labels));
-			} else {
-				this.priceData = new TimedDataAdapter(new TimedData(fm.readFromSource(location), labels));
-			}
-		} catch (IOException | ParseException e) {
-				Logger.getInstance()
-						.writeWarning("Data for variable market price at \"" + location + "\" could not be read. Using zeros only.");
-				e.printStackTrace();
-				setMarketPriceFile(""); // Fix path and load empty data
-		}
-
-	}
-
-	public double getFixedMarketPrice() {
-		return fixedMarketPrice;
-	}
-
-	public void setFixedMarketPrice(double fixedMarketPrice) {
-		this.fixedMarketPrice = fixedMarketPrice;
-	}
-
 	public String getLoggingMode() {
 		return loggingMode;
 	}
@@ -237,7 +187,7 @@ public class Parameters {
 	private void setLoggingMode(String loggingMode) {
 		this.loggingMode = loggingMode;
 	}
-	
+
 	public void nextLoggingMode() {
 		int index = loggingOptions.indexOf(loggingMode);
 
@@ -249,4 +199,29 @@ public class Parameters {
 			DesignerPanel.parameterPanel.lbLoggingMode2.setIcon(IconStore.loggingMode.get(index + 1));
 		}
 	}
+
+	public Price getElecSellingPrice() {
+		return elecSellingPrice;
+	}
+
+	public void setElecSellingPrice(Price elecSellingPrice) {
+		this.elecSellingPrice = elecSellingPrice;
+	}
+
+	public Price getElecBuyingPrice() {
+		return elecBuyingPrice;
+	}
+
+	public void setElecBuyingPrice(Price elecBuyingPrice) {
+		this.elecBuyingPrice = elecBuyingPrice;
+	}
+
+	public Price getHeatBuyingPrice() {
+		return heatBuyingPrice;
+	}
+
+	public void setHeatBuyingPrice(Price heatBuyingPrice) {
+		this.heatBuyingPrice = heatBuyingPrice;
+	}
+
 }

@@ -55,7 +55,6 @@ public class ReporterOverviewPanel extends JPanel {
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		// TODO: Dark mode implementation
 		setBackground(Colors.background);
 	}
 

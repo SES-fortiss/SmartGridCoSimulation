@@ -14,6 +14,7 @@ import javax.swing.SwingConstants;
 
 import fortiss.components.Building;
 import fortiss.components.Component;
+import fortiss.components.Connection;
 import fortiss.gui.style.Colors;
 
 public class DesignerPanel extends JPanel {
@@ -27,10 +28,12 @@ public class DesignerPanel extends JPanel {
 	public static int buildingCount = buildings.size();
 	public static Building selectedBuilding = null;
 	public static Component selectedComponent = null;
+	public static Connection selectedConnection = null;
 
 	// Panels
 	private static TreeMap<String, InformationPanel> informationPanels = new TreeMap<String, InformationPanel>();
 	public static ParameterInputPanel parameterPanel;
+	public static PricesPanel pricesPanel;
 	public static ActionPanel pl_action; // Action panel: LoadListener, run, save, reset
 	public static BuildingInputPanel pl_ems_detail; // Split 1: panel for EMS details
 	public static JPanel pl_comp_detail; // Split 2: panel for components details
@@ -88,6 +91,11 @@ public class DesignerPanel extends JPanel {
 		parameterPanel = new ParameterInputPanel();
 		pl_comp_detail.add(parameterPanel, "parameter");
 		informationPanels.put("parameter", parameterPanel);
+		
+		// Add prices panel
+		pricesPanel = new PricesPanel();
+		pl_comp_detail.add(pricesPanel, "prices");
+		informationPanels.put("prices", pricesPanel);
 
 		// Add initial panel
 		initialPanel = new InitialPanel();

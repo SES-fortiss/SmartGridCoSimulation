@@ -17,7 +17,9 @@ public class Strings {
 	public static final String elecSell = "ElecSell";
 	
 	// Result names + units
-	public static final String energyPriceAndUnit = "Energy price [EUR]";
+	public static final String elecBuyingPriceAndUnit = "Electricity buying price [EUR/kWh]";
+	public static final String elecSellingPriceAndUnit = "Electricity selling price [EUR/kWh]";
+	public static final String heatBuyingPriceAndUnit = "Heat buying price [EUR/kWh]";
 	public static final String totalCostAndUnit = "Total cost [EUR]";
 	public static final String co2EmissionsAndUnit = "CO2 emissions [kg CO2]";
 	

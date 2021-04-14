@@ -15,6 +15,8 @@ public class Building {
 	@Expose
 	private String name;
 	@Expose
+	protected String formattedName;
+	@Expose
 	private int port;
 
 	@Expose
@@ -41,6 +43,7 @@ public class Building {
 	public Building(String name, int port, Point2D position) {
 		// Do not use setName() in the constructor!
 		this.name = name;
+		setFormattedName(name);
 		this.setPort(port);
 
 		demand_list = new ArrayList<Demand>();
@@ -55,6 +58,11 @@ public class Building {
 	public String getName() {
 		return name;
 	}
+	
+	public String getFormattedName() {		
+		if (formattedName == null) return name;		
+		return formattedName;
+	}
 
 	/**
 	 * Set the name of a building and the text of its icon. Calls
@@ -62,7 +70,16 @@ public class Building {
 	 */
 	public void setName(String name) {
 		this.name = name;
+		setFormattedName(name);
 		getIcon().setName(name);
+	}
+	
+	/**
+	 * Set the formatted name of a component, i.e. without Umlaut (diaeresis).
+	 */
+	public void setFormattedName(String name) {
+		this.formattedName = name.replace("Ä", "Ae").replace("Ö", "Oe").replace("Ü", "Ue").replace("ä", "ae")
+				.replace("ö", "oe").replace("ü", "ue").replace("ß", "ss");
 	}
 
 	public int getPort() {

@@ -443,10 +443,10 @@ public class MILPProblemNoConnections extends MILPProblem {
 			if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
         		// buy
             	colno[counter] = index;
-            	row[counter++] = energyPrices.getElectricityPriceInEuro(cts+i);
+            	row[counter++] = energyPrices.getElecBuyingPrice(cts+i);
             	// sell
             	colno[counter] = index+nStepsMPC;
-            	row[counter++] = -energyPrices.getElectricityPriceInEuro(cts+i)*0.5;
+            	row[counter++] = -energyPrices.getElecSellingPrice(cts+i);
 			}
         	
         	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {

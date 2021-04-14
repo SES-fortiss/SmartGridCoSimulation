@@ -53,7 +53,7 @@ public class OverviewResults extends ResultsLibrary {
 		// Read building optimization results
 		for (Entry<String, Building> entry : DesignerPanel.buildings.entrySet()) {
 			Building building = (Building) entry.getValue();
-			filename = building.getName() + qualifier;
+			filename = building.getFormattedName() + qualifier;
 			filename = location + source + filename;
 			try {
 				resultsLibrary.put(building.getName(), new Data(fm.readFromSource(filename), true, Data.BYROW));

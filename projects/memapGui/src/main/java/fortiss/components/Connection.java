@@ -32,7 +32,9 @@ public class Connection {
 	/** Default length of connection */
 	private static final double DEFAULT_LENGTH = 10.0;
 	/** Default looses value of connection */
-	private static final double DEFAULT_LOSSES = 0.1;
+	private static final double DEFAULT_LOSSES = 10;
+	/** Default transport capacity of connection */
+	private static final double DEFAULT_TRANSPORT_CAPACITY = 999;
 	/** Line between nodeA and nodeB */
 	private Line2D ln;
 	/** Length of connection [m] */
@@ -41,6 +43,9 @@ public class Connection {
 	/** Looses of connection [%] */
 	@Expose
 	private double losses;
+	/** Maximum transport capacity [kW]*/
+	@Expose
+	private double maxTransportCapacity;
 
 	/**
 	 * Constructor for class Connection.
@@ -57,6 +62,7 @@ public class Connection {
 		setLn();
 		setLength(DEFAULT_LENGTH);
 		setLosses(DEFAULT_LOSSES);
+		setMaxTransportCapacity(DEFAULT_TRANSPORT_CAPACITY);
 	}
 
 	/**
@@ -113,7 +119,7 @@ public class Connection {
 	 * @return losses of the connection
 	 */
 	public double getLosses() {
-		return losses;
+		return losses * 100;
 	}
 
 	/**
@@ -122,7 +128,15 @@ public class Connection {
 	 * @param losses looses value [units]
 	 */
 	public void setLosses(double losses) {
-		this.losses = losses;
+		this.losses = losses / 100;
+	}
+
+	public double getMaxTransportCapacity() {
+		return maxTransportCapacity;
+	}
+
+	public void setMaxTransportCapacity(double maxTransportCapacity) {
+		this.maxTransportCapacity = maxTransportCapacity;
 	}
 
 	/**

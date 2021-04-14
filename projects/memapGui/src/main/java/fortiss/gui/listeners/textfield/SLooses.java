@@ -2,20 +2,20 @@ package fortiss.gui.listeners.textfield;
 
 import fortiss.components.Storage;
 
-public class SStateOfChargeListener extends NumberListener{
+public class SLooses extends NumberListener{
 
-	public SStateOfChargeListener() {
+	public SLooses() {
 		super(false, true, 0, 1, 10);
 	}
 
 	@Override
 	void update(String text) {
-		((Storage) component).setSoc(Double.parseDouble(text));
+		((Storage) component).setLosses(Double.parseDouble(text));
 	}
 
 	@Override
 	String getAttribute() {
-		double soc = ((Storage) component).getSoc();
+		double soc = ((Storage) component).getLosses();
 		return String.valueOf(soc);
 	}
 	

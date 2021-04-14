@@ -14,6 +14,7 @@ import fortiss.gui.listeners.selectionitem.SNetworkTypeListener;
 import fortiss.gui.listeners.textfield.SCapacityListener;
 import fortiss.gui.listeners.textfield.SEffINListener;
 import fortiss.gui.listeners.textfield.SEffOUTListener;
+import fortiss.gui.listeners.textfield.SLooses;
 import fortiss.gui.listeners.textfield.SMaxChargeListener;
 import fortiss.gui.listeners.textfield.SMaxDischargeListener;
 import fortiss.gui.listeners.textfield.SNameListener;
@@ -34,6 +35,8 @@ public class StorageInputPanel extends InformationPanel {
 	public JTextField txtSCapacity;
 	/** Storage state of charge (SOC)*/
 	public JTextField txtSStateOfCharge;
+	/** Storage looses*/
+	public JTextField txtSLooses;
 	/** Storage maximum charge rate */
 	public JTextField txtSMaxCharge;
 	/** Storage maximum discharge rate */
@@ -54,6 +57,8 @@ public class StorageInputPanel extends InformationPanel {
 	private JLabel lbSCapacity;
 	/** Storage state of charge (SOC) label */
 	private JLabel lbSStateOfCharge;
+	/** Storage losses label */
+	private JLabel lbSLosses;
 	/** Storage maximum charge rate label */
 	private JLabel lbMaxCharge;
 	/** Storage maximum discharge rate label */
@@ -76,6 +81,7 @@ public class StorageInputPanel extends InformationPanel {
 		lbSNetworkType.setForeground(Colors.normal);
 		lbSCapacity.setForeground(Colors.normal);
 		lbSStateOfCharge.setForeground(Colors.normal);
+		lbSLosses.setForeground(Colors.normal);
 		lbMaxCharge.setForeground(Colors.normal);
 		lbSMaxDRate.setForeground(Colors.normal);
 		lbSChargeE.setForeground(Colors.normal);
@@ -132,7 +138,7 @@ public class StorageInputPanel extends InformationPanel {
 		txtSCapacity.addFocusListener(new SCapacityListener());
 		add(txtSCapacity, "growx");
 		
-		lbSStateOfCharge = new JLabel("State of charge [0-capacity]");
+		lbSStateOfCharge = new JLabel("State of charge [%] (0..1)");
 		add(lbSStateOfCharge);
 		
 		txtSStateOfCharge = new JTextField();
@@ -140,7 +146,16 @@ public class StorageInputPanel extends InformationPanel {
 		txtSStateOfCharge.addFocusListener(new SStateOfChargeListener());
 		txtSStateOfCharge.setColumns(10);
 		add(txtSStateOfCharge, "growx");
-
+		
+		lbSLosses = new JLabel("Losses [%/h] (0..1)");
+		add(lbSLosses);
+		
+		txtSLooses = new JTextField();
+		txtSLooses.addKeyListener(new SLooses());
+		txtSLooses.addFocusListener(new SLooses());
+		txtSLooses.setColumns(10);
+		add(txtSLooses, "growx");
+		
 		lbMaxCharge = new JLabel("Max. Charge rate [kW]");
 		add(lbMaxCharge);
 
@@ -185,6 +200,7 @@ public class StorageInputPanel extends InformationPanel {
 		sSNetworkType.setSelectedItem(storage.getNetworkType());
 		txtSCapacity.setText(Double.toString(storage.getCapacity()));
 		txtSStateOfCharge.setText(Double.toString(storage.getSoc()));
+		txtSLooses.setText(Double.toString(storage.getLosses()));
 		txtSMaxCharge.setText(Double.toString(storage.getMaxCharging()));
 		txtSMaxDischarge.setText(Double.toString(storage.getMaxDischarging()));
 		txtSEffIN.setText(Double.toString(storage.getEffIN()));

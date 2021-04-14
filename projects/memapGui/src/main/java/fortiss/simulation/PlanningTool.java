@@ -69,8 +69,6 @@ public class PlanningTool {
 	 */
 	public void init() {
 		setPlanningToolWindow(new PlanningToolWindow());
-
-		setParameters(new Parameters());
 		
 		setDesignerPanel(new DesignerPanel());
 		setTrackerPanel(new TrackerPanel());
@@ -90,6 +88,7 @@ public class PlanningTool {
 			new ModelInitHelper().loadFromFile(workingFilePath);
 		} else {
 			Logger.getInstance().writeWarning("No working file found!");
+			setParameters(new Parameters());
 		}
 	}
 

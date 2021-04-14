@@ -65,6 +65,9 @@ public class LineListener extends MouseAdapter {
 			popup.hide();
 
 		Connection clickedConnection = getClickedConnection(clickedLine);
+		
+		// Relevant for TextListener. A connection has been selected
+		DesignerPanel.selectedConnection = clickedConnection;
 
 		PopupFactory pf = PopupFactory.getSharedInstance();
 		connectionPropertiesPanel = new ConnectionPropertiesPanel(clickedConnection);

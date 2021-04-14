@@ -25,12 +25,12 @@ import fortiss.components.Connection;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.commands.ResetCommand;
 import fortiss.serialization.BuildingTypeAdapter;
+import fortiss.serialization.ParametersTypeAdapter;
 import fortiss.serialization.Point2DTypeAdapter;
 import fortiss.simulation.Parameters;
 import fortiss.simulation.PlanningTool;
 import fortiss.simulation.helper.ConnectionManager;
 import fortiss.simulation.helper.Logger;
-import memap.examples.ExampleFiles;
 
 public class ModelInitHelper {
 
@@ -58,6 +58,7 @@ public class ModelInitHelper {
 			GsonBuilder gsonBuilder = new GsonBuilder();
 			gsonBuilder.registerTypeAdapter(Point2D.class, new Point2DTypeAdapter());
 			gsonBuilder.registerTypeAdapter(Building.class, new BuildingTypeAdapter());
+			gsonBuilder.registerTypeAdapter(Parameters.class, new ParametersTypeAdapter());
 			Type buildingSetType = new TypeToken<HashSet<Building>>() {
 			}.getType();
 
@@ -103,16 +104,6 @@ public class ModelInitHelper {
 			// Import parameters
 			JsonElement parameters = p.next();
 			planningTool.setParameters(gson.fromJson(parameters, Parameters.class));
-			// Fix path
-			String variablePricePath = planningTool.getParameters().getMarketPriceFile();
-			File variablePriceFile = new File(variablePricePath);
-			ExampleFiles ef = new ExampleFiles();
-			if(!variablePriceFile.exists() && !variablePricePath.isEmpty() && !ef.isExample(variablePricePath)) {
-				planningTool.getParameters().setMarketPriceFile(""); // It calls setData()
-				Logger.getInstance().writeWarning("File " + variablePricePath + " does not exist. Using default.");
-			} else {// The file exist and the path was set by gson
-				planningTool.getParameters().setData();
-			}
 			
 			DesignerPanel.parameterPanel.update();
 			Logger.getInstance().writeInfo("Parameters: " + gson.toJson(planningTool.getParameters()));

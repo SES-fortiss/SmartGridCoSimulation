@@ -21,7 +21,7 @@ public class Data {
 	public static final String BYROW = "by row";
 	public static final String BYCOLUMN = "by column";
 
-	private Map<String, ArrayList<Double>> dataset = new LinkedHashMap<String, ArrayList<Double>>();
+	private Map<String, ArrayList<Double>> dataset;
 
 	/**
 	 * Constructor for the class Data.
@@ -33,6 +33,7 @@ public class Data {
 	 * @throws IOException
 	 */
 	public Data(BufferedReader br, boolean hasHeader, String readMode) throws IOException, ParseException {
+		dataset = new LinkedHashMap<String, ArrayList<Double>>();
 		if (readMode.equals(BYCOLUMN)) {
 			readByColumn(br, hasHeader);
 		} else if (readMode.equals(BYROW)) {

@@ -102,12 +102,15 @@ public class LPSolver {
 			double[] currentSOC = solHandler.getCurrentSOC(buildingMessage.storageList);
 			double[] totalCostsValue = { costTotal };
 			double[] co2emissionsValue = { CO2Total };
-			double[] currentEnergyPrice = { energyPrices.getElectricityPriceInEuro(currentTimeStep) };
+			double[] currentEnergyPrices = { energyPrices.getElecBuyingPrice(currentTimeStep),
+					energyPrices.getElecSellingPrice(currentTimeStep),
+					energyPrices.getHeatBuyingPrice(currentTimeStep) };
 
 			String[] timeStep = { Strings.timeStep };
 			String[] currentOptVectorNames = solHandler.getVectorNamesForThisTimeStep(problem.namesUB, nStepsMPC);
 			String[] currentSOCNames = solHandler.getNamesForSOC(buildingMessage.storageList);
-			String[] energyPrice = { Strings.energyPriceAndUnit };
+			String[] energyPricesNames = { Strings.elecBuyingPriceAndUnit, Strings.elecSellingPriceAndUnit,
+					Strings.heatBuyingPriceAndUnit };
 			String[] totalCosts = { Strings.totalCostAndUnit };
 			String[] co2emissions = { Strings.co2EmissionsAndUnit };
 
@@ -136,10 +139,10 @@ public class LPSolver {
 			}
 
 			String[] namesResult = HelperConcat.concatAllObjects(timeStep, currentDemandNames, currentOptVectorNames,
-					currentSOCNames, energyPrice, totalCosts, co2emissions);
+					currentSOCNames, energyPricesNames, totalCosts, co2emissions);
 
 			double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector,
-					currentSOC, currentEnergyPrice, totalCostsValue, co2emissionsValue);
+					currentSOC, currentEnergyPrices, totalCostsValue, co2emissionsValue);
 
 			// Format results vector for printing
 			String[] vectorResultStr = new String[vectorResult.length];
@@ -149,8 +152,10 @@ public class LPSolver {
 			}
 			vectorResultStr[0] = ((Integer) currentTimeStep).toString();
 
-			//System.out.println("LP: " + this.actorName + " Names: " + Arrays.toString(namesResult));
-			//System.out.println("LP: " + this.actorName + " Result: " + Arrays.toString(vectorResultStr));
+			// System.out.println("LP: " + this.actorName + " Names: " +
+			// Arrays.toString(namesResult));
+			// System.out.println("LP: " + this.actorName + " Result: " +
+			// Arrays.toString(vectorResultStr));
 
 			// Save
 			buildingsSolutionPerTimeStep[currentTimeStep] = vectorResult;
@@ -176,23 +181,21 @@ public class LPSolver {
 
 			// METRICS FOR RESULTS OVERVIEW
 			MetricsHandler mc = null;
-			
+
 			if (buildingMessageList != null) {
 				mc = new LPMetricsHandler(buildingMessageList, optResult, optSolution, problem, currentTimeStep,
 						nStepsMPC);
-	
-				
+
 			} else {
-				mc = new LPMetricsHandler(buildingMessage, optResult, optSolution, problem, currentTimeStep,
-						nStepsMPC);
+				mc = new LPMetricsHandler(buildingMessage, optResult, optSolution, problem, currentTimeStep, nStepsMPC);
 			}
-			
+
 			// filename to be created
 			String filename = topologyController.getSimulationName() + "/MPC" + nStepsMPC + "_LP/";
 			filename += actorName + "_MPC" + nStepsMPC + Strings.lpOverviewFileSuffix;
 
 			mc.calculateOverviewMetrics(filename);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			String error = getClass().getName() + ": " + actorName + " cannot solve the optimization";

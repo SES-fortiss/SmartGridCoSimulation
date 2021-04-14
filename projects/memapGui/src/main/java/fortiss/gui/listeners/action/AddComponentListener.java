@@ -32,7 +32,8 @@ public class AddComponentListener extends MouseAdapter {
 			break;
 		case "storage":
 			component = new Storage(DesignerPanel.selectedBuilding,
-					"Storage" + DesignerPanel.selectedBuilding.getStorageCount(), "Heat", 0.0, 0.0, 0.0, 0.0, 1.0, 1.0);
+					"Storage" + DesignerPanel.selectedBuilding.getStorageCount(), "Heat", 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+					1.0);
 			DesignerPanel.selectedBuilding.addStorage((Storage) component);
 			break;
 		case "volatile":

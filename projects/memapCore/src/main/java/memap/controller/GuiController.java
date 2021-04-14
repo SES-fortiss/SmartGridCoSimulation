@@ -22,8 +22,11 @@ import memap.components.CSVProducer;
 import memap.components.CSVStorage;
 import memap.components.CSVVolatileProducer;
 import memap.components.prototypes.Connection;
+import memap.helper.ElectricityPrice;
 import memap.helper.EnergyPrices;
+import memap.helper.HeatPrice;
 import memap.helper.MEMAPLogging;
+import memap.helper.Price;
 import memap.helper.configurationOptions.OptHierarchy;
 import memap.helper.configurationOptions.OptimizationCriteria;
 import memap.helper.configurationOptions.Optimizer;
@@ -53,13 +56,13 @@ public class GuiController {
 
 		Thread memapOffThread = new Thread(topMemapOff);
 		Thread memapOnThread = new Thread(topMemapOn);
-		
+
 		memapOffThread.start();
 		memapOnThread.start();
-		
+
 		memapOffThread.join();
 		memapOnThread.join();
-		
+
 	}
 
 	private TopologyController createTopology(OptHierarchy optimizationHierarchy) {
@@ -88,7 +91,7 @@ public class GuiController {
 		// Connections
 		JsonElement connections = p.next();
 		ArrayList<Connection> connectionList = gson.fromJson(connections, connectionMapType);
-		
+
 		// Parameters
 		JsonElement parameters = p.next();
 
@@ -98,21 +101,29 @@ public class GuiController {
 		// Configure simulation parameters
 		TopologyConfig topologyConfig = TopologyConfig.getInstance();
 
-		boolean isFixedPrice = jObject.get("hasfixedPrice").getAsBoolean();
-		double fixedPrice = jObject.get("fixedMarketPrice").getAsDouble();
-		int nrStepsMPC = jObject.get("steps").getAsInt();
-		int timeStepsPerDay = jObject.get("length").getAsInt();
+		int mpcHorizon = jObject.get("mpcHorizon").getAsInt();
+		int timeStepsPerDay = jObject.get("stepsPerDay").getAsInt();
 		int nrDays = jObject.get("days").getAsInt();
-		String variablePriceFile = jObject.get("marketPriceFile").getAsString();
+		
+		// Must come before prices are set!
+		topologyConfig.init(mpcHorizon, timeStepsPerDay, nrDays, 0, 0);
+		
+		JsonObject elecBuyingPriceObj = jObject.get("elecBuyingPrice").getAsJsonObject();
+		JsonObject elecSellingPriceObj = jObject.get("elecSellingPrice").getAsJsonObject();
+		JsonObject heatBuyingPriceObj = jObject.get("heatBuyingPrice").getAsJsonObject();
 
-		topologyConfig.init(nrStepsMPC, timeStepsPerDay, nrDays, 0, 0);
+		Price elecBuyingPrice = new ElectricityPrice(elecBuyingPriceObj.get("fixed").getAsBoolean(),
+				elecBuyingPriceObj.get("price").getAsDouble(), elecBuyingPriceObj.get("priceFilePath").getAsString(),
+				mpcHorizon);
+		Price elecSellingPrice = new ElectricityPrice(elecSellingPriceObj.get("fixed").getAsBoolean(),
+				elecSellingPriceObj.get("price").getAsDouble(), elecSellingPriceObj.get("priceFilePath").getAsString(),
+				mpcHorizon);
+		Price heatBuyingPrice = new HeatPrice(heatBuyingPriceObj.get("fixed").getAsBoolean(),
+				heatBuyingPriceObj.get("price").getAsDouble(), heatBuyingPriceObj.get("priceFilePath").getAsString(),
+				mpcHorizon);
 
 		EnergyPrices energyPrices = EnergyPrices.getInstance();
-		if (isFixedPrice) {
-			energyPrices.init(fixedPrice);
-		} else {
-			energyPrices.init(variablePriceFile);
-		}
+		energyPrices.init(elecBuyingPrice, elecSellingPrice, heatBuyingPrice);
 
 		Optimizer optimizer = null;
 		String optimizerType = jObject.get("optimizer").getAsString();
@@ -146,7 +157,7 @@ public class GuiController {
 
 		TopologyController top = new TopologyController(jObject.get("simulationName").getAsString(), optHierarchy,
 				optimizer, optimizationCriteria, ToolUsage.PLANNING, loggingMode);
-		
+
 		for (JsonElement json : buildings) {
 			BuildingController building = gson.fromJson(json, BuildingController.class);
 			top.attach(building.getName(), building);
@@ -188,7 +199,13 @@ public class GuiController {
 			JsonObject jObject = (JsonObject) jsonElement;
 
 			// Creating the building
-			BuildingController building = new CSVBuildingController(jObject.get("name").getAsString());
+			BuildingController building;
+			
+			try {
+				building = new CSVBuildingController(jObject.get("formattedName").getAsString());
+			} catch (Exception e) {
+				building = new CSVBuildingController(jObject.get("name").getAsString());
+			}
 
 			// Attaching devices
 			JsonArray couplers = (JsonArray) jObject.get("coupler_list");
@@ -249,11 +266,23 @@ public class GuiController {
 			NetworkType primaryNetworkType = (networkP.equals("Heat")) ? NetworkType.HEAT : NetworkType.ELECTRICITY;
 			NetworkType secondaryNetworkType = (primaryNetworkType.equals(NetworkType.HEAT)) ? NetworkType.ELECTRICITY
 					: NetworkType.HEAT;
+			
+			// FIXME this design is maybe not very beatiful. If a better solution exist, we should try to improve it.
+			CSVCoupler coupler;
+			
+			try {
+				coupler = new CSVCoupler(jObject.get("formattedName").getAsString(), jObject.get("minimumPower").getAsDouble(),
+						jObject.get("maximumPower").getAsDouble(), jObject.get("efficiencyPrimary").getAsDouble(),
+						jObject.get("efficiencySecondary").getAsDouble(), primaryNetworkType, secondaryNetworkType,
+						jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0); 
+			} catch (Exception e) {
+				coupler = new CSVCoupler(jObject.get("name").getAsString(), jObject.get("minimumPower").getAsDouble(),
+						jObject.get("maximumPower").getAsDouble(), jObject.get("efficiencyPrimary").getAsDouble(),
+						jObject.get("efficiencySecondary").getAsDouble(), primaryNetworkType, secondaryNetworkType,
+						jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
+			}
 
-			return new CSVCoupler(jObject.get("name").getAsString(), jObject.get("minimumPower").getAsDouble(),
-					jObject.get("maximumPower").getAsDouble(), jObject.get("efficiencyPrimary").getAsDouble(),
-					jObject.get("efficiencySecondary").getAsDouble(), primaryNetworkType, secondaryNetworkType,
-					jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
+			return coupler;
 		}
 	}
 
@@ -266,10 +295,20 @@ public class GuiController {
 
 			NetworkType networkType = (networkT.equals("Heat")) ? networkType = NetworkType.HEAT
 					: NetworkType.ELECTRICITY;
+			
+			CSVProducer producer; 
+			
+			try {
+				producer = new CSVProducer(jObject.get("formattedName").getAsString(), jObject.get("minimumPower").getAsDouble(),
+						jObject.get("maximumPower").getAsDouble(), jObject.get("efficiency").getAsDouble(), networkType,
+						jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0); 
+			} catch (Exception e) {
+				producer = new CSVProducer(jObject.get("name").getAsString(), jObject.get("minimumPower").getAsDouble(),
+						jObject.get("maximumPower").getAsDouble(), jObject.get("efficiency").getAsDouble(), networkType,
+						jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
+			}
 
-			return new CSVProducer(jObject.get("name").getAsString(), jObject.get("minimumPower").getAsDouble(),
-					jObject.get("maximumPower").getAsDouble(), jObject.get("efficiency").getAsDouble(), networkType,
-					jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
+			return producer; 
 		}
 	}
 
@@ -283,9 +322,19 @@ public class GuiController {
 			NetworkType networkType = (networkT.equals("Heat")) ? networkType = NetworkType.HEAT
 					: NetworkType.ELECTRICITY;
 
-			return new CSVVolatileProducer(jObject.get("name").getAsString(), jObject.get("forecastFile").getAsString(),
-					jObject.get("minimumPower").getAsDouble(), jObject.get("maximumPower").getAsDouble(), networkType,
-					jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
+			CSVVolatileProducer vproducer; 
+			
+			try {
+				vproducer = new CSVVolatileProducer(jObject.get("formattedName").getAsString(), jObject.get("forecastFile").getAsString(),
+						jObject.get("minimumPower").getAsDouble(), jObject.get("maximumPower").getAsDouble(), networkType,
+						jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
+			} catch (Exception e) {
+				vproducer = new CSVVolatileProducer(jObject.get("name").getAsString(), jObject.get("forecastFile").getAsString(),
+						jObject.get("minimumPower").getAsDouble(), jObject.get("maximumPower").getAsDouble(), networkType,
+						jObject.get("cost").getAsDouble(), jObject.get("coEmission").getAsDouble(), 0);
+			}
+			
+			return vproducer;
 		}
 	}
 
@@ -298,11 +347,24 @@ public class GuiController {
 
 			NetworkType networkType = (networkT.equals("Heat")) ? networkType = NetworkType.HEAT
 					: NetworkType.ELECTRICITY;
+			
+			CSVStorage storage;
+			
+			try {
+				storage = new CSVStorage(jObject.get("formattedName").getAsString(), jObject.get("capacity").getAsDouble(),
+						jObject.get("soc").getAsDouble(), jObject.get("maxCharging").getAsDouble(),
+						jObject.get("maxDischarging").getAsDouble(), jObject.get("effIN").getAsDouble(),
+						jObject.get("effOUT").getAsDouble(), networkType, 0.0001, 0.0001,
+						jObject.get("losses").getAsDouble(), 0);
+			} catch (Exception e) {
+				storage = new CSVStorage(jObject.get("name").getAsString(), jObject.get("capacity").getAsDouble(),
+						jObject.get("soc").getAsDouble(), jObject.get("maxCharging").getAsDouble(),
+						jObject.get("maxDischarging").getAsDouble(), jObject.get("effIN").getAsDouble(),
+						jObject.get("effOUT").getAsDouble(), networkType, 0.0001, 0.0001,
+						jObject.get("losses").getAsDouble(), 0);
+			}
 
-			return new CSVStorage(jObject.get("name").getAsString(), jObject.get("capacity").getAsDouble(),
-					jObject.get("soc").getAsDouble(), jObject.get("maxCharging").getAsDouble(),
-					jObject.get("maxDischarging").getAsDouble(), jObject.get("effIN").getAsDouble(),
-					jObject.get("effOUT").getAsDouble(), networkType, 0.0001, 0.0001, 0, 0);
+			return storage;
 		}
 	}
 
@@ -311,9 +373,20 @@ public class GuiController {
 		public CSVConsumer deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context)
 				throws JsonParseException {
 			JsonObject jObject = (JsonObject) jsonElement;
+			
+			CSVConsumer consumer;
+			
+			try {
+				consumer = new CSVConsumer(jObject.get("formattedName").getAsString(), 
+						jObject.get("consumptionProfile").getAsString(),
+						0);
+			} catch (Exception e) {
+				consumer = new CSVConsumer(jObject.get("name").getAsString(), 
+						jObject.get("consumptionProfile").getAsString(),
+						0);
+			}
 
-			return new CSVConsumer(jObject.get("name").getAsString(), jObject.get("consumptionProfile").getAsString(),
-					0);
+			return consumer; 
 		}
 	}
 

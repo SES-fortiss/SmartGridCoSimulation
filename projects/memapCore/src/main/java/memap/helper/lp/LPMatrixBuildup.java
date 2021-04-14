@@ -557,10 +557,10 @@ public class LPMatrixBuildup {
 
 				// Extended price vector for market
 				// electricity buy price
-				problem.lambda[n_index + b_index + i] = energyPrices.getElectricityPriceInEuro(cts + i);
+				problem.lambda[n_index + b_index + i] = energyPrices.getElecBuyingPrice(cts + i);
 				// electricity sell price
 				problem.lambda[n_index + b_index + nStepsMPC
-						+ i] = -energyPrices.getElectricityPriceInEuro(cts + i) * 0.5;
+						+ i] = -energyPrices.getElecSellingPrice(cts + i);
 				// Emissions of German electricity kg CO2 / kWh
 				problem.lambdaCO2[n_index + b_index + i] = 0.474;
 				// electricity sell price
