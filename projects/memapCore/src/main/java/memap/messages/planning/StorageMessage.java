@@ -24,6 +24,7 @@ public class StorageMessage implements AnswerContent {
 	public double efficiencyDischarge;
 	
 	public double storageLosses;
+	public STORAGELOSS_UNITS storageLossUnit;
 	
 	public NetworkType networkType;
 	
@@ -33,5 +34,9 @@ public class StorageMessage implements AnswerContent {
 		result = gson.toJson(this);
 		return result;
 	}
+	
+	public enum STORAGELOSS_UNITS {
+        WATT, KWH_DAY, PERCENT_HOUR, PERCENT_MONTH;
+    } 
 
 }

@@ -246,6 +246,14 @@ public class SolutionHandler {
 		}
 		return result;
 	}
+	
+	public double[] getCurrentSOCEnergy(ArrayList<StorageMessage> storageMessageList) {
+		double[] result = new double[storageMessageList.size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = storageMessageList.get(i).storageEnergyContent;
+		}
+		return result;
+	}
 
 	/**
 	 * @param buildingMessageList a list of building messages
@@ -259,6 +267,16 @@ public class SolutionHandler {
 		}
 
 		return getCurrentSOC(storeMessageList);
+	}
+	
+	public double[] getCurrentSOCEnergyMB(ArrayList<BuildingMessage> buildingMessageList) {
+		ArrayList<StorageMessage> storeMessageList = new ArrayList<StorageMessage>();
+
+		for (BuildingMessage bm : buildingMessageList) {
+			storeMessageList.addAll(bm.storageList);
+		}
+
+		return getCurrentSOCEnergy(storeMessageList);
 	}
 
 	/**
@@ -326,17 +344,38 @@ public class SolutionHandler {
 		}
 		return result;
 	}
+	
+	public String[] getNamesForSOCEnergy(ArrayList<StorageMessage> storageMessageList) {
+		String[] result = new String[storageMessageList.size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = storageMessageList.get(i).name;
+			if (result[i].contains(".")) {
+				String[] strSplit = result[i].split("\\.");
+				result[i] = strSplit[strSplit.length - 1];
+			}
+			result[i] =  result[i] + "_SOC_Energy";
+		}
+		return result;
+	}
 
 	/**
 	 * @param buildingMessageList a list of building messages
 	 * @return an array with the names of storage objects
 	 */
-public String[] getNamesForSOCs(ArrayList<BuildingMessage> buildingMessageList) {
+	public String[] getNamesForSOCs(ArrayList<BuildingMessage> buildingMessageList) {
 		ArrayList<StorageMessage> storeMessageList = new ArrayList<StorageMessage>();
 		for (BuildingMessage bm : buildingMessageList) {
 			storeMessageList.addAll(bm.storageList);
 		}
 		return getNamesForSOC(storeMessageList);
+	}
+
+	public String[] getNamesForSOCEnergyMB(ArrayList<BuildingMessage> buildingMessageList) {
+		ArrayList<StorageMessage> storeMessageList = new ArrayList<StorageMessage>();
+		for (BuildingMessage bm : buildingMessageList) {
+			storeMessageList.addAll(bm.storageList);
+		}
+		return getNamesForSOCEnergy(storeMessageList);
 	}
 
 }

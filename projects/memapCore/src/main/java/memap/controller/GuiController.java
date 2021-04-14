@@ -354,14 +354,20 @@ public class GuiController {
 				storage = new CSVStorage(jObject.get("formattedName").getAsString(), jObject.get("capacity").getAsDouble(),
 						jObject.get("soc").getAsDouble(), jObject.get("maxCharging").getAsDouble(),
 						jObject.get("maxDischarging").getAsDouble(), jObject.get("effIN").getAsDouble(),
-						jObject.get("effOUT").getAsDouble(), networkType, 0.0001, 0.0001,
-						jObject.get("losses").getAsDouble(), 0);
+						jObject.get("effOUT").getAsDouble(), networkType, 
+						0.0, // operationalCost EUR 
+						0.0, // operationalCost Co2
+						jObject.get("losses").getAsDouble(),   // lossFactor
+						0);
 			} catch (Exception e) {
 				storage = new CSVStorage(jObject.get("name").getAsString(), jObject.get("capacity").getAsDouble(),
 						jObject.get("soc").getAsDouble(), jObject.get("maxCharging").getAsDouble(),
 						jObject.get("maxDischarging").getAsDouble(), jObject.get("effIN").getAsDouble(),
-						jObject.get("effOUT").getAsDouble(), networkType, 0.0001, 0.0001,
-						jObject.get("losses").getAsDouble(), 0);
+						jObject.get("effOUT").getAsDouble(), networkType, 
+						0.0, // operationalCost EUR 
+						0.0, // operationalCost Co2
+						jObject.get("losses").getAsDouble(),   // lossFactor
+						0);
 			}
 
 			return storage;

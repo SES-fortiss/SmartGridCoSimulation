@@ -142,13 +142,9 @@ public class ClientStorage extends Storage {
 							DataValue data = new DataValue(new Variant(optimizationAdviceInput), null, null);
 							client.writeValue(inputSetpointsId, data);
 						}
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+					} catch (InterruptedException | ExecutionException e) {
 						e.printStackTrace();
-					} catch (ExecutionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}			
+					}		
 				}
 				if (key.equals(actorName + "Discharge")) {
 					optimizationAdviceOutput = optResult.resultMap.get(key);
@@ -157,13 +153,9 @@ public class ClientStorage extends Storage {
 							DataValue data = new DataValue(new Variant(optimizationAdviceOutput), null, null);
 							client.writeValue(outputSetpointsId, data);
 						}
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+					} catch (InterruptedException | ExecutionException e) {
 						e.printStackTrace();
-					} catch (ExecutionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}			
+					}
 				}
 			}
 			

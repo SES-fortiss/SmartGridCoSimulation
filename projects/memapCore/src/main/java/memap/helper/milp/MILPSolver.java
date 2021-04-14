@@ -188,26 +188,35 @@ public class MILPSolver {
 		String[] totalCosts = { Strings.totalCostAndUnit };
 		String[] co2emissions = { Strings.co2EmissionsAndUnit };
 
-		double[] currentDemand = null;
-		double[] currentSOC = null;
-		String[] currentSOCNames = null;
 		String[] currentDemandNames = null;
+		double[] currentDemand = null;
+		
+		String[] currentSOCNames = null;
+		double[] currentSOC = null;
+		
+		String[] currentStorageEnergyContentNames = null;
+		double[] currentStorageEnergyContent = null;
 
 		if (singleBuildingMessage != null) {
 			// Without connections
 			currentDemand = milpSolHandler.getDemandForThisTimestep(singleBuildingMessage.getCombinedDemandVector(),
 					nStepsMPC); 			
 			currentSOC = milpSolHandler.getCurrentSOC(singleBuildingMessage.storageList);
+			currentStorageEnergyContent = milpSolHandler.getCurrentSOCEnergy(singleBuildingMessage.storageList);
+			
 			currentDemandNames = milpSolHandler.getNamesForDemandSingleBuilding();
 			currentSOCNames = milpSolHandler.getNamesForSOC(singleBuildingMessage.storageList);
+			currentStorageEnergyContentNames = milpSolHandler.getNamesForSOCEnergy(singleBuildingMessage.storageList);
 		} else {
 			// With connections
 			double[] demandVector = buildingMessageHandler.getCombinedDemandVector(multipleBuildingMessages, nStepsMPC);
 			currentDemand = milpSolHandler.getDemandForThisTimestep(demandVector, nStepsMPC);			
 			currentSOC = milpSolHandler.getCurrentSOCs(multipleBuildingMessages);
+			currentStorageEnergyContent = milpSolHandler.getCurrentSOCEnergyMB(multipleBuildingMessages);
+			
 			currentDemandNames = milpSolHandler.getNamesForDemand(multipleBuildingMessages, nStepsMPC);
 			currentSOCNames = milpSolHandler.getNamesForSOCs(multipleBuildingMessages);
-			
+			currentStorageEnergyContentNames = milpSolHandler.getNamesForSOCEnergyMB(multipleBuildingMessages);
 			
 			//Small modification to calculate the aggregated demand of the buildings.
 			double[] resultWithTotalHeatDemand = new double[currentDemand.length+1];			
@@ -220,9 +229,9 @@ public class MILPSolver {
 		}
 
 		String[] namesResult = HelperConcat.concatAllObjects(timeStep, currentDemandNames, currentOptVectorNames,
-				currentSOCNames, energyPricesNames, totalCosts, co2emissions);
+				currentSOCNames, currentStorageEnergyContentNames, energyPricesNames, totalCosts, co2emissions);
 		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC,
-				currentEnergyPrices, totalCostsEUR, totalCO2emissions);
+				currentStorageEnergyContent, currentEnergyPrices, totalCostsEUR, totalCO2emissions);
 
 		
 		int nrOfBuildings = 1;
