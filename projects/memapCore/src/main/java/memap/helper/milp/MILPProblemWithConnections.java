@@ -10,6 +10,7 @@ import memap.controller.TopologyController;
 import memap.helper.CO2profiles;
 import memap.helper.MEMAPLogging;
 import memap.helper.configurationOptions.OptimizationCriteria;
+import memap.helper.configurationOptions.ToolUsage;
 import memap.messages.BuildingMessage;
 import memap.messages.extension.NetworkType;
 import memap.messages.planning.ConnectionMessage;
@@ -450,6 +451,18 @@ public class MILPProblemWithConnections extends MILPProblem {
 	            	
 	            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
 	            		row[counter++] = pm.operationalCostCO2;
+	            	}
+	            	
+	            	if (topologyController.getToolUsage() == ToolUsage.SERVER && pm.varOperationalCostEUR != null) {
+	            		
+	            		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
+	                		row[counter++] = pm.varOperationalCostEUR[i];
+	    				}
+	                	
+	                	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
+	                		row[counter++] = pm.varOperationalCostEUR[i];
+	                	}	
+	                	System.out.println("CProd costs for MPC step " + i + ": " + pm.varOperationalCostEUR[i]);
 	            	}
 	            	
 	            	controllableHandled++;

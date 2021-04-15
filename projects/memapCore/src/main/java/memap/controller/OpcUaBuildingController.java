@@ -305,11 +305,12 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId effId = NodeId.parse((String) cprod.get("EffPrim"));
 								NodeId costCO2Id = NodeId.parse((String) cprod.get("CO2PerKWh"));
 								NodeId opCostId = NodeId.parse((String) cprod.get("PrimEnCost"));
+								NodeId priceFCId = NodeId.parse((String) cprod.get("priceFC"));
 								NodeId setpointsId = NodeId.parse((String) cprod.get("SPDevPwr"));
 								
 								String producerName = EMSkey + "_CPROD" + String.format("%02d",  i+1);
 								ClientProducer cp = new ClientProducer(client, producerName, primarySectId, minPowerId, maxPowerId,
-										effId, opCostId, costCO2Id, setpointsId, 0);
+										effId, opCostId, priceFCId, costCO2Id, setpointsId, 0);
 								attach(cp);
 								cp.setTopologyController(topologyController);
 								System.out.println("Controllable producer (" + (i+1) + "/" + controllableProd.keySet().size() + ") added to " + EMSkey);

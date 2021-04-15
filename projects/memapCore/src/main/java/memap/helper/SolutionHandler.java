@@ -160,29 +160,33 @@ public class SolutionHandler {
 			
 		for (int i = 0; i < result.length; i++) {
 			// get device name at this position
-			String devName;
-			if (names[i * nStepsMPC].length() > 3) {
+			String devName = null;
+			if (names[i * nStepsMPC] != null && names[i * nStepsMPC].length() > 3) {
 				devName = names[i * nStepsMPC].substring(0, names[i * nStepsMPC].length() - 3);
-			} else {
-				devName = names[i * nStepsMPC];
-			}
-			// compare device name with building message
-			for (int j = 0; j < maxNr; j++) {	
-				
-				if (lbm.getNrOfControllableProducers() > j && devName.equals(pm.get(j).name)) {
-					result[i] = optSolution[i * nStepsMPC]*pm.get(j).efficiency;
-				} else if (lbm.getNrOfVolatileProducers() > j && devName.equals(vpm.get(j).name)) {
-					result[i] = optSolution[i * nStepsMPC]*vpm.get(j).efficiency;
-				} else if (lbm.getNrOfCouplers() > j && devName.equals(cm.get(j).name)) {
-					// has to be changed to primary efficiency ?
-					result[i] = optSolution[i * nStepsMPC]*cm.get(j).efficiencyHeat;
-				} else if (lbm.getNrOfStorages() > j && devName.equals(sm.get(j).name + "Discharge")) {
-					result[i] = optSolution[i * nStepsMPC]*sm.get(j).efficiencyDischarge;
-				} else if (lbm.getNrOfStorages() > j && devName.equals(sm.get(j).name + "Charge")) {
-					result[i] = optSolution[i * nStepsMPC]*sm.get(j).efficiencyCharge;
-				} else {
-					result[i] = optSolution[i * nStepsMPC];
+			
+				// compare device name with building message
+				for (int j = 0; j < maxNr; j++) {	
+					
+					if (lbm.getNrOfControllableProducers() > j && devName.equals(pm.get(j).name)) {
+						if (nStepsMPC == 1) {System.out.println("i = " + i);}
+						if (nStepsMPC == 1) {System.out.println(devName + " before corr = " + optSolution[i * nStepsMPC]);}
+						result[i] = optSolution[i * nStepsMPC]*pm.get(j).efficiency;
+						if (nStepsMPC == 1) {System.out.println(devName + " after corr = " + result[i]);}
+					} else if (lbm.getNrOfVolatileProducers() > j && devName.equals(vpm.get(j).name)) {
+						result[i] = optSolution[i * nStepsMPC]*vpm.get(j).efficiency;
+					} else if (lbm.getNrOfCouplers() > j && devName.equals(cm.get(j).name)) {
+						// has to be changed to primary efficiency ?
+						result[i] = optSolution[i * nStepsMPC]*cm.get(j).efficiencyHeat;
+					} else if (lbm.getNrOfStorages() > j && devName.equals(sm.get(j).name + "Discharge")) {
+						result[i] = optSolution[i * nStepsMPC]*sm.get(j).efficiencyDischarge;
+					} else if (lbm.getNrOfStorages() > j && devName.equals(sm.get(j).name + "Charge")) {
+						result[i] = optSolution[i * nStepsMPC]*sm.get(j).efficiencyCharge;
+					} else {
+						result[i] = optSolution[i * nStepsMPC];
+					}
 				}
+			} else {
+				System.out.println("Warning: Name is null at index: " + i * nStepsMPC);
 			}
 		}
 		return result;
