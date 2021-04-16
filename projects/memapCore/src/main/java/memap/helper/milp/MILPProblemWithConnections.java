@@ -15,6 +15,7 @@ import memap.messages.BuildingMessage;
 import memap.messages.extension.NetworkType;
 import memap.messages.planning.ConnectionMessage;
 import memap.messages.planning.CouplerMessage;
+import memap.messages.planning.DemandMessage;
 import memap.messages.planning.ProducerMessage;
 import memap.messages.planning.StorageMessage;
 import memap.messages.planning.VolatileProducerMessage;
@@ -431,6 +432,9 @@ public class MILPProblemWithConnections extends MILPProblem {
 		int cts = currentTimeStep;
         int counter = 0;
         
+        double[] bestBuyPrice = new double[nStepsMPC];
+    	Arrays.fill(bestBuyPrice, 100.0); // fill with 100 €/kWh
+        
         for (int i = 0; i < nStepsMPC; i++) {        	
         	for (BuildingMessage bm : buildingMessages) {
 
@@ -440,6 +444,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 	            int storageHandled = 0;
 	            
 	            int indexBuilding = mapBuildingMessageToIndex.get(bm);
+	        	
 	        	
 	        	for (ProducerMessage pm : bm.controllableProducerList) {    
 	        		int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  	
@@ -522,6 +527,15 @@ public class MILPProblemWithConnections extends MILPProblem {
 					row[counter++] = chargingCosts; // x_to
 					storageHandled++;
 	    		}	        	
+
+	        	
+	        	for (DemandMessage dm : bm.demandList) {
+	        		// Check which House has the lowest buy-price for electricity:
+	        		if (dm.varNetworkCostEUR != null && dm.varNetworkCostEUR[0] < bestBuyPrice[0]) {
+	        			bestBuyPrice = dm.varNetworkCostEUR;
+	        		}	
+	        	}
+	        	
         	}        	
         	
         	int index = nCols + 1 - 2*nStepsMPC + i;
@@ -544,6 +558,27 @@ public class MILPProblemWithConnections extends MILPProblem {
             	row[counter++] = 0;
         	}
         	
+        	
+    		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
+    			
+    			if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
+	    			// buy
+	            	colno[counter] = index;
+	            	row[counter++] = bestBuyPrice[i];
+	            	// sell
+	            	colno[counter] = index+nStepsMPC;
+	            	row[counter++] = -energyPrices.getElecSellingPrice(cts+i);	
+    			}  
+    		
+	    		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
+	    			// buy
+	            	colno[counter] = index;
+	            	row[counter++] = CO2profiles.getCO2emissions(cts+i);
+	            	// sell, no compensation for selling
+	            	colno[counter] = index+nStepsMPC;
+	            	row[counter++] = 0;
+	    		}      		
+    		}
 
         }        
         

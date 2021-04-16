@@ -32,7 +32,7 @@ public class ClientProducer extends Producer {
 	
 	NetworkType networkType;
 	public double opCost;
-	public Double opCostArray[];
+	public Double opCostFC[];
 	public double costCO2;
 	public BasicClient client;
 	public NodeId setpointsId;
@@ -67,54 +67,54 @@ public class ClientProducer extends Producer {
 		
 		// Initialization delayed until after topologyConfig initialization
 		
-				opCostArray = new Double[topologyConfig.getNrStepsMPC()];
-				Arrays.fill(opCostArray, 0.0);
-				
-				// subscribe to the Value attribute of the server's CurrentTime node
-				ReadValueId readValueIdCostsFC = new ReadValueId(priceFCId, AttributeId.Value.uid(), null,
-						QualifiedName.NULL_VALUE);
-
-				// monitoring parameters
-				int clientHandle = 1543453; // just random numbers
-
-				// Forecast		
-				MonitoringParameters parametersCost = new MonitoringParameters(uint(clientHandle), 1000.0, null, uint(10),
-						true);
-
-
-				// creation request
-				MonitoredItemCreateRequest requestCost = new MonitoredItemCreateRequest(readValueIdCostsFC,
-						MonitoringMode.Reporting, parametersCost);
-				
-				
-				// The actual consumer. Methods on call are implemented here
-				BiConsumer<UaMonitoredItem, DataValue> costs = (item, value) -> {
-					Variant var = value.getValue();
-					if (var.getValue() instanceof Number[]) {
-						opCostArray = (Double[]) var.getValue();
-					} else {
-						System.out.println("Value " + value + " is not in Number[] format");
-					}
-				};
-
-				// setting the consumer after the subscription creation
-				BiConsumer<UaMonitoredItem, Integer> onItemCreatedCost = (monitoredItem, id) -> monitoredItem
-						.setValueConsumer(costs);
-
-				// creating the subscription
-				UaSubscription subscriptionCost;
-
-
-				try {
-					subscriptionCost = client.getSubscriptionManager().createSubscription(1000.0).get();
-					itemsCost = subscriptionCost
-							.createMonitoredItems(TimestampsToReturn.Both, Arrays.asList(requestCost), onItemCreatedCost).get();
-
-				} catch (InterruptedException | ExecutionException e) {
-					e.printStackTrace();
-				}
+		opCostFC = new Double[topologyConfig.getNrStepsMPC()];
+		Arrays.fill(opCostFC, 0.0);
 		
+		// subscribe to the Value attribute of the server's CurrentTime node
+		ReadValueId readValueIdCostsFC = new ReadValueId(priceFCId, AttributeId.Value.uid(), null,
+				QualifiedName.NULL_VALUE);
+
+		// monitoring parameters
+		int clientHandle = 1543453; // just random numbers
+
+		// Forecast		
+		MonitoringParameters parametersCost = new MonitoringParameters(uint(clientHandle), 1000.0, null, uint(10),
+				true);
+
+
+		// creation request
+		MonitoredItemCreateRequest requestCost = new MonitoredItemCreateRequest(readValueIdCostsFC,
+				MonitoringMode.Reporting, parametersCost);
+		
+		
+		// The actual consumer. Methods on call are implemented here
+		BiConsumer<UaMonitoredItem, DataValue> costs = (item, value) -> {
+			Variant var = value.getValue();
+			if (var.getValue() instanceof Number[]) {
+				opCostFC = (Double[]) var.getValue();
+			} else {
+				System.out.println("Value " + value + " is not in Number[] format");
+			}
+		};
+
+		// setting the consumer after the subscription creation
+		BiConsumer<UaMonitoredItem, Integer> onItemCreatedCost = (monitoredItem, id) -> monitoredItem
+				.setValueConsumer(costs);
+
+		// creating the subscription
+		UaSubscription subscriptionCost;
+
+
+		try {
+			subscriptionCost = client.getSubscriptionManager().createSubscription(1000.0).get();
+			itemsCost = subscriptionCost
+					.createMonitoredItems(TimestampsToReturn.Both, Arrays.asList(requestCost), onItemCreatedCost).get();
+
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
 		}
+		
+	}
 
 	public void makeDecision() {
 		producerMessage.id = fullActorPath;
@@ -122,7 +122,7 @@ public class ClientProducer extends Producer {
 		producerMessage.minPower = minPower;
 		producerMessage.maxPower = maxPower;
 		producerMessage.operationalCostEUR = opCost;
-		producerMessage.varOperationalCostEUR = Stream.of(opCostArray).mapToDouble(Double::doubleValue).toArray();
+		producerMessage.varOperationalCostEUR = Stream.of(opCostFC).mapToDouble(Double::doubleValue).toArray();
 		producerMessage.operationalCostCO2 = costCO2;
 		producerMessage.efficiency = efficiency;
 		producerMessage.networkType = networkType;

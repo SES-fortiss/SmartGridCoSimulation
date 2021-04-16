@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
@@ -36,6 +37,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 	public NodeId nodeId;
 	/** Consumption profile values */
 	public Double consumptionProfile[];
+	public Double networkCostFC[];
 
 	public List<UaMonitoredItem> itemsDemand;
 
@@ -59,6 +61,8 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		
 		
 		// Initialization delayed until after topologyConfig initialization
+		networkCostFC = new Double[topologyConfig.getNrStepsMPC()];
+		Arrays.fill(networkCostFC, 0.0);
 		
 		consumptionProfile = new Double[topologyConfig.getNrStepsMPC()];
 		Arrays.fill(consumptionProfile, 0.0);
@@ -133,13 +137,15 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 			}
 		}
 
-		consumptionMessage.name = actorName;
-		consumptionMessage.id = fullActorPath;
-		consumptionMessage.setDemandVector(demandVectorB);
-		consumptionMessage.forecastType = "Profile";
-		consumptionMessage.networkType = networkType;
+		demandMessage.name = actorName;
+		demandMessage.id = fullActorPath;
+		demandMessage.setDemandVector(demandVectorB);
+		demandMessage.forecastType = "Profile";
+		demandMessage.networkType = networkType;
+		// TODO: Include Subscription to price forecast if datapoint is availible and =! null
+		demandMessage.varNetworkCostEUR = Stream.of(networkCostFC).mapToDouble(Double::doubleValue).toArray();
 
-		super.updateDisplay(consumptionMessage);
+		super.updateDisplay(demandMessage);
 	}
 
 

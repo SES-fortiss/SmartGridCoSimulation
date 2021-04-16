@@ -55,13 +55,13 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 			}
 		}
 
-		consumptionMessage.name = actorName;
-		consumptionMessage.id = fullActorPath;
-		consumptionMessage.setDemandVector(demandVectorB);
-		consumptionMessage.forecastType = "Profile";
-		consumptionMessage.networkType = NetworkType.DEMANDWITHBOTH;
+		demandMessage.name = actorName;
+		demandMessage.id = fullActorPath;
+		demandMessage.setDemandVector(demandVectorB);
+		demandMessage.forecastType = "Profile";
+		demandMessage.networkType = NetworkType.DEMANDWITHBOTH;
 
-		super.updateDisplay(consumptionMessage);
+		super.updateDisplay(demandMessage);
 	}
 	
 	/**
