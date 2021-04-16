@@ -35,6 +35,7 @@ public class ClientProducer extends Producer {
 	public Double opCostFC[];
 	public double costCO2;
 	public BasicClient client;
+	public NodeId setpointId;
 	public NodeId setpointsId;
 	
 	public List<UaMonitoredItem> itemsCost;
@@ -51,19 +52,21 @@ public class ClientProducer extends Producer {
 	 * @param setpointsId 
 	 * @param port
 	 */
-	public ClientProducer(BasicClient client, String name, NodeId nodeIdSector, NodeId minPowerId, NodeId maxPowerId, NodeId effId, NodeId opCostId, NodeId priceFCId, NodeId costCO2Id, NodeId setpointsId, int port)
+	public ClientProducer(BasicClient client, String name, NodeId nodeIdSector, NodeId minPowerId, NodeId maxPowerId, NodeId effId, NodeId opCostId, NodeId priceFCId, NodeId costCO2Id, NodeId setpointsId,  NodeId setpointId, int port)
 			throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(minPowerId), client.readFinalDoubleValue(maxPowerId),
 				client.readFinalDoubleValue(effId), port);
 
 		// TODO an in superclass device:
-		this.client = client;
+		this.client = client;		
+		this.setpointId = setpointId;
 		this.setpointsId = setpointsId;
 		this.networkType = this.setNetworkType(client, nodeIdSector);
 //		this.opCostArray = client.readFinalDoubleArrayValue(priceFCId);
-		this.opCost = client.readFinalDoubleValue(opCostId);
-		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
-		
+//		this.opCost = client.readFinalDoubleValue(opCostId);
+//		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
+		this.opCost = 0.0;
+		this.costCO2 = 0.0;
 		
 		// Initialization delayed until after topologyConfig initialization
 		
@@ -137,12 +140,20 @@ public class ClientProducer extends Producer {
 			for (String key : optResult.resultMap.keySet()) {
 				if (key.equals(actorName)) {
 					optimizationAdvice = optResult.resultMap.get(key);
+					
+					// Write scalar setpoint to EMS (single value)
+					DataValue singlevalueSetpoint = new DataValue(new Variant(optimizationAdvice[0]), null, null);
+					client.writeValue(setpointId, singlevalueSetpoint);
+					System.out.println("SP written: " + optimizationAdvice[0]);
+					
+					// If availible: write setpoint array to EMS (length = mpc)
 					try {
 						if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, setpointsId).getValue().getValue().getClass().isArray()) {
 							DataValue data = new DataValue(new Variant(optimizationAdvice), null, null);
 							client.writeValue(setpointsId, data);
-							System.out.println("SP written: " + optimizationAdvice[0]);
+							
 						}
+						
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

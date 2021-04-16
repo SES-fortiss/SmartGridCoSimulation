@@ -53,11 +53,13 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 	 * @param port
 	 */
 
-	public ClientDemand(BasicClient client, String name, NodeId nodeIdSector, NodeId nodeIdConsumption, NodeId arrayForecastId, int port) {
+	public ClientDemand(BasicClient client, String name, NodeId nodeIdSector, NodeId nodeIdConsumption, 
+			NodeId arrayDemandForecastId, NodeId arrayPriceForecastId, int port) {
 		super(name, port);
 		this.client = client;
 		networkType = setNetworkType(client, nodeIdSector);
-		
+		// TODO: nodeIdConsumption (= current demand) is not needed at the moment
+		// because it is assumed that forecast is perfect. 
 		
 		
 		// Initialization delayed until after topologyConfig initialization
@@ -68,7 +70,10 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		Arrays.fill(consumptionProfile, 0.0);
 		
 		// subscribe to the Value attribute of the server's CurrentTime node
-		ReadValueId readValueIdConsumption = new ReadValueId(arrayForecastId, AttributeId.Value.uid(), null,
+		ReadValueId readValueIdConsumption = new ReadValueId(arrayDemandForecastId, AttributeId.Value.uid(), null,
+				QualifiedName.NULL_VALUE);
+		
+		ReadValueId readValueIdPrices = new ReadValueId(arrayPriceForecastId, AttributeId.Value.uid(), null,
 				QualifiedName.NULL_VALUE);
 
 		// monitoring parameters
@@ -77,11 +82,15 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		// Forecast		
 		MonitoringParameters parametersDemand = new MonitoringParameters(uint(clientHandle), 1000.0, null, uint(10),
 				true);
+		MonitoringParameters parametersPrice = new MonitoringParameters(uint(clientHandle), 1000.0, null, uint(10),
+				true);
 
 
 		// creation request
 		MonitoredItemCreateRequest requestDemand = new MonitoredItemCreateRequest(readValueIdConsumption,
 				MonitoringMode.Reporting, parametersDemand);
+		MonitoredItemCreateRequest requestPrice = new MonitoredItemCreateRequest(readValueIdPrices,
+				MonitoringMode.Reporting, parametersPrice);
 		
 		
 		// The actual consumer. Methods on call are implemented here
@@ -93,19 +102,42 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 				System.out.println("Value " + value + " is not in Number[] format");
 			}
 		};
+		
+		// The actual consumer. Methods on call are implemented here
+		BiConsumer<UaMonitoredItem, DataValue> priceFC = (item, value) -> {
+			Variant var = value.getValue();
+			if (var.getValue() instanceof Number[]) {
+				networkCostFC = (Double[]) var.getValue();
+			} else {
+				System.out.println("Value " + value + " is not in Number[] format");
+			}
+		};
 
 		// setting the consumer after the subscription creation
 		BiConsumer<UaMonitoredItem, Integer> onItemCreatedDemand = (monitoredItem, id) -> monitoredItem
 				.setValueConsumer(demand);
+		
+		BiConsumer<UaMonitoredItem, Integer> onItemCreatedPrice = (monitoredItem, id) -> monitoredItem
+				.setValueConsumer(priceFC);
 
-		// creating the subscription
+		// creating the subscriptions
 		UaSubscription subscriptionDemand;
+		UaSubscription subscriptionPrice;
 
 
 		try {
 			subscriptionDemand = client.getSubscriptionManager().createSubscription(1000.0).get();
 			itemsDemand = subscriptionDemand
 					.createMonitoredItems(TimestampsToReturn.Both, Arrays.asList(requestDemand), onItemCreatedDemand).get();
+
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			subscriptionPrice = client.getSubscriptionManager().createSubscription(1000.0).get();
+			itemsDemand = subscriptionPrice
+					.createMonitoredItems(TimestampsToReturn.Both, Arrays.asList(requestPrice), onItemCreatedPrice).get();
 
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
