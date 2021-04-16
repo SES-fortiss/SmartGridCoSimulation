@@ -375,10 +375,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 			
 			double delta_time_factor = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 fuer 96 Schritte /Tag
 			
-	        for (StorageMessage sm : bm.storageList) {
-	        	
-	            double[] rowCHARGE = new double[nCols+1];
-	            double[] rowDISCHARGE = new double[nCols+1];
+	        for (StorageMessage sm : bm.storageList) {	        
 	            
 	            double SOC_perc = sm.stateOfCharge;
 				double standbyLosses = sm.storageLosses;
@@ -397,20 +394,25 @@ public class MILPProblemWithConnections extends MILPProblem {
 				double beta_to = delta_time_factor/sm.capacity * sm.efficiencyCharge; // Units [h/kWh]
 				double beta_fm = delta_time_factor/(sm.capacity * sm.efficiencyDischarge); // Units [h/kWh]	
 				
+				int index = indexBuilding + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );		 
+				
 		        for (int i = 0; i < nStepsMPC; i++) {
-		        	int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );		        			          
-
-		        	rowCHARGE[index] = - beta_fm * Math.pow(alpha, nStepsMPC -1 - i);
-	            	rowDISCHARGE[index] = beta_fm * Math.pow(alpha, nStepsMPC -1 - i);
-
-	            	// Now add the factor for the charging decision variable x_to:
-	            	rowCHARGE[index + nStepsMPC] = beta_to * Math.pow(alpha, nStepsMPC -1 - i);
-	            	rowDISCHARGE[index + nStepsMPC] = - beta_to * Math.pow(alpha, nStepsMPC -1 - i);
-
-	            	// Add the factor vectors to the problem as constraint:
-	            	problem.addConstraint(rowDISCHARGE, LpSolve.LE, SOC_perc);
-	            	problem.addConstraint(rowCHARGE, LpSolve.LE, (1-SOC_perc));
-		        	
+	            	double[] rowCHARGE = new double[nCols+1];
+	    			double[] rowDISCHARGE = new double[nCols+1];
+	    			
+	    			for (int k = 0; k <= i; k++) {
+	    				// First add the factor for the discharge decision variable (x_fm)
+	    				rowCHARGE[index + k] = - beta_fm * Math.pow(alpha, i-k);
+	    				rowDISCHARGE[index + k] = beta_fm * Math.pow(alpha, i-k);
+	    	        	
+	    				// Now add the factor for the charging decision variable (x_to):
+	    				rowCHARGE[index + k + nStepsMPC] = beta_to * Math.pow(alpha, i-k);
+	    				rowDISCHARGE[index + k + nStepsMPC] = - beta_to * Math.pow(alpha, i-k);
+	    			}
+	                
+	    			// Add the factor vectors to the problem as constraint:
+	    			problem.addConstraint(rowDISCHARGE, LpSolve.LE, (SOC_perc * Math.pow(alpha, i+1)));
+	    			problem.addConstraint(rowCHARGE, LpSolve.LE, (1-(SOC_perc * Math.pow(alpha, i+1))));		        	
 				}
 		        
 		        storageHandled++;
