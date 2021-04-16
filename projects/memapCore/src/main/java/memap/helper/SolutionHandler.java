@@ -168,10 +168,7 @@ public class SolutionHandler {
 				for (int j = 0; j < maxNr; j++) {	
 					
 					if (lbm.getNrOfControllableProducers() > j && devName.equals(pm.get(j).name)) {
-						if (nStepsMPC == 1) {System.out.println("i = " + i);}
-						if (nStepsMPC == 1) {System.out.println(devName + " before corr = " + optSolution[i * nStepsMPC]);}
 						result[i] = optSolution[i * nStepsMPC]*pm.get(j).efficiency;
-						if (nStepsMPC == 1) {System.out.println(devName + " after corr = " + result[i]);}
 					} else if (lbm.getNrOfVolatileProducers() > j && devName.equals(vpm.get(j).name)) {
 						result[i] = optSolution[i * nStepsMPC]*vpm.get(j).efficiency;
 					} else if (lbm.getNrOfCouplers() > j && devName.equals(cm.get(j).name)) {

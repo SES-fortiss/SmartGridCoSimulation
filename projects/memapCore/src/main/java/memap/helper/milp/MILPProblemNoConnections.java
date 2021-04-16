@@ -345,6 +345,7 @@ public class MILPProblemNoConnections extends MILPProblem {
 				
 				if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
             		row[counter++] = pm.operationalCostEUR;
+//            		System.out.println("CP-costs " + pm.operationalCostEUR + " written at counter " + (counter-1));
 				}
             	
             	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
@@ -353,14 +354,18 @@ public class MILPProblemNoConnections extends MILPProblem {
             	
             	if (topologyController.getToolUsage() == ToolUsage.SERVER && pm.varOperationalCostEUR != null) {
             		
+            		// This part overwrites the previous costs if above condition is given
+            		counter--;
+            		// TODO: solve better
+            		
             		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
                 		row[counter++] = pm.varOperationalCostEUR[i];
+//                		System.out.println("CP-costs " + pm.varOperationalCostEUR[i] + " overwritten at counter " + (counter-1));
     				}
                 	
                 	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
                 		row[counter++] = pm.varOperationalCostEUR[i];
                 	}	
-                	System.out.println("CProd costs for MPC step " + i + ": " + pm.varOperationalCostEUR[i]);
             	}
 
 				controllableHandled++;
@@ -423,15 +428,15 @@ public class MILPProblemNoConnections extends MILPProblem {
 				storageHandled++;
 			}
 			
-			
+			// Check which House has the lowest buy-price for electricity:
         	double[] bestBuyPrice = new double[nStepsMPC];
         	Arrays.fill(bestBuyPrice, 100.0); // fill with 100 €/kWh
         	
         	for (DemandMessage dm : buildingMessage.demandList) {		
-        		// Check which House has the lowest buy-price for electricity:
-        		if (dm.varNetworkCostEUR != null && dm.varNetworkCostEUR[0] < bestBuyPrice[0]) {
+        		// TODO: This is not an optimal solution! Filter 
+        		if (dm.networkType == NetworkType.ELECTRICITY && dm.varNetworkCostEUR != null && dm.varNetworkCostEUR[0] < bestBuyPrice[0]) {
         			bestBuyPrice = dm.varNetworkCostEUR;
-        		}        		
+        		} 
         	}
 
 			// buy
@@ -457,9 +462,10 @@ public class MILPProblemNoConnections extends MILPProblem {
         	}
         	    	
     		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
-    			
+    			// This part overwrites the previous costs if above condition is given
+
     			if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
-	    			// TODO: Better solution for this to avoid double code for server / plannung
+	    			// TODO: Better solution for this to avoid double code for server / planning
     				counter = counter - 2;
     				// buy
 	            	colno[counter] = index;

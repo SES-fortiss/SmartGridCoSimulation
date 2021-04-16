@@ -144,8 +144,8 @@ public class JettyStart {
 		// Here, the topology Controller gets started and runs in a loop.
 		Runnable simulationMemapOn = new Runnable() {
 			public void run() {
-//				topologyMemapOn.startLiveSimulation(nextQuarter.toLocalDate(), java.time.Duration.ofSeconds(5));		
-				topologyMemapOn.startLiveSimulation(LocalDate.now(), java.time.Duration.ofSeconds(5));
+//				topologyMemapOn.startLiveSimulation(nextQuarter.toLocalDate(), java.time.Duration.ofSeconds(Simulation.PauseInSec));		
+				topologyMemapOn.startLiveSimulation(LocalDate.now(), java.time.Duration.ofSeconds(Simulation.PauseInSec));
 			}
 
 		};
@@ -153,7 +153,7 @@ public class JettyStart {
 		Runnable simulationMemapOff = new Runnable() {
 			public void run() {
 				if (doubleSim) {
-					topologyMemapOff.startLiveSimulation(LocalDate.now(), java.time.Duration.ofSeconds(5));
+					topologyMemapOff.startLiveSimulation(LocalDate.now(), java.time.Duration.ofSeconds(Simulation.PauseInSec));
 				}
 			}
 		};

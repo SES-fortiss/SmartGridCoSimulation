@@ -1,7 +1,6 @@
 package memap.components.prototypes;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import com.google.gson.Gson;
 
@@ -69,10 +68,6 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 
 	@Override
 	public void handleRequest() {
-		if(optResult.resultMap.get("CoSESEMS01OBJ01_CPROD01") != null) {
-			double producerSetpoint = optResult.resultMap.get("CoSESEMS01OBJ01_CPROD01")[0];
-			System.out.println("Producer Setpoint at Start: " + producerSetpoint);
-		}
 	}
 	
 	@Override
@@ -175,17 +170,6 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 					e.printStackTrace();
 				}
 			}
-			
-			if(optResult.resultMap.get("CoSESEMS01OBJ01_CPROD01") != null) {
-				double producerSetpoint = optResult.resultMap.get("CoSESEMS01OBJ01_CPROD01")[0];
-				double[] producerSetpointAry = optResult.resultMap.get("CoSESEMS01OBJ01_CPROD01");
-				System.out.println("Producer Setpoint at End: " + producerSetpoint);
-				System.out.println("Producer Setpoint Array: ");
-				System.out.println(Arrays.toString(producerSetpointAry));
-			} else {
-				System.out.println("Producer Setpoint is null");
-			}
-			
 		}
 		
 		return buildingMessage;

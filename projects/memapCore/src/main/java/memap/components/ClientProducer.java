@@ -144,7 +144,6 @@ public class ClientProducer extends Producer {
 					// Write scalar setpoint to EMS (single value)
 					DataValue singlevalueSetpoint = new DataValue(new Variant(optimizationAdvice[0]), null, null);
 					client.writeValue(setpointId, singlevalueSetpoint);
-					System.out.println("SP written: " + optimizationAdvice[0]);
 					
 					// If availible: write setpoint array to EMS (length = mpc)
 					try {

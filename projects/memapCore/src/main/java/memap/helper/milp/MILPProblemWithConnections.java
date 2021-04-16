@@ -460,6 +460,10 @@ public class MILPProblemWithConnections extends MILPProblem {
 	            	
 	            	if (topologyController.getToolUsage() == ToolUsage.SERVER && pm.varOperationalCostEUR != null) {
 	            		
+	            		// This part overwrites the previous costs if above condition is given
+	            		counter = counter -1;
+	            		// TODO: solve better
+	            		
 	            		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
 	                		row[counter++] = pm.varOperationalCostEUR[i];
 	    				}
@@ -531,8 +535,8 @@ public class MILPProblemWithConnections extends MILPProblem {
 	        	
 	        	for (DemandMessage dm : bm.demandList) {
 	        		// Check which House has the lowest buy-price for electricity:
-	        		if (dm.varNetworkCostEUR != null && dm.varNetworkCostEUR[0] < bestBuyPrice[0]) {
-	        			bestBuyPrice = dm.varNetworkCostEUR;
+	        		if (dm.networkType == NetworkType.ELECTRICITY && dm.varNetworkCostEUR != null && dm.varNetworkCostEUR[0] < bestBuyPrice[0]) {
+	            			bestBuyPrice = dm.varNetworkCostEUR;
 	        		}	
 	        	}
 	        	
@@ -560,7 +564,10 @@ public class MILPProblemWithConnections extends MILPProblem {
         	
         	
     		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
+    			// This part overwrites the previous costs if above condition is given
     			
+    			// TODO: Better solution for this to avoid double code for server / planning
+				counter = counter - 2;
     			if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
 	    			// buy
 	            	colno[counter] = index;
