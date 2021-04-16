@@ -13,7 +13,8 @@ public class DemandMessage implements AnswerContent {
 	public String forecastType;
 	public NetworkType networkType;
 	
-	public double[] varNetworkCostEUR;
+	public double[] varNetworkBuyCostEUR;
+	public double[] varNetworkSellCostEUR;
 	// only needed in a perspective CO2-optimization in dependence on the RES share in the grid:
 	public double[] varNetworkCostCO2;
 

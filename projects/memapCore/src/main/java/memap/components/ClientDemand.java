@@ -26,6 +26,7 @@ import akka.timeManagement.CurrentTimeStepSubscriber;
 import memap.components.prototypes.Consumer;
 import memap.controller.TopologyController;
 import memap.helperOPCua.BasicClient;
+import memap.messages.OptimizationResultMessage;
 import memap.messages.extension.NetworkType;
 
 public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber {
@@ -35,9 +36,19 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 	private int currentTimeStep;
 	public BasicClient client;
 	public NodeId nodeId;
+	public NodeId setpointsGridBuyId; 
+	public NodeId setpointGridBuyId;
+	public NodeId setpointsGridSellsId;
+	public NodeId setpointGridSellId;
+	
+	
 	/** Consumption profile values */
 	public Double consumptionProfile[];
-	public Double networkCostFC[];
+	public Double networkBuyCostFC[];
+	public Double networkSellCostFC[];
+	
+	public double[] optimizationAdviceBuy;
+	public double[] optimizationAdviceSell;
 
 	public List<UaMonitoredItem> itemsDemand;
 
@@ -53,18 +64,38 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 	 * @param port
 	 */
 
-	public ClientDemand(BasicClient client, String name, NodeId nodeIdSector, NodeId nodeIdConsumption, 
-			NodeId arrayDemandForecastId, NodeId arrayPriceForecastId, int port) {
+	public ClientDemand(BasicClient client, 
+			String name, 
+			NodeId nodeIdSector, 
+			NodeId nodeIdConsumption, 
+			NodeId arrayDemandForecastId, 
+			NodeId arrayBuyPriceForecastId, 
+			NodeId arraySellPriceForecastId,
+			NodeId setpointsGridBuyId, 
+			NodeId setpointGridBuyId, 
+			NodeId setpointsGridSellsId, 
+			NodeId setpointGridSellId,  
+			int port) {
 		super(name, port);
+		
 		this.client = client;
+		this.setpointsGridBuyId = setpointsGridBuyId; 
+		this.setpointGridBuyId = setpointGridBuyId;
+		this.setpointsGridSellsId = setpointsGridSellsId;
+		this.setpointGridSellId = setpointGridSellId;
+
 		networkType = setNetworkType(client, nodeIdSector);
-		// TODO: nodeIdConsumption (= current demand) is not needed at the moment
-		// because it is assumed that forecast is perfect. 
+		// nodeIdConsumption (= current demand) is not needed at the moment
+		// (because it is assumed that forecast is perfect). 
 		
+
+		// TODO: How to handle this if datapoint price forecast is not available ?!
 		
-		// Initialization delayed until after topologyConfig initialization
-		networkCostFC = new Double[topologyConfig.getNrStepsMPC()];
-		Arrays.fill(networkCostFC, 0.0);
+		networkBuyCostFC = new Double[topologyConfig.getNrStepsMPC()];
+		Arrays.fill(networkBuyCostFC, 0.0);
+		
+		networkSellCostFC = new Double[topologyConfig.getNrStepsMPC()];
+		Arrays.fill(networkSellCostFC, 0.0);
 		
 		consumptionProfile = new Double[topologyConfig.getNrStepsMPC()];
 		Arrays.fill(consumptionProfile, 0.0);
@@ -73,7 +104,10 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		ReadValueId readValueIdConsumption = new ReadValueId(arrayDemandForecastId, AttributeId.Value.uid(), null,
 				QualifiedName.NULL_VALUE);
 		
-		ReadValueId readValueIdPrices = new ReadValueId(arrayPriceForecastId, AttributeId.Value.uid(), null,
+		ReadValueId readValueIdBuyPrices = new ReadValueId(arrayBuyPriceForecastId, AttributeId.Value.uid(), null,
+				QualifiedName.NULL_VALUE);
+
+		ReadValueId readValueIdSellPrices = new ReadValueId(arraySellPriceForecastId, AttributeId.Value.uid(), null,
 				QualifiedName.NULL_VALUE);
 
 		// monitoring parameters
@@ -82,15 +116,19 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		// Forecast		
 		MonitoringParameters parametersDemand = new MonitoringParameters(uint(clientHandle), 1000.0, null, uint(10),
 				true);
-		MonitoringParameters parametersPrice = new MonitoringParameters(uint(clientHandle), 1000.0, null, uint(10),
+		MonitoringParameters parametersBuyPrice = new MonitoringParameters(uint(clientHandle), 1000.0, null, uint(10),
+				true);
+		MonitoringParameters parametersSellPrice = new MonitoringParameters(uint(clientHandle), 1000.0, null, uint(10),
 				true);
 
 
 		// creation request
 		MonitoredItemCreateRequest requestDemand = new MonitoredItemCreateRequest(readValueIdConsumption,
 				MonitoringMode.Reporting, parametersDemand);
-		MonitoredItemCreateRequest requestPrice = new MonitoredItemCreateRequest(readValueIdPrices,
-				MonitoringMode.Reporting, parametersPrice);
+		MonitoredItemCreateRequest requestBuyPrice = new MonitoredItemCreateRequest(readValueIdBuyPrices,
+				MonitoringMode.Reporting, parametersBuyPrice);
+		MonitoredItemCreateRequest requestSellPrice = new MonitoredItemCreateRequest(readValueIdSellPrices,
+				MonitoringMode.Reporting, parametersSellPrice);
 		
 		
 		// The actual consumer. Methods on call are implemented here
@@ -104,10 +142,20 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		};
 		
 		// The actual consumer. Methods on call are implemented here
-		BiConsumer<UaMonitoredItem, DataValue> priceFC = (item, value) -> {
+		BiConsumer<UaMonitoredItem, DataValue> buyPriceFC = (item, value) -> {
 			Variant var = value.getValue();
 			if (var.getValue() instanceof Number[]) {
-				networkCostFC = (Double[]) var.getValue();
+				networkBuyCostFC = (Double[]) var.getValue();
+			} else {
+				System.out.println("Value " + value + " is not in Number[] format");
+			}
+		};
+		
+		// The actual consumer. Methods on call are implemented here
+		BiConsumer<UaMonitoredItem, DataValue> sellPriceFC = (item, value) -> {
+			Variant var = value.getValue();
+			if (var.getValue() instanceof Number[]) {
+				networkSellCostFC = (Double[]) var.getValue();
 			} else {
 				System.out.println("Value " + value + " is not in Number[] format");
 			}
@@ -117,12 +165,16 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		BiConsumer<UaMonitoredItem, Integer> onItemCreatedDemand = (monitoredItem, id) -> monitoredItem
 				.setValueConsumer(demand);
 		
-		BiConsumer<UaMonitoredItem, Integer> onItemCreatedPrice = (monitoredItem, id) -> monitoredItem
-				.setValueConsumer(priceFC);
+		BiConsumer<UaMonitoredItem, Integer> onItemCreatedBuyPrice = (monitoredItem, id) -> monitoredItem
+				.setValueConsumer(buyPriceFC);
+		
+		BiConsumer<UaMonitoredItem, Integer> onItemCreatedSellPrice = (monitoredItem, id) -> monitoredItem
+				.setValueConsumer(sellPriceFC);
 
 		// creating the subscriptions
 		UaSubscription subscriptionDemand;
-		UaSubscription subscriptionPrice;
+		UaSubscription subscriptionBuyPrice;
+		UaSubscription subscriptionSellPrice;
 
 
 		try {
@@ -135,9 +187,18 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		}
 		
 		try {
-			subscriptionPrice = client.getSubscriptionManager().createSubscription(1000.0).get();
-			itemsDemand = subscriptionPrice
-					.createMonitoredItems(TimestampsToReturn.Both, Arrays.asList(requestPrice), onItemCreatedPrice).get();
+			subscriptionBuyPrice = client.getSubscriptionManager().createSubscription(1000.0).get();
+			itemsDemand = subscriptionBuyPrice
+					.createMonitoredItems(TimestampsToReturn.Both, Arrays.asList(requestBuyPrice), onItemCreatedBuyPrice).get();
+
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			subscriptionSellPrice = client.getSubscriptionManager().createSubscription(1000.0).get();
+			itemsDemand = subscriptionSellPrice
+					.createMonitoredItems(TimestampsToReturn.Both, Arrays.asList(requestSellPrice), onItemCreatedSellPrice).get();
 
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
@@ -174,12 +235,46 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		demandMessage.setDemandVector(demandVectorB);
 		demandMessage.forecastType = "Profile";
 		demandMessage.networkType = networkType;
-		// TODO: Include Subscription to price forecast if datapoint is availible and =! null
-		demandMessage.varNetworkCostEUR = Stream.of(networkCostFC).mapToDouble(Double::doubleValue).toArray();
+		demandMessage.varNetworkBuyCostEUR = Stream.of(networkBuyCostFC).mapToDouble(Double::doubleValue).toArray();
+		demandMessage.varNetworkSellCostEUR = Stream.of(networkSellCostFC).mapToDouble(Double::doubleValue).toArray();
 
 		super.updateDisplay(demandMessage);
 	}
-
+	
+	@Override
+	public void handleRequest() {
+		if (requestContentReceived instanceof OptimizationResultMessage) {
+			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
+			for (String key : optResult.resultMap.keySet()) {
+				if (key.equals("ElecBuy")) {
+					optimizationAdviceBuy = optResult.resultMap.get(key);
+					DataValue singlevalueBuySetpoint = new DataValue(new Variant(optimizationAdviceBuy[0]), null, null);
+					client.writeValue(setpointGridBuyId, singlevalueBuySetpoint);
+					try {
+						if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, setpointsGridBuyId).getValue().getValue().getClass().isArray()) {
+							DataValue data = new DataValue(new Variant(optimizationAdviceBuy), null, null);
+							client.writeValue(setpointsGridBuyId, data);
+						}
+					} catch (InterruptedException | ExecutionException e) {
+						e.printStackTrace();
+					}		
+				}
+				if (key.equals("ElecSell")) {
+					optimizationAdviceSell = optResult.resultMap.get(key);
+					DataValue singlevalueSellSetpoint = new DataValue(new Variant(optimizationAdviceSell[0]), null, null);
+					client.writeValue(setpointGridSellId, singlevalueSellSetpoint);
+					try {
+						if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, setpointsGridSellsId).getValue().getValue().getClass().isArray()) {
+							DataValue data = new DataValue(new Variant(optimizationAdviceSell), null, null);
+							client.writeValue(setpointsGridSellsId, data);
+						}
+					} catch (InterruptedException | ExecutionException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
 
 	@Override
 	public List<Double> getHeatProfile(int timeStep, int mpcHorizon) {

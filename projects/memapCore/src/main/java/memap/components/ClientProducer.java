@@ -34,6 +34,8 @@ public class ClientProducer extends Producer {
 	public double opCost;
 	public Double opCostFC[];
 	public double costCO2;
+	public double[] costCO2Array;
+	
 	public BasicClient client;
 	public NodeId setpointId;
 	public NodeId setpointsId;
@@ -52,7 +54,18 @@ public class ClientProducer extends Producer {
 	 * @param setpointsId 
 	 * @param port
 	 */
-	public ClientProducer(BasicClient client, String name, NodeId nodeIdSector, NodeId minPowerId, NodeId maxPowerId, NodeId effId, NodeId opCostId, NodeId priceFCId, NodeId costCO2Id, NodeId setpointsId,  NodeId setpointId, int port)
+	public ClientProducer(BasicClient client, 
+			String name, 
+			NodeId nodeIdSector, 
+			NodeId minPowerId, 
+			NodeId maxPowerId, 
+			NodeId effId, 
+			NodeId opCostId, 
+			NodeId priceFCId, 
+			NodeId costCO2Id, 
+			NodeId setpointsId,  
+			NodeId setpointId, 
+			int port)
 			throws InterruptedException, ExecutionException {
 		super(name, client.readFinalDoubleValue(minPowerId), client.readFinalDoubleValue(maxPowerId),
 				client.readFinalDoubleValue(effId), port);
@@ -62,59 +75,72 @@ public class ClientProducer extends Producer {
 		this.setpointId = setpointId;
 		this.setpointsId = setpointsId;
 		this.networkType = this.setNetworkType(client, nodeIdSector);
-//		this.opCostArray = client.readFinalDoubleArrayValue(priceFCId);
-//		this.opCost = client.readFinalDoubleValue(opCostId);
-//		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
-		this.opCost = 0.0;
-		this.costCO2 = 0.0;
 		
-		// Initialization delayed until after topologyConfig initialization
+		if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, costCO2Id).getValue().getValue().getClass().isArray()) {
+			this.costCO2Array = client.readFinalDoubleArrayValue(costCO2Id);
+			this.costCO2 = costCO2Array[0];
+		} else {
+			this.costCO2Array = null;
+			this.costCO2 = client.readFinalDoubleValue(costCO2Id);
+		}
 		
-		opCostFC = new Double[topologyConfig.getNrStepsMPC()];
-		Arrays.fill(opCostFC, 0.0);
 		
-		// subscribe to the Value attribute of the server's CurrentTime node
-		ReadValueId readValueIdCostsFC = new ReadValueId(priceFCId, AttributeId.Value.uid(), null,
-				QualifiedName.NULL_VALUE);
+		// subscription if array with price forecast is available at the EMS 
+		if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, priceFCId).getValue().getValue().getClass().isArray()) {
+			
+			// Subscription to variable primary energy costs
+			opCostFC = new Double[topologyConfig.getNrStepsMPC()];
+			Arrays.fill(opCostFC, 0.0);
+			
+			// subscribe to the Value attribute of the server's CurrentTime node
+			ReadValueId readValueIdCostsFC = new ReadValueId(priceFCId, AttributeId.Value.uid(), null,
+					QualifiedName.NULL_VALUE);
 
-		// monitoring parameters
-		int clientHandle = 1543453; // just random numbers
+			// monitoring parameters
+			int clientHandle = 1543453; // just random numbers
 
-		// Forecast		
-		MonitoringParameters parametersCost = new MonitoringParameters(uint(clientHandle), 1000.0, null, uint(10),
-				true);
+			// Forecast		
+			MonitoringParameters parametersCost = new MonitoringParameters(uint(clientHandle), 1000.0, null, uint(10),
+					true);
 
 
-		// creation request
-		MonitoredItemCreateRequest requestCost = new MonitoredItemCreateRequest(readValueIdCostsFC,
-				MonitoringMode.Reporting, parametersCost);
-		
-		
-		// The actual consumer. Methods on call are implemented here
-		BiConsumer<UaMonitoredItem, DataValue> costs = (item, value) -> {
-			Variant var = value.getValue();
-			if (var.getValue() instanceof Number[]) {
-				opCostFC = (Double[]) var.getValue();
-			} else {
-				System.out.println("Value " + value + " is not in Number[] format");
+			// creation request
+			MonitoredItemCreateRequest requestCost = new MonitoredItemCreateRequest(readValueIdCostsFC,
+					MonitoringMode.Reporting, parametersCost);
+			
+			
+			// The actual consumer. Methods on call are implemented here
+			BiConsumer<UaMonitoredItem, DataValue> costs = (item, value) -> {
+				Variant var = value.getValue();
+				if (var.getValue() instanceof Number[]) {
+					opCostFC = (Double[]) var.getValue();
+				} else {
+					System.out.println("Value " + value + " is not in Number[] format");
+				}
+			};
+
+			// setting the consumer after the subscription creation
+			BiConsumer<UaMonitoredItem, Integer> onItemCreatedCost = (monitoredItem, id) -> monitoredItem
+					.setValueConsumer(costs);
+
+			// creating the subscription
+			UaSubscription subscriptionCost;
+
+
+			try {
+				subscriptionCost = client.getSubscriptionManager().createSubscription(1000.0).get();
+				itemsCost = subscriptionCost
+						.createMonitoredItems(TimestampsToReturn.Both, Arrays.asList(requestCost), onItemCreatedCost).get();
+
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
 			}
-		};
 
-		// setting the consumer after the subscription creation
-		BiConsumer<UaMonitoredItem, Integer> onItemCreatedCost = (monitoredItem, id) -> monitoredItem
-				.setValueConsumer(costs);
-
-		// creating the subscription
-		UaSubscription subscriptionCost;
-
-
-		try {
-			subscriptionCost = client.getSubscriptionManager().createSubscription(1000.0).get();
-			itemsCost = subscriptionCost
-					.createMonitoredItems(TimestampsToReturn.Both, Arrays.asList(requestCost), onItemCreatedCost).get();
-
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
+			this.opCost = 0.0;
+			
+		} else {
+			this.opCostFC = null;
+			this.opCost = client.readFinalDoubleValue(opCostId);
 		}
 		
 	}
@@ -129,7 +155,10 @@ public class ClientProducer extends Producer {
 		producerMessage.operationalCostCO2 = costCO2;
 		producerMessage.efficiency = efficiency;
 		producerMessage.networkType = networkType;
+		
+		super.updateDisplay(producerMessage);
 	}
+	
 	
 	@Override
 	public void handleRequest() {
@@ -145,7 +174,7 @@ public class ClientProducer extends Producer {
 					DataValue singlevalueSetpoint = new DataValue(new Variant(optimizationAdvice[0]), null, null);
 					client.writeValue(setpointId, singlevalueSetpoint);
 					
-					// If availible: write setpoint array to EMS (length = mpc)
+					// If available: write setpoint array to EMS (length = mpc)
 					try {
 						if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, setpointsId).getValue().getValue().getClass().isArray()) {
 							DataValue data = new DataValue(new Variant(optimizationAdvice), null, null);
@@ -164,8 +193,8 @@ public class ClientProducer extends Producer {
 				
 			}
 		}
-
 	}
+	
 	
 	/** Passes a reference of an object of class {@link TopologyController} to the parent class */
 	public void setTopologyController(TopologyController topologyController) {
@@ -177,6 +206,5 @@ public class ClientProducer extends Producer {
 	public NetworkType setNetworkType(BasicClient client, NodeId nodeIdSector) {
 		return super.setNetworkType(client, nodeIdSector);
 	}
-
 
 }

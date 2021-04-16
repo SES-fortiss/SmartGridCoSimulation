@@ -5,6 +5,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.concurrent.Executors;
 
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
@@ -22,6 +23,7 @@ import memap.messages.BuildingMessage;
 import memap.messages.BuildingMessageHandler;
 import memap.messages.OptimizationResultMessage;
 import memap.messages.planning.ConnectionDB;
+import simulation.SimulationStarter;
 
 public class MILPSolver {
 	/** Reference to topologyController ancestor */
@@ -114,7 +116,9 @@ public class MILPSolver {
 			String error = getClass().getName() + ": No solution found. Resuming execution without a solution";
 			if (topologyController.getToolUsage().equals(ToolUsage.SERVER)) {
 				System.err.println(error);
-                System.exit(1);
+				SimulationStarter.actorSystemRefStatic.terminate();
+			    System.exit(1);
+
             } else {
                 SimulationProgress.getInstance().setStatus(Status.ERROR, error);
                 

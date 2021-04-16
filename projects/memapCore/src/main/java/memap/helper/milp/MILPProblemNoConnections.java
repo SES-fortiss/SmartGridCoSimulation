@@ -400,6 +400,21 @@ public class MILPProblemNoConnections extends MILPProblem {
             		row[counter++] = cm.operationalCostCO2;
             	}
             	
+            	if (topologyController.getToolUsage() == ToolUsage.SERVER && cm.varOperationalCostEUR != null) {
+            		
+            		// This part overwrites the previous costs if above condition is given
+            		counter = counter -1;
+            		// TODO: solve better
+            		
+            		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
+                		row[counter++] = cm.varOperationalCostEUR[i];
+    				}
+                	
+                	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
+                		row[counter++] = cm.varOperationalCostEUR[i];
+                	}	
+            	}
+            	
 				couplerHandled++;
 			}
 
@@ -431,11 +446,17 @@ public class MILPProblemNoConnections extends MILPProblem {
 			// Check which House has the lowest buy-price for electricity:
         	double[] bestBuyPrice = new double[nStepsMPC];
         	Arrays.fill(bestBuyPrice, 100.0); // fill with 100 €/kWh
+        	double[] bestSellPrice = new double[nStepsMPC];
+        	Arrays.fill(bestSellPrice, 0.0); // fill with 0 €/kWh
         	
         	for (DemandMessage dm : buildingMessage.demandList) {		
-        		// TODO: This is not an optimal solution! Filter 
-        		if (dm.networkType == NetworkType.ELECTRICITY && dm.varNetworkCostEUR != null && dm.varNetworkCostEUR[0] < bestBuyPrice[0]) {
-        			bestBuyPrice = dm.varNetworkCostEUR;
+        		if (dm.networkType == NetworkType.ELECTRICITY) {
+        			
+        			if (dm.varNetworkBuyCostEUR != null && dm.varNetworkBuyCostEUR[0] < bestBuyPrice[0])
+        			bestBuyPrice = dm.varNetworkBuyCostEUR;
+        			
+        			if (dm.varNetworkSellCostEUR != null && dm.varNetworkSellCostEUR[0] > bestBuyPrice[0])
+            		bestSellPrice = dm.varNetworkSellCostEUR;
         		} 
         	}
 
@@ -472,7 +493,7 @@ public class MILPProblemNoConnections extends MILPProblem {
 	            	row[counter++] = bestBuyPrice[i];
 	            	// sell
 	            	colno[counter] = index+nStepsMPC;
-	            	row[counter++] = -energyPrices.getElecSellingPrice(cts+i);	
+	            	row[counter++] = -bestSellPrice[i];	
     			}  
     		
 	    		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {

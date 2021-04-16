@@ -54,7 +54,7 @@ public class BasicClient {
 			double[] value = Stream.of((Double[]) obj).mapToDouble(Double::doubleValue).toArray();
 			return value;
 		} else {
-			System.out.println("This is not a number!");
+			System.out.println("This is not an array!");
 			System.out.println(obj.toString());
 			System.out.println(nodeId.toString());
 		}

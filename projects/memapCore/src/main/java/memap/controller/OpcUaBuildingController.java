@@ -256,14 +256,17 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId maxPowerId = NodeId.parse((String) coupl.get("MaxPower"));
 								NodeId effHeatId = NodeId.parse((String) coupl.get("EffPrim"));
 								NodeId effElecId = NodeId.parse((String) coupl.get("EffSec"));
-								NodeId opCostId = NodeId.parse((String) coupl.get("PrimEnCost"));
-//								NodeId priceFCId = NodeId.parse((String) coupl.get("GenCosts"));
+								
+//								NodeId opCostId = NodeId.parse((String) coupl.get("PrimEnCost"));
+								NodeId opCostId = null;
+								NodeId priceFCId = NodeId.parse((String) coupl.get("GenCosts"));
 								NodeId costCO2Id = NodeId.parse((String) coupl.get("CO2PerKWh"));
-								NodeId setpointsId = NodeId.parse((String) coupl.get("SPDevPwr"));
+								NodeId setpointsId = NodeId.parse((String) coupl.get("SPDevPwrAr"));
+								NodeId setpointId = NodeId.parse((String) coupl.get("SPDevPwr"));
 
 								String couplerName = EMSkey + "_COUPL" + String.format("%02d",  i+1);
 								ClientCoupler cc = new ClientCoupler(client, couplerName, primarySectId, secondarySectId, minPowerId, maxPowerId, effHeatId,
-										effElecId, opCostId, costCO2Id, setpointsId, 0);
+										effElecId, opCostId, priceFCId, costCO2Id, setpointsId, setpointId, 0);
 								attach(cc);
 								cc.setTopologyController(topologyController);
 								System.out.println("Coupler (" + (i+1) + "/" + coupler.keySet().size() + ") added to " + EMSkey);
@@ -281,12 +284,19 @@ public class OpcUaBuildingController implements BuildingController {
 							try {
 								NodeId demndSectId = NodeId.parse((String) demnd.get("PrimSect"));
 								NodeId arrayDemandForecastId = NodeId.parse((String) demnd.get("DemandFC"));
-								NodeId arrayPriceForecastId = NodeId.parse((String) demnd.get("GrdBuyCost"));
+								NodeId arrayBuyPriceFcId = NodeId.parse((String) demnd.get("GrdBuyCost"));
+								NodeId arraySellPriceFcId = NodeId.parse((String) demnd.get("GrdSellCost"));
 //								NodeId consumptionId = NodeId.parse((String) demnd.get("curDem"));
 								NodeId consumptionId = null;
+								NodeId setpointsGridBuyId = NodeId.parse((String) demnd.get("SPGrdBuyAr"));
+								NodeId setpointGridBuyId = NodeId.parse((String) demnd.get("SPGrdBuy"));
+								NodeId setpointsGridSellsId = NodeId.parse((String) demnd.get("SPGrdSellAr"));
+								NodeId setpointGridSellId = NodeId.parse((String) demnd.get("SPGrdSell"));
 								
 								String demandName = EMSkey + "_DEMND" + String.format("%02d",  i+1);
-								ClientDemand cd = new ClientDemand(client, demandName, demndSectId, consumptionId, arrayDemandForecastId, arrayPriceForecastId, 0);
+								ClientDemand cd = new ClientDemand(client, demandName, demndSectId, consumptionId, 
+										arrayDemandForecastId, arrayBuyPriceFcId, arraySellPriceFcId, 
+										setpointsGridBuyId, setpointGridBuyId, setpointsGridSellsId, setpointGridSellId, 0);
 								attach(cd);
 								cd.setTopologyController(topologyController);
 								System.out.println("Demand (" + (i+1) + "/" + demands.keySet().size() + ") added to " + EMSkey);
@@ -306,10 +316,11 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId minPowerId = NodeId.parse((String) cprod.get("MinPower"));
 								NodeId maxPowerId = NodeId.parse((String) cprod.get("MaxPower"));
 								NodeId effId = NodeId.parse((String) cprod.get("EffPrim"));
-								NodeId costCO2Id = NodeId.parse((String) cprod.get("CO2PerKWh"));
+								
 //								NodeId opCostId = NodeId.parse((String) cprod.get("PrimEnCost"));
 								NodeId opCostId = null;
 								NodeId priceFCId = NodeId.parse((String) cprod.get("GenCosts"));
+								NodeId costCO2Id = NodeId.parse((String) cprod.get("CO2PerKWh"));
 								NodeId setpointsId = NodeId.parse((String) cprod.get("SPDevPwrAr"));
 								NodeId setpointId = NodeId.parse((String) cprod.get("SPDevPwr"));
 								
