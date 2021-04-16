@@ -385,22 +385,26 @@ public class MILPProblemNoConnections extends MILPProblem {
 
 			for (StorageMessage sm : buildingMessage.storageList) {
 				
-				double price = 0;
+				double chargingCosts = 0;
+				double dischargingCosts = 0;
 				
 				if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
-            		price = sm.operationalCostEUR;
+					dischargingCosts = sm.operationalCostEUR;
+					chargingCosts = sm.operationalCostEUR;
+            		
 				}
             	
             	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
-            		price = sm.operationalCostCO2;
+            		dischargingCosts = sm.operationalCostCO2;
+            		chargingCosts = -0.0001;  // TODO hardcoded heuristic as discussed in Github
             	}
 
 				int index = i + 1 + nStepsMPC
 						* ((controllableHandled * 2) + volatileHandled + (couplerHandled * 2) + (storageHandled * 2));
 				colno[counter] = index;
-				row[counter++] = price;
+				row[counter++] = dischargingCosts; // x_fm
 				colno[counter] = index + nStepsMPC;
-				row[counter++] = price;
+				row[counter++] = chargingCosts; // x_to
 				storageHandled++;
 			}
 
