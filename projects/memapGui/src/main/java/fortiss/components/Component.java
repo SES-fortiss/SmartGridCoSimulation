@@ -3,6 +3,7 @@ package fortiss.components;
 import com.google.gson.annotations.Expose;
 
 import fortiss.gui.icons.ComponentIcon;
+import fortiss.simulation.PlanningTool;
 
 public abstract class Component {
 
@@ -37,6 +38,7 @@ public abstract class Component {
 		this.name = name;
 		setFormattedName(name);
 		getIcon().setName(name);
+		setSaved(false);
 	}
 
 	/**
@@ -68,5 +70,9 @@ public abstract class Component {
 
 	public void showComponent(boolean focus) {
 		icon.showComponent(focus);
+	}
+	
+	public void setSaved(boolean saved) {
+		PlanningTool.getInstance().setSaved(saved);
 	}
 }

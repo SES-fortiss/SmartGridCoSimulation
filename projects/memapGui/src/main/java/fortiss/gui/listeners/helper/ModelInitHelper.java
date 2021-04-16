@@ -111,8 +111,9 @@ public class ModelInitHelper {
 			// Show and save current working file
 			planningTool.getPlanningToolWindow().setTitle("MEMAP - " + topologyFilePath + " - DesignerPanel");
 			planningTool.setWorkingFile(topologyFilePath);
+			planningTool.setSaved(true);
 			Logger.getInstance().writeInfo("Topology loaded from: " + topologyFilePath);
-
+			
 		} catch (FileNotFoundException e1) {
 			Logger.getInstance().writeError("File not found: " + topologyFilePath);
 			e1.printStackTrace();

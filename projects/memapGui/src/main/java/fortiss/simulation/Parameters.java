@@ -111,6 +111,7 @@ public class Parameters {
 
 	public void setSimulationName(String simulationName) {
 		this.simulationName = simulationName;
+		setSaved(false);
 	}
 
 	public int getStepsPerDay() {
@@ -119,6 +120,7 @@ public class Parameters {
 
 	public void setStepsPerDay(int stepsPerDay) {
 		this.stepsPerDay = stepsPerDay;
+		setSaved(false);
 	}
 
 	public int getMPCHorizon() {
@@ -130,6 +132,7 @@ public class Parameters {
 		elecBuyingPrice.updateMPCHorizon(mpcHorizon);
 		elecSellingPrice.updateMPCHorizon(mpcHorizon);
 		heatBuyingPrice.updateMPCHorizon(mpcHorizon);
+		setSaved(false);
 	}
 
 	public int getDays() {
@@ -138,6 +141,7 @@ public class Parameters {
 
 	public void setDays(int days) {
 		this.days = days;
+		setSaved(false);
 	}
 
 	public String getOptimizer() {
@@ -146,6 +150,7 @@ public class Parameters {
 
 	private void setOptimizer(String optimizer) {
 		this.optimizer = optimizer;
+		setSaved(false);
 	}
 
 	public void nextOptimizer() {
@@ -166,6 +171,7 @@ public class Parameters {
 
 	private void setOptCriteria(String optCriteria) {
 		this.optCriteria = optCriteria;
+		setSaved(false);
 	}
 
 	public void nextOptCriteria() {
@@ -186,6 +192,7 @@ public class Parameters {
 
 	private void setLoggingMode(String loggingMode) {
 		this.loggingMode = loggingMode;
+		setSaved(false);
 	}
 
 	public void nextLoggingMode() {
@@ -222,6 +229,10 @@ public class Parameters {
 
 	public void setHeatBuyingPrice(Price heatBuyingPrice) {
 		this.heatBuyingPrice = heatBuyingPrice;
+	}
+	
+	public void setSaved(boolean saved) {
+		PlanningTool.getInstance().setSaved(saved);
 	}
 
 }

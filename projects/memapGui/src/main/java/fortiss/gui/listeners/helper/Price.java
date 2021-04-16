@@ -7,6 +7,7 @@ import java.util.Collections;
 
 import com.google.gson.annotations.Expose;
 
+import fortiss.simulation.PlanningTool;
 import memap.examples.ExampleFiles;
 import memap.helper.DataInterface;
 import memap.helper.TimedDataAdapter;
@@ -49,6 +50,7 @@ public abstract class Price {
 
 	public void setFixed(boolean fixed) {
 		this.fixed = fixed;
+		setSaved(false);
 	}
 
 	/** Intended for GUI compatibility */
@@ -107,11 +109,13 @@ public abstract class Price {
 	public void setPrice(double price, int mpcHorizon) {
 		this.price = price;
 		setDataFromValue(mpcHorizon);
+		setSaved(false);
 	}
 
 	public void setPriceFilePath(String priceFilePath) {
 		this.priceFilePath = priceFilePath;
 		setDataFromFile();
+		setSaved(false);
 	}
 
 	abstract public String[] getLabels();
@@ -128,4 +132,9 @@ public abstract class Price {
 		setDataFromValue(mpcHorizon);
 		setDataFromFile();
 	}
+	
+	public void setSaved(boolean saved) {
+		PlanningTool.getInstance().setSaved(saved);
+	}
+	
 }
