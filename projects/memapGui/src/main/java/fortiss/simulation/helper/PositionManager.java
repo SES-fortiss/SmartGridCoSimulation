@@ -2,11 +2,8 @@ package fortiss.simulation.helper;
 
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
-import java.util.TreeMap;
 
 import javax.swing.JLabel;
-
-import com.google.gson.annotations.Expose;
 
 import fortiss.components.Building;
 import fortiss.gui.DesignerPanel;
@@ -21,43 +18,11 @@ public class PositionManager {
 	private static PositionManager pm = new PositionManager();
 	private ConnectionManager cm = ConnectionManager.getInstance();
 
-	@Expose
-	private TreeMap<String, Point2D> centerPositions = new TreeMap<String, Point2D>();
-
 	/**
 	 * @return PositionManager instance
 	 */
 	public static PositionManager getInstance() {
 		return pm;
-	}
-
-	/**
-	 * Adds the positions of a building icon.
-	 * 
-	 * @param buildingName the name of a building
-	 * @param icon         a building label
-	 */
-	public void addPosition(String buildingName, BuildingIcon icon) {
-		getCenterPositions().put(buildingName, getCentralPoint(icon));
-	}
-
-	/**
-	 * Removes the positions of a building icon.
-	 * 
-	 * @param icon a building label
-	 */
-	public void removePosition(String buildingName) {
-		getCenterPositions().remove(buildingName);
-		cm.removeConnectionsOf(buildingName);
-	}
-
-	/**
-	 * Clears the positions list. Calls
-	 * {@link fortiss.simulation.helper.ConnectionManager#resetConnections()}
-	 */
-	public void clearPositions() {
-		getCenterPositions().clear();
-		cm.resetConnections();
 	}
 
 	/**
@@ -67,8 +32,8 @@ public class PositionManager {
 	 * @param buildingName the name of a building
 	 * @param icon         a building icon
 	 */
-	public void updateCenterPositionOf(String buildingName, BuildingIcon icon) {
-		getCenterPositions().replace(buildingName, getCentralPoint(icon));
+	public void updateCenterPositionOf(BuildingIcon icon) {
+		icon.setPosition(getCentralPoint(icon));
 		cm.updateLines();
 		DesignerPanel.pl_ems.repaint();
 	}
@@ -101,16 +66,17 @@ public class PositionManager {
 	 * 
 	 * @param buildingName the name of a building
 	 */
-	public Point2D getPositionOf(String buildingName) {
-		return getCenterPositions().get(buildingName);
-	}
+	/*
+	 * public Point2D getPositionOf(String buildingName) { return
+	 * getCenterPositions().get(buildingName); }
+	 */
 
 	/**
 	 * Corrects the position of a building icon that has been dragged out of the
 	 * visible area of the panel. Calls
 	 * {@link PositionManager#updateBuildingPosition(JLabel)}.
 	 */
-	public void fixPosition(String buildingName, BuildingIcon icon) {
+	public void fixPosition(BuildingIcon icon) {
 		int x = icon.getX();
 		int y = icon.getY();
 		
@@ -128,7 +94,7 @@ public class PositionManager {
 		}
 
 		icon.setLocation(x, y);
-		updateCenterPositionOf(buildingName, icon);
+		updateCenterPositionOf(icon);
 		DesignerPanel.pl_ems.repaint();
 	}
 
@@ -138,9 +104,8 @@ public class PositionManager {
 	 */
 	public void fixPositions() {
 		for (Building building : DesignerPanel.buildings.values()) {
-			String buildingName = building.getName();
 			BuildingIcon icon = building.getIcon();
-			fixPosition(buildingName, icon);
+			fixPosition(icon);
 		}
 	}
 
@@ -159,24 +124,4 @@ public class PositionManager {
 		return visibleRec;
 	}
 
-	/**
-	 * @return the position map for the center of building icons
-	 */
-	public TreeMap<String, Point2D> getCenterPositions() {
-		return centerPositions;
-	}
-
-	/**
-	 * Update a building name. Calls
-	 * {@link ConnectionManager#updateBuildingsName(String, String)}
-	 * 
-	 * @param oldName
-	 * @param newName
-	 */
-	public void updateBuildingsName(String oldName, String newName) {
-		Point2D point = centerPositions.get(oldName);
-		centerPositions.remove(oldName);
-		centerPositions.put(newName, point);
-		cm.updateBuildingsName(oldName, newName);
-	}
 }

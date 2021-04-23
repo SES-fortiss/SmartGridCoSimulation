@@ -25,6 +25,7 @@ import fortiss.components.Connection;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.commands.ResetCommand;
 import fortiss.serialization.BuildingTypeAdapter;
+import fortiss.serialization.ConnectionTypeAdapter;
 import fortiss.serialization.ParametersTypeAdapter;
 import fortiss.serialization.Point2DTypeAdapter;
 import fortiss.simulation.Parameters;
@@ -59,6 +60,7 @@ public class ModelInitHelper {
 			gsonBuilder.registerTypeAdapter(Point2D.class, new Point2DTypeAdapter());
 			gsonBuilder.registerTypeAdapter(Building.class, new BuildingTypeAdapter());
 			gsonBuilder.registerTypeAdapter(Parameters.class, new ParametersTypeAdapter());
+			gsonBuilder.registerTypeAdapter(Connection.class, new ConnectionTypeAdapter());
 			Type buildingSetType = new TypeToken<HashSet<Building>>() {
 			}.getType();
 
@@ -130,6 +132,7 @@ public class ModelInitHelper {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Point2D.class, new Point2DTypeAdapter());
 		gsonBuilder.registerTypeAdapter(Building.class, new BuildingTypeAdapter());
+		gsonBuilder.registerTypeAdapter(Connection.class, new ConnectionTypeAdapter());
 		Gson gson = gsonBuilder.enableComplexMapKeySerialization().excludeFieldsWithoutExposeAnnotation().create();
 
 		// Export topology

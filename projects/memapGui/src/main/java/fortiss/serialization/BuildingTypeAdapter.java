@@ -50,7 +50,7 @@ public class BuildingTypeAdapter implements JsonSerializer<Building>, JsonDeseri
 			component.setBuilding(building);
 		}
 
-		building.setIcon(new BuildingIcon(building, building.getName(), position));
+		building.setIcon(new BuildingIcon(building, position));
 
 		return building;
 	}

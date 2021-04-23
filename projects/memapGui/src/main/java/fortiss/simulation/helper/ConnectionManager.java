@@ -44,6 +44,7 @@ public class ConnectionManager {
 			Connection c = new Connection(nodeA, nodeB);
 			getConnectionList().add(c);
 			getLines().add(c.getLn());
+			System.out.println("addConnection - Manager");
 			setConnectionNumber(getConnectionNumber() + 1);
 		}
 	}
@@ -187,16 +188,6 @@ public class ConnectionManager {
 	public void setConnectionList(ArrayList<Connection> connectionList) {
 		this.connectionList = connectionList;
 		this.connectionNumber = connectionList.size();
-		for (Connection c : connectionList) {
-			getLines().add(c.getLn());
-			c.setColor();
-			String nameNodeA = c.getNameNodeA();
-			String nameNodeB = c.getNameNodeB();
-			BuildingIcon nodeA = DesignerPanel.buildings.get(nameNodeA).getIcon();
-			BuildingIcon nodeB = DesignerPanel.buildings.get(nameNodeB).getIcon();
-			c.setNodeA(nodeA);
-			c.setNodeB(nodeB);
-		}
 	}
 	
 	
@@ -214,15 +205,10 @@ public class ConnectionManager {
 	 * Update the name of a building
 	 * 
 	 * @param oldName
-	 * @param newName
 	 */
-	public void updateBuildingsName(String oldName, String newName) {
+	public void updateBuildingsName(String oldName) {
 		for (Connection c : getConnectionsOf(oldName)) {
-			if(c.getNameNodeA().equals(oldName)) {
-				c.setNameNodeA(newName);
-			} else if(c.getNameNodeB().equals(oldName)) {
-				c.setNameNodeB(newName);
-			}
+				c.updateBuildingsName();
 		}
 	}
 

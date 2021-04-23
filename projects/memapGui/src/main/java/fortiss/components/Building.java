@@ -53,7 +53,7 @@ public class Building {
 		volatile_list = new ArrayList<Volatile>();
 		storage_list = new ArrayList<Storage>();
 
-		setIcon(new BuildingIcon(this, name, position));
+		setIcon(new BuildingIcon(this, position));
 	}
 
 	public String getName() {

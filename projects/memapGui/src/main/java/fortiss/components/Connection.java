@@ -16,12 +16,18 @@ import fortiss.simulation.helper.PositionManager;
  */
 public class Connection {
 
-	/** Name of the node A. For serialization purposes */
+	/** Name of the node A. For serialization purposes ~ MEMAP gui */
 	@Expose
 	private String nameNodeA;
+	/** Formatted name of the node A. For serialization purposes ~ MEMAP core */
+	@Expose
+	private String formattedNameNodeA;
 	/** Name of the node B. For serialization purposes */
 	@Expose
 	private String nameNodeB;
+	/** Formatted name of the node B. For serialization purposes ~ MEMAP core */
+	@Expose
+	private String formattedNameNodeB;
 
 	/** A color to draw the line (ln) */
 	private Color color;
@@ -43,7 +49,7 @@ public class Connection {
 	/** Looses of connection [%] */
 	@Expose
 	private double losses;
-	/** Maximum transport capacity [kW]*/
+	/** Maximum transport capacity [kW] */
 	@Expose
 	private double maxTransportCapacity;
 
@@ -55,9 +61,11 @@ public class Connection {
 	 */
 	public Connection(BuildingIcon nodeA, BuildingIcon nodeB) {
 		setNodeA(nodeA);
-		setNameNodeA(nodeA.getText());
+		setNameNodeA(nodeA.getBuilding().getName());
+		setFormattedNameNodeA(nodeA.getBuilding().getFormattedName());
 		setNodeB(nodeB);
-		setNameNodeB(nodeB.getText());
+		setNameNodeB(nodeB.getBuilding().getName());
+		setFormattedNameNodeB(nodeB.getBuilding().getFormattedName());
 		setColor();
 		setLn();
 		setLength(DEFAULT_LENGTH);
@@ -162,8 +170,7 @@ public class Connection {
 	 * deserialization
 	 */
 	public void setLn() {
-		PositionManager pm = PositionManager.getInstance();
-		this.ln = new Line2D.Float(pm.getPositionOf(nameNodeA), pm.getPositionOf(nameNodeB));
+		ln = new Line2D.Float(nodeA.getPosition(), nodeB.getPosition());
 	}
 
 	/**
@@ -175,10 +182,22 @@ public class Connection {
 
 	/**
 	 * Set the name of node A
+	 * 
 	 * @param nameNodeA
 	 */
 	public void setNameNodeA(String nameNodeA) {
 		this.nameNodeA = nameNodeA;
+	}
+
+	/**
+	 * @return the formatted name of node A
+	 */
+	public String getFormattedNameNodeA() {
+		return formattedNameNodeA;
+	}
+
+	public void setFormattedNameNodeA(String formattedNameNodeA) {
+		this.formattedNameNodeA = formattedNameNodeA;
 	}
 
 	/**
@@ -190,12 +209,24 @@ public class Connection {
 
 	/**
 	 * Set the name of node B
+	 * 
 	 * @param nameNodeB
 	 */
 	public void setNameNodeB(String nameNodeB) {
 		this.nameNodeB = nameNodeB;
 	}
-	
+
+	/**
+	 * @return the formatted name of node B
+	 */
+	public String getFormattedNameNodeB() {
+		return formattedNameNodeB;
+	}
+
+	public void setFormattedNameNodeB(String formattedNameNodeB) {
+		this.formattedNameNodeB = formattedNameNodeB;
+	}
+
 	/**
 	 * Set a random color to {@link #color}
 	 */
@@ -222,6 +253,13 @@ public class Connection {
 	 */
 	public Color getColor() {
 		return color;
+	}
+
+	public void updateBuildingsName() {
+		setNameNodeA(nodeA.getBuilding().getName());
+		setFormattedNameNodeA(nodeA.getBuilding().getFormattedName());
+		setNameNodeB(nodeB.getBuilding().getName());
+		setFormattedNameNodeB(nodeB.getBuilding().getFormattedName());
 	}
 
 }
