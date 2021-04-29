@@ -158,32 +158,37 @@ public class SolutionHandler {
 		int maxNr = Math.max(Math.max(lbm.getNrOfCouplers(), lbm.getNrOfControllableProducers()), Math.max(lbm.getNrOfStorages(), lbm.getNrOfVolatileProducers()));
 //		System.out.println("Numbers: " + lbm.getNrOfCouplers() + lbm.getNrOfControllableProducers() + lbm.getNrOfStorages() + lbm.getNrOfVolatileProducers());
 			
-		for (int i = 0; i < result.length; i++) {
-			// get device name at this position
-			String devName;
-			if (names[i * nStepsMPC].length() > 3) {
-				devName = names[i * nStepsMPC].substring(0, names[i * nStepsMPC].length() - 3);
-			} else {
-				devName = names[i * nStepsMPC];
-			}
-			// compare device name with building message
-			for (int j = 0; j < maxNr; j++) {	
-				
-				if (lbm.getNrOfControllableProducers() > j && devName.equals(pm.get(j).name)) {
-					result[i] = optSolution[i * nStepsMPC]*pm.get(j).efficiency;
-				} else if (lbm.getNrOfVolatileProducers() > j && devName.equals(vpm.get(j).name)) {
-					result[i] = optSolution[i * nStepsMPC]*vpm.get(j).efficiency;
-				} else if (lbm.getNrOfCouplers() > j && devName.equals(cm.get(j).name)) {
-					// has to be changed to primary efficiency ?
-					result[i] = optSolution[i * nStepsMPC]*cm.get(j).efficiencyHeat;
-				} else if (lbm.getNrOfStorages() > j && devName.equals(sm.get(j).name + "Discharge")) {
-					result[i] = optSolution[i * nStepsMPC]*sm.get(j).efficiencyDischarge;
-				} else if (lbm.getNrOfStorages() > j && devName.equals(sm.get(j).name + "Charge")) {
-					result[i] = optSolution[i * nStepsMPC]*sm.get(j).efficiencyCharge;
+		try {
+			for (int i = 0; i < result.length; i++) {
+				// get device name at this position
+				String devName = null;
+				if (names[i * nStepsMPC].length() > 3) {
+					devName = names[i * nStepsMPC].substring(0, names[i * nStepsMPC].length() - 3);
 				} else {
-					result[i] = optSolution[i * nStepsMPC];
+					devName = names[i * nStepsMPC];
+				}
+				// compare device name with building message
+				for (int j = 0; j < maxNr; j++) {	
+					
+					if (lbm.getNrOfControllableProducers() > j && devName.equals(pm.get(j).name)) {
+						result[i] = optSolution[i * nStepsMPC]*pm.get(j).efficiency;
+					} else if (lbm.getNrOfVolatileProducers() > j && devName.equals(vpm.get(j).name)) {
+						result[i] = optSolution[i * nStepsMPC]*vpm.get(j).efficiency;
+					} else if (lbm.getNrOfCouplers() > j && devName.equals(cm.get(j).name)) {
+						// has to be changed to primary efficiency ?
+						result[i] = optSolution[i * nStepsMPC]*cm.get(j).efficiencyHeat;
+					} else if (lbm.getNrOfStorages() > j && devName.equals(sm.get(j).name + "Discharge")) {
+						result[i] = optSolution[i * nStepsMPC]*sm.get(j).efficiencyDischarge;
+					} else if (lbm.getNrOfStorages() > j && devName.equals(sm.get(j).name + "Charge")) {
+						result[i] = optSolution[i * nStepsMPC]*sm.get(j).efficiencyCharge;
+					} else {
+						result[i] = optSolution[i * nStepsMPC];
+					}
 				}
 			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return result;
 	}

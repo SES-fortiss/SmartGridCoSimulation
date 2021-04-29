@@ -29,11 +29,11 @@ public abstract class Consumer extends Device {
 		super(name, port);
 	}
 
-	public DemandMessage consumptionMessage = new DemandMessage();
+	public DemandMessage demandMessage = new DemandMessage();
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
-		return consumptionMessage;
+		return demandMessage;
 	}
 
 	/**

@@ -3,6 +3,7 @@ package memap.helperOPCua;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
@@ -40,6 +41,20 @@ public class BasicClient {
 			return value;
 		} else {
 			System.out.println("This is not a number!");
+			System.out.println(obj.toString());
+			System.out.println(nodeId.toString());
+		}
+		return null;
+	}
+	
+	public double[] readFinalDoubleArrayValue(NodeId nodeId) throws InterruptedException, ExecutionException {
+		Object obj = client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, nodeId).get().getValue()
+				.getValue();
+		if (obj.getClass().isArray()) {
+			double[] value = Stream.of((Double[]) obj).mapToDouble(Double::doubleValue).toArray();
+			return value;
+		} else {
+			System.out.println("This is not an array!");
 			System.out.println(obj.toString());
 			System.out.println(nodeId.toString());
 		}

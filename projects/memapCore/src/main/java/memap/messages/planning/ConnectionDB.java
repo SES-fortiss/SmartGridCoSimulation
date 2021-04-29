@@ -106,7 +106,7 @@ public class ConnectionDB {
 			conn.close();
 		}
 		catch (SQLException ex) {
-            System.out.println("DB-Message: " + ex.getMessage());
+//            System.out.println("DB-Message: " + ex.getMessage());
         }
 
 

@@ -12,6 +12,11 @@ public class DemandMessage implements AnswerContent {
 	private double[] demandForecast; // that certainly includes both heat and electricity
 	public String forecastType;
 	public NetworkType networkType;
+	
+	public double[] varNetworkBuyCostEUR;
+	public double[] varNetworkSellCostEUR;
+	// only needed in a perspective CO2-optimization in dependence on the RES share in the grid:
+	public double[] varNetworkCostCO2;
 
 	public DemandMessage() {
 		demandForecast = null;

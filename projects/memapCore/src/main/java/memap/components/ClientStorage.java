@@ -33,7 +33,9 @@ public class ClientStorage extends Storage {
 	double costCO2;
 	public BasicClient client;
 	public NodeId calculatedSocId;
+	public NodeId inputSetpointId;
 	public NodeId inputSetpointsId;
+	public NodeId outputSetpointId;
 	public NodeId outputSetpointsId;
 
 	public List<UaMonitoredItem> itemsDemand;
@@ -51,21 +53,48 @@ public class ClientStorage extends Storage {
 	 * @param costCO2Id        CO2 cost [kg CO2/kWh]
 	 * @param port
 	 */
-	public ClientStorage(BasicClient client, String name, NodeId capacityId, NodeId stateOfCharge, NodeId calculatedSocId, NodeId maxChargingId,
-			NodeId maxDischargingId, NodeId effInId, NodeId effOutId, NodeId storageLossId, NodeId nodeIdSector, NodeId opCostId,
-			NodeId costCO2Id, NodeId inputSetpointsId, NodeId outputSetpointsId, int port) throws InterruptedException, ExecutionException {
-		super(name, client.readFinalDoubleValue(capacityId), client.readFinalDoubleValue(stateOfCharge),
-				client.readFinalDoubleValue(maxChargingId), client.readFinalDoubleValue(maxDischargingId),
-				client.readFinalDoubleValue(effInId), client.readFinalDoubleValue(effOutId), client.readFinalDoubleValue(storageLossId), port);
+	public ClientStorage(
+			BasicClient client, 
+			String name, 
+			NodeId capacityId, 
+			NodeId stateOfCharge, 
+			NodeId calculatedSocId, 
+			NodeId maxChargingId,
+			NodeId maxDischargingId, 
+			NodeId effInId, 
+			NodeId effOutId, 
+			NodeId storageLossId, 
+			NodeId nodeIdSector, 
+			NodeId opCostId,
+			NodeId costCO2Id, 
+			NodeId inputSetpointsId, 
+			NodeId outputSetpointsId, 
+			NodeId inputSetpointId, 
+			NodeId outputSetpointId, 
+			int port) throws InterruptedException, ExecutionException {
+		super(name, 
+				client.readFinalDoubleValue(capacityId), 
+				client.readFinalDoubleValue(stateOfCharge),
+				client.readFinalDoubleValue(maxChargingId), 
+				client.readFinalDoubleValue(maxDischargingId),
+				client.readFinalDoubleValue(effInId), 
+				client.readFinalDoubleValue(effOutId), 
+				client.readFinalDoubleValue(storageLossId), 
+				port);
 		this.client = client;
+		// setpoints as scalar and array
+		this.inputSetpointId = inputSetpointId;
 		this.inputSetpointsId = inputSetpointsId;
+		this.outputSetpointId = outputSetpointId;
 		this.outputSetpointsId = outputSetpointsId;
 		this.networkType = setNetworkType(client, nodeIdSector);
-		this.opCost = client.readFinalDoubleValue(opCostId);
-		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
+//		this.opCost = client.readFinalDoubleValue(opCostId);
+//		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
+		this.opCost = 0.0;
+		this.costCO2 = 0.0;
 		this.calculatedSocId = calculatedSocId;
 		
-		
+//		System.out.println("Initial SOC = " + this.stateOfCharge);
 		
 		// ========= Subscription ==============
 		
@@ -137,6 +166,8 @@ public class ClientStorage extends Storage {
 			for (String key : optResult.resultMap.keySet()) {
 				if (key.equals(actorName + "Charge")) {
 					optimizationAdviceInput = optResult.resultMap.get(key);
+					DataValue singlevalueInputSetpoint = new DataValue(new Variant(optimizationAdviceInput[0]), null, null);
+					client.writeValue(inputSetpointId, singlevalueInputSetpoint);
 					try {
 						if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, inputSetpointsId).getValue().getValue().getClass().isArray()) {
 							DataValue data = new DataValue(new Variant(optimizationAdviceInput), null, null);
@@ -148,6 +179,8 @@ public class ClientStorage extends Storage {
 				}
 				if (key.equals(actorName + "Discharge")) {
 					optimizationAdviceOutput = optResult.resultMap.get(key);
+					DataValue singlevalueOutputSetpoint = new DataValue(new Variant(optimizationAdviceOutput[0]), null, null);
+					client.writeValue(outputSetpointId, singlevalueOutputSetpoint);
 					try {
 						if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, outputSetpointsId).getValue().getValue().getClass().isArray()) {
 							DataValue data = new DataValue(new Variant(optimizationAdviceOutput), null, null);
@@ -165,19 +198,17 @@ public class ClientStorage extends Storage {
 			double delta_time = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 (for 96 steps/day)
 			double standbyLosses = storageLoss; // in percent for hour -> Example: 0.021 corresponds to 2.1 [%/h]
 			
-			
 			// Alphas and betas have to be calculated here as well. 
 			// helper parameters, only depend on time step length and storage parameters
 			double alpha = 1 - standbyLosses * delta_time;
-			double beta_to = delta_time/ storageMessage.capacity * storageMessage.efficiencyCharge;
-			double beta_fm = delta_time/(storageMessage.capacity * storageMessage.efficiencyDischarge);
+			double beta_to = delta_time/ this.capacity * this.effIN;
+			double beta_fm = delta_time/(this.capacity * this.effOUT);
 			
 			// update the SOC based on the just written setpoints for the storage
 			double SOC_perc_updated = this.stateOfCharge * alpha + beta_to * optimizationAdviceInput[0] - beta_fm * optimizationAdviceOutput[0];
 			
 			// feed the updated SOC back into the original format and value (workaround, should be updated)
 			this.stateOfCharge =  SOC_perc_updated;
-			
 			// use the updating/communication procedure used below (just copied)
 			DataValue solCalc = new DataValue(new Variant(this.stateOfCharge), null, null);
 			client.writeValue(calculatedSocId, solCalc);

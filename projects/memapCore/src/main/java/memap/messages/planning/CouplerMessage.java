@@ -14,6 +14,7 @@ public class CouplerMessage implements AnswerContent {
 	public double maxPower;
 	
 	public double operationalCostEUR;
+	public double[] varOperationalCostEUR;
 	public double operationalCostCO2;
 	
 	public double efficiencyHeat;

@@ -10,10 +10,12 @@ import memap.controller.TopologyController;
 import memap.helper.CO2profiles;
 import memap.helper.MEMAPLogging;
 import memap.helper.configurationOptions.OptimizationCriteria;
+import memap.helper.configurationOptions.ToolUsage;
 import memap.messages.BuildingMessage;
 import memap.messages.extension.NetworkType;
 import memap.messages.planning.ConnectionMessage;
 import memap.messages.planning.CouplerMessage;
+import memap.messages.planning.DemandMessage;
 import memap.messages.planning.ProducerMessage;
 import memap.messages.planning.StorageMessage;
 import memap.messages.planning.VolatileProducerMessage;
@@ -430,6 +432,11 @@ public class MILPProblemWithConnections extends MILPProblem {
 		int cts = currentTimeStep;
         int counter = 0;
         
+        double[] bestBuyPrice = new double[nStepsMPC];
+    	Arrays.fill(bestBuyPrice, 100.0); // fill with 100 €/kWh
+    	double[] bestSellPrice = new double[nStepsMPC];
+    	Arrays.fill(bestSellPrice, 0.0); // fill with 0 €/kWh
+        
         for (int i = 0; i < nStepsMPC; i++) {        	
         	for (BuildingMessage bm : buildingMessages) {
 
@@ -439,6 +446,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 	            int storageHandled = 0;
 	            
 	            int indexBuilding = mapBuildingMessageToIndex.get(bm);
+	        	
 	        	
 	        	for (ProducerMessage pm : bm.controllableProducerList) {    
 	        		int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  	
@@ -450,6 +458,21 @@ public class MILPProblemWithConnections extends MILPProblem {
 	            	
 	            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
 	            		row[counter++] = pm.operationalCostCO2;
+	            	}
+	            	
+	            	if (topologyController.getToolUsage() == ToolUsage.SERVER && pm.varOperationalCostEUR != null) {
+	            		
+	            		// This part overwrites the previous costs if above condition is given
+	            		counter = counter -1;
+	            		// TODO: solve better
+	            		
+	            		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
+	                		row[counter++] = pm.varOperationalCostEUR[i];
+	    				}
+	                	
+	                	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
+	                		row[counter++] = pm.varOperationalCostEUR[i];
+	                	}	
 	            	}
 	            	
 	            	controllableHandled++;
@@ -482,6 +505,21 @@ public class MILPProblemWithConnections extends MILPProblem {
 	            		row[counter++] = cm.operationalCostCO2;
 	            	}
 	            	
+	            	if (topologyController.getToolUsage() == ToolUsage.SERVER && cm.varOperationalCostEUR != null) {
+	            		
+	            		// This part overwrites the previous costs if above condition is given
+	            		counter = counter -1;
+	            		// TODO: solve better
+	            		
+	            		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
+	                		row[counter++] = cm.varOperationalCostEUR[i];
+	    				}
+	                	
+	                	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
+	                		row[counter++] = cm.varOperationalCostEUR[i];
+	                	}	
+	            	}
+
 	            	couplerHandled++;
 	    		}
 	        	
@@ -509,6 +547,20 @@ public class MILPProblemWithConnections extends MILPProblem {
 					row[counter++] = chargingCosts; // x_to
 					storageHandled++;
 	    		}	        	
+
+	        	
+	        	for (DemandMessage dm : bm.demandList) {
+	        		// Check which House has the lowest buy-price for electricity:	
+            		if (dm.networkType == NetworkType.ELECTRICITY) {
+            			
+            			if (dm.varNetworkBuyCostEUR != null && dm.varNetworkBuyCostEUR[0] < bestBuyPrice[0])
+            			bestBuyPrice = dm.varNetworkBuyCostEUR;
+            			
+            			if (dm.varNetworkSellCostEUR != null && dm.varNetworkSellCostEUR[0] > bestBuyPrice[0])
+                		bestSellPrice = dm.varNetworkSellCostEUR;
+            		} 	
+	        	}
+	        	
         	}        	
         	
         	int index = nCols + 1 - 2*nStepsMPC + i;
@@ -531,6 +583,30 @@ public class MILPProblemWithConnections extends MILPProblem {
             	row[counter++] = 0;
         	}
         	
+        	
+    		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
+    			// This part overwrites the previous costs if above condition is given
+    			
+    			// TODO: Better solution for this to avoid double code for server / planning
+				counter = counter - 2;
+    			if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
+	    			// buy
+	            	colno[counter] = index;
+	            	row[counter++] = bestBuyPrice[i];
+	            	// sell
+	            	colno[counter] = index+nStepsMPC;
+	            	row[counter++] = -bestSellPrice[i];	
+    			}  
+    		
+	    		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
+	    			// buy
+	            	colno[counter] = index;
+	            	row[counter++] = CO2profiles.getCO2emissions(cts+i);
+	            	// sell, no compensation for selling
+	            	colno[counter] = index+nStepsMPC;
+	            	row[counter++] = 0;
+	    		}      		
+    		}
 
         }        
         
