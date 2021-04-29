@@ -5,7 +5,6 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.concurrent.Executors;
 
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;

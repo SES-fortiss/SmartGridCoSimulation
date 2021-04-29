@@ -5,24 +5,77 @@
         "description": "",
         "endpoints": [
             {
-                "name": "CoSES2",
+                "name": "CoSES_EMS2",
                 "description": "",
-                "url": "opc.tcp:\/\/0.0.0.0:4852",
+                "url": "opc.tcp:\/\/10.10.10.9:4852",
                 "opcua_namespaceindex": 2,
                 "config": {
-                    "CoSESEMS01OBJ01": {
+                    "CoSESEMS02OBJ01": {
+                        "CPROD": {
+                            "1": {
+                                "1": {
+                                    "VM": {
+                                        "HT": {
+                                            "curCO2costs": "ns=2;i=146",
+                                            "curPrice": "ns=2;i=145"
+                                        }
+                                    },
+                                    "ZM": {
+                                        "HT": {
+                                            "CO2PerKWh": "ns=2;i=144",
+                                            "EffPrim": "ns=2;i=142",
+                                            "GenCosts": "ns=2;i=143",
+                                            "MaxPower": "ns=2;i=141",
+                                            "MinPower": "ns=2;i=140",
+                                            "PrimSect": "ns=2;i=139"
+                                        },
+                                        "XX": {
+                                            "nameID": "ns=2;i=138"
+                                        }
+                                    }
+                                },
+                                "2": {
+                                    "ZM": {
+                                        "HT": {
+                                            "curPwr": "ns=2;i=149"
+                                        }
+                                    }
+                                },
+                                "3": {
+                                    "VM": {
+                                        "HT": {
+                                            "SPDevPwr": "ns=2;i=148",
+                                            "SPDevPwrAr": "ns=2;i=147"
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "DEMND": {
                             "1": {
                                 "1": {
+                                    "VM": {
+                                        "HT": {
+                                            "curCO2Buy": "ns=2;i=113",
+                                            "curCO2Sell": "ns=2;i=114",
+                                            "curPriceBuy": "ns=2;i=109",
+                                            "curPriceSell": "ns=2;i=110"
+                                        }
+                                    },
                                     "ZM": {
                                         "HT": {
-                                            "DemndSetPt": "ns=2;i=113",
+                                            "DemndSetPt": "ns=2;i=119",
                                             "EffReceive": "ns=2;i=104",
+                                            "GrdBuyCO2": "ns=2;i=111",
                                             "GrdBuyCost": "ns=2;i=107",
+                                            "GrdSellCO2": "ns=2;i=112",
                                             "GrdSellCost": "ns=2;i=108",
-											"PrimSect": "ns=2;i=103",
-                                            "SPGrdBuyAr": "ns=2;i=109",
-                                            "SPGrdSellAr": "ns=2;i=110"
+                                            "PrimSect": "ns=2;i=103",
+                                            "SPGrdBuyAr": "ns=2;i=115",
+                                            "SPGrdSellAr": "ns=2;i=116"
+                                        },
+                                        "XX": {
+                                            "nameID": "ns=2;i=102"
                                         }
                                     }
                                 },
@@ -30,49 +83,59 @@
                                     "ZM": {
                                         "HT": {
                                             "curDem": "ns=2;i=106",
-											"DemandFC": "ns=2;i=105"
+                                            "DemandFC": "ns=2;i=105"
                                         }
                                     }
                                 },
                                 "3": {
                                     "VM": {
                                         "HT": {
-                                            "SPGrdBuy": "ns=2;i=111",
-                                            "SPGrdSell": "ns=2;i=112"
+                                            "SPGrdBuy": "ns=2;i=117",
+                                            "SPGrdSell": "ns=2;i=118"
                                         }
                                     }
                                 }
                             },
                             "2": {
                                 "1": {
+                                    "VM": {
+                                        "EL": {
+                                            "curCO2Buy": "ns=2;i=131",
+                                            "curCO2Sell": "ns=2;i=132",
+                                            "curPriceBuy": "ns=2;i=127",
+                                            "curPriceSell": "ns=2;i=128"
+                                        }
+                                    },
                                     "ZM": {
                                         "EL": {
-                                            "DemndSetPt": "ns=2;i=125",
-                                            "EffReceive": "ns=2;i=116",
-                                            "GrdBuyCost": "ns=2;i=119",
-                                            "GrdSellCost": "ns=2;i=120",
-                                            "PrimSect": "ns=2;i=115",
-                                            "SPGrdBuyAr": "ns=2;i=121",
-                                            "SPGrdSellAr": "ns=2;i=122"
+                                            "DemndSetPt": "ns=2;i=137",
+                                            "EffReceive": "ns=2;i=122",
+                                            "GrdBuyCO2": "ns=2;i=129",
+                                            "GrdBuyCost": "ns=2;i=125",
+                                            "GrdSellCO2": "ns=2;i=130",
+                                            "GrdSellCost": "ns=2;i=126",
+                                            "PrimSect": "ns=2;i=121",
+                                            "SPGrdBuyAr": "ns=2;i=133",
+                                            "SPGrdSellAr": "ns=2;i=134"
                                         },
                                         "XX": {
-                                            "nameID": "ns=2;i=114"
+                                            "nameID": "ns=2;i=120"
                                         }
                                     }
                                 },
                                 "2": {
                                     "ZM": {
                                         "EL": {
-                                            "curDem": "ns=2;i=118",
-                                            "DemandFC": "ns=2;i=117"
+                                            "curDem": "ns=2;i=124",
+                                            "DemandFC": "ns=2;i=123"
                                         }
                                     }
                                 },
                                 "3": {
                                     "VM": {
                                         "EL": {
-                                            "SPGrdBuy": "ns=2;i=123",
-                                            "SPGrdSell": "ns=2;i=124"
+                                            "SPGrdBuy": "ns=2;i=135",
+                                            "SPGrdSell": "ns=2;i=136"
                                         }
                                     }
                                 }
@@ -84,7 +147,7 @@
                                     "ZM": {
                                         "XX": {
                                             "nameID": "ns=2;i=100",
-											"trigger": "ns=2;i=101"
+                                            "trigger": "ns=2;i=101"
                                         }
                                     }
                                 }
@@ -95,79 +158,43 @@
                                 "1": {
                                     "ZM": {
                                         "HT": {
-                                            "Capacity": "ns=2;i=133",
-                                            "DisEffPrim": "ns=2;i=129",
-                                            "EffPrim": "ns=2;i=128",
-                                            "MaxPower": "ns=2;i=131",
-                                            "MaxPowerIn": "ns=2;i=132",
-                                            "PrimSect": "ns=2;i=127",
-                                            "StorLossPD": "ns=2;i=130"
+                                            "Capacity": "ns=2;i=157",
+                                            "CO2PerKWh": "ns=2;i=158",
+                                            "DisEffPrim": "ns=2;i=153",
+                                            "EffPrim": "ns=2;i=152",
+                                            "MaxPower": "ns=2;i=155",
+                                            "MaxPowerIn": "ns=2;i=156",
+                                            "PrimSect": "ns=2;i=151",
+                                            "StorLossPD": "ns=2;i=154"
                                         },
                                         "XX": {
-                                            "nameID": "ns=2;i=126"
+                                            "nameID": "ns=2;i=150"
                                         }
                                     }
                                 },
                                 "2": {
                                     "ZM": {
                                         "HT": {
-                                            "curChrg": "ns=2;i=134",
-                                            "curDeChrg": "ns=2;i=135",
-                                            "curSOC": "ns=2;i=136"
+                                            "curChrg": "ns=2;i=159",
+                                            "curDeChrg": "ns=2;i=160",
+                                            "curSOC": "ns=2;i=161"
                                         }
                                     }
                                 },
                                 "3": {
                                     "VM": {
                                         "HT": {
-                                            "SPCharge": "ns=2;i=139",
-                                            "SPChargeAr": "ns=2;i=138",
-                                            "SPDisChrg": "ns=2;i=141",
-                                            "SPDisChrgAr": "ns=2;i=140"
+                                            "SPCharge": "ns=2;i=164",
+                                            "SPChargeAr": "ns=2;i=163",
+                                            "SPDisChrg": "ns=2;i=166",
+                                            "SPDisChrgAr": "ns=2;i=165"
                                         }
                                     }
                                 },
                                 "4": {
                                     "VM": {
                                         "HT": {
-                                            "calcSOC": "ns=2;i=137"
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "COUPL": {
-                            "1": {
-								"1": {
-                                    "ZM": {
-                                        "HT": {
-                                            "CO2PerKWh": "ns=2;i=150",
-                                            "EffPrim": "ns=2;i=145",
-                                            "EffSec": "ns=2;i=146",
-                                            "GenCosts": "ns=2;i=149",
-                                            "MaxPower": "ns=2;i=148",
-                                            "MinPower": "ns=2;i=147",
-                                            "PrimSect": "ns=2;i=143",
-											"SecdSect": "ns=2;i=144"
-                                        },
-                                        "XX": {
-                                            "nameID": "ns=2;i=142"
-                                        }
-                                    }
-                                },
-								"2": {
-                                    "ZM": {
-                                        "HT": {
-                                            "curPwrPrim": "ns=2;i=151",
-											"curPwrSec": "ns=2;i=152"
-                                        }
-                                    }
-                                },
-                                "3": {
-                                    "VM": {
-                                        "HT": {
-                                            "SPDevPwr": "ns=2;i=154",
-                                            "SPDevPwrAr": "ns=2;i=153"
+                                            "calcSOC": "ns=2;i=162"
                                         }
                                     }
                                 }
@@ -175,7 +202,7 @@
                         }
                     }
                 }
-            }
+			}
         ]
     }
 }

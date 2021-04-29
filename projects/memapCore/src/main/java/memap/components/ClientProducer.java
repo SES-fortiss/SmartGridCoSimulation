@@ -34,7 +34,7 @@ public class ClientProducer extends Producer {
 	public double opCost;
 	public Double opCostFC[];
 	public double costCO2;
-	public double[] costCO2Array;
+	public double[] costCO2Array = new double[topologyConfig.getNrStepsMPC()];
 	
 	public BasicClient client;
 	public NodeId setpointId;
@@ -80,13 +80,15 @@ public class ClientProducer extends Producer {
 			this.costCO2Array = client.readFinalDoubleArrayValue(costCO2Id);
 			this.costCO2 = costCO2Array[0];
 		} else {
-			this.costCO2Array = null;
 			this.costCO2 = client.readFinalDoubleValue(costCO2Id);
+			Arrays.fill(costCO2Array, costCO2);
 		}
 		
 		
 		// subscription if array with price forecast is available at the EMS 
 		if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, priceFCId).getValue().getValue().getClass().isArray()) {
+			
+			System.out.println("Producer price is forecast array.");
 			
 			// Subscription to variable primary energy costs
 			opCostFC = new Double[topologyConfig.getNrStepsMPC()];
@@ -136,11 +138,11 @@ public class ClientProducer extends Producer {
 				e.printStackTrace();
 			}
 
-			this.opCost = 0.0;
+			this.opCost = opCostFC[0];
 			
 		} else {
-			this.opCostFC = null;
 			this.opCost = client.readFinalDoubleValue(opCostId);
+			Arrays.fill(this.opCostFC, opCost);
 		}
 		
 	}

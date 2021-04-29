@@ -94,7 +94,7 @@ public class ClientStorage extends Storage {
 		this.costCO2 = 0.0;
 		this.calculatedSocId = calculatedSocId;
 		
-		
+//		System.out.println("Initial SOC = " + this.stateOfCharge);
 		
 		// ========= Subscription ==============
 		
@@ -198,19 +198,17 @@ public class ClientStorage extends Storage {
 			double delta_time = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 (for 96 steps/day)
 			double standbyLosses = storageLoss; // in percent for hour -> Example: 0.021 corresponds to 2.1 [%/h]
 			
-			
 			// Alphas and betas have to be calculated here as well. 
 			// helper parameters, only depend on time step length and storage parameters
 			double alpha = 1 - standbyLosses * delta_time;
-			double beta_to = delta_time/ storageMessage.capacity * storageMessage.efficiencyCharge;
-			double beta_fm = delta_time/(storageMessage.capacity * storageMessage.efficiencyDischarge);
+			double beta_to = delta_time/ this.capacity * this.effIN;
+			double beta_fm = delta_time/(this.capacity * this.effOUT);
 			
 			// update the SOC based on the just written setpoints for the storage
 			double SOC_perc_updated = this.stateOfCharge * alpha + beta_to * optimizationAdviceInput[0] - beta_fm * optimizationAdviceOutput[0];
 			
 			// feed the updated SOC back into the original format and value (workaround, should be updated)
 			this.stateOfCharge =  SOC_perc_updated;
-			
 			// use the updating/communication procedure used below (just copied)
 			DataValue solCalc = new DataValue(new Variant(this.stateOfCharge), null, null);
 			client.writeValue(calculatedSocId, solCalc);

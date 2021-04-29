@@ -158,12 +158,15 @@ public class SolutionHandler {
 		int maxNr = Math.max(Math.max(lbm.getNrOfCouplers(), lbm.getNrOfControllableProducers()), Math.max(lbm.getNrOfStorages(), lbm.getNrOfVolatileProducers()));
 //		System.out.println("Numbers: " + lbm.getNrOfCouplers() + lbm.getNrOfControllableProducers() + lbm.getNrOfStorages() + lbm.getNrOfVolatileProducers());
 			
-		for (int i = 0; i < result.length; i++) {
-			// get device name at this position
-			String devName = null;
-			if (names[i * nStepsMPC] != null && names[i * nStepsMPC].length() > 3) {
-				devName = names[i * nStepsMPC].substring(0, names[i * nStepsMPC].length() - 3);
-			
+		try {
+			for (int i = 0; i < result.length; i++) {
+				// get device name at this position
+				String devName = null;
+				if (names[i * nStepsMPC].length() > 3) {
+					devName = names[i * nStepsMPC].substring(0, names[i * nStepsMPC].length() - 3);
+				} else {
+					devName = names[i * nStepsMPC];
+				}
 				// compare device name with building message
 				for (int j = 0; j < maxNr; j++) {	
 					
@@ -182,9 +185,10 @@ public class SolutionHandler {
 						result[i] = optSolution[i * nStepsMPC];
 					}
 				}
-			} else {
-				System.out.println("Warning: Name is null at index: " + i * nStepsMPC);
 			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return result;
 	}
