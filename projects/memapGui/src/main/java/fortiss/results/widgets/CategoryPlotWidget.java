@@ -67,6 +67,7 @@ public class CategoryPlotWidget extends JPanel {
 		chart.getChart().getStyler().setLegendSeriesLineLength(20);
 		chart.getChart().getStyler().setAxisTitleFont(Fonts.getOpenSans(FontSize.TINY));
 		chart.getChart().getStyler().setAxisTickLabelsFont(Fonts.getOpenSans(FontSize.TINY));
+		chart.getChart().getStyler().setXAxisMaxLabelCount(10);
 		
 		series.forEach((serie) -> chart.getChart().addSeries(serie.getName(), (List<?>) serie.getXData(),
 				(List<? extends Number>) serie.getYData()));

@@ -21,6 +21,8 @@ public class PricesPanel extends InformationPanel {
 
 	public PricesPanel() {
 		StyleGenerator.setupStyle();
+		setBackground(Colors.background);
+		setForeground(Colors.normal);
 		initialize();
 	}
 

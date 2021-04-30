@@ -24,6 +24,7 @@ public class SaveAsCommand implements Command {
 			new ModelInitHelper().writeMemapModel(file.getAbsolutePath());
 
 			planningTool.getPlanningToolWindow().setTitle("MEMAP - " + file.getAbsolutePath() + " - PlanningTool");
+			PlanningTool.getInstance().setSaved(true);
 		}
 	}
 

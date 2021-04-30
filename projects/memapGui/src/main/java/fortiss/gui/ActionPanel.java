@@ -2,15 +2,13 @@ package fortiss.gui;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
-
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.FormSpecs;
-import com.jgoodies.forms.layout.RowSpec;
 
 import fortiss.gui.commands.ConfigureParameters;
 import fortiss.gui.commands.LoadCommand;
@@ -18,11 +16,13 @@ import fortiss.gui.commands.ResetCommand;
 import fortiss.gui.commands.SaveAsCommand;
 import fortiss.gui.commands.SaveCommand;
 import fortiss.gui.listeners.action.ButtonListener;
-import fortiss.gui.listeners.action.DarkModeListener;
 import fortiss.gui.listeners.action.HoverMouseListener;
 import fortiss.gui.style.Colors;
+import fortiss.gui.style.FontSize;
+import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.media.IconStore;
+import net.miginfocom.swing.MigLayout;
 
 /**
  * Panel for action buttons
@@ -30,6 +30,7 @@ import fortiss.media.IconStore;
 public class ActionPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+	private JLabel lblFileStatus;
 
 	/** Necessary for dark mode on/off implementation */
 	@Override
@@ -50,6 +51,10 @@ public class ActionPanel extends JPanel {
 	private void initialize() {
 		setPreferredSize(new Dimension(1047, 60));
 
+		setLayout(new MigLayout("insets 4 4 4 4, center, width 99%, hidemode 0",
+				"[]40[]", 
+				""));
+		
 		// Add load button
 		JLabel lblLoad = new JLabel("");
 		lblLoad.setBorder(new EmptyBorder(3, 3, 3, 3));
@@ -57,26 +62,7 @@ public class ActionPanel extends JPanel {
 		lblLoad.setToolTipText("Load from Json File");
 		lblLoad.addMouseListener(new ButtonListener(new LoadCommand()));
 		lblLoad.addMouseListener(new HoverMouseListener());
-
-		setLayout(new FormLayout(new ColumnSpec[] {
-				ColumnSpec.decode("250px:grow"),
-				FormSpecs.DEFAULT_COLSPEC,
-				ColumnSpec.decode("30px"),
-				ColumnSpec.decode("30px"),
-				ColumnSpec.decode("30px"),
-				ColumnSpec.decode("30px"),
-				ColumnSpec.decode("30px"),
-				ColumnSpec.decode("30px"),
-				ColumnSpec.decode("30px"),
-				ColumnSpec.decode("30px"),
-				ColumnSpec.decode("center:550px:grow"),
-				FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC,
-				FormSpecs.DEFAULT_COLSPEC,},
-			new RowSpec[] {
-				FormSpecs.PARAGRAPH_GAP_ROWSPEC,
-				RowSpec.decode("30px"),}));
-		add(lblLoad, "3, 2, left, top");
+		add(lblLoad);
 
 		// Add run button
 		JLabel lblRun = new JLabel("");
@@ -85,7 +71,7 @@ public class ActionPanel extends JPanel {
 		lblRun.setToolTipText("Start simulation");
 		lblRun.addMouseListener(new ButtonListener(new ConfigureParameters()));
 		lblRun.addMouseListener(new HoverMouseListener());
-		add(lblRun, "5, 2, left, top");
+		add(lblRun);
 
 		// Add save button
 		JLabel lblSave = new JLabel("");
@@ -94,7 +80,7 @@ public class ActionPanel extends JPanel {
 		lblSave.setToolTipText("Save");
 		lblSave.addMouseListener(new ButtonListener(new SaveCommand()));
 		lblSave.addMouseListener(new HoverMouseListener());
-		add(lblSave, "7, 2, left, top");
+		add(lblSave);
 
 		// Add save button
 		JLabel lblSaveAs = new JLabel("");
@@ -103,7 +89,7 @@ public class ActionPanel extends JPanel {
 		lblSaveAs.setToolTipText("Save as");
 		lblSaveAs.addMouseListener(new ButtonListener(new SaveAsCommand()));
 		lblSaveAs.addMouseListener(new HoverMouseListener());
-		add(lblSaveAs, "9, 2, left, top");
+		add(lblSaveAs);
 
 		// Add reset button
 		JLabel lblReset = new JLabel("");
@@ -112,16 +98,40 @@ public class ActionPanel extends JPanel {
 		lblReset.setToolTipText("Reset");
 		lblReset.addMouseListener(new ButtonListener(new ResetCommand()));
 		lblReset.addMouseListener(new HoverMouseListener());
-		add(lblReset, "11, 2, left, top");
+		add(lblReset);
+		
+		lblFileStatus = new JLabel("");
+		lblFileStatus.setFont(Fonts.getOpenSans(FontSize.SMALL));
+		lblFileStatus.setBorder(new EmptyBorder(3, 3, 3, 3));
+		add(lblFileStatus);
 
 		// TODO: Fix or remove dark mode
-		JLabel lblDarkmode = new JLabel("");
+		/*JLabel lblDarkmode = new JLabel("");
 		lblDarkmode.setToolTipText("Select to turn dark mode on/off");
 		lblDarkmode.setIcon(IconStore.offDarkMode);
 		lblDarkmode.addMouseListener(new DarkModeListener());
 		lblDarkmode.addMouseListener(new HoverMouseListener());
 		add(lblDarkmode, "12, 2, right, center");
-		lblDarkmode.setVisible(false);
+		lblDarkmode.setVisible(false);*/
+	}
+	
+	public void setUnsaved() {
+		lblFileStatus.setText("** Unsaved changes");
+	}
+	
+	public void setSaved() {
+		Timer timer = new Timer(1000, new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent ae) {
+				lblFileStatus.setText("");
+			}
+		});
+		timer.setRepeats(false);
+
+		timer.start();
+		lblFileStatus.setText("Topology saved!");
 	}
 
 }

@@ -45,6 +45,7 @@ public class Demand extends Component {
 	public void setConsumptionProfile(String consumptionFile) {
 		this.consumptionProfile = consumptionFile;
 		setData();
+		setSaved(false);
 	}
 
 	/**

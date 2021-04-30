@@ -48,12 +48,19 @@ public class ParametersTypeAdapter implements JsonSerializer<Parameters>, JsonDe
 				heatBuyingPriceObj.get("price").getAsDouble(), heatBuyingPriceObj.get("priceFilePath").getAsString(),
 				mpcHorizon);
 
+		JsonObject co2EmissionsObj = obj.get("co2Emissions").getAsJsonObject();
+		
+		Price co2Emissions = new HeatPrice(co2EmissionsObj.get("fixed").getAsBoolean(),
+				co2EmissionsObj.get("price").getAsDouble(), co2EmissionsObj.get("priceFilePath").getAsString(),
+				mpcHorizon);
+		
 		elecBuyingPrice.loadFromFile(mpcHorizon);
 		elecSellingPrice.loadFromFile(mpcHorizon);
 		heatBuyingPrice.loadFromFile(mpcHorizon);
+		co2Emissions.loadFromFile(mpcHorizon);
 
 		Parameters parameters = new Parameters(simulationName, simulationSteps, mpcHorizon, days, optCriteria,
-				optimizer, loggingMode, elecBuyingPrice, elecSellingPrice, heatBuyingPrice);
+				optimizer, loggingMode, elecBuyingPrice, elecSellingPrice, heatBuyingPrice, co2Emissions);
 
 		return parameters;
 	}

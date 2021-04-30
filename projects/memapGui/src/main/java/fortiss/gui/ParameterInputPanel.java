@@ -75,6 +75,7 @@ public class ParameterInputPanel extends InformationPanel {
 	private JLabel lbLoggingMode;
 
 	private PricesPanel pricesPanel;
+	private EmissionsPanel emissionsPanel;
 
 	/** Necessary for dark mode on/off implementation */
 	@Override
@@ -192,6 +193,9 @@ public class ParameterInputPanel extends InformationPanel {
 		pricesPanel = new PricesPanel();
 		innerPanel.add(pricesPanel, "spanx, growx, growy");
 		
+		emissionsPanel = new EmissionsPanel();
+		innerPanel.add(emissionsPanel, "spanx, growx, growy");
+		
 		JButton btAccept = new JButton("Start simulation");
 		btAccept.addMouseListener(new ButtonListener(new RunCommand()));
 		innerPanel.add(btAccept, "span, center, gaptop 10");
@@ -235,6 +239,7 @@ public class ParameterInputPanel extends InformationPanel {
 			lbOptimizer2.setIcon(IconStore.milp);
 		
 		pricesPanel.update();
+		emissionsPanel.update();
 	}
 
 }

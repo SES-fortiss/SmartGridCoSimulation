@@ -89,4 +89,5 @@ public class BuildingInputPanel extends InformationPanel {
 		txtBName.setText(building.getName());
 		txtBPort.setText(String.valueOf(building.getPort()));
 	}
+
 }

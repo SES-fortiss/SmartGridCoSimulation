@@ -7,6 +7,7 @@ import com.google.gson.annotations.Expose;
 
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.icons.BuildingIcon;
+import fortiss.simulation.PlanningTool;
 
 /**
  * Building is the class for representing Energy Management Systems (EMS).
@@ -52,7 +53,7 @@ public class Building {
 		volatile_list = new ArrayList<Volatile>();
 		storage_list = new ArrayList<Storage>();
 
-		setIcon(new BuildingIcon(this, name, position));
+		setIcon(new BuildingIcon(this, position));
 	}
 
 	public String getName() {
@@ -72,6 +73,7 @@ public class Building {
 		this.name = name;
 		setFormattedName(name);
 		getIcon().setName(name);
+		setSaved(false);
 	}
 	
 	/**
@@ -88,6 +90,7 @@ public class Building {
 
 	public void setPort(int port) {
 		this.port = port;
+		setSaved(false);
 	}
 
 	public int getDemandCount() {
@@ -172,6 +175,10 @@ public class Building {
 	 */
 	public void setIcon(BuildingIcon icon) {
 		this.icon = icon;
+	}
+	
+	public void setSaved(boolean saved) {
+		PlanningTool.getInstance().setSaved(saved);
 	}
 
 	public void showComponents() {

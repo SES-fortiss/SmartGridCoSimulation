@@ -1,7 +1,7 @@
 package fortiss.gui.listeners.textfield;
 
 import fortiss.gui.DesignerPanel;
-import fortiss.simulation.helper.PositionManager;
+import fortiss.simulation.helper.ConnectionManager;
 
 public class BNameListener extends NameListener {
 	
@@ -9,9 +9,9 @@ public class BNameListener extends NameListener {
 	void update(String text) {
 		DesignerPanel.buildings.remove(building.getName());
 		DesignerPanel.buildings.put(text, building);
-		PositionManager.getInstance().updateBuildingsName(building.getName(), text);
-		
+		String oldName = building.getName();
 		building.setName(text);
+		ConnectionManager.getInstance().updateBuildingsName(oldName);
 	}
 
 	@Override

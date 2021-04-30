@@ -114,16 +114,12 @@ public class MILPSolver {
 			result = 5;
 			String error = getClass().getName() + ": No solution found. Resuming execution without a solution";
 			if (topologyController.getToolUsage().equals(ToolUsage.SERVER)) {
-				System.err.println(error);
+				System.out.println(error);
 				SimulationStarter.actorSystemRefStatic.terminate();
-			    System.exit(1);
-
-            } else {
-                SimulationProgress.getInstance().setStatus(Status.ERROR, error);
-                
-            }
-			
-			//System.exit(1); removed so that the GUI continues open when the optimization fails.
+				System.exit(1);
+			} else {
+				SimulationProgress.getInstance().setStatus(Status.ERROR, error);
+			}
 			// TODO Add code to account for the other 14 solver status values. maybe switch
 			// to linear solver instead?
 			// TODO Add some UI warning. When this error takes place the results window does

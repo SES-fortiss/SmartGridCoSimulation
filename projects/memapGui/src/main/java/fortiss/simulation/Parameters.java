@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.google.gson.annotations.Expose;
 
 import fortiss.gui.DesignerPanel;
+import fortiss.gui.listeners.helper.CO2Emission;
 import fortiss.gui.listeners.helper.ElectricityPrice;
 import fortiss.gui.listeners.helper.HeatPrice;
 import fortiss.gui.listeners.helper.Price;
@@ -71,6 +72,8 @@ public class Parameters {
 	private Price elecBuyingPrice;
 	@Expose
 	private Price heatBuyingPrice;
+	@Expose
+	private Price co2Emissions;
 
 	/**
 	 * Constructor for class Parameters
@@ -87,11 +90,12 @@ public class Parameters {
 		setElecBuyingPrice(new ElectricityPrice(0.275, mpcHorizon));
 		setElecSellingPrice(new ElectricityPrice(0.275, mpcHorizon));
 		setHeatBuyingPrice(new HeatPrice(0.275, mpcHorizon));
+		setCO2Emissions(new CO2Emission(0.275, mpcHorizon));
 	}
 
 	public Parameters(String simulationName, int simulationSteps, int mpcHorizon, int days, String optCriteria,
 			String optimizer, String loggingMode, Price elecBuyingPrice, Price elecSellingPrice,
-			Price heatBuyingPrice) {
+			Price heatBuyingPrice, Price co2Emissions) {
 		setSimulationName(simulationName);
 		setStepsPerDay(simulationSteps);
 		// Initially setter is not called, so that the prices are not updated
@@ -103,6 +107,7 @@ public class Parameters {
 		setElecBuyingPrice(elecBuyingPrice);
 		setElecSellingPrice(elecSellingPrice);
 		setHeatBuyingPrice(heatBuyingPrice);
+		setCO2Emissions(co2Emissions);
 	}
 
 	public String getSimulationName() {
@@ -111,6 +116,7 @@ public class Parameters {
 
 	public void setSimulationName(String simulationName) {
 		this.simulationName = simulationName;
+		setSaved(false);
 	}
 
 	public int getStepsPerDay() {
@@ -119,6 +125,7 @@ public class Parameters {
 
 	public void setStepsPerDay(int stepsPerDay) {
 		this.stepsPerDay = stepsPerDay;
+		setSaved(false);
 	}
 
 	public int getMPCHorizon() {
@@ -130,6 +137,7 @@ public class Parameters {
 		elecBuyingPrice.updateMPCHorizon(mpcHorizon);
 		elecSellingPrice.updateMPCHorizon(mpcHorizon);
 		heatBuyingPrice.updateMPCHorizon(mpcHorizon);
+		setSaved(false);
 	}
 
 	public int getDays() {
@@ -138,6 +146,7 @@ public class Parameters {
 
 	public void setDays(int days) {
 		this.days = days;
+		setSaved(false);
 	}
 
 	public String getOptimizer() {
@@ -146,6 +155,7 @@ public class Parameters {
 
 	private void setOptimizer(String optimizer) {
 		this.optimizer = optimizer;
+		setSaved(false);
 	}
 
 	public void nextOptimizer() {
@@ -166,6 +176,7 @@ public class Parameters {
 
 	private void setOptCriteria(String optCriteria) {
 		this.optCriteria = optCriteria;
+		setSaved(false);
 	}
 
 	public void nextOptCriteria() {
@@ -186,6 +197,7 @@ public class Parameters {
 
 	private void setLoggingMode(String loggingMode) {
 		this.loggingMode = loggingMode;
+		setSaved(false);
 	}
 
 	public void nextLoggingMode() {
@@ -222,6 +234,18 @@ public class Parameters {
 
 	public void setHeatBuyingPrice(Price heatBuyingPrice) {
 		this.heatBuyingPrice = heatBuyingPrice;
+	}
+	
+	public void setCO2Emissions(Price co2Emissions) {
+		this.co2Emissions = co2Emissions;
+	}
+	
+	public Price getCO2Emissions() {
+		return co2Emissions;
+	}
+	
+	public void setSaved(boolean saved) {
+		PlanningTool.getInstance().setSaved(saved);
 	}
 
 }

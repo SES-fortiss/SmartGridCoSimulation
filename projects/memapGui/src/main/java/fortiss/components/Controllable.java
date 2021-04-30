@@ -53,6 +53,7 @@ public class Controllable extends Component {
 
 	public void setNetworkType(String networkType) {
 		this.networkType = networkType;
+		setSaved(false);
 	}
 
 	public double getMinimumPower() {
@@ -61,6 +62,7 @@ public class Controllable extends Component {
 
 	public void setMinimumPower(double minimumPower) {
 		this.minimumPower = minimumPower;
+		setSaved(false);
 	}
 	
 	public double getMaximumPower() {
@@ -69,6 +71,7 @@ public class Controllable extends Component {
 
 	public void setMaximumPower(double maximumPower) {
 		this.maximumPower = maximumPower;
+		setSaved(false);
 	}
 
 	public double getEfficiency() {
@@ -77,6 +80,7 @@ public class Controllable extends Component {
 
 	public void setEfficiency(double efficiency) {
 		this.efficiency = efficiency;
+		setSaved(false);
 	}
 
 	public double getCost() {
@@ -85,6 +89,7 @@ public class Controllable extends Component {
 
 	public void setCost(double cost) {
 		this.cost = cost;
+		setSaved(false);
 	}
 
 	public double getCOEmission() {
@@ -93,6 +98,7 @@ public class Controllable extends Component {
 
 	public void setCOEmission(double coEmission) {
 		this.coEmission = coEmission;
+		setSaved(false);
 	}
 
 }

@@ -61,6 +61,7 @@ public class Storage extends Component {
 
 	public void setNetworkType(String networkType) {
 		this.networkType = networkType;
+		setSaved(false);
 	}
 
 	public double getCapacity() {
@@ -69,6 +70,7 @@ public class Storage extends Component {
 
 	public void setCapacity(double capacity) {
 		this.capacity = capacity;
+		setSaved(false);
 	}
 
 	public double getSoc() {
@@ -77,6 +79,7 @@ public class Storage extends Component {
 
 	public void setSoc(double soc) {
 		this.soc = soc;
+		setSaved(false);
 	}
 
 	public double getLosses() {
@@ -86,6 +89,7 @@ public class Storage extends Component {
 	public void setLosses(double losses) {
 		// TODO, we might add units for losses in future. We should assure that it is written here correctly.
 		this.losses = losses;
+		setSaved(false);
 	}
 
 	public double getMaxCharging() {
@@ -94,6 +98,7 @@ public class Storage extends Component {
 
 	public void setMaxCharging(double maxCharging) {
 		this.maxCharging = maxCharging;
+		setSaved(false);
 	}
 
 	public double getMaxDischarging() {
@@ -102,6 +107,7 @@ public class Storage extends Component {
 
 	public void setMaxDischarging(double maxDischargeRate) {
 		this.maxDischarging = maxDischargeRate;
+		setSaved(false);
 	}
 
 	public double getEffIN() {
@@ -110,6 +116,7 @@ public class Storage extends Component {
 
 	public void setEffIN(double efficiencyCharge) {
 		this.effIN = efficiencyCharge;
+		setSaved(false);
 	}
 
 	public double getEffOUT() {
@@ -118,6 +125,7 @@ public class Storage extends Component {
 
 	public void setEffOUT(double efficiencyDischarge) {
 		this.effOUT = efficiencyDischarge;
+		setSaved(false);
 	}
 
 }

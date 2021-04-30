@@ -7,7 +7,7 @@ import fortiss.gui.DesignerPanel;
 import fortiss.gui.icons.BuildingIcon;
 import fortiss.gui.icons.ComponentIcon;
 import fortiss.gui.icons.Icon;
-import fortiss.simulation.helper.PositionManager;
+import fortiss.simulation.helper.ConnectionManager;
 
 public class RemoveListener extends KeyAdapter {
 
@@ -76,8 +76,7 @@ public class RemoveListener extends KeyAdapter {
 		DesignerPanel.buildings.remove(buildingName);
 
 		// Remove position
-		PositionManager pm = PositionManager.getInstance();
-		pm.removePosition(buildingName);
+		ConnectionManager.getInstance().removeConnectionsOf(buildingName);
 
 		// Remove EMS detail panel
 		DesignerPanel.showInformationPanel("initial");
