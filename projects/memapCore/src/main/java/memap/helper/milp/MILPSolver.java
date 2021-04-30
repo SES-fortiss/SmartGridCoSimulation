@@ -115,6 +115,7 @@ public class MILPSolver {
 			String error = getClass().getName() + ": No solution found. Resuming execution without a solution";
 			if (topologyController.getToolUsage().equals(ToolUsage.SERVER)) {
 				System.out.println(error);
+				SimulationStarter.actorSystemRefStatic.terminate();
 				System.exit(1);
 			} else {
 				SimulationProgress.getInstance().setStatus(Status.ERROR, error);
