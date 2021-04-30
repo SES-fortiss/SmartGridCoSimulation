@@ -313,6 +313,11 @@ public class PlanningTool {
 
 	public void setSaved(boolean saved) {
 		this.saved = saved;
+		if(saved) {
+			DesignerPanel.pl_action.setSaved();
+		} else {
+			DesignerPanel.pl_action.setUnsaved();
+		}
 	}
 	
 }
