@@ -241,7 +241,7 @@ public class OpcUaBuildingController implements BuildingController {
 							}
 							
 							System.out.println("EMS-Description (nameID) = " + EmsName);
-							ClientEMS ems = new ClientEMS(client, EmsName, triggerId, ConnEffId, 0);
+							ClientEMS ems = new ClientEMS(client, topologyController, EmsName, triggerId, ConnEffId, 0);
 							attach(ems);
 							ems.setTopologyController(topologyController);
 							System.out.println("EMS (" + EMSkey + ") added. ");
