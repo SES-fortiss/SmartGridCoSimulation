@@ -8,7 +8,10 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
 import akka.basicMessages.AnswerContent;
 import memap.components.prototypes.Device;
+import memap.controller.TopologyController;
 import memap.helperOPCua.BasicClient;
+import memap.messages.extension.NetworkType;
+import memap.messages.planning.ConnectionMessage;
 
 
 /**
@@ -20,19 +23,40 @@ import memap.helperOPCua.BasicClient;
 
 public class ClientEMS extends Device {
 	
+	/** Reference to the topology */
+	protected TopologyController topologyController;
+	
+	public ConnectionMessage connectionMessage = new ConnectionMessage();
+	
 	public BasicClient client;
 	public NodeId triggerId;
-	double trigger;
+	public NodeId connEffId;
+	public double connEff;
+	public double trigger;
 	
-	public ClientEMS(BasicClient client, String name, NodeId triggerId, int port) {
+	public ClientEMS(BasicClient client, String name, NodeId triggerId, NodeId connEffId, int port) throws InterruptedException, ExecutionException {
 		super(name, port);
 		this.client = client;
 		this.triggerId = triggerId;
-		
-		
-		
+		this.connEff = client.readFinalDoubleValue(connEffId);
 	}
 
+	@Override
+	public void makeDecision() {
+//		if (topologyController.getOptimizer() == Optimizer.MILPwithConnections) {
+		connectionMessage.id = fullActorPath;
+		connectionMessage.name = actorName;
+//		connectionMessage.efficiency = connEff;
+		connectionMessage.efficiency = 0.0001;
+		// How to get the Stings names of connected buildings? From connection Matrix
+//		connectionMessage.connectedBuildingFrom = "CoSES_H1";
+//		connectionMessage.connectedBuildingTo = "unknown";
+		connectionMessage.pipeLengthInMeter = 50;
+		connectionMessage.operationalCostEUR = 0.0001;
+		connectionMessage.operationalCostCO2 = 0.0001;
+		connectionMessage.networkType = NetworkType.HEAT;
+//		}
+	}
 
 
 	public void handleRequest() {

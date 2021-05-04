@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 
 import memap.components.prototypes.Device;
 import memap.helper.HelperUnnestingJSON;
+import memap.helper.configurationOptions.Optimizer;
 import memap.components.ClientDemand;
 import memap.components.ClientEMS;
 import memap.components.ClientCoupler;
@@ -233,8 +234,14 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId nid0 = NodeId.parse((String) info.get("nameID"));
 							NodeId triggerId = NodeId.parse((String) info.get("trigger")); // Trigger for Synchronization , CoSES-Lab
 							String EmsName = client.readFinalStringValue(nid0);
+							
+							NodeId ConnEffId = null;
+							if (topologyController.getOptimizer() == Optimizer.MILPwithConnections) {
+								ConnEffId = NodeId.parse((String) info.get("EffHtNetReceive"));
+							}
+							
 							System.out.println("EMS-Description (nameID) = " + EmsName);
-							ClientEMS ems = new ClientEMS(client, EmsName, triggerId, 0);
+							ClientEMS ems = new ClientEMS(client, EmsName, triggerId, ConnEffId, 0);
 							attach(ems);
 							ems.setTopologyController(topologyController);
 							System.out.println("EMS (" + EMSkey + ") added. ");
@@ -380,10 +387,8 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId calculatedSocId = NodeId.parse((String) strge.get("calcSOC"));  // Only available in CoSES
 //								NodeId calculatedSocId = null;
 								NodeId storageLossId = NodeId.parse((String) strge.get("StorLossPD"));
-//								NodeId opCostId = NodeId.parse((String) strge.get("PrimEnCost"));
-								NodeId opCostId = null;
+								NodeId opCostId = NodeId.parse((String) strge.get("PrimEnCost"));
 								NodeId costCO2Id = NodeId.parse((String) strge.get("CO2PerKWh"));
-//								NodeId costCO2Id = null;
 								NodeId inputSetpointId = NodeId.parse((String) strge.get("SPCharge"));
 								NodeId inputSetpointsId = NodeId.parse((String) strge.get("SPChargeAr"));
 //								NodeId inputSetpointsId = null;
