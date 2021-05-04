@@ -72,7 +72,7 @@ public class JettyStart {
 
 	public void run(JsonObject memapStartMessage) {
 
-		topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILP,
+		topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILPwithConnections,
 				OptimizationCriteria.EUR, ToolUsage.SERVER, MEMAPLogging.RESULTS_ONLY);
 
 		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 7020, 0);

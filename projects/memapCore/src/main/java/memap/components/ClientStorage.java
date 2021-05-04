@@ -88,10 +88,8 @@ public class ClientStorage extends Storage {
 		this.outputSetpointId = outputSetpointId;
 		this.outputSetpointsId = outputSetpointsId;
 		this.networkType = setNetworkType(client, nodeIdSector);
-//		this.opCost = client.readFinalDoubleValue(opCostId);
-//		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
-		this.opCost = 0.0;
-		this.costCO2 = 0.0;
+		this.opCost = client.readFinalDoubleValue(opCostId);
+		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
 		this.calculatedSocId = calculatedSocId;
 		
 //		System.out.println("Initial SOC = " + this.stateOfCharge);

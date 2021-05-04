@@ -302,7 +302,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		if (requestContentReceived instanceof OptimizationResultMessage) {
 			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
 			for (String key : optResult.resultMap.keySet()) {
-				if (key.equals("ElecBuy")) {
+				if ((key.equals("ElecBuy")) && (this.networkType == NetworkType.ELECTRICITY)) {
 					optimizationAdviceBuy = optResult.resultMap.get(key);
 					DataValue singlevalueBuySetpoint = new DataValue(new Variant(optimizationAdviceBuy[0]), null, null);
 					client.writeValue(setpointGridBuyId, singlevalueBuySetpoint);
@@ -315,7 +315,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 						e.printStackTrace();
 					}		
 				}
-				if (key.equals("ElecSell")) {
+				if ((key.equals("ElecSell")) && (this.networkType == NetworkType.ELECTRICITY)) {
 					optimizationAdviceSell = optResult.resultMap.get(key);
 					DataValue singlevalueSellSetpoint = new DataValue(new Variant(optimizationAdviceSell[0]), null, null);
 					client.writeValue(setpointGridSellId, singlevalueSellSetpoint);
