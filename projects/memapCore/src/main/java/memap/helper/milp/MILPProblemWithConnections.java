@@ -389,10 +389,6 @@ public class MILPProblemWithConnections extends MILPProblem {
 							problem.addConstraint(row, LpSolve.LE, cm.maxPower);
 						}
 					}
-	        		
-	        		//int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );
-	        		
-	        		//System.out.println(  MILPProblemNoConnections.class + " cm info " +   );
 	        			        		
 	        	}
 	     }
