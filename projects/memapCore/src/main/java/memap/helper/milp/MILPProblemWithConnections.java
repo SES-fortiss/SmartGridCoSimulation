@@ -359,10 +359,58 @@ public class MILPProblemWithConnections extends MILPProblem {
 	            	//System.out.println("Adding max charging --> row2: " + Arrays.toString(row2) + " <= " + sm.maxLoad);
 	        		        		
 	         		storageHandled++;
-	 			}
-	    	}
-		}
+	 			}	        	
+	    	}	// end of BuildingMessage Loop
+	    }	// end of nStepsLoop
+
+	     
+	     // TODO connection constraints	     
+	     {
+	        	int numberOfNames = problem.getNcolumns();
+	        	
+	        	ArrayList<String> nameList = new ArrayList<>(numberOfNames);
+	        	
+	        	for (int j = 0; j < numberOfNames; j++) {
+					nameList.add(j, problem.getColName(j));
+				}
+	        	
+	        	System.out.println(  MILPProblemNoConnections.class + " names: " +  nameList.toString());
+	        	
+	        	for (BuildingMessage bm : buildingMessages) {
+	        		
+	        		System.out.println("BuildingMessage : " + bm.name);
+	        		
+	        		for (ConnectionMessage cm : bm.connectionList) {
+						System.out.println( "Connection: name=" + cm.name + "  from=" + cm.connectedBuildingFrom + " to="+cm.connectedBuildingTo );
+						
+						for (Integer index : searchIndexOfConnectionName(cm.name, nameList) )  {
+							double[] row = new double[nCols+1];
+							row[index] = 1;
+							problem.addConstraint(row, LpSolve.LE, cm.maxPower);
+						}
+					}
+	        		
+	        		//int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );
+	        		
+	        		//System.out.println(  MILPProblemNoConnections.class + " cm info " +   );
+	        			        		
+	        	}
+	     }
+	    
 		return problem;
+	}
+	
+	// can be optimized for speed
+	private ArrayList<Integer> searchIndexOfConnectionName(String connectionName, ArrayList<String> nameList) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+				
+		for (int j = 0; j < nameList.size(); j++) {
+			if (nameList.get(j).contains(connectionName)) {
+				result.add(j);
+			}
+		}
+		
+		return result;
 	}
 
 	public LpSolve createSOCBoundaries(LpSolve problem, ArrayList<BuildingMessage> buildingMessages) throws LpSolveException {
