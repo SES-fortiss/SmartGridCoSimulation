@@ -137,10 +137,7 @@ public class MILPProblemWithConnections extends MILPProblem {
     	for (BuildingMessage bm : buildingMessages) {
     		mapBuildingMessageToIndex.put(bm, startIndex);
     		
-    		for (int i = 0; i < nStepsMPC; i++) {
-    			
-    			//System.out.println("Current Building: " + bm.name);
-    			
+    		for (int i = 0; i < nStepsMPC; i++) {    			    			
     			int controllableHandled = 0;
                 int volatileHandled = 0;
                 int couplerHandled = 0;
@@ -364,7 +361,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 	    }	// end of nStepsLoop
 
 	     
-	     // TODO connection constraints	     
+	     // this is new content, to consider connection limits
 	     {
 	        	int numberOfNames = problem.getNcolumns();
 	        	
@@ -374,16 +371,12 @@ public class MILPProblemWithConnections extends MILPProblem {
 					nameList.add(j, problem.getColName(j));
 				}
 	        	
-	        	System.out.println(  MILPProblemNoConnections.class + " names: " +  nameList.toString());
-	        	
-	        	for (BuildingMessage bm : buildingMessages) {
-	        		
-	        		System.out.println("BuildingMessage : " + bm.name);
-	        		
+	        	for (BuildingMessage bm : buildingMessages) {	        		        		
 	        		for (ConnectionMessage cm : bm.connectionList) {
-						System.out.println( "Connection: name=" + cm.name + "  from=" + cm.connectedBuildingFrom + " to="+cm.connectedBuildingTo );
+	        			
+						ArrayList<Integer> nameIndices = searchIndexOfConnectionName(cm.name, nameList);
 						
-						for (Integer index : searchIndexOfConnectionName(cm.name, nameList) )  {
+						for (Integer index : nameIndices )  {
 							double[] row = new double[nCols+1];
 							row[index] = 1;
 							problem.addConstraint(row, LpSolve.LE, cm.maxPower);
@@ -401,7 +394,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 				
 		for (int j = 0; j < nameList.size(); j++) {
-			if (nameList.get(j).contains(connectionName)) {
+			if (nameList.get(j) != null && nameList.get(j).contains(connectionName)) {
 				result.add(j);
 			}
 		}
@@ -440,7 +433,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 				double beta_to = delta_time_factor/sm.capacity * sm.efficiencyCharge; // Units [h/kWh]
 				double beta_fm = delta_time_factor/(sm.capacity * sm.efficiencyDischarge); // Units [h/kWh]	
 				
-				int index = indexBuilding + 1 + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );		 
+				int index = indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );		 
 				
 		        for (int i = 0; i < nStepsMPC; i++) {
 	            	double[] rowCHARGE = new double[nCols+1];

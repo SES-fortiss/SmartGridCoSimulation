@@ -19,6 +19,10 @@ import memap.messages.BuildingMessage;
 import memap.messages.OptimizationResultMessage;
 
 /**
+ * The Solver Class is the major interface to work through our optimization.
+ * The Solver uses the Problem class to define the Optimization and call the
+ * related methods step-by-step.
+ * 
  * Note, this class might have many cloning from MILP with no connections, we
  * are trying to remove as many clones as possible, after finishing the correct
  * implementation of MILP.

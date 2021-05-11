@@ -1,14 +1,11 @@
 package memap.helper.milp;
 
-import java.util.ArrayList;
-
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
 import memap.messages.planning.ConnectionMessage;
 import memap.messages.planning.CouplerMessage;
 import memap.messages.planning.ProducerMessage;
 import memap.messages.planning.StorageMessage;
-import scala.Array;
 
 public abstract class MILPHelper {
 	
