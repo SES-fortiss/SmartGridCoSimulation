@@ -3,7 +3,7 @@ package fortiss.gui.listeners.helper;
 public class ElectricityPrice extends Price {
 
 	private static final String DEFAULT_FILE = "ELECTRICITYPRICEEXAMPLE";
-	private static final double DEFAULT_PRICE = 0.275;
+	private static final double DEFAULT_PRICE = 0.3;
 	private static final String [] labels = { "Price [EUR/kWh]" };
 	private static final String units = "[EUR/kWh]";
 

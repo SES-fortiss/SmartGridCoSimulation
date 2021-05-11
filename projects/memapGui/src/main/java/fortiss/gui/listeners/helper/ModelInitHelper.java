@@ -148,6 +148,12 @@ public class ModelInitHelper {
 		
 		// Export parameters
 		Parameters pars = PlanningTool.getInstance().getParameters();
+		
+		String[] buffer = topologyFilePath.split("\\\\");
+		String buffer2 = buffer[buffer.length-1];
+		String buffer3 = buffer2.replace(".json", "");		
+		pars.setSimulationName(buffer3);
+		
 		str += gson.toJson(pars);
 		
 		fm.writeFile(str, new File(topologyFilePath));

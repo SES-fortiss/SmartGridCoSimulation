@@ -55,66 +55,62 @@ public class PriceBoard extends JPanel implements OptionObserver {
 	private void initialize(String title) {
 		
 		setBorder(new LineBorder(Colors.green));
-		setLayout(new MigLayout("insets 0 0 0 0, fillx, wrap 4, hidemode 2, width 99%",
+		setLayout(new MigLayout("insets 0 0 0 0, fillx, wrap 5, hidemode 2, width 99%",
 				"[left, growprio 70]30[right]10[right, grow 0]5[right, grow 0]", "[][][][][]"));
 
 		JLabel lblTitle = new JLabel(title);
 		lblTitle.setFont(Fonts.getOswald(FontSize.SMALL));
-		add(lblTitle, "spanx 2");
+		add(lblTitle, "spanx 1");
 		
-		btDataPlot = new JLabel("");
-		btDataPlot.setIcon(IconStore.visualize);
-		btDataPlot.setBorder(new EmptyBorder(3, 3, 3, 3));
-		btDataPlot.addMouseListener(new PPlotListener());
-		btDataPlot.addMouseListener(new HoverMouseListener());
-		add(btDataPlot, "wmax 40");
-		
-		btReload = new JLabel("");
-		btReload.setIcon(IconStore.reset);
-		btReload.setToolTipText("Reload file");
-		btReload.setBorder(new EmptyBorder(3, 3, 3, 3));
-		btReload.addMouseListener(new HoverMouseListener());
-		btReload.addMouseListener(new PReloadListener());
-		add(btReload, "hidemode 3, wmax 40");
-
-		JLabel lbPriceType = new JLabel("Type:");
-		add(lbPriceType);
-
 		lbPriceType2 = new OptionLabel(new String[] { "Fixed", "Variable" },
 				new ImageIcon[] { IconStore.fixedMarket, IconStore.variableMarket }, this);
 		lbPriceType2.addMouseListener(new PriceTypeListener());
-		add(lbPriceType2, "spanx 3");
-
+		add(lbPriceType2, "spanx 4");
+		
 		lbPrice = new JLabel("Price ");
 		add(lbPrice, "hidemode 3");
-
+		
 		txtPrice = new JTextField("");
 		txtPrice.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		txtPrice.setText("");
 		txtPrice.addKeyListener(new PriceListener());
 		txtPrice.addFocusListener(new PriceListener());
 		txtPrice.setColumns(10);
-		add(txtPrice, "spanx 3, hidemode 3");
-
+		add(txtPrice, " hidemode 3");
+		
 		lbPriceFileInstruction = new JLabel("Select a file");
 		add(lbPriceFileInstruction, "hidemode 3");
 
 		txtPriceFile = new JTextField("");
-		//txtPriceFile.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		txtPriceFile.addKeyListener(new PriceFileListener());
 		txtPriceFile.addFocusListener(new PriceFileListener());
 		txtPriceFile.setColumns(30);
-		add(txtPriceFile, "spanx 2, hidemode 3");
-
+		add(txtPriceFile, "hidemode 3");
+		
 		btDataBrowse = new JLabel("");
 		btDataBrowse.addMouseListener(new PBrowseListener());
 		btDataBrowse.addMouseListener(new HoverMouseListener());
 		btDataBrowse.setIcon(IconStore.open);
-		btDataBrowse.setBorder(new EmptyBorder(3, 3, 3, 3));
+		btDataBrowse.setBorder(new EmptyBorder(3, 3, 0, 3));
 		add(btDataBrowse, "hidemode 3, wmax 40");
+		
+		btDataPlot = new JLabel("");
+		btDataPlot.setIcon(IconStore.visualize);
+		btDataPlot.setBorder(new EmptyBorder(3, 3, 0, 3));
+		btDataPlot.addMouseListener(new PPlotListener());
+		btDataPlot.addMouseListener(new HoverMouseListener());
+		add(btDataPlot, "hidemode 3, wmax 40");
+		
+		btReload = new JLabel("");
+		btReload.setIcon(IconStore.reset);
+		btReload.setToolTipText("Reload file");
+		btReload.setBorder(new EmptyBorder(3, 3, 0, 3));
+		btReload.addMouseListener(new HoverMouseListener());
+		btReload.addMouseListener(new PReloadListener());
+		add(btReload, "hidemode 3, wmax 40");
 
 		plotPanel = new PlotPanel();
-		add(plotPanel, "span, growx, hmax 300, hidemode 3");
+		add(plotPanel, "newline, spanx 5, growx, hmax 300, hidemode 3");
 	}
 
 	public Price getPrice() {

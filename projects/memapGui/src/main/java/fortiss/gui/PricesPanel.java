@@ -28,15 +28,17 @@ public class PricesPanel extends InformationPanel {
 
 		setLayout(new MigLayout("insets 0 0 0 0, fillx, wrap 1, hidemode 2, width 99%", "[center]", ""));
 
+		
 		JLabel lblSectionTitle = new JLabel("Energy prices".toUpperCase(), SwingConstants.LEFT);
 		lblSectionTitle.setFont(Fonts.getOswald(FontSize.SMALL));
 		lblSectionTitle.setForeground(Colors.title);
-		add(lblSectionTitle, "gapbottom 10, growx");
+		add(lblSectionTitle, "gapbottom 0, growx");
+		
 
-		elecBuyingPriceBoard = new PriceBoard("Electrity (buying price)");
+		elecBuyingPriceBoard = new PriceBoard("Electricity (buying price)");
 		add(elecBuyingPriceBoard, "growx");
 
-		elecSellingPriceBoard = new PriceBoard("Electrity (selling price)");
+		elecSellingPriceBoard = new PriceBoard("Electricity (selling price)");
 		add(elecSellingPriceBoard, "growx");
 
 		heatBuyingPriceBoard = new PriceBoard("Heat (buying price)");

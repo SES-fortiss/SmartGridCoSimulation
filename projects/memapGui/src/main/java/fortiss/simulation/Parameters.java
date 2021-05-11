@@ -76,7 +76,7 @@ public class Parameters {
 	 * Constructor for class Parameters
 	 */
 	public Parameters() {
-		setSimulationName("InteractiveMEMAP");
+		setSimulationName("default");
 		setStepsPerDay(24);
 		// Initially setter is not called, so that the prices are not updated
 		this.mpcHorizon = 2;
@@ -84,9 +84,9 @@ public class Parameters {
 		setOptimizer(optimizerOptions.get(0));
 		setOptCriteria(criteriaOptions.get(0));
 		setLoggingMode(loggingOptions.get(0));
-		setElecBuyingPrice(new ElectricityPrice(0.275, mpcHorizon));
-		setElecSellingPrice(new ElectricityPrice(0.275, mpcHorizon));
-		setHeatBuyingPrice(new HeatPrice(0.275, mpcHorizon));
+		setElecBuyingPrice(new ElectricityPrice(0.3, mpcHorizon));
+		setElecSellingPrice(new ElectricityPrice(0.08, mpcHorizon));
+		setHeatBuyingPrice(new HeatPrice(0.13, mpcHorizon));
 	}
 
 	public Parameters(String simulationName, int simulationSteps, int mpcHorizon, int days, String optCriteria,
