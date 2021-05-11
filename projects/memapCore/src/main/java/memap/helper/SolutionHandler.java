@@ -11,6 +11,7 @@ import memap.helper.lp.LPOptimizationProblem;
 import memap.main.TopologyConfig;
 import memap.media.Strings;
 import memap.messages.BuildingMessage;
+import memap.messages.extension.NetworkType;
 import memap.messages.planning.CouplerMessage;
 import memap.messages.planning.ProducerMessage;
 import memap.messages.planning.StorageMessage;
@@ -187,7 +188,6 @@ public class SolutionHandler {
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
@@ -209,19 +209,6 @@ public class SolutionHandler {
 		return result;
 	}
 
-	/**
-	 * @param optSolution optimization solution
-	 * @param etas        transformation vectors
-	 * @param nStepsMPC   the number of steps for MPC
-	 * @return an array with the demand values for a given time step
-	 */
-	public double[] getEffSolutionForThisTimeStep(double[] optSolution, double[] etas, int nStepsMPC) {
-		double[] result = new double[optSolution.length / nStepsMPC];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = optSolution[i * nStepsMPC] * etas[i * nStepsMPC];
-		}
-		return result;
-	}
 
 	/**
 	 * @param problem   A linear programming problem
@@ -381,6 +368,97 @@ public class SolutionHandler {
 			storeMessageList.addAll(bm.storageList);
 		}
 		return getNamesForSOCEnergy(storeMessageList);
+	}
+
+	public ArrayList<String> createNamesForCorrEfficiency(BuildingMessage singleBuildingMessage, String[] names) {
+		ArrayList<String> additionalNames = new ArrayList<>();
+		
+		for (ProducerMessage producerMessage : singleBuildingMessage.controllableProducerList) {
+			for (int i = 0; i < names.length; i++) {
+				if(names[i].contains(producerMessage.name + "_T")) {
+					additionalNames.add(names[i] + "_withEfficiency");
+				}
+			}
+		}
+		
+		for (CouplerMessage couplerMessage : singleBuildingMessage.couplerList) {
+			for (int i = 0; i < names.length; i++) {
+				if(names[i].contains(couplerMessage.name + "_T")) {
+					additionalNames.add(names[i] +  "_withEffieciency" +"_"+ couplerMessage.primaryNetwork);
+					additionalNames.add(names[i] +  "_withEffieciency" +"_"+ couplerMessage.secondaryNetwork);
+				}
+			}
+		}		
+		return additionalNames;
+	}
+
+	public ArrayList<Double> createValuesForCorrEfficiency(
+			BuildingMessage singleBuildingMessage, 
+			String[] names,
+			double[] optSolution) {
+		
+		ArrayList<Double> additionalValues = new ArrayList<>();
+		
+		for (ProducerMessage producerMessage : singleBuildingMessage.controllableProducerList) {			
+			for (int i = 0; i < names.length; i++) {
+				if(names[i].contains(producerMessage.name + "_T")) {
+					additionalValues.add(optSolution[i]*producerMessage.efficiency);				
+				}
+			}
+		}
+		
+		for (CouplerMessage couplerMessage : singleBuildingMessage.couplerList) {
+			
+			for (int i = 0; i < names.length; i++) {
+				if(names[i].contains(couplerMessage.name + "_T")) {
+					//System.out.println(names[i]);
+					if(couplerMessage.primaryNetwork == NetworkType.HEAT) {
+						additionalValues.add(optSolution[i]*couplerMessage.efficiencyHeat);
+						additionalValues.add(optSolution[i]*couplerMessage.efficiencyElec);
+					} else if (couplerMessage.primaryNetwork == NetworkType.ELECTRICITY) {
+						additionalValues.add(optSolution[i]*couplerMessage.efficiencyElec);
+						additionalValues.add(optSolution[i]*couplerMessage.efficiencyHeat);
+					}
+				}
+			}
+		}		
+				
+		return additionalValues;
+	}
+
+	public ArrayList<String> createNamesForCorrEfficiency(ArrayList<BuildingMessage> multipleBuildingMessages, String[] names) {
+		
+		ArrayList<String> buffer = new ArrayList<>();
+				
+		for (BuildingMessage bm : multipleBuildingMessages) {						
+			buffer.addAll(createNamesForCorrEfficiency(bm, names));
+		}
+		
+		return buffer;
+	}
+
+	public ArrayList<Double> createValuesForCorrEfficiency(ArrayList<BuildingMessage> multipleBuildingMessages,
+			String[] names, double[] optSolution) {
+		ArrayList<Double> buffer = new ArrayList<>();
+		
+		for (BuildingMessage bm : multipleBuildingMessages) {	
+			buffer.addAll(createValuesForCorrEfficiency(bm, names, optSolution));
+		}
+		return buffer;
+	}
+
+	public int[] getIndicesByTO(String[] names, int nStepsMPC2) {
+		int[] result = new int[ names.length / nStepsMPC2];
+		int counter = 0;
+		
+		for (int i = 0; i < names.length; i++) {
+			if(names[i].contains("_T0")) {
+				result[counter] = i;
+				counter++;
+			}
+		}
+				
+		return result;
 	}
 
 }
