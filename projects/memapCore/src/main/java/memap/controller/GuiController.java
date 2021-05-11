@@ -184,8 +184,9 @@ public class GuiController {
 			String connectedBuilding = obj.get("formattedNameNodeA").getAsString();
 			double pipeLengthInMeter = obj.get("length").getAsDouble();
 			double lossesPer100m = obj.get("losses").getAsDouble();
+			double maxTransportCapacity = obj.get("maxTransportCapacity").getAsDouble();
 
-			return new Connection(sourceBuilding, connectedBuilding, pipeLengthInMeter, lossesPer100m, 1.0);
+			return new Connection(sourceBuilding, connectedBuilding, pipeLengthInMeter, lossesPer100m, maxTransportCapacity);
 		}
 
 	}
