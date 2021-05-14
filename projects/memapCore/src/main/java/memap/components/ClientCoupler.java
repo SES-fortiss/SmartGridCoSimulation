@@ -158,6 +158,8 @@ public class ClientCoupler extends Coupler {
 		couplerMessage.secondaryNetwork = secondaryNetwork;
 		couplerMessage.operationalCostEUR = opCost;
 		couplerMessage.varOperationalCostEUR = Stream.of(opCostFC).mapToDouble(Double::doubleValue).toArray();
+		// System.out.println("varopCosts-Length = " + couplerMessage.varOperationalCostEUR.length);
+		// TODO: once experienced strange bug for cm.varOperationalCostEUR: "Index 4 out of bounds for length 4", although mpc was 5?! 
 		couplerMessage.operationalCostCO2 = costCO2;
 		couplerMessage.efficiencyElec = efficiencyElec;
 		couplerMessage.efficiencyHeat = efficiencyHeat;

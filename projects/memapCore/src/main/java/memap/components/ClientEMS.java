@@ -54,7 +54,8 @@ public class ClientEMS extends Connection {
 			connectionMessage.connectedBuildingTo = connectedBuilding;
 			
 			connectionMessage.efficiency = efficiency;
-			connectionMessage.maxPower = q_max;
+			connectionMessage.maxPower = 0.0; //q_max;
+			// TODO: efficiency = 0 seems to not prevent heat transfer
 			connectionMessage.pipeLengthInMeter = pipeLengthInMeter;
 			connectionMessage.operationalCostEUR = 0.0001;
 			connectionMessage.operationalCostCO2 = 0.0001;
