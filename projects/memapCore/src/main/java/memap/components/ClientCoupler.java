@@ -174,7 +174,11 @@ public class ClientCoupler extends Coupler {
 		if (requestContentReceived instanceof OptimizationResultMessage) {
 			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
 			for (String key : optResult.resultMap.keySet()) {
-				if (key.equals(actorName)) {
+				if ( // write setpoint only for primary Network 
+					(this.primaryNetwork == NetworkType.HEAT && key.equals(actorName + "_withEffieciency_HEAT")) || 
+					(this.primaryNetwork == NetworkType.ELECTRICITY && key.equals(actorName + "_withEffieciency_ELECTRICITY")) 
+					) 
+				{
 					optimizationAdvice = optResult.resultMap.get(key);
 					
 					// Write scalar setpoint to EMS (single value)
