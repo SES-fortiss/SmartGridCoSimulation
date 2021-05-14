@@ -6,6 +6,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
+import akka.basicMessages.AnswerContent;
 import memap.components.prototypes.Connection;
 import memap.controller.TopologyController;
 import memap.helper.configurationOptions.Optimizer;
@@ -33,9 +34,8 @@ public class ClientEMS extends Connection {
 	public NodeId connEffId;
 	public double trigger;
 	
-	public ClientEMS(BasicClient client, TopologyController topologyController, String name, NodeId triggerId, NodeId connEffId, int port) throws InterruptedException, ExecutionException {
-		// How to get the Stings names of connected buildings? From connection Matrix:
-		super("CoSES_H1", "CoSES_H2", 50, client.readFinalDoubleValue(connEffId), 999);
+	public ClientEMS(BasicClient client, TopologyController topologyController, String name, String connFrom, String connTo, NodeId triggerId, NodeId connEffId, int port) throws InterruptedException, ExecutionException {
+		super(connFrom, connTo, 50, client.readFinalDoubleValue(connEffId), 999);
 		this.client = client;
 		this.topologyController = topologyController;
 		this.triggerId = triggerId; 
@@ -44,12 +44,13 @@ public class ClientEMS extends Connection {
 	@Override
 	public void makeDecision() {
 		if (topologyController.getOptimizer() == Optimizer.MILPwithConnections) {
-			
+					
 			connectionMessage.networkType = NetworkType.HEAT;
+			
 			connectionMessage.name = actorName;
 			connectionMessage.id = fullActorPath;
-		
-			connectionMessage.connectedBuildingFrom = fullActorPath.split("/")[this.fullActorPath.split("/").length-2];		
+			
+			connectionMessage.connectedBuildingFrom = sourceBuilding;
 			connectionMessage.connectedBuildingTo = connectedBuilding;
 			
 			connectionMessage.efficiency = efficiency;
@@ -57,10 +58,14 @@ public class ClientEMS extends Connection {
 			connectionMessage.pipeLengthInMeter = pipeLengthInMeter;
 			connectionMessage.operationalCostEUR = 0.0001;
 			connectionMessage.operationalCostCO2 = 0.0001;
-		
 		}
 	}
 
+	@Override
+	public AnswerContent returnAnswerContentToSend() {
+		return connectionMessage;
+	}
+	
 	@Override
 	public void handleRequest() {
 		

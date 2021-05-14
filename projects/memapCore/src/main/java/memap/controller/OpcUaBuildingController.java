@@ -102,6 +102,7 @@ public class OpcUaBuildingController implements BuildingController {
 		// Subscribe to all devices on the OpcUaServer which are referenced in the
 		// nodesConfig File
 		nodesConfigHandler.initDevices();
+		// TODO: Better way to use House-Name in initDevice class for defining Connections
 	}
 
 	@Override
@@ -236,12 +237,16 @@ public class OpcUaBuildingController implements BuildingController {
 							String EmsName = client.readFinalStringValue(nid0);
 							
 							NodeId ConnEffId = null;
+							String connTo = null;
 							if (topologyController.getOptimizer() == Optimizer.MILPwithConnections) {
 								ConnEffId = NodeId.parse((String) info.get("EffHtNetReceive"));
+								// TODO: This is CoSES hardcoded! Change asap
+								if (name.equals("CoSES_H1")) connTo = "CoSES_H2";
+								if (name.equals("CoSES_H2")) connTo = "CoSES_H1";
 							}
 							
 							System.out.println("EMS-Description (nameID) = " + EmsName);
-							ClientEMS ems = new ClientEMS(client, topologyController, EmsName, triggerId, ConnEffId, 0);
+							ClientEMS ems = new ClientEMS(client, topologyController, EMSkey, name, connTo, triggerId, ConnEffId, 0);
 							attach(ems);
 							ems.setTopologyController(topologyController);
 							System.out.println("EMS (" + EMSkey + ") added. ");
