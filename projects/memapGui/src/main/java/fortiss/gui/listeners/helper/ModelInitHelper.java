@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Type;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -109,6 +110,8 @@ public class ModelInitHelper {
 			// Import parameters
 			JsonElement parameters = root.get(2);
 			planningTool.setParameters(gson.fromJson(parameters, Parameters.class));
+			String fileName = Paths.get(topologyFilePath).getFileName().toString().replaceAll(".json", "");
+			planningTool.getParameters().setSimulationName(fileName);
 			
 			DesignerPanel.parameterPanel.update();
 			Logger.getInstance().writeInfo("Parameters: " + gson.toJson(planningTool.getParameters()));
@@ -154,6 +157,9 @@ public class ModelInitHelper {
 		
 		// Export parameters
 		Parameters pars = PlanningTool.getInstance().getParameters();
+		String fileName = Paths.get(topologyFilePath).getFileName().toString().replaceAll(".json", "");
+		pars.setSimulationName(fileName);
+		DesignerPanel.parameterPanel.update();
 		root.add(pars);
 		
 		String str = gson.toJson(root);

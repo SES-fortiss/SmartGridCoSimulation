@@ -20,7 +20,6 @@ import fortiss.gui.listeners.label.OptimizationCriteriaListener;
 import fortiss.gui.listeners.label.OptimizerListener;
 import fortiss.gui.listeners.textfield.DaysListener;
 import fortiss.gui.listeners.textfield.MPCHorizonListener;
-import fortiss.gui.listeners.textfield.SimulationNameListener;
 import fortiss.gui.listeners.textfield.StepsPerDayListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
@@ -38,8 +37,6 @@ public class ParameterInputPanel extends InformationPanel {
 	private static final long serialVersionUID = 1L;
 
 	private JScrollPane scrollPane;
-	/** Simulation name */
-	private JTextField txtSimulationName;
 	/** steps MPC horizon. An integer */
 	private JTextField txtSteps;
 	/** length MemapSimulation steps. An integer */
@@ -61,6 +58,8 @@ public class ParameterInputPanel extends InformationPanel {
 	private JLabel lbTitle;
 	/** label for simulation name length */
 	private JLabel lbSimulationName;
+	/** Simulation name */
+	private JLabel lbSimulationName2;
 	/** label for MemapSimulation length */
 	private JLabel lbLength;
 	/** label for steps MPC horizon */
@@ -85,6 +84,7 @@ public class ParameterInputPanel extends InformationPanel {
 		setForeground(Colors.normal);
 		lbTitle.setForeground(Colors.title);
 		lbSimulationName.setForeground(Colors.normal);
+		lbSimulationName2.setForeground(Colors.normal);
 		lbLength.setForeground(Colors.normal);
 		lbSteps.setForeground(Colors.normal);
 		lbDays.setForeground(Colors.normal);
@@ -129,13 +129,10 @@ public class ParameterInputPanel extends InformationPanel {
 		lbSimulationName = new JLabel("Simulation name");
 		innerPanel.add(lbSimulationName);
 
-		txtSimulationName = new JTextField();
-		txtSimulationName.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		txtSimulationName.setText("");
-		txtSimulationName.addKeyListener(new SimulationNameListener());
-		txtSimulationName.addFocusListener(new SimulationNameListener());
-		txtSimulationName.setColumns(20);
-		innerPanel.add(txtSimulationName, "growx");
+		lbSimulationName2 = new JLabel();
+		lbSimulationName2.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		lbSimulationName2.setText("");
+		innerPanel.add(lbSimulationName2, "growx");
 
 		lbLength = new JLabel("Steps per day");
 		innerPanel.add(lbLength);
@@ -217,7 +214,7 @@ public class ParameterInputPanel extends InformationPanel {
 
 		// load data of the selected component
 		Parameters pars = PlanningTool.getInstance().getParameters();
-		txtSimulationName.setText(pars.getSimulationName());
+		lbSimulationName2.setText(pars.getSimulationName());
 		txtSteps.setText(Integer.toString(pars.getMPCHorizon()));
 		txtLength.setText(Integer.toString(pars.getStepsPerDay()));
 		txtDays.setText(Integer.toString(pars.getDays()));
