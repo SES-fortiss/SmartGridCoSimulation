@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -14,6 +15,7 @@ import java.util.TreeMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonStreamParser;
@@ -67,9 +69,10 @@ public class ModelInitHelper {
 			Gson gson = gsonBuilder.setPrettyPrinting().enableComplexMapKeySerialization().excludeFieldsWithoutExposeAnnotation().create();
 
 			JsonStreamParser p = new JsonStreamParser(br);
+			JsonArray root = p.next().getAsJsonArray();
 
 			// Import topology
-			JsonElement topology = p.next();
+			JsonElement topology = root.get(0);
 
 			DesignerPanel.buildings = new TreeMap<String, Building>();
 
@@ -96,7 +99,7 @@ public class ModelInitHelper {
 			}
 
 			// Import Connections
-			JsonElement connections = p.next();
+			JsonElement connections = root.get(1);
 			ArrayList<Connection> connectionList = gson.fromJson(connections, new TypeToken<ArrayList<Connection>>() {
 			}.getType());
 
@@ -104,7 +107,7 @@ public class ModelInitHelper {
 			cm.setConnectionList(connectionList);
 
 			// Import parameters
-			JsonElement parameters = p.next();
+			JsonElement parameters = root.get(2);
 			planningTool.setParameters(gson.fromJson(parameters, Parameters.class));
 			
 			DesignerPanel.parameterPanel.update();
@@ -141,18 +144,19 @@ public class ModelInitHelper {
 			Building building = entry.getValue();
 			mySet.add(building);
 		}
-		String str = gson.toJson(mySet);
-
-		str += System.getProperty("line.separator");
+		
+		Collection<Object> root = new ArrayList<Object>();
+		root.add(mySet);
 
 		// Export connections
 		ConnectionManager cm = ConnectionManager.getInstance();
-		str += gson.toJson(cm.getConnectionList());
-		str += System.getProperty("line.separator");
+		root.add(cm.getConnectionList());
 		
 		// Export parameters
 		Parameters pars = PlanningTool.getInstance().getParameters();
-		str += gson.toJson(pars);
+		root.add(pars);
+		
+		String str = gson.toJson(root);
 		
 		fm.writeFile(str, new File(topologyFilePath));
 
