@@ -120,12 +120,17 @@ public class ParameterInputPanel extends InformationPanel {
 		lbTitle = new JLabel("SIMULATION PARAMETERS");
 		lbTitle.setFont(Fonts.getOswald());
 		lbTitle.setForeground(Colors.title);
-		innerPanel.add(lbTitle, "spanx, center, gapbottom 30");
+		innerPanel.add(lbTitle, "left, gapbottom 30");
+		
+		JButton btAccept = new JButton("Start simulation");
+		btAccept.addMouseListener(new ButtonListener(new RunCommand()));
+		innerPanel.add(btAccept, "right, gaptop 10");
 
 		lbSimulationName = new JLabel("Simulation name");
 		innerPanel.add(lbSimulationName);
 
 		txtSimulationName = new JTextField();
+		txtSimulationName.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		txtSimulationName.setText("");
 		txtSimulationName.addKeyListener(new SimulationNameListener());
 		txtSimulationName.addFocusListener(new SimulationNameListener());
@@ -195,10 +200,6 @@ public class ParameterInputPanel extends InformationPanel {
 		
 		emissionsPanel = new EmissionsPanel();
 		innerPanel.add(emissionsPanel, "spanx, growx, growy");
-		
-		JButton btAccept = new JButton("Start simulation");
-		btAccept.addMouseListener(new ButtonListener(new RunCommand()));
-		innerPanel.add(btAccept, "span, center, gaptop 10");
 		
 		scrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
