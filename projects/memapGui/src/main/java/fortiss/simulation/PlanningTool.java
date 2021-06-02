@@ -49,6 +49,8 @@ public class PlanningTool {
 	private LogPanel logPanel;
 	/** GUI controller */
 	private GuiController guiController;
+	
+	private boolean saved = false;
 
 	public static void main(String[] args) {
 
@@ -303,6 +305,19 @@ public class PlanningTool {
 	
 	public String getWorkingFile() {
 		return preferences.get(WORKING_FILE, "");
+	}
+
+	public boolean isSaved() {
+		return saved;
+	}
+
+	public void setSaved(boolean saved) {
+		this.saved = saved;
+		if(saved) {
+			DesignerPanel.pl_action.setSaved();
+		} else {
+			DesignerPanel.pl_action.setUnsaved();
+		}
 	}
 	
 }

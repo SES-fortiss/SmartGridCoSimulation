@@ -2,7 +2,7 @@ package fortiss.gui.commands;
 
 import fortiss.gui.DesignerPanel;
 import fortiss.simulation.PlanningTool;
-import fortiss.simulation.helper.PositionManager;
+import fortiss.simulation.helper.ConnectionManager;
 
 public class ResetCommand implements Command {
 
@@ -11,9 +11,8 @@ public class ResetCommand implements Command {
 		DesignerPanel.pl_ems.reset();
 		DesignerPanel.pl_comp.reset();
 
-		// Eliminate positions
-		PositionManager pm = PositionManager.getInstance();
-		pm.clearPositions();
+		// Eliminate connections
+		ConnectionManager.getInstance().resetConnections();
 
 		// Eliminate buildings
 		DesignerPanel.buildings.clear();

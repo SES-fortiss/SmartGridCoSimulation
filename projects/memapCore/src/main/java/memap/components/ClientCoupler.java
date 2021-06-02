@@ -158,6 +158,8 @@ public class ClientCoupler extends Coupler {
 		couplerMessage.secondaryNetwork = secondaryNetwork;
 		couplerMessage.operationalCostEUR = opCost;
 		couplerMessage.varOperationalCostEUR = Stream.of(opCostFC).mapToDouble(Double::doubleValue).toArray();
+		// System.out.println("varopCosts-Length = " + couplerMessage.varOperationalCostEUR.length);
+		// TODO: once experienced strange bug for cm.varOperationalCostEUR: "Index 4 out of bounds for length 4", although mpc was 5?! 
 		couplerMessage.operationalCostCO2 = costCO2;
 		couplerMessage.efficiencyElec = efficiencyElec;
 		couplerMessage.efficiencyHeat = efficiencyHeat;
@@ -174,7 +176,11 @@ public class ClientCoupler extends Coupler {
 		if (requestContentReceived instanceof OptimizationResultMessage) {
 			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
 			for (String key : optResult.resultMap.keySet()) {
-				if (key.equals(actorName)) {
+				if ( // write setpoint only for primary Network 
+					(this.primaryNetwork == NetworkType.HEAT && key.equals(actorName + "_withEffieciency_HEAT")) || 
+					(this.primaryNetwork == NetworkType.ELECTRICITY && key.equals(actorName + "_withEffieciency_ELECTRICITY")) 
+					) 
+				{
 					optimizationAdvice = optResult.resultMap.get(key);
 					
 					// Write scalar setpoint to EMS (single value)

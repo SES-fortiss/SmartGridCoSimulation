@@ -15,6 +15,7 @@ public class SaveCommand implements Command {
 		
 		if (workingFilePath != null && !workingFilePath.isEmpty()) {
 			new ModelInitHelper().writeMemapModel(workingFilePath);
+			PlanningTool.getInstance().setSaved(true);
 		} else {
 			Command saveAs = new SaveAsCommand();
 			saveAs.execute();

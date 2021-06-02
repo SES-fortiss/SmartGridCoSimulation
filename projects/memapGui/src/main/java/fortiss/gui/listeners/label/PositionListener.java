@@ -36,7 +36,7 @@ public class PositionListener extends MouseAdapter {
 			BuildingIcon icon = (BuildingIcon) e.getComponent();
 			icon.setLocation(icon.getX() + e.getX() - icon.getWidth() / 2,
 					icon.getY() + e.getY() - icon.getHeight() / 2);
-			pm.updateCenterPositionOf(icon.getText(), icon);
+			pm.updateCenterPositionOf(icon);
 		}
 	}
 
@@ -52,7 +52,7 @@ public class PositionListener extends MouseAdapter {
 
 			BuildingIcon icon = (BuildingIcon) e.getComponent();
 			if (!pm.getVisibleArea().contains(icon.getX(), icon.getY())) {
-				pm.fixPosition(icon.getText(), icon);
+				pm.fixPosition(icon);
 			}
 		}
 	}

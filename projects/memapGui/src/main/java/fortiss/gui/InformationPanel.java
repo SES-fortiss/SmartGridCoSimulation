@@ -11,4 +11,5 @@ public abstract class InformationPanel extends JPanel {
 	}
 	
 	public abstract void update();
+
 }

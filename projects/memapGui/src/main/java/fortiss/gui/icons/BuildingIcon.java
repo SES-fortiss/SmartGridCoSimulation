@@ -25,12 +25,12 @@ public class BuildingIcon extends Icon {
 	/**
 	 * Creates a building icon that represent a new building
 	 */
-	public BuildingIcon(Building building, String buildingName, Point2D position) {
-		super(buildingName, "building", IconStore.sBuilding, IconStore.uBuilding);
+	public BuildingIcon(Building building, Point2D position) {
+		super(building.getName(), "building", IconStore.sBuilding, IconStore.uBuilding);
 		setBuilding(building);
 		setPosition(position);
 
-		String toolTip = "<html>" + buildingName + "<br>- click to select building"
+		String toolTip = "<html>" + building.getName() + "<br>- click to select building"
 				+ "<br>- press DEL to delete selected building" + "<br>- right click and drag to create a connection "
 				+ "<br>- double click on connection to modify it parameters </html>";
 
@@ -39,8 +39,6 @@ public class BuildingIcon extends Icon {
 		PositionManager pm = PositionManager.getInstance();
 		Point2D upperLeftPosition = pm.getUpperLeftPoint(position);
 		setLocation((int) upperLeftPosition.getX(), (int) upperLeftPosition.getY());
-
-		pm.addPosition(buildingName, this);
 
 		DesignerPanel.pl_ems.add(this);
 		DesignerPanel.pl_ems.doLayout();

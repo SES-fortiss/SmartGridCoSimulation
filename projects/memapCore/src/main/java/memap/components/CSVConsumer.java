@@ -63,7 +63,7 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 
 		super.updateDisplay(demandMessage);
 	}
-	
+
 	/**
 	 * @return Heat profile
 	 */
@@ -81,50 +81,52 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 	}
 
 	/**
-	 * Assign values to heatProfile and electricityProfile. Maybe this should be replaced into a distinct init helper class.
+	 * Assign values to heatProfile and electricityProfile. Maybe this should be
+	 * replaced into a distinct init helper class.
 	 */
 	private void setProfiles(String csvFile) {
 		try {
-			
 			FileManager fm = new FileManager();
 			if (csvFile.isEmpty()) {
-				
-				OriginalCSVHandler ocsv = new OriginalCSVHandler(fm.getBuffer("CONSUMPTIONEXAMPLE0"), topologyConfig);
+				OriginalCSVHandler ocsv;
+				csvFile = "CONSUMPTIONEXAMPLE0"; // Necessary in case parsing fails
+				ocsv = new OriginalCSVHandler(fm.getBuffer(csvFile), topologyConfig);
 				electricityProfile = ocsv.getElectricityProfile();
 				heatProfile = ocsv.getHeatProfile();
-				
 			} else {
-				
 				// We handle the original way (old data format) first
 				BufferedReader br = fm.getBuffer(csvFile);
-				OriginalCSVHandler ocsv = new OriginalCSVHandler(br, topologyConfig);				
+				OriginalCSVHandler ocsv;
+				ocsv = new OriginalCSVHandler(br, topologyConfig);
 				electricityProfile = ocsv.getElectricityProfile();
 				heatProfile = ocsv.getHeatProfile();
-				
 			}
 		} catch (IOException | ParseException e) {
-			
-			System.out.println("Reading new format of " + csvFile);			
+
+			System.out.println("Reading new format of " + csvFile);
 			try {
-				// If the first reader does not work, we try a second format style, that is specified as another scenario
-				
+				// If the first reader does not work, we try a second format style, that is
+				// specified as another scenario
+
 				FileManager fm = new FileManager();
 				BufferedReader br = fm.getBuffer(csvFile);
-				String [] columnNames = new String[] {"Heat", "Electricity"};
+				String[] columnNames = new String[] { "Heat", "Electricity" };
 				TimedData timedConsumerData = new TimedData(br, columnNames);
 				TimedDataHandler tdh = new TimedDataHandler(timedConsumerData, topologyConfig, columnNames);
 				electricityProfile = tdh.get(columnNames[0]);
 				heatProfile = tdh.get(columnNames[1]);
-				
-				// After the creation of the profiles, we must be sure to consider the MPC Horizon.
-				// We append the first part of the profile again to the end to make sure that MPC data is available.
-				
-				int requiredProfileWithMPC = topologyConfig.getNrSteps() + topologyConfig.getNrStepsMPC() - 1;				
-				if ( electricityProfile.size() < requiredProfileWithMPC) {
+
+				// After the creation of the profiles, we must be sure to consider the MPC
+				// Horizon.
+				// We append the first part of the profile again to the end to make sure that
+				// MPC data is available.
+
+				int requiredProfileWithMPC = topologyConfig.getNrSteps() + topologyConfig.getNrStepsMPC() - 1;
+				if (electricityProfile.size() < requiredProfileWithMPC) {
 					electricityProfile.addAll(electricityProfile.subList(0, topologyConfig.getNrStepsMPC()));
 					heatProfile.addAll(heatProfile.subList(0, topologyConfig.getNrStepsMPC()));
 				}
-				
+
 			} catch (Exception e2) {
 				SimulationProgress.getInstance().setStatus(Status.ERROR, getClass() + " - wrong format");
 				SimulationStarter.stopSimulationStatic();
@@ -132,7 +134,6 @@ public class CSVConsumer extends Consumer implements CurrentTimeStepSubscriber {
 				e2.printStackTrace();
 			}
 		}
-
 	}
 
 	@Override
