@@ -72,7 +72,7 @@ abstract public class StyleGenerator {
 		UIManager.put("Tree.closedIcon", IconStore.closedNode);
 		UIManager.put("Tree.openIcon", IconStore.openNode);
 		UIManager.put("Tree.leafIcon", IconStore.itemNode);
-		UIManager.put("ScrollBar.width", 10);
+		UIManager.put("ScrollBar.width", 15);
 		
 	}
 
