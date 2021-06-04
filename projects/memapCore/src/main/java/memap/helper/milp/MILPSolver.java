@@ -122,8 +122,6 @@ public class MILPSolver {
 			}
 			// TODO Add code to account for the other 14 solver status values. maybe switch
 			// to linear solver instead?
-			// TODO Add some UI warning. When this error takes place the results window does
-			// not appear.
 		}
 	}
 
@@ -141,22 +139,70 @@ public class MILPSolver {
 		workWithResults(optSolution, names, lambda, lambdaCO2);
 	}
 
+	// FIXME - this method is doing two independent tasks, 
 	private void workWithResults(double[] optSolution, String[] names, double[] lambda, double[] lambdaCO2) {
+		
+		/** TASK ONE - creation of optResult Map (the MPC set-points) */
+		
+		
+		/* Buffers to calculate additional values with efficiencies */
+		ArrayList<String> additionalEfficiencyNames_tmp = null;
+		ArrayList<Double> additionalEfficiencyValues_tmp = null;
+		
+		if (singleBuildingMessage != null) {
+			additionalEfficiencyNames_tmp = milpSolHandler.createNamesForCorrEfficiency(singleBuildingMessage, names);
+			additionalEfficiencyValues_tmp = milpSolHandler.createValuesForCorrEfficiency(singleBuildingMessage, names, optSolution);
+			
+		} else if (multipleBuildingMessages != null) {
+			additionalEfficiencyNames_tmp = milpSolHandler.createNamesForCorrEfficiency(multipleBuildingMessages, names);
+			additionalEfficiencyValues_tmp = milpSolHandler.createValuesForCorrEfficiency(multipleBuildingMessages, names, optSolution);
+		}
+		
+		//System.out.println(MILPSolver.class + "  additionalEFFNames: " + additionalEfficiencyNames_tmp.toString());
+		//System.out.println(MILPSolver.class + "  additionalEFFValues: " + additionalEfficiencyValues_tmp.toString());
+		
+		/* cast the ArrayList<String> and ArrayList<Double> to conventional Java arrays-[] */ 
+		String[] additionalEfficiencyNames = new String[additionalEfficiencyNames_tmp.size()];
+		additionalEfficiencyNames = additionalEfficiencyNames_tmp.toArray(additionalEfficiencyNames);
+		
+		double[] additionalEfficiencyValues = new double[additionalEfficiencyValues_tmp.size()];				
+		for (int i = 0; i < additionalEfficiencyValues.length; i++) {
+			additionalEfficiencyValues[i] = additionalEfficiencyValues_tmp.get(i);
+		} // casting done here
+		
+		double[] extendedSolutionVector = HelperConcat.concatAlldoubles(
+					optSolution, 
+					additionalEfficiencyValues
+				);
+		
+		String[] extendedNames = HelperConcat.concatAllObjects(
+					names, 
+					additionalEfficiencyNames
+				);
+		
+		for (int i = 0; i < extendedNames.length / nStepsMPC; i++) {
+			double[] values = new double[nStepsMPC];
 
-		BuildingMessageHandler buildingMessageHandler = new BuildingMessageHandler();
+			for (int j = 0; j < values.length; j++) {
+				values[j] = extendedSolutionVector[i * nStepsMPC + j];
+			}
+
+			String str = extendedNames[i * nStepsMPC].replace("_T0", "");
+
+			optResult.resultMap.put(str, values);
+		}
+
+		// Memory is cleaned up in the child classes  
+		
+		
+		/** TASK TWO - creation of result vectors for CURRENT TIME STEP for planning tool */
+
 		double buildingCostPerTimestep = 0;
 		double buildingCO2PerTimestep = 0;
 		buildingCostPerTimestep = milpSolHandler.calculateTimeStepCosts(optSolution, lambda);
 		buildingCO2PerTimestep = milpSolHandler.calculateTimeStepCosts(optSolution, lambdaCO2);
 		buildingStepCostsMILP[currentTimeStep] = buildingCostPerTimestep;
 		buildingStepCO2MILP[currentTimeStep] = buildingCO2PerTimestep;
-
-		// to calculate the total costs --> what does that say?
-		
-		// System.out.println("buildingCostPerTimestep: " + buildingCostPerTimestep);
-		
-		// is that the total costs of the planned schedule?
-		// is that the cost
 		
 		double costTotal = 0;
 		double CO2Total = 0;
@@ -165,34 +211,44 @@ public class MILPSolver {
 			costTotal += buildingStepCostsMILP[i];
 			CO2Total += buildingStepCO2MILP[i];
 		}
-		
-		// System.out.println("costTotal: " + costTotal);
 
-		// Creation of the result vector
+		/** Creation of the two result vectors, one with name, one with values **/
+		String[] timeStep = { Strings.timeStep };
 		double[] currentStep = { currentTimeStep };
 		
-		// FIXME. Currently there is a bug, because singleBuildingMessage == null, if connections are present! This has to be considered.
-		double[] currentOptVector = null;
-		if (singleBuildingMessage != null) { // Jan's version 
-			currentOptVector = milpSolHandler.getEffSolutionForThisTimeStep(singleBuildingMessage, names, optSolution, nStepsMPC);
-		}
+		String[] energyPricesNames = { 
+					Strings.elecBuyingPriceAndUnit, 
+					Strings.elecSellingPriceAndUnit,
+					Strings.heatBuyingPriceAndUnit 
+				};
 		
-		if (singleBuildingMessage == null) { // previous solution
-			currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
-		}
+		double[] currentEnergyPrices = { 
+					energyPrices.getElecBuyingPrice(currentTimeStep),
+					energyPrices.getElecSellingPrice(currentTimeStep),
+					energyPrices.getHeatBuyingPrice(currentTimeStep) 
+				};
 		
-		double[] currentEnergyPrices = { energyPrices.getElecBuyingPrice(currentTimeStep),
-				energyPrices.getElecSellingPrice(currentTimeStep),
-				energyPrices.getHeatBuyingPrice(currentTimeStep) };
-		double[] totalCostsEUR = { costTotal };
-		double[] totalCO2emissions = { CO2Total };
-
-		String[] timeStep = { Strings.timeStep };
-		String[] currentOptVectorNames = milpSolHandler.getVectorNamesForThisTimeStep(names, nStepsMPC);
-		String[] energyPricesNames = { Strings.elecBuyingPriceAndUnit, Strings.elecSellingPriceAndUnit,
-				Strings.heatBuyingPriceAndUnit };
 		String[] totalCosts = { Strings.totalCostAndUnit };
+		double[] totalCostsEUR = { costTotal };
+		
 		String[] co2emissions = { Strings.co2EmissionsAndUnit };
+		double[] totalCO2emissions = { CO2Total };
+		
+		String[] currentOptVectorNames = milpSolHandler.getVectorNamesForThisTimeStep(names, nStepsMPC);
+		double[] currentOptVector = milpSolHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
+		
+		System.out.println(MILPSolver.class + " additionalEfficiencyNames: " + Arrays.toString(additionalEfficiencyNames));
+		System.out.println(MILPSolver.class + " additionalEfficiencyValues: " + Arrays.toString(additionalEfficiencyValues));
+		
+		// filter the right names
+		int[] selectedIndices = milpSolHandler.getIndicesByTO(additionalEfficiencyNames, nStepsMPC); 
+		String[] currentEfficiencyNames = new String[selectedIndices.length];
+		double[] currentEfficiencyValues = new double[selectedIndices.length];
+		
+		for (int i = 0; i < selectedIndices.length; i++) {
+			currentEfficiencyNames[i] = additionalEfficiencyNames[selectedIndices[i]].replace("_T0", "");
+			currentEfficiencyValues[i] = additionalEfficiencyValues[selectedIndices[i]];
+		}
 
 		String[] currentDemandNames = null;
 		double[] currentDemand = null;
@@ -208,15 +264,17 @@ public class MILPSolver {
 			currentDemand = milpSolHandler.getDemandForThisTimestep(singleBuildingMessage.getCombinedDemandVector(),
 					nStepsMPC); 			
 			currentSOC = milpSolHandler.getCurrentSOC(singleBuildingMessage.storageList);
-			currentStorageEnergyContent = milpSolHandler.getCurrentSOCEnergy(singleBuildingMessage.storageList);
-			
+			currentStorageEnergyContent = milpSolHandler.getCurrentSOCEnergy(singleBuildingMessage.storageList);			
 			currentDemandNames = milpSolHandler.getNamesForDemandSingleBuilding();
 			currentSOCNames = milpSolHandler.getNamesForSOC(singleBuildingMessage.storageList);
 			currentStorageEnergyContentNames = milpSolHandler.getNamesForSOCEnergy(singleBuildingMessage.storageList);
+			
 		} else {
 			// With connections
+			BuildingMessageHandler buildingMessageHandler = new BuildingMessageHandler();
 			double[] demandVector = buildingMessageHandler.getCombinedDemandVector(multipleBuildingMessages, nStepsMPC);
-			currentDemand = milpSolHandler.getDemandForThisTimestep(demandVector, nStepsMPC);			
+			
+			currentDemand = milpSolHandler.getDemandForThisTimestep(demandVector, nStepsMPC);
 			currentSOC = milpSolHandler.getCurrentSOCs(multipleBuildingMessages);
 			currentStorageEnergyContent = milpSolHandler.getCurrentSOCEnergyMB(multipleBuildingMessages);
 			
@@ -229,79 +287,59 @@ public class MILPSolver {
 			for (int i = 0; i < currentDemand.length -1; i++) {
 				resultWithTotalHeatDemand[0] += currentDemand[i];
 				resultWithTotalHeatDemand[i+1] = currentDemand[i];
-			}			
+			}
 			resultWithTotalHeatDemand[currentDemand.length] = currentDemand[currentDemand.length-1];			
 			currentDemand = resultWithTotalHeatDemand;
-		}
+		}		
 
-		String[] namesResult = HelperConcat.concatAllObjects(timeStep, currentDemandNames, currentOptVectorNames,
-				currentSOCNames, currentStorageEnergyContentNames, energyPricesNames, totalCosts, co2emissions);
-		double[] vectorResult = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC,
-				currentStorageEnergyContent, currentEnergyPrices, totalCostsEUR, totalCO2emissions);
-
+		String[] namesResult_this_TimeStep = HelperConcat.concatAllObjects(
+				timeStep, 
+				currentDemandNames, 
+				currentOptVectorNames, 				
+				currentEfficiencyNames,				
+				currentSOCNames, 
+				currentStorageEnergyContentNames, 
+				energyPricesNames, 
+				totalCosts, 
+				co2emissions);
 		
+		double[] vectorResult_this_TimeStep = HelperConcat.concatAlldoubles(
+				currentStep, 
+				currentDemand, 
+				currentOptVector,				
+				currentEfficiencyValues,				
+				currentSOC,
+				currentStorageEnergyContent, 
+				currentEnergyPrices, 
+				totalCostsEUR, 
+				totalCO2emissions);
+
+		// FIXME - check if the "ToolUsage.SERVER" part has to be adapted to the changes above as well.
 		int nrOfBuildings = 1;
 		if (singleBuildingMessage == null) {
 			nrOfBuildings =  multipleBuildingMessages.size();
 		}
 		
 		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
-			ConnectionDB.addResults(topologyController.getOptimizationHierarchy(),currentTimeStep, namesResult, currentStep, currentDemand, currentOptVector, currentSOC,
+			ConnectionDB.addResults(topologyController.getOptimizationHierarchy(),currentTimeStep, namesResult_this_TimeStep, currentStep, currentDemand, currentOptVector, currentSOC,
 				currentEnergyPrices, totalCostsEUR, totalCO2emissions, nrOfBuildings);
-		}
-		
+		}		
 
 		// Format results vector for printing
-		String[] vectorResultStr = new String[vectorResult.length];
+		String[] vectorResultStr = new String[vectorResult_this_TimeStep.length];
 		DecimalFormat df = new DecimalFormat("0,00", new DecimalFormatSymbols(Locale.GERMAN));
 		for (int i = 1; i < vectorResultStr.length; i++) {
-			vectorResultStr[i] = df.format(vectorResult[i]);
+			vectorResultStr[i] = df.format(vectorResult_this_TimeStep[i]);
 		}
-
-		//System.out.println("MILP: " + this.actorName + " Names: " + Arrays.toString(namesResult));
-		//System.out.println("MILP: " + this.actorName + " Result: " + Arrays.toString(vectorResult));
-		
 		
 		// Save
-		buildingsSolutionPerTimeStepMILP[currentTimeStep] = vectorResult;
+		buildingsSolutionPerTimeStepMILP[currentTimeStep] = vectorResult_this_TimeStep;
 
 		String saveString = topologyController.getSimulationName() + "/MPC" + topologyConfig.getNrStepsMPC() + "_MILP/";
 		saveString += actorName + "_MPC" + nStepsMPC + Strings.milpSolutionFileSuffix;
 		if (currentTimeStep == (topologyConfig.getNrOfIterations() - 1)) {
-			milpSolHandler.exportMatrix(buildingsSolutionPerTimeStepMILP, saveString, namesResult);
+			milpSolHandler.exportMatrix(buildingsSolutionPerTimeStepMILP, saveString, namesResult_this_TimeStep);
 		}
-
-		/* FIXME this is workaround due to merge of the branches from server team and planning tool team
-		 * it would be good to get a harmonic solution, where the solution is corrected by efficiencies in both cases, 
-		 * no matter if it is a solution of the problem with connections, or without. 
-		 */
-		double[] optSolutionEffcorrected = null;
-		if (singleBuildingMessage != null) {
-			optSolutionEffcorrected = milpSolHandler.getEffSolutionForThisTimeStep(singleBuildingMessage, names, optSolution, 1);
-		}
-		if (singleBuildingMessage == null) {
-			optSolutionEffcorrected = optSolution;
-		}
-		
-		
-		
-		// Request content to send
-		for (int i = 0; i < names.length / nStepsMPC; i++) {
-			double[] values = new double[nStepsMPC];
-
-			for (int j = 0; j < values.length; j++) {
-				values[j] = optSolutionEffcorrected[i * nStepsMPC + j];
-			}
-
-			// TODO : Improve this work around
-			// as this might be required for controllable gens and couplers
-			String str = names[i * nStepsMPC].replace("_T0", "");
-//			String str2 = str.substring(0, str.indexOf("_"));
-
-			optResult.resultMap.put(str, values);
-		}
-
-		// Memory is cleaned up in the child classes 
 
 	}
 

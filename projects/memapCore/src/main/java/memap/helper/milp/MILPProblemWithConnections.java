@@ -545,7 +545,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 	            	if (topologyController.getToolUsage() == ToolUsage.SERVER && cm.varOperationalCostEUR != null) {
 	            		
 	            		// This part overwrites the previous costs if above condition is given
-	            		counter = counter -1;
+	            		counter--;
 	            		// TODO: solve better
 	            		
 	            		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {

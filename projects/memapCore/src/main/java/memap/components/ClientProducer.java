@@ -169,7 +169,7 @@ public class ClientProducer extends Producer {
 			
 			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
 			for (String key : optResult.resultMap.keySet()) {
-				if (key.equals(actorName)) {
+				if (key.equals(actorName + "_withEfficiency")) {
 					optimizationAdvice = optResult.resultMap.get(key);
 					
 					// Write scalar setpoint to EMS (single value)

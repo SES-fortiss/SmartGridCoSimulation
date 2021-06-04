@@ -88,10 +88,8 @@ public class ClientStorage extends Storage {
 		this.outputSetpointId = outputSetpointId;
 		this.outputSetpointsId = outputSetpointsId;
 		this.networkType = setNetworkType(client, nodeIdSector);
-//		this.opCost = client.readFinalDoubleValue(opCostId);
-//		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
-		this.opCost = 0.0;
-		this.costCO2 = 0.0;
+		this.opCost = client.readFinalDoubleValue(opCostId);
+		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
 		this.calculatedSocId = calculatedSocId;
 		
 //		System.out.println("Initial SOC = " + this.stateOfCharge);
@@ -201,7 +199,7 @@ public class ClientStorage extends Storage {
 			// Alphas and betas have to be calculated here as well. 
 			// helper parameters, only depend on time step length and storage parameters
 			double alpha = 1 - standbyLosses * delta_time;
-			double beta_to = delta_time/ this.capacity * this.effIN;
+			double beta_to = (delta_time/ this.capacity) * this.effIN;
 			double beta_fm = delta_time/(this.capacity * this.effOUT);
 			
 			// update the SOC based on the just written setpoints for the storage
