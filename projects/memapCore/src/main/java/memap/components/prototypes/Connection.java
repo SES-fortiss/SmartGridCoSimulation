@@ -25,9 +25,9 @@ public class Connection extends Device {
 
 		this.sourceBuilding = sourceBuilding;
 		this.connectedBuilding = connectedBuilding;
-		this.q_max = q_max;
 		this.operationalPrice = 0.0001;
 		efficiency = Math.pow(1.0 - lossesPer100m, pipeLengthInMeter / 100);
+		this.q_max = q_max / efficiency;
 		this.pipeLengthInMeter = pipeLengthInMeter;
 		
 		// Initialization delayed until after topologyConfig initialization

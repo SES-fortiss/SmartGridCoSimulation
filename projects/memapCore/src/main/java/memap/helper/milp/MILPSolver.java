@@ -142,51 +142,10 @@ public class MILPSolver {
 	// FIXME - this method is doing two independent tasks, 
 	private void workWithResults(double[] optSolution, String[] names, double[] lambda, double[] lambdaCO2) {
 		
-		/** TASK ONE - creation of optResult Map */
+		/** TASK ONE - creation of optResult Map (the MPC set-points) */
 		
-		/* FIXME - done below 
-		 * 
-		 * 
-		 * this is workaround due to merge of the branches from server team and planning tool team
-		 * it would be good to get a harmonic solution, where the solution is corrected by efficiencies in both cases, 
-		 * no matter if it is a solution of the problem with connections, or without. 
-		 */
 		
-		/** OLD Code 
-		double[] optSolutionEffcorrected = null;
-		if (singleBuildingMessage != null) {
-			optSolutionEffcorrected = milpSolHandler.getEffSolutionForThisTimeStep(singleBuildingMessage, names, optSolution, 1);
-		}
-		if (singleBuildingMessage == null) {
-			optSolutionEffcorrected = optSolution;
-		}
-		
-		// TODO change the method above.
-				
-		// System.out.println(MILPSolver.class + " names[]: " + Arrays.toString(names));
-		// System.out.println(MILPSolver.class + " optSolution[]: " + Arrays.toString(optSolution));
-		
-		// optSolutionEffcorrected = null;
-		
-		// Request content to send
-		for (int i = 0; i < names.length / nStepsMPC; i++) {
-			double[] values = new double[nStepsMPC];
-
-			for (int j = 0; j < values.length; j++) {
-				values[j] = optSolutionEffcorrected[i * nStepsMPC + j];
-			}
-
-			// TODO : Improve this work around
-			// as this might be required for controllable gens and couplers
-			String str = names[i * nStepsMPC].replace("_T0", "");
-//			String str2 = str.substring(0, str.indexOf("_"));
-
-			optResult.resultMap.put(str, values);
-		}
-		*/
-		
-		/** THIS IS A MODIFACTION TO CONSIDER THE EFFICIENCIES AS WELL */
-		
+		/* Buffers to calculate additional values with efficiencies */
 		ArrayList<String> additionalEfficiencyNames_tmp = null;
 		ArrayList<Double> additionalEfficiencyValues_tmp = null;
 		
@@ -199,6 +158,9 @@ public class MILPSolver {
 			additionalEfficiencyValues_tmp = milpSolHandler.createValuesForCorrEfficiency(multipleBuildingMessages, names, optSolution);
 		}
 		
+		//System.out.println(MILPSolver.class + "  additionalEFFNames: " + additionalEfficiencyNames_tmp.toString());
+		//System.out.println(MILPSolver.class + "  additionalEFFValues: " + additionalEfficiencyValues_tmp.toString());
+		
 		/* cast the ArrayList<String> and ArrayList<Double> to conventional Java arrays-[] */ 
 		String[] additionalEfficiencyNames = new String[additionalEfficiencyNames_tmp.size()];
 		additionalEfficiencyNames = additionalEfficiencyNames_tmp.toArray(additionalEfficiencyNames);
@@ -208,9 +170,6 @@ public class MILPSolver {
 			additionalEfficiencyValues[i] = additionalEfficiencyValues_tmp.get(i);
 		} // casting done here
 		
-		
-		// new code to correct the old code, that is commented out above
-		// TODO - needs to be checked
 		double[] extendedSolutionVector = HelperConcat.concatAlldoubles(
 					optSolution, 
 					additionalEfficiencyValues
@@ -233,10 +192,10 @@ public class MILPSolver {
 			optResult.resultMap.put(str, values);
 		}
 
-		// Memory is cleaned up in the child classes 
+		// Memory is cleaned up in the child classes  
 		
 		
-		/** TASK TWO - creation of result vectors for current time step for planning tool */
+		/** TASK TWO - creation of result vectors for CURRENT TIME STEP for planning tool */
 
 		double buildingCostPerTimestep = 0;
 		double buildingCO2PerTimestep = 0;
@@ -290,9 +249,6 @@ public class MILPSolver {
 			currentEfficiencyNames[i] = additionalEfficiencyNames[selectedIndices[i]].replace("_T0", "");
 			currentEfficiencyValues[i] = additionalEfficiencyValues[selectedIndices[i]];
 		}
-		
-		System.out.println(MILPSolver.class + " currentEfficiencyNames: " + Arrays.toString(currentEfficiencyNames));
-		System.out.println(MILPSolver.class + " currentEfficiencyProdValues: " + Arrays.toString(currentEfficiencyValues));
 
 		String[] currentDemandNames = null;
 		double[] currentDemand = null;

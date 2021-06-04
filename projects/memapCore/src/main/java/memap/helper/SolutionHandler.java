@@ -12,6 +12,7 @@ import memap.main.TopologyConfig;
 import memap.media.Strings;
 import memap.messages.BuildingMessage;
 import memap.messages.extension.NetworkType;
+import memap.messages.planning.ConnectionMessage;
 import memap.messages.planning.CouplerMessage;
 import memap.messages.planning.ProducerMessage;
 import memap.messages.planning.StorageMessage;
@@ -330,7 +331,7 @@ public class SolutionHandler {
 					additionalNames.add(names[i] +  "_withEffieciency" +"_"+ couplerMessage.secondaryNetwork);
 				}
 			}
-		}		
+		}
 		return additionalNames;
 	}
 
@@ -368,14 +369,22 @@ public class SolutionHandler {
 		return additionalValues;
 	}
 
-	public ArrayList<String> createNamesForCorrEfficiency(ArrayList<BuildingMessage> multipleBuildingMessages, String[] names) {
-		
+	public ArrayList<String> createNamesForCorrEfficiency(ArrayList<BuildingMessage> multipleBuildingMessages, String[] names) {		
 		ArrayList<String> buffer = new ArrayList<>();
 				
 		for (BuildingMessage bm : multipleBuildingMessages) {						
-			buffer.addAll(createNamesForCorrEfficiency(bm, names));
-		}
+			buffer.addAll(createNamesForCorrEfficiency(bm, names));			
+		}		
 		
+		for (BuildingMessage bm : multipleBuildingMessages) {						
+			for (ConnectionMessage cm : bm.connectionList) {
+				for (int i = 0; i < names.length; i++) {
+					if(names[i].contains(cm.name)) {	
+						buffer.add(names[i] + "_withEfficiency");
+					}
+				}
+			}			
+		}
 		return buffer;
 	}
 
@@ -385,6 +394,16 @@ public class SolutionHandler {
 		
 		for (BuildingMessage bm : multipleBuildingMessages) {	
 			buffer.addAll(createValuesForCorrEfficiency(bm, names, optSolution));
+		}
+		
+		for (BuildingMessage bm : multipleBuildingMessages) {
+			for (ConnectionMessage cm : bm.connectionList) {
+				for (int i = 0; i < names.length; i++) {					
+					if(names[i].contains(cm.name)) {
+						buffer.add(optSolution[i]*cm.efficiency);				
+					}
+				}
+			}
 		}
 		return buffer;
 	}
