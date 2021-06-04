@@ -46,7 +46,6 @@ public class Parameters {
 	};
 
 	/** Simulation name */
-	@Expose
 	private String simulationName;
 	/** length MemapSimulation steps. An integer */
 	@Expose
@@ -94,10 +93,10 @@ public class Parameters {
     setCO2Emissions(new CO2Emission(0.404, mpcHorizon));
 	}
 
-	public Parameters(String simulationName, int simulationSteps, int mpcHorizon, int days, String optCriteria,
+	public Parameters(int simulationSteps, int mpcHorizon, int days, String optCriteria,
 			String optimizer, String loggingMode, Price elecBuyingPrice, Price elecSellingPrice,
 			Price heatBuyingPrice, Price co2Emissions) {
-		setSimulationName(simulationName);
+		setSimulationName("InteractiveMEMAP");
 		setStepsPerDay(simulationSteps);
 		// Initially setter is not called, so that the prices are not updated
 		this.mpcHorizon = 2;
@@ -115,6 +114,9 @@ public class Parameters {
 		return simulationName;
 	}
 
+	/**
+	 * Must be manually set after deserialization!
+	 */
 	public void setSimulationName(String simulationName) {
 		this.simulationName = simulationName;
 		setSaved(false);

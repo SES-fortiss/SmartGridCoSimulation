@@ -83,17 +83,18 @@ public class GuiController {
 
 		Gson gson = gsonBuilder.enableComplexMapKeySerialization().create();
 		JsonStreamParser p = new JsonStreamParser(reader);
-
+		JsonArray root = p.next().getAsJsonArray();
+		
 		// Buildings
-		JsonElement topology = p.next();
+		JsonElement topology = root.get(0);
 		JsonArray buildings = topology.getAsJsonArray();
 
 		// Connections
-		JsonElement connections = p.next();
+		JsonElement connections = root.get(1);
 		ArrayList<Connection> connectionList = gson.fromJson(connections, connectionMapType);
 
 		// Parameters
-		JsonElement parameters = p.next();
+		JsonElement parameters = root.get(2);
 
 		// Create topology
 		JsonObject jObject = parameters.getAsJsonObject();

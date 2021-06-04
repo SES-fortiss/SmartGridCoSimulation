@@ -17,7 +17,6 @@ import fortiss.gui.listeners.helper.HeatPrice;
 import fortiss.gui.listeners.helper.Price;
 import fortiss.simulation.Parameters;
 
-
 public class ParametersTypeAdapter implements JsonSerializer<Parameters>, JsonDeserializer<Parameters> {
 
 	@Override
@@ -26,7 +25,6 @@ public class ParametersTypeAdapter implements JsonSerializer<Parameters>, JsonDe
 
 		JsonObject obj = json.getAsJsonObject();
 
-		String simulationName = obj.get("simulationName").getAsString();
 		int simulationSteps = obj.get("stepsPerDay").getAsInt();
 		int mpcHorizon = obj.get("mpcHorizon").getAsInt();
 		int days = obj.get("days").getAsInt();
@@ -49,18 +47,18 @@ public class ParametersTypeAdapter implements JsonSerializer<Parameters>, JsonDe
 				mpcHorizon);
 
 		JsonObject co2EmissionsObj = obj.get("co2Emissions").getAsJsonObject();
-		
+
 		Price co2Emissions = new HeatPrice(co2EmissionsObj.get("fixed").getAsBoolean(),
 				co2EmissionsObj.get("price").getAsDouble(), co2EmissionsObj.get("priceFilePath").getAsString(),
 				mpcHorizon);
-		
+
 		elecBuyingPrice.loadFromFile(mpcHorizon);
 		elecSellingPrice.loadFromFile(mpcHorizon);
 		heatBuyingPrice.loadFromFile(mpcHorizon);
 		co2Emissions.loadFromFile(mpcHorizon);
 
-		Parameters parameters = new Parameters(simulationName, simulationSteps, mpcHorizon, days, optCriteria,
-				optimizer, loggingMode, elecBuyingPrice, elecSellingPrice, heatBuyingPrice, co2Emissions);
+		Parameters parameters = new Parameters(simulationSteps, mpcHorizon, days, optCriteria, optimizer, loggingMode,
+				elecBuyingPrice, elecSellingPrice, heatBuyingPrice, co2Emissions);
 
 		return parameters;
 	}
