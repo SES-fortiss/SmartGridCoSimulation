@@ -3,6 +3,7 @@ package memap.controller;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import com.google.gson.Gson;
@@ -155,8 +156,10 @@ public class GuiController {
 			loggingMode = MEMAPLogging.FILES;
 		if (loggingST.equals("resultLogs"))
 			loggingMode = MEMAPLogging.RESULTS_ONLY;
+		
+		String fileName = Paths.get(topologyFilePath).getFileName().toString().replaceAll(".json", "");
 
-		TopologyController top = new TopologyController(jObject.get("simulationName").getAsString(), optHierarchy,
+		TopologyController top = new TopologyController(fileName, optHierarchy,
 				optimizer, optimizationCriteria, ToolUsage.PLANNING, loggingMode);
 
 		for (JsonElement json : buildings) {
