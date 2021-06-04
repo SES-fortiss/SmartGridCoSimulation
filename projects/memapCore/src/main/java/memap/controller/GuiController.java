@@ -181,7 +181,7 @@ public class GuiController {
 			JsonObject obj = json.getAsJsonObject();
 
 			String sourceBuilding = obj.get("formattedNameNodeA").getAsString();
-			String connectedBuilding = obj.get("formattedNameNodeA").getAsString();
+			String connectedBuilding = obj.get("formattedNameNodeB").getAsString();
 			double pipeLengthInMeter = obj.get("length").getAsDouble();
 			double lossesPer100m = obj.get("losses").getAsDouble();
 			double maxTransportCapacity = obj.get("maxTransportCapacity").getAsDouble();
