@@ -1,11 +1,6 @@
 package fortiss.gui;
 
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-
 import fortiss.gui.style.Colors;
-import fortiss.gui.style.FontSize;
-import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
 import fortiss.simulation.Parameters;
 import fortiss.simulation.PlanningTool;
@@ -29,13 +24,6 @@ public class PricesPanel extends InformationPanel {
 	private void initialize() {
 
 		setLayout(new MigLayout("insets 0 0 0 0, fillx, wrap 1, hidemode 2, width 99%", "[center]", ""));
-
-		/*
-		JLabel lblSectionTitle = new JLabel("Energy prices".toUpperCase(), SwingConstants.LEFT);
-		lblSectionTitle.setFont(Fonts.getOswald(FontSize.SMALL));
-		lblSectionTitle.setForeground(Colors.title);
-		add(lblSectionTitle, "gapbottom 0, growx");
-		*/
 
 		elecBuyingPriceBoard = new PriceBoard("Electricity (buying price)");
 		add(elecBuyingPriceBoard, "growx");
