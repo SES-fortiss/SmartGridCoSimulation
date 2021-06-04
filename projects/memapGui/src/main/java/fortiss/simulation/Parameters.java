@@ -90,7 +90,7 @@ public class Parameters {
 		setElecBuyingPrice(new ElectricityPrice(0.3, mpcHorizon));
 		setElecSellingPrice(new ElectricityPrice(0.08, mpcHorizon));
 		setHeatBuyingPrice(new HeatPrice(0.13, mpcHorizon));
-    setCO2Emissions(new CO2Emission(0.404, mpcHorizon));
+		setCO2Emissions(new CO2Emission(0.404, mpcHorizon));
 	}
 
 	public Parameters(int simulationSteps, int mpcHorizon, int days, String optCriteria,
