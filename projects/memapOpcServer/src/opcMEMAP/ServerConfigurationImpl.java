@@ -291,7 +291,7 @@ public class ServerConfigurationImpl implements Namespace {
     public void write(WriteContext context, List<WriteValue> writeValues) {
         List<StatusCode> results = Lists.newArrayListWithCapacity(writeValues.size());
         
-        // Das Problem ist hier, dass diese methode den richtigen context benötigt.
+        // Das Problem ist hier, dass diese methode den richtigen context benÃ¶tigt.
         // Ich habe noch nicht rausgefunden, wie man das richtig einsetzt.
         
         for (WriteValue writeValue : writeValues) {

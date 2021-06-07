@@ -79,7 +79,7 @@ public class MyOpcUaServer implements Runnable {
       serverStarted = true;
       serverUpdater = new ServerUpdater(server, jsonInterface.getServerReference());
 
-      // start: bin mir nicht unsicher, ob das überhaupt gebraucht wird.
+      // start: bin mir nicht unsicher, ob das Ã¼berhaupt gebraucht wird.
       final CompletableFuture<Void> future = new CompletableFuture<>();
       Runtime.getRuntime().addShutdownHook(new Thread(() -> future.complete(null)));
       future.get();
