@@ -17,7 +17,7 @@ jobs:
       - name: Checkout memap
         uses: actions/checkout@v2
         with:
-          ref: feat-ci
+          ref: development
       - name: Set up JDK 8
         uses: actions/setup-java@v2
         with:
@@ -40,7 +40,7 @@ jobs:
     - name: Checkout memap
       uses: actions/checkout@v2
       with:
-        ref: feat-ci
+        ref: development
     - name: Set up JDK 8
       uses: actions/setup-java@v2
       with:
@@ -65,7 +65,7 @@ jobs:
     - name: Checkout memap
       uses: actions/checkout@v2
       with:
-        ref: feat-ci
+        ref: development
     - name: Set up JDK 8
       uses: actions/setup-java@v2
       with:
@@ -87,7 +87,7 @@ jobs:
     - name: Checkout memap
       uses: actions/checkout@v2
       with:
-        ref: feat-ci
+        ref: development
     - name: Set up JDK 8
       uses: actions/setup-java@v2
       with:
@@ -113,7 +113,7 @@ jobs:
     - name: Checkout memap
       uses: actions/checkout@v2
       with:
-        ref: feat-ci
+        ref: development
     - name: Set up JDK 8
       uses: actions/setup-java@v2
       with:
@@ -137,7 +137,7 @@ jobs:
     - name: Checkout memap
       uses: actions/checkout@v2
       with:
-        ref: feat-ci
+        ref: development
     - name: Set up JDK 8
       uses: actions/setup-java@v2
       with:
