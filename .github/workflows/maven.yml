@@ -33,6 +33,7 @@ jobs:
         run: mvn -f core/cim15/pom.xml clean install
       
   install-powerflow:
+    needs: install-cim
     runs-on: ubuntu-latest
     
     steps:
@@ -55,6 +56,9 @@ jobs:
       run: mvn -f core/powerflow/pom.xml clean install
      
   install-gridarchitect:
+    needs:
+      - install-cim
+      - install-powerflow
     runs-on: ubuntu-latest
     
     steps:
@@ -99,6 +103,10 @@ jobs:
       run: mvn -f projects/memapOpcServer/pom.xml clean install
     
   install-memapCore:
+    needs:
+      - install-cim
+      - install-powerflow
+      - install-gridarchitect
     runs-on: ubuntu-latest
     
     steps:
@@ -121,6 +129,8 @@ jobs:
       run: mvn -f projects/memapCore/pom.xml clean install
       
   install-memapGui:
+    needs:
+      - install-memapCore
     runs-on: ubuntu-latest
     
     steps:
