@@ -119,7 +119,7 @@ public class PriceBoard extends JPanel implements OptionObserver {
 
 	public void setPrice(Price price) {
 		this.price = price;
-		lbPrice.setText("Price " + getPrice().getUnits());
+		lbPrice.setText(price.getLabels()[0]);
 		update();
 	}
 	
