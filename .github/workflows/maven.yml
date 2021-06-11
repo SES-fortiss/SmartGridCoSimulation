@@ -32,9 +32,9 @@ jobs:
         restore-keys: ${{ runner.os }}-m2
     - name: Build with Maven
       run: |
-        mvn -f projects/memapOpcServer/pom.xml clean compile install -Dmaven.test.skip=true -X
-        mvn -f core/cim15/pom.xml clean compile install -Dmaven.test.skip=true -X
-        mvn -f core/powerflow/pom.xml clean compile install -Dmaven.test.skip=true -X
-        mvn -f core/gridarchitect/pom.xml clean compile install -Dmaven.test.skip=true -X
-        mvn -f projects/memapCore/pom.xml clean compile install -Dmaven.test.skip=true -X
-        mvn -f projects/memapGui/pom.xml clean compile install -Dmaven.test.skip=true -X
+        mvn -f projects/memapOpcServer/pom.xml clean compile install -Dmaven.test.skip=true 
+        mvn -f core/cim15/pom.xml clean compile install -Dmaven.test.skip=true 
+        mvn -f core/powerflow/pom.xml clean compile install -Dmaven.test.skip=true
+        mvn -f core/gridarchitect/pom.xml clean compile install -Dmaven.test.skip=true
+        mvn -f projects/memapCore/pom.xml clean compile install -Dmaven.test.skip=true
+        mvn -f projects/memapGui/pom.xml clean compile install -Dmaven.test.skip=true
