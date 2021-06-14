@@ -6,22 +6,22 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 
 import fortiss.gui.style.Colors;
-import fortiss.gui.Designer;
-import fortiss.media.Icon;
+import fortiss.media.IconStore;
+import fortiss.simulation.PlanningTool;
 
 public class DarkModeListener extends MouseAdapter {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		JLabel icon = (JLabel) e.getSource();
-		if(icon.getIcon().equals(Icon.onDarkMode)) {
-			icon.setIcon(Icon.offDarkMode);
+		if(icon.getIcon().equals(IconStore.onDarkMode)) {
+			icon.setIcon(IconStore.offDarkMode);
 			Colors.setDarkModeOff();
 		} else {
-			icon.setIcon(Icon.onDarkMode);
+			icon.setIcon(IconStore.onDarkMode);
 			Colors.setDarkModeOn();
 		}
-		Designer.frame.repaint();
+		PlanningTool.getInstance().repaintAll();
 	}
 	
 }

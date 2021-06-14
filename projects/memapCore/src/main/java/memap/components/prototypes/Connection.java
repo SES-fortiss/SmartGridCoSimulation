@@ -7,12 +7,8 @@ import memap.messages.planning.ConnectionMessage;
 
 public class Connection extends Device {
 
-	/**
-	 * public int connectedBuilding; public double maxIn; public double maxOut;
-	 * public double efficiencyIn; public double efficiencyOut; public double
-	 * operationalPriceEURO; public double operationalPriceCO2;
-	 */
-
+	// for deserialization
+	public String sourceBuilding;
 	public String connectedBuilding;
 	public double q_max;
 	public double efficiency;
@@ -21,43 +17,26 @@ public class Connection extends Device {
 
 	public ConnectionMessage connectionMessage = new ConnectionMessage();
 
-	public double[] linprogConnectionInput = new double[nStepsMPC];
-	public double[] linprogConnectionOutput = new double[nStepsMPC];
+	public double[] linprogConnectionInput;
+	public double[] linprogConnectionOutput;
 
-	// public Connection(int connectedBuilding, double maxIn, double maxOut, double
-	// pipeLength, int port) {
-	public Connection(String connectedBuilding, double pipeLengthInMeter, double lossesPer100m, double q_max) {
-		super("connection", 0);
+	public Connection(String sourceBuilding, String connectedBuilding, double pipeLengthInMeter, double lossesPer100m, double q_max) {
+		super("connection_From" + sourceBuilding + "_To"+connectedBuilding, 0);
 
-		/*
-		 * this.connectedBuilding = connectedBuilding; this.maxIn = maxIn; this.maxOut=
-		 * maxOut; this.operationalPriceEURO = 0.00001; this.operationalPriceCO2 = 0.0;
-		 * // 1.5 % Verlust auf 100 Metern Leitung this.efficiencyIn =
-		 * Math.pow(0.985,pipeLength/100); this.efficiencyOut =
-		 * Math.pow(0.985,pipeLength/100);
-		 */
-
+		this.sourceBuilding = sourceBuilding;
 		this.connectedBuilding = connectedBuilding;
-		this.q_max = q_max;
 		this.operationalPrice = 0.0001;
 		efficiency = Math.pow(1.0 - lossesPer100m, pipeLengthInMeter / 100);
+		this.q_max = q_max / efficiency;
 		this.pipeLengthInMeter = pipeLengthInMeter;
+		
+		// Initialization delayed until after topologyConfig initialization
+		linprogConnectionInput = new double[topologyConfig.getNrStepsMPC()];
+		linprogConnectionOutput = new double[topologyConfig.getNrStepsMPC()];
 	}
 
 	@Override
 	public void makeDecision() {
-		/**
-		connectionMessage.networkType = NetworkType.HEAT;
-		connectionMessage.name = this.actorName;
-		connectionMessage.id = this.fullActorPath;
-		connectionMessage.connectedBuilding = this.connectedBuilding;
-		connectionMessage.maxIn = this.maxIn;
-		connectionMessage.maxOut = this.maxOut;
-		connectionMessage.efficiencyIn = this.efficiencyIn;
-		connectionMessage.efficiencyOut = this.efficiencyOut;
-		connectionMessage.operationalCostEUR = this.operationalPriceEURO;
-		connectionMessage.operationalCostCO2 = this.operationalPriceCO2;*/
-		
 		connectionMessage.networkType = NetworkType.HEAT;
 		connectionMessage.name = actorName;
 		connectionMessage.id = fullActorPath;
@@ -96,4 +75,5 @@ public class Connection extends Device {
 		}
 	}
 
+	
 }

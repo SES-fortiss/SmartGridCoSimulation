@@ -1,6 +1,7 @@
 package exampleScenario.components;
 
-import akka.systemActors.GlobalTime;
+import java.time.Duration;
+
 import exampleScenario.messages.BuildingRequest;
 
 public class ThermalStorage extends Storage {
@@ -20,6 +21,8 @@ public class ThermalStorage extends Storage {
 		super.makeDecision();
 		specificationToSend.cost = 0.0;
 		
+		Duration timeStepDuration = this.actor.getTimeStepDuration();
+		
 		BuildingRequest request;
 		double diff;
 		
@@ -30,9 +33,9 @@ public class ThermalStorage extends Storage {
 			// production > consumption -> charge thermal storage
 			if (diff > 0) {
 				if (diff > this.p_max_in) diff = p_max_in;
-				if (diff*GlobalTime.period.getSeconds() < (this.max_capacity - this.current_capacity)) {
+				if (diff*timeStepDuration.getSeconds() < (this.max_capacity - this.current_capacity)) {
 					specificationToSend.p_in = diff;
-					this.current_capacity += diff*GlobalTime.period.getSeconds();
+					this.current_capacity += diff*timeStepDuration.getSeconds();
 					specificationToSend.capacity = this.current_capacity;
 				}
 			}
@@ -40,9 +43,9 @@ public class ThermalStorage extends Storage {
 			// production < consumption -> discharge thermal storage
 			if (diff < 0) {
 				if (-diff > this.p_max_out) diff = -p_max_out;
-				if (-diff*GlobalTime.period.getSeconds() < this.current_capacity) {
+				if (-diff*timeStepDuration.getSeconds() < this.current_capacity) {
 					specificationToSend.p_out = -diff;
-					this.current_capacity += diff*GlobalTime.period.getSeconds();
+					this.current_capacity += diff*timeStepDuration.getSeconds();
 					specificationToSend.capacity = this.current_capacity;
 				}
 			}

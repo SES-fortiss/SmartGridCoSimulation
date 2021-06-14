@@ -11,7 +11,6 @@ package memap.behavior;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,7 +18,6 @@ import org.jsoup.nodes.Element;
 
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
@@ -72,10 +70,5 @@ public class ReaderFromOnline extends BehaviorModel {
 	@Override
 	public RequestContent returnRequestContentToSend() {
 		return null;
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		
 	}
 }

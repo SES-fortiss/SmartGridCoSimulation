@@ -9,17 +9,13 @@
 
 package vppClusterHeads.bioMass;
 
-import java.util.LinkedList;
-
+import akka.basicMessages.AnswerContent;
+import akka.basicMessages.RequestContent;
+import behavior.BehaviorModel;
 import helper.Swmcsv;
 import vppClusterHeads.genericStuff.GenericAnswerContent;
 import vppClusterHeads.genericStuff.GenericRequestContent;
 import vppClusterHeads.genericStuff.VPPPlantType;
-import akka.advancedMessages.ErrorAnswerContent;
-import akka.basicMessages.AnswerContent;
-import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
-import behavior.BehaviorModel;
 
 /**
  * 
@@ -57,8 +53,8 @@ public class BioMassBehaviorModel extends BehaviorModel {
 
 	public void makeDecision() {
 		
-		actualPower = installedPower*Swmcsv.getSWMProfileBioMass(GlobalTime.currentTime);
-		forecastPower = installedPower*Swmcsv.getSWMProfileBioMass(GlobalTime.nextTime);
+		actualPower = installedPower*Swmcsv.getSWMProfileBioMass(this.actor.getCurrentTime());
+		forecastPower = installedPower*Swmcsv.getSWMProfileBioMass(this.actor.getCurrentTime().plus(this.actor.getTimeStepDuration()));
 		
 		answerContentToSend.scheduledProduction = actualPower;
 		answerContentToSend.forecastPower = forecastPower;
@@ -94,6 +90,4 @@ public class BioMassBehaviorModel extends BehaviorModel {
 		return null;
 	}
 
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 }

@@ -15,8 +15,10 @@ import static edu.emory.mathcs.utils.Utils.irange;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.fortiss.powerflowsim.Properties;
 import org.fortiss.powerflowsim.model.CimModel;
 import org.fortiss.powerflowsim.simulation.helper.ExtendedMatrixFunctions;
@@ -35,13 +37,13 @@ import org.jblas.Solve;
  * second solver was implemented by Denis. The second solver is called NetwonExplicit.
  * As some models could not be solved, additionally, the solver was modified to consider
  * physical limits (voltage levels and angle levels) and a step size modification was added.
- * Both solvers provide similar results.
+ * Both solvers provide similar results, but Martins's solver is faster ;-) .
  * 
  * @author murphy, denis
  */
 public abstract class Solver {
 
-	private static Logger log = Logger.getLogger(Solver.class);
+	private static Logger log = LogManager.getLogger(Solver.class);
 	private static double tolerance = Properties.solverTolerance;
 	private static int maxIterations = Properties.solverMaxIterations;
 	private static BusBranchModel busBranchModel;
@@ -55,7 +57,10 @@ public abstract class Solver {
 	 */
 	public static String solve_model(CimModel model){
 		
-		log.setLevel(Level.WARN);
+		// previous solution only as reminder 
+		// log.setLevel(Level.WARN);
+		Configurator.setLevel(log.getName(), Level.WARN);
+		
 		log.info("enter solve_model() method of Solver.class");
 		
 		/*

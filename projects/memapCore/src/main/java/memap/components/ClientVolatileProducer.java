@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -22,16 +23,20 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
 import akka.basicMessages.AnswerContent;
 import memap.components.prototypes.Producer;
+import memap.controller.TopologyController;
 import memap.helperOPCua.BasicClient;
 import memap.messages.extension.NetworkType;
 import memap.messages.planning.VolatileProducerMessage;
 
+
 public class ClientVolatileProducer extends Producer {
-	public double productionProfile[] = new double[nStepsMPC];
+	
+	NetworkType networkType;
+	public Double[] productionProfile;
 	public List<UaMonitoredItem> itemsProduction;
-	public NetworkType networkType;
 	double opCost;
 	double costCO2;
+	public BasicClient client;
 
 	VolatileProducerMessage volatileProducerMessage;
 
@@ -47,16 +52,20 @@ public class ClientVolatileProducer extends Producer {
 	 * @param costCO2Id           CO2 cost [kg CO2/kWh]
 	 * @param port
 	 */
-	public ClientVolatileProducer(BasicClient client, String name, NodeId minPowerId, NodeId maxPowerId, NodeId effId,
-			NodeId currentProductionId, NetworkType networkType, NodeId opCostId, NodeId costCO2Id, int port)
+	public ClientVolatileProducer(BasicClient client, String name,  NodeId nodeIdSector, NodeId maxPowerId,
+			NodeId currentProductionId, NodeId opCostId, NodeId costCO2Id, int port)
 			throws InterruptedException, ExecutionException {
-		super(name, client.readFinalDoubleValue(minPowerId), client.readFinalDoubleValue(maxPowerId),
-				client.readFinalDoubleValue(effId), port);
+		super(name, 0.0, client.readFinalDoubleValue(maxPowerId),
+				1.0, port);
 
 		volatileProducerMessage = new VolatileProducerMessage();
-		this.networkType = networkType;
+		this.client = client;
+		this.networkType = setNetworkType(client, nodeIdSector);
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
+		
+		// Initialization delayed until after topologyConfig initialization
+		productionProfile = new Double[topologyConfig.getNrStepsMPC()];
 
 		// subscribe to the Value attribute of the server's CurrentTime node
 		ReadValueId readProductionId = new ReadValueId(currentProductionId, AttributeId.Value.uid(), null,
@@ -75,7 +84,9 @@ public class ClientVolatileProducer extends Producer {
 		// The actual consumer. Methods on call are implemented here
 		BiConsumer<UaMonitoredItem, DataValue> volatileProducerProduction = (item, value) -> {
 			Variant var = value.getValue();
-			if (var.getValue() instanceof Double) {
+			if (var.getValue() instanceof Number[]) {
+				productionProfile = (Double[]) var.getValue();
+			} else if (var.getValue() instanceof Double) {
 				Arrays.fill(productionProfile, (Math.abs((Double) value.getValue().getValue())));
 			} else {
 				System.out.println("Value " + value + " is not in double format");
@@ -112,11 +123,29 @@ public class ClientVolatileProducer extends Producer {
 		volatileProducerMessage.operationalCostCO2 = costCO2;
 		volatileProducerMessage.efficiency = efficiency;
 		volatileProducerMessage.networkType = networkType;
-		volatileProducerMessage.forecast = productionProfile;
+		//TODO: Input forecast Array
+		// volatileProducerMessage.setForecastVector()
+		volatileProducerMessage.forecast = ArrayUtils.toPrimitive(productionProfile);
+	}
+	
+	@Override
+	public void handleRequest() {
+
 	}
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
 		return volatileProducerMessage;
+	}
+	
+	/** Passes a reference of an object of class {@link TopologyController} to the parent class */
+	@Override
+	public void setTopologyController(TopologyController topologyController) {
+		super.setTopologyController(topologyController);
+	}
+
+	@Override
+	public NetworkType setNetworkType(BasicClient client, NodeId nodeIdSector) {
+		return super.setNetworkType(client, nodeIdSector);
 	}
 }

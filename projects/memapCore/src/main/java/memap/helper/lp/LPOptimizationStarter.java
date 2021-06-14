@@ -3,19 +3,29 @@ package memap.helper.lp;
 import com.joptimizer.optimizers.LPOptimizationRequest;
 import com.joptimizer.optimizers.LPPrimalDualMethod;
 
-import memap.main.ConfigurationMEMAP;
+import memap.controller.TopologyController;
+import memap.helper.configurationOptions.OptimizationCriteria;
+import memap.main.SimulationProgress;
+import memap.main.Status;
 
 public class LPOptimizationStarter {
+	
+	/** Reference to topologyController ancestor */
+	TopologyController topologyController;
+	
+	public LPOptimizationStarter(TopologyController topologyController){
+		this.topologyController = topologyController;
+	}
 	
 	public double[] runLinProg(LPOptimizationProblem problem) {
 	
 		LPOptimizationRequest or = new LPOptimizationRequest();
 		
-		if (ConfigurationMEMAP.chosenCriteria == ConfigurationMEMAP.OptimizationCriteria.EUR) {
+		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.EUR) {
 			or.setC(problem.lambda);
 		}
 		
-		if (ConfigurationMEMAP.chosenCriteria == ConfigurationMEMAP.OptimizationCriteria.CO2) {
+		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
 			or.setC(problem.lambdaCO2);
 		}
 		
@@ -32,6 +42,7 @@ public class LPOptimizationStarter {
 		try {
 			opt.optimize();
 		} catch (Exception e) {
+			SimulationProgress.getInstance().setStatus(Status.ERROR, getClass().getName() +": infeasible problem");
 			e.printStackTrace();
 		}
 		

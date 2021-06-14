@@ -1,9 +1,11 @@
 package memap.components;
 
 import memap.components.prototypes.Producer;
+import memap.controller.TopologyController;
 import memap.messages.extension.NetworkType;
 
 public class CSVProducer extends Producer {
+
 	public NetworkType networkType;
 	double opCost;
 	double costCO2;
@@ -36,6 +38,12 @@ public class CSVProducer extends Producer {
 		producerMessage.operationalCostCO2 = costCO2;
 		producerMessage.efficiency = efficiency;
 		producerMessage.networkType = networkType;
+	}
+	
+	/** Passes a reference of an object of class {@link TopologyController} to the parent class */
+	@Override
+	public void setTopologyController(TopologyController topologyController) {
+		super.setTopologyController(topologyController);
 	}
 
 }

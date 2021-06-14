@@ -9,13 +9,10 @@
 
 package smartMeterExample.behavior;
 
-import java.util.LinkedList;
-
-import smartMeterExample.message.SmartMeterAnswer;
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
+import smartMeterExample.message.SmartMeterAnswer;
 
 public class SmartMeterBehavior extends BehaviorModel {
 	
@@ -39,10 +36,5 @@ public class SmartMeterBehavior extends BehaviorModel {
 	@Override
 	public RequestContent returnRequestContentToSend() {
 		return null;
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		
 	}
 }

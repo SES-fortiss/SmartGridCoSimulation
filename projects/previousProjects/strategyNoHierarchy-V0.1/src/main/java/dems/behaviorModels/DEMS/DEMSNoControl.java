@@ -9,24 +9,17 @@
 
 package dems.behaviorModels.DEMS;
 
-import helper.IoHelper;
-import helper.MyDateTimeFormatter;
-
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Locale;
-
-import akka.advancedMessages.ErrorAnswerContent;
-import akka.basicMessages.AnswerContent;
-import akka.basicMessages.BasicAnswer;
-import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
-import behavior.BehaviorModel;
 
 import com.google.gson.Gson;
 
+import akka.basicMessages.AnswerContent;
+import akka.basicMessages.BasicAnswer;
+import akka.basicMessages.RequestContent;
+import behavior.BehaviorModel;
 import dems.Simulation;
 import dems.helper.DEMSSchedule;
 import dems.helper.PowerPlantProperties;
@@ -34,6 +27,8 @@ import dems.messageContents.DEMSAggregatorAnswerContent;
 import dems.messageContents.DEMSRequestContent;
 import dems.messageContents.GenericAnswerContent;
 import dems.messageContents.IndividualRequest;
+import helper.IoHelper;
+import helper.MyDateTimeFormatter;
 
 /**
  * DEMSAggregator bekommt alle Nachrichten und kann diese Verarbeiten
@@ -77,7 +72,7 @@ public class DEMSNoControl extends BehaviorModel{
 	
 	@Override
 	public void handleRequest() {
-		scheduledPowerProduction = DEMSSchedule.getSchedule(GlobalTime.currentTime);			
+		scheduledPowerProduction = DEMSSchedule.getSchedule(this.actor.getCurrentTime());			
     	requestContentToSend.reductionFactor = 1;
     	requestContentToSend.individualContent = false;
 	}
@@ -109,7 +104,7 @@ public class DEMSNoControl extends BehaviorModel{
     		}
     	}
       	
-      	final double PERIOD = GlobalTime.period.getSeconds() / 3600.0;
+      	final double PERIOD = this.actor.getTimeStepDuration().getSeconds() / 3600.0;
       	
       	costPowerPlants -= costPurchase;
       	// Punishment costs 150 �/MWh --> 0.15�/kWh (is a little hacky but works)
@@ -121,8 +116,7 @@ public class DEMSNoControl extends BehaviorModel{
       	
     	answerContentToSend.currentProduction = actualAggregatedPowerProduction;
     	answerContentToSend.expectedProduction = expectedAggregatedPowerProduction;
-    	answerContentToSend.time = GlobalTime.currentTimeStep;
-    	answerContentToSend.dateTime = GlobalTime.currentTime.format(MyDateTimeFormatter.formatter);
+    	answerContentToSend.dateTime = this.actor.getCurrentTime().format(MyDateTimeFormatter.formatter);
     	answerContentToSend.scheduledProduction = scheduledPowerProduction;
     	answerContentToSend.cpMinusGuesses = actualAggregatedPowerProduction - guesses;
     	
@@ -160,9 +154,9 @@ public class DEMSNoControl extends BehaviorModel{
 			string = string + gson.toJson(message.answerContent) + ",\n";
 			jsonStringList.set(i, string);
 			i++;
-		}		
+		}
 		
-		if (GlobalTime.currentTimeStep + 1 == GlobalTime.lastTimeStep){			
+		if (this.actor.getCurrentTimeStep() + 1 == Simulation.getMaxTimeSteps()){			
 			jsonString = jsonString.substring(0, jsonString.length()-2) +"], \n\"children\" : [";
 			for (int j = 0; j < super.answerListReceived.size(); j++){
 				String string = jsonStringList.get(j);
@@ -250,7 +244,4 @@ public class DEMSNoControl extends BehaviorModel{
 		return requestContentToSend;
 	}
 	
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 }

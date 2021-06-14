@@ -14,8 +14,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.fortiss.powerflowsim.Properties;
 
 import CIM15.IEC61970.Core.ConductingEquipment;
@@ -37,7 +39,7 @@ import CIM15.IEC61970.Wires.PowerTransformer;
  */
 public class CimModel {
 
-	private static Logger log = Logger.getLogger(CimModel.class);
+	private static Logger log = LogManager.getLogger(CimModel.class);
 	public Set<Object> model = new HashSet<Object>();
 	private TopologicalNode swingNode;
 
@@ -45,7 +47,7 @@ public class CimModel {
 	 * Creates a new empty Model
 	 */
 	public CimModel() {
-		log.setLevel(Level.WARN);		
+		Configurator.setLevel("org.fortiss.powerflowsim.model.CimModel", Level.DEBUG);		
 	}
 
 	/**

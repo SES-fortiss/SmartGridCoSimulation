@@ -15,8 +15,10 @@ import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.fortiss.powerflowsim.model.CimModel;
 import org.fortiss.powerflowsim.simulation.internal.BusBranchModel;
 import org.fortiss.powerflowsim.simulation.internal.Solver;
@@ -37,11 +39,14 @@ import configuration.GridArchitectConfiguration;
  */
 public class PowerflowApi {
 	
-	private static Logger log = Logger.getLogger(PowerflowApi.class);
+	private static Logger log = LogManager.getLogger(PowerflowApi.class);
 
 	public static void execute() {
 		
-		log.setLevel(Level.WARN);
+		// previous solution only as reminder 
+		// log.setLevel(Level.WARN);
+		Configurator.setLevel(log.getName(), Level.WARN);
+		
 		log.debug("enter execute() method of PowerflowApi.class");
 		log.info(PowerflowMapping.getPowerflowTopology() + " --- Execute Power Flow Calcultations");
 	

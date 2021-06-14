@@ -1,6 +1,5 @@
 package linprogMPC.components;
 
-import akka.systemActors.GlobalTime;
 import linprogMPC.components.prototypes.Coupler;
 import linprogMPC.helper.EnergyPrices;
 
@@ -14,7 +13,7 @@ public class CHP extends Coupler {
 	public void makeDecision() {
 		super.makeDecision();
 		
-		int cts = GlobalTime.getCurrentTimeStep();
+		int cts = this.actor.getCurrentTimeStep();
 		couplerMessage.name = this.actorName;
 		couplerMessage.id = this.fullActorPath;
 		couplerMessage.operationalCostEUR = 0.00001 + EnergyPrices.getGasPriceInEuro(cts);		

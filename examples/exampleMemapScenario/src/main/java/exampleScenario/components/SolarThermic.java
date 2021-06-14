@@ -1,6 +1,5 @@
 package exampleScenario.components;
 
-import akka.systemActors.GlobalTime;
 import exampleScenario.helper.SolarRadiation;
 
 public class SolarThermic extends Producer {
@@ -22,6 +21,6 @@ public class SolarThermic extends Producer {
 		super.makeDecision();
 		
 		specificationToSend.cost = 0.00;
-		specificationToSend.power_h = SolarRadiation.getRadiation(GlobalTime.currentTime)*area*efficiency;
+		specificationToSend.power_h = SolarRadiation.getRadiation(this.actor.getCurrentTime())*area*efficiency;
 	}
 }

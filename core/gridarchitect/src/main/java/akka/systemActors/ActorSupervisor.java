@@ -13,30 +13,30 @@ import static akka.dispatch.Futures.sequence;
 import static akka.pattern.Patterns.ask;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
-import topology.ActorTopology;
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
-import akka.actor.UntypedActor;
 import akka.basicActors.BasicActor;
 import akka.basicActors.LoggingMode;
-import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.BasicRequest;
+import akka.japi.pf.ReceiveBuilder;
 import akka.systemMessages.CompletionMessage;
 import akka.systemMessages.EndSimulationMessage;
 import akka.systemMessages.TimeStepMessage;
 import akka.systemMessages.TimeoutMessage;
+import akka.timeManagement.CurrentTimeStepSubscriber;
+import akka.timeManagement.GlobalTime;
 import configuration.GridArchitectConfiguration;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
+import simulation.SimulationStarter;
+import topology.ActorTopology;
 
 
 /**
@@ -47,18 +47,20 @@ import configuration.GridArchitectConfiguration;
  * ActorSupervisor to handle Akka internals.
  * 
  */
-public class ActorSupervisor extends UntypedActor {
+public class ActorSupervisor extends AbstractActor implements CurrentTimeStepSubscriber {
 
-    public boolean receivedAllStates = false;
-    public List<ActorRef> responseTrace = new ArrayList<ActorRef>();
-    
-	public final Map<ActorRef, List<ActorRef>> responseTraceMap = new HashMap<ActorRef, List<ActorRef>>();
+    //public List<ActorRef> responseTrace = new ArrayList<ActorRef>();
 	
     public LoggingMode operationMode;
     public int actorCount = 0;
     public int totalActorCount = 0;
     public String simulationName;
     public ActorTopology actorTopology;
+    
+    /** Reference to global time in {@link SimulationStarter} */
+	GlobalTime globalTime;
+	int currentTimeStep;
+
 
     /*
      * ActorSupervisor Constructor
@@ -79,7 +81,7 @@ public class ActorSupervisor extends UntypedActor {
             
         } catch (Exception e) {
             e.printStackTrace();
-            getContext().system().shutdown();
+            getContext().system().terminate();
         }
     }
       
@@ -89,22 +91,18 @@ public class ActorSupervisor extends UntypedActor {
     
     @Override
 	public void preStart() {
-        getContext().system().eventStream().subscribe(getSelf(), TimeStepMessage.class);
+        getContext().system().eventStream().subscribe(getSelf(), TimeStepMessage.class);        
     }
     
     @Override
 	public void postStop() {
-        System.out.println("ActorSupervisor STOP");
+        //System.out.println("ActorSupervisor STOP");
     }
 
     @Override
     public String toString() {
         return "GridActorSupervisor{" +
-              //  ", timeStep=" + timeStep +
-              ", timeStep=" + GlobalTime.currentTimeStep +
-                ", receivedPower=" + receivedAllStates +
-                ", responseTrace=" + responseTrace +
-                ", responseTraceMap=" + responseTraceMap +
+              ", timeStep=" + globalTime.getCurrentTimeStep() +
                 ", operationMode=" + operationMode +
                 ", actorCount=" + actorCount +
                 ", totalActorCount=" + totalActorCount +
@@ -112,17 +110,77 @@ public class ActorSupervisor extends UntypedActor {
                 ", gridTopology=" + actorTopology +
                 '}';
     }
-
-    @Override
+    
+	@Override
+	public Receive createReceive() {
+				
+		ReceiveBuilder receiveBuilder = ReceiveBuilder.create();
+		
+		receiveBuilder
+			.match(GlobalTime.class, s -> this.globalTime = s)	
+			.match(TimeStepMessage.class, this::handleTimeStepMessage)
+			.match(EndSimulationMessage.class, this::handleEndSimulation)	
+			.match(String.class, this::handleStringMessage);
+		
+		receiveBuilder.matchAny( o -> System.out.println("ActorSupervisor: received unknown message"));
+		
+	    return receiveBuilder.build();
+	}
+    
+	private void handleStringMessage(String message) {      
+		
+		
+		//System.err.println("ActorSupervisor: handleStringMessage: " + message);
+		
+        if (message == "Init") {
+        	// System.out.println("ActorSupervisor: " + "Init Message arrived");        	
+        	initialiseGrid();
+        	return;
+        }
+         
+        if (message == "Register") {
+            this.actorCount++;
+            // Logging der registrierten Aktoren. Alle 1000 und die letzten 5 Aktoren werden ausgegeben
+            if (this.actorCount % 1000 == 0 || this.totalActorCount-this.actorCount < 5) {
+                System.out.println(String.format(System.currentTimeMillis()+"ms Actor [%s] of [%s] registered", this.actorCount, this.totalActorCount));                
+            }
+                          
+            if (this.actorCount == this.totalActorCount){
+            	getContext().actorSelection("/user/ActorMonitor").tell("System created", getSelf());            	 
+            }
+            return;
+        }
+         
+        if (message == "InitComplete") {
+            System.out.println("initComplete?");
+            getSender().tell(this.actorCount == this.totalActorCount, getSelf());
+            return;
+        }        
+        
+        System.out.println("ActorSupervisor: Cannot process the received String.class message.");
+	}
+	
+	
+    /** OLD Code as a reference from an older akka version.*/
+	/*
     public void onReceive(Object message) throws Exception {             	
         
+    	if (message instanceof GlobalTime) {
+        	globalTime = (GlobalTime) message;
+        	globalTime.subscribeToCurrentTimeStep(this);
+        	return;
+        }
+    	
         if (message instanceof TimeStepMessage) {
         	handleTimeStepMessage(getSender(), (TimeStepMessage)message);
         	return;
         }
                 
         if (message == "Init") {
-        	this.initialiseGrid();
+        	
+        	System.out.println("ActorSupervisor: " + "Init Message arrived");
+        	
+        	initialiseGrid();
         	return;
         }
          
@@ -154,8 +212,9 @@ public class ActorSupervisor extends UntypedActor {
         System.out.println("Kann die Nachricht nicht verarbeiten.");        
         System.out.println("Sender: " + getSender());
     }
+    */
    
-    private void handleEndSimulation() throws Exception {
+    private void handleEndSimulation(EndSimulationMessage esm) throws Exception {
     	
     	List<Future<Object>> childrenResponseList = new ArrayList<Future<Object>>();    	
     	
@@ -165,8 +224,10 @@ public class ActorSupervisor extends UntypedActor {
         
         Future<Iterable<Object>> childrenFuturesIterable = sequence(childrenResponseList, getContext().system().dispatcher());
         
-        // hier wird gewartet bis die Kinder geantwortet haben.
-        Await.result(childrenFuturesIterable, Duration.create(GridArchitectConfiguration.rootActorResponseTime, TimeUnit.MILLISECONDS));        
+        /* wait until children have answered.*/
+        Await.result(childrenFuturesIterable, Duration.create(GridArchitectConfiguration.rootActorResponseTime, TimeUnit.MILLISECONDS));
+        // tested, looks good.
+        getSender().tell("ShutDown", getSelf());     
 	}
 
 	public void initialiseGrid() { 
@@ -176,7 +237,7 @@ public class ActorSupervisor extends UntypedActor {
         for (String actorPath : actorTopology.getActorTopology().keySet()) {
         	// Children of the first layer
             if (3 == StringUtils.countMatches(actorPath, "/")){
-            	// If the actor has not spawned
+            	// If the actor is not spawned
             	if (!actorTopology.getActorTopology().get(actorPath).hasAlreadyBeenSpawned){            		
             		spawnGridActor(actorPath.replace("/user/ActorSupervisor/", ""),this.actorTopology);
             		actorTopology.getActorTopology().get(actorPath).hasAlreadyBeenSpawned = true;
@@ -189,38 +250,35 @@ public class ActorSupervisor extends UntypedActor {
     * Spawn Grid Actor.
     */
 	public void spawnGridActor(String actorName, ActorTopology actorTopology) {
-    	getContext().actorOf(BasicActor.create(simulationName, "/user/ActorSupervisor/"+actorName, actorTopology), actorName);
+    	getContext().actorOf(BasicActor.create(simulationName, "/user/ActorSupervisor/"+ actorName, actorTopology), actorName);
+    	getContext().actorSelection("/user/ActorSupervisor/" + actorName).tell(globalTime, getSelf());
     }
 
     /*
     *  Forwards the new TimeStep to the first Layer of Actors.
     *  */
-    public void handleTimeStepMessage(ActorRef sender, TimeStepMessage message) {
-    	GlobalTime.currentTimeStep= message.timeStep;
-        this.responseTrace = new ArrayList<ActorRef>();
+
+    public void handleTimeStepMessage(TimeStepMessage message) {
+    	
+    	globalTime.setCurrentTimeStep(message.timeStep);
         try {
             askChildren();
         }
-        catch (Exception e) {System.out.println(e);}
-    	
+        catch (Exception e) {
+        	e.printStackTrace();
+        }
+        
+        this.reportToMonitor();
     }
     
     /*
     * Reports to ActorMonitor as soon as all Actors have completed their decision.
     * */
     public void reportToMonitor() {
-        if (this.receivedAllStates) {
-        	getContext().actorSelection("/user/ActorMonitor").tell(new CompletionMessage(true), getSelf());
-        }
-        else {
-            System.out.println("reportToMonitor false");
-        }
+    	getContext().actorSelection("/user/ActorMonitor").tell(new CompletionMessage(true), getSelf());
     }
-
-    /*
-    * Wrapper for ExecuteResponseLogic.
-    * */
-    public void askChildren(){
+    
+    public void askChildren(){    	
     	
         List<ActorRef> actorTrace = new ArrayList<ActorRef>();
         actorTrace.add(getSelf());
@@ -239,41 +297,30 @@ public class ActorSupervisor extends UntypedActor {
     * Asks first GridActor layer for Decision.
     * */
     
-    private void askChildrenLogic (List<ActorRef> actorTrace) throws Exception{
+    private void askChildrenLogic (List<ActorRef> actorTrace) throws Exception{    	
+        //long startTimeLocal = System.currentTimeMillis();
     	
-        List<Future<Object>> childrenResponseList = new ArrayList<Future<Object>>();                
-        
+        List<Future<Object>> childrenResponseList = new ArrayList<Future<Object>>();
         for (ActorRef child: getContext().getChildren()) {
         	//System.out.println("Request: "+ new BasicRequest(timeStep, actorTrace, null));
-            childrenResponseList.add(ask(child, new BasicRequest(GlobalTime.currentTimeStep, actorTrace, null), GridArchitectConfiguration.rootActorResponseTime));
+            childrenResponseList.add(ask(child, new BasicRequest(globalTime.getCurrentTimeStep(), globalTime.getCurrentTime(), globalTime.getPeriod(), actorTrace, null), GridArchitectConfiguration.rootActorResponseTime));
             //System.out.println("Supervisor: ASK A CHILD");
         }
         
-        //System.out.println("-------------------------");        
+        //long stopTimeLocal = System.currentTimeMillis();
+        //if (getCurrentTimeStep() %20 ==0)
+        //	System.err.println("ActorSupervisor, askChildrenLogic() Teil1-ask: " + (stopTimeLocal - startTimeLocal) + "ms");
+        //startTimeLocal = System.currentTimeMillis();
+        
+        
+        //System.out.println("-------------------------");
         
         Future<Iterable<Object>> childrenFuturesIterable = sequence(childrenResponseList, getContext().system().dispatcher());
-        Iterable<Object> childrenResponsesIterable = Await.result(childrenFuturesIterable, Duration.create(GridArchitectConfiguration.rootActorResponseTime, TimeUnit.MILLISECONDS));        
-
-        this.receivedAllStates = true;
-        for (Iterator<Object> i = childrenResponsesIterable.iterator(); i.hasNext();) {
-        	BasicAnswer response = (BasicAnswer) i.next();        	
-        	
-            this.receivedAllStates = this.receivedAllStates && response.sane;
-            //System.out.println(response);
-            if (response.upstreamActorTrace.size() > 0){
-            	responseTraceMap.put(response.upstreamActorTrace.get(response.upstreamActorTrace.size()-1), response.upstreamActorTrace);
-            }
-            
-            for (ActorRef actor: response.upstreamActorTrace) 
-            	this.responseTrace.add(actor);
-        }
-        
-        this.reportToMonitor();
+        Await.result(childrenFuturesIterable, Duration.create(GridArchitectConfiguration.rootActorResponseTime, TimeUnit.MILLISECONDS));
     }
     
-    public int getCurrentTimeStep()
-    {
-    	return GlobalTime.currentTimeStep;
+    public int getCurrentTimeStep() {
+    	return globalTime.getCurrentTimeStep();
     }
     
     public class IntitializeException extends Exception {
@@ -282,4 +329,11 @@ public class ActorSupervisor extends UntypedActor {
     		super(string);
     	}
     }
+
+	@Override
+	public void update(int currentTimeStep) {
+		this.currentTimeStep = currentTimeStep;
+	}
+
+
 }

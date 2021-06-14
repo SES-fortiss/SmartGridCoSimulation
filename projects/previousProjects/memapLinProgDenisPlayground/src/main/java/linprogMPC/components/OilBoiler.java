@@ -1,6 +1,5 @@
 package linprogMPC.components;
 
-import akka.systemActors.GlobalTime;
 import linprogMPC.helper.EnergyPrices;
 
 public class OilBoiler extends Producer {
@@ -17,7 +16,7 @@ public class OilBoiler extends Producer {
 	public void makeDecision() {
 		super.makeDecision();				
 //		Calendar currentTime = startTime;
-		int cts = GlobalTime.getCurrentTimeStep();
+		int cts = this.actor.getCurrentTimeStep();
 		for (int i = 0; i < nStepsMPC; i++) {
 			producerMessage.cost[i] = 0.00001 + EnergyPrices.getGasPriceInEuro(cts+i);
 //			currentTime.add(Calendar.SECOND, stepSize);

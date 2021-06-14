@@ -12,6 +12,7 @@ package georg;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 
 // This is executed with Eclipse
 public class GeorgSimulation {
@@ -24,9 +25,10 @@ public class GeorgSimulation {
 		
 		SimulationStarter.saveGridTopologyPlot(topology);				
 		
-        ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);
+		SimulationStarter simulationStarter = new SimulationStarter(new GlobalTime());
+        ActorSystem actorSystem = simulationStarter.initialiseActorSystem(topology);
         
-        SimulationStarter.startSimulation(actorSystem, 0, maxTimeStep);
+        simulationStarter.startSimulation(actorSystem, 0, maxTimeStep);
 	}
 	
 	public static void main(String[] args){

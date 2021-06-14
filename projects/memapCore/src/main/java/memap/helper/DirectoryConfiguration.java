@@ -8,6 +8,9 @@ public abstract class DirectoryConfiguration {
 	/** Configuration directory path */
 	public static String configDir = "config";
 	
+	/** Library directory path */
+	public static String library = "lp";
+	
 	/** Results directory path */
 	public static String resultDir = "results";
 	

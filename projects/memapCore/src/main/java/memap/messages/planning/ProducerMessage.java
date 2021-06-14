@@ -12,6 +12,7 @@ public class ProducerMessage implements AnswerContent {
 	public double minPower;
 	
 	public double operationalCostEUR;
+	public double[] varOperationalCostEUR;
 	public double operationalCostCO2;
 	
 	public double efficiency;

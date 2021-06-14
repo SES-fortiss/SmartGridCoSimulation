@@ -1,7 +1,9 @@
 package memap.helperOPCua;
 
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
@@ -12,6 +14,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+
 
 public class BasicClient {
 	public CompletableFuture<EndpointDescription[]> endpoints;
@@ -38,9 +41,39 @@ public class BasicClient {
 			return value;
 		} else {
 			System.out.println("This is not a number!");
+			System.out.println(obj.toString());
+			System.out.println(nodeId.toString());
 		}
 		return null;
 	}
+	
+	public double[] readFinalDoubleArrayValue(NodeId nodeId) throws InterruptedException, ExecutionException {
+		Object obj = client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, nodeId).get().getValue()
+				.getValue();
+		if (obj.getClass().isArray()) {
+			double[] value = Stream.of((Double[]) obj).mapToDouble(Double::doubleValue).toArray();
+			return value;
+		} else {
+			System.out.println("This is not an array!");
+			System.out.println(obj.toString());
+			System.out.println(nodeId.toString());
+		}
+		return null;
+	}
+	
+	public String readFinalStringValue(NodeId nodeId) throws InterruptedException, ExecutionException {
+		Object obj = client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, nodeId).get().getValue()
+				.getValue();
+		if (obj instanceof String) {
+			String string = ((String) obj);
+			return string;
+		} else {
+			System.out.println("This is not a string!");
+			System.out.println(obj.toString());
+			System.out.println(nodeId.toString());
+		}
+		return null;
+	}	
 
 	public UaSubscriptionManager getSubscriptionManager() {
 		return client.getSubscriptionManager();
@@ -48,6 +81,10 @@ public class BasicClient {
 
 	public CompletableFuture<UaClient> connect() {
 		return client.connect();
+	}
+
+	public void writeValue(NodeId setpointsId, DataValue setpoint) {
+		this.client.writeValue(setpointsId, setpoint);
 	}
 
 }

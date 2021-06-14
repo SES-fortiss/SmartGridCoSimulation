@@ -9,15 +9,11 @@
 
 package akkaAndSolverAndSCADA.behaviorModels;
 
-import java.util.LinkedList;
-
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.advancedMessages.GenericAnswerContent;
 import akka.advancedMessages.GenericRequestContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 
 /**
@@ -51,7 +47,7 @@ public class Aggregator extends BehaviorModel{
 	}
 
     @Override
-    public void makeDecision() {
+    public void makeDecision() {    	
     	actualAggregatedPowerProduction = 0.0;
     	expectedAggregatedPowerProduction = 0.0;
     	
@@ -68,7 +64,7 @@ public class Aggregator extends BehaviorModel{
     		expectedAggregatedPowerProduction += childPlannedProduction;    		
     	}
       	
-      	scheduledAggregatorProduction = AggregatorSchedule.getSchedule(GlobalTime.currentTimeStep+1);
+      	scheduledAggregatorProduction = AggregatorSchedule.getSchedule(this.actor.getCurrentTimeStep()+1);
       	
     	answerContentToSend.currentProduction = actualAggregatedPowerProduction;
     	answerContentToSend.expectedProduction = expectedAggregatedPowerProduction;
@@ -101,7 +97,4 @@ public class Aggregator extends BehaviorModel{
 	public RequestContent returnRequestContentToSend() {
 		return requestContentToSend;
 	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 }

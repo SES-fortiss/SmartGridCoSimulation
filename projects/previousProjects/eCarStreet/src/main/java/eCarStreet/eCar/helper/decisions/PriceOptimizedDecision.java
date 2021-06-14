@@ -13,7 +13,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import akka.systemActors.GlobalTime;
 import eCarStreet.eCar.ECar;
 import eCarStreet.helper.PricePrognosis;
 
@@ -23,10 +22,10 @@ public class PriceOptimizedDecision implements Decision {
 	OptimizationPoint[] fahrplan;
 
 	@Override
-	public double getDemand(ECar eCar, LocalDateTime time) {		
+	public double getDemand(ECar eCar, LocalDateTime time, Duration period) {		
 		
 		if (optimizer == null){			
-			calculateOptimizedFahrplan(eCar);
+			calculateOptimizedFahrplan(eCar, period);
 		}
 		
 		double power = 0.0;
@@ -44,8 +43,7 @@ public class PriceOptimizedDecision implements Decision {
 		return -power;
 	}
 
-	public void calculateOptimizedFahrplan(ECar eCar) {
-		Duration period = GlobalTime.period;
+	public void calculateOptimizedFahrplan(ECar eCar, Duration period) {
 		if (period == null) period = Duration.ofMinutes(15);		
 		optimizer = new Optimizer(eCar, period);
 		

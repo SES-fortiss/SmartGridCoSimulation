@@ -1,28 +1,35 @@
 package memap.components.prototypes;
 
-import java.util.concurrent.TimeUnit;
-
 import akka.basicMessages.AnswerContent;
-import memap.helper.MyTimeUnit;
-import memap.messages.OptimizationResultMessage;
+import memap.controller.TopologyController;
 import memap.messages.planning.StorageMessage;
+import memap.messages.planning.StorageMessage.STORAGELOSS_UNITS;
 
 public abstract class Storage extends Device {
 
+	/** Reference to the topology */
+	protected TopologyController topologyController;
 	public double capacity;
 	public double max_charging;
 	public double max_discharging;
 	public double effIN;
 	public double effOUT;
+	
+	/** NEW Stuff */
 	public double stateOfCharge;
+	public double storageEnergyContent;
+	public double storageLoss; 
+	public STORAGELOSS_UNITS storageLossUnit = STORAGELOSS_UNITS.PERCENT_HOUR; // Unit [%/h] Example 0.021 represents 2.1%/h
 
 	public StorageMessage storageMessage = new StorageMessage();
 
-	public double[] linprogStorageInput = new double[nStepsMPC];
-	public double[] linprogStorageOutput = new double[nStepsMPC];
+	public double[] storageChargeRequest;
+	public double[] optimizationAdviceInput;
+	public double[] optimizationAdviceOutput;
+	public double[] storageDischargeRequest;
 
 	public Storage(String name, double capacity, double stateOfCharge, double max_charging, double max_discharging,
-			double effIN, double effOUT, int port) {
+			double effIN, double effOUT, double storageLoss,int port) {
 		super(name, port);
 		this.capacity = capacity;
 		this.stateOfCharge = stateOfCharge;
@@ -30,38 +37,32 @@ public abstract class Storage extends Device {
 		this.max_discharging = max_discharging;
 		this.effIN = effIN;
 		this.effOUT = effOUT;
+		this.storageLoss = storageLoss;
+
+		
+		// Initialization delayed until after topologyConfig initialization
+		optimizationAdviceInput = new double[topologyConfig.getNrStepsMPC()];
+		optimizationAdviceOutput = new double[topologyConfig.getNrStepsMPC()];
 	}
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
 
 		this.storageMessage.id = this.fullActorPath;
-
 		return storageMessage;
 	}
-
+	
+	/**
+	 * Implement this method to retrieve the current SOC.
+	 * 
+	 * @param timeStep
+	 * @return State Of Charge
+	 */
+	public abstract Double getStateOfCharge();
+	
+	
 	@Override
-	public void handleRequest() {
-		if (requestContentReceived instanceof OptimizationResultMessage) {
-			OptimizationResultMessage linprogResult = ((OptimizationResultMessage) requestContentReceived);
-
-			String dataKey = actorName + "Discharge";
-			for (String key : linprogResult.resultMap.keySet()) {		
-				if (key.contains(dataKey)) {
-					linprogStorageOutput = linprogResult.resultMap.get(key);
-				}
-			}
-			
-			dataKey = actorName + "Charge";
-			for (String key : linprogResult.resultMap.keySet()) {		
-				if (key.contains(dataKey)) {
-					linprogStorageInput = linprogResult.resultMap.get(key);
-				}
-			}
-
-			double soc_alt = stateOfCharge;
-			double leistung = linprogStorageInput[0] * effIN - linprogStorageOutput[0] * 1 / effOUT;
-			stateOfCharge = soc_alt + leistung * MyTimeUnit.stepLength(TimeUnit.MINUTES) / 60;
-		}
+	public void setTopologyController(TopologyController topologyController) {
+		this.topologyController = topologyController;
 	}
 }

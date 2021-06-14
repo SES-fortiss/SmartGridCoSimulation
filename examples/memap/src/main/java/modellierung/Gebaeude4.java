@@ -1,12 +1,11 @@
 package modellierung;
 
-import java.util.LinkedList;
-
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
+import akka.timeManagement.CurrentTimeStepSubscriber;
+import akka.timeManagement.GlobalTime;
 import behavior.BehaviorModel;
 import helper.SolarProfile;
 import memap.external.M2MDisplay;
@@ -14,10 +13,12 @@ import modellierung.helper.Reader;
 import modellierung.nachrichten.EMSmsg;
 import modellierung.nachrichten.MEMAPmsg;
 
-public class Gebaeude4 extends BehaviorModel {
+public class Gebaeude4 extends BehaviorModel implements CurrentTimeStepSubscriber {
 	
 	public M2MDisplay display;
 	Gson gson = new Gson();
+	
+	
 
 	public EMSmsg ans = new EMSmsg();
 	// alles in kW
@@ -41,15 +42,14 @@ public class Gebaeude4 extends BehaviorModel {
 	
 	Reader reader = new Reader("Waerme4.csv");
 	
+	GlobalTime globalTime = null;
+	int currentTimeStep = 0;
 	
 	public Gebaeude4() {
 		display = new M2MDisplay(8084);
 		display.run();
+		Topology.getGlobalTime().subscribeToCurrentTimeStep(this);
 	}
-	
-	
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 
 	@Override
 	public void handleRequest() {
@@ -67,11 +67,11 @@ public class Gebaeude4 extends BehaviorModel {
 
 	@Override
 	public void makeDecision() {
-		erzeugungsKapazitatWaerme = installiertePV * SolarProfile.getSolarProfileSummer(getActualTimeStep());
+		erzeugungsKapazitatWaerme = installiertePV * SolarProfile.getSolarProfileSummer(currentTimeStep);
 
 		double pricereceived = ((MEMAPmsg) requestContentReceived).preis;
 		
-		verbrauchWaerme = reader.getLoad(actualTimeValue);
+		verbrauchWaerme = reader.getLoad(actor.getCurrentTime());
 		
 		kostenProduktion = kostenErzeugung*erzeugungWaerme;
 		einnahmeProduktion = pricereceived*erzeugungWaerme;
@@ -96,6 +96,12 @@ public class Gebaeude4 extends BehaviorModel {
 	@Override
 	public RequestContent returnRequestContentToSend() {
 		return null;
+	}
+
+
+	@Override
+	public void update(int currentTimeStep) {
+		this.currentTimeStep = currentTimeStep;		
 	}
 
 }

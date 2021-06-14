@@ -34,18 +34,26 @@ public class LPOptimizationProblem {
 		lambda  = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages) + nrOfCouplers + nrOfConnections*2 + marketmatrices)];
 		lambdaCO2  = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages) + nrOfCouplers + nrOfConnections*2 + marketmatrices)];
 		
+		// SOC if discharging, remaining charging capacity if charching
 		h = new double[nStepsMPC*2*nrOfStorages];
+
+		// Charge and discharge efficiencies for storages in x
 		g = new double[nStepsMPC*2*nrOfStorages][nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
 		
+		// Demand: {heat, electricity}
 		b_eq = new double[nStepsMPC*(nrOfBuildings+1)];
+		
+		// Efficiency for producers in x
 		a_eq = new double[nStepsMPC*(nrOfBuildings+1)][nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];		
 		
+		// Power generation boundaries
 		x_lb = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
 		x_ub = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];		
 		
+		// Device names
 		namesUB = new String[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
 		etas = new double[nStepsMPC*(nrOfProducers+(2*nrOfStorages)+nrOfCouplers+nrOfConnections*2+marketmatrices)];
-		
+
 	}
 	
 	public int getNrOfBuildings() {

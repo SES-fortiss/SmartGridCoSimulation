@@ -5,6 +5,9 @@ bin/
 .settings/
 .svn/
 projects/*/res/results/
+projects/*/memapToolFiles/results/
+/projects/*/memapToolFiles/config/
+
 
 # Excluded files:
 

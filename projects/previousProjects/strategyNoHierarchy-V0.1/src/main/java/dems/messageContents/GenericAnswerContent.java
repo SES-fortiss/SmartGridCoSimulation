@@ -26,7 +26,6 @@ import akka.basicMessages.AnswerContent;
 
 public class GenericAnswerContent implements AnswerContent{
 
-	public double time;
 	public String dateTime;
 	public double installedPower;
 	public double currentProduction;

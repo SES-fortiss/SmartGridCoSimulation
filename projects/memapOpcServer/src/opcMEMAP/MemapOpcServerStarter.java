@@ -45,11 +45,12 @@ public class MemapOpcServerStarter {
 	}	
 	
 	public void start() throws Exception {
+
 		myServer = new MyOpcUaServer(generateFromFile, interfaceSpecification, port);
 				
 		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.execute(myServer);
-        
+
         while(!myServer.isServerRunning()) {
         	Thread.sleep(200);
         }

@@ -7,8 +7,6 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Point;
 
-import javax.swing.JLabel;
-
 /**
  * 
  * This class is a modification of {@code DragLayout} by @author Rob Camick
@@ -201,7 +199,6 @@ public class DragLayout implements LayoutManager {
 					Point p = component.getLocation();
 					Dimension d = getActualSize(component);
 					component.setBounds(p.x + x, p.y + y, d.width, d.height);
-					PositionManager.updateBuildingPosition((JLabel) component);
 				}
 			}
 		}

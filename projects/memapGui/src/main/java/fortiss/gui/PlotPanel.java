@@ -1,23 +1,23 @@
 package fortiss.gui;
 
-import java.awt.Graphics2D;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Locale;
 
-import javax.swing.JPanel;
-
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYSeries;
-import org.knowm.xchart.style.Styler.YAxisPosition;
+import org.knowm.xchart.CategoryChart;
+import org.knowm.xchart.CategoryChartBuilder;
+import org.knowm.xchart.CategorySeries;
+import org.knowm.xchart.CategorySeries.CategorySeriesRenderStyle;
+import org.knowm.xchart.XChartPanel;
+import org.knowm.xchart.style.AxesChartStyler.TextAlignment;
+import org.knowm.xchart.style.CategoryStyler;
+import org.knowm.xchart.style.Styler.ChartTheme;
+import org.knowm.xchart.style.Styler.LegendPosition;
 import org.knowm.xchart.style.markers.SeriesMarkers;
-
-import fortiss.gui.style.Colors;
 
 /**
  * Plots series of data
  */
-public class PlotPanel extends JPanel {
+public class PlotPanel extends XChartPanel<CategoryChart> {
 
 	private static final long serialVersionUID = 1L;
 	/**
@@ -25,23 +25,33 @@ public class PlotPanel extends JPanel {
 	 * <code>false</code> otherwise
 	 */
 	private boolean plotted = false;
-
-	/** Chart containing data series */
-	private XYChart chart;
+	
+	private Double max = 0.0;
+	private Double min = 0.0;
 
 	/**
 	 * Constructor for the class PlotPanel. Creates Data objects and initializes the
 	 * series list.
 	 */
 	public PlotPanel() {
+		super(new CategoryChartBuilder()
+	            .theme(ChartTheme.Matlab)
+	            .build());
+	        
 		setFocusable(false);
-		chart = new XYChart(getWidth(), getHeight());
-		chart.getStyler().setChartBackgroundColor(Colors.background);
-		chart.getStyler().setYAxisDecimalPattern("#0.00");
-		chart.getStyler().setLocale(Locale.GERMAN);
-		chart.getStyler().setYAxisGroupPosition(0, YAxisPosition.Left);
-		chart.getStyler().setYAxisGroupPosition(1, YAxisPosition.Right);
-		chart.getStyler().setYAxisTitleVisible(false);
+		
+		CategoryStyler styler = getChart().getStyler();
+
+		styler.setPlotContentSize(0.95);
+		styler.setYAxisDecimalPattern("#0.00");
+		styler.setLocale(Locale.GERMAN);
+		styler.setLegendPosition(LegendPosition.InsideNE);
+		styler.setDefaultSeriesRenderStyle(CategorySeriesRenderStyle.Line);
+		styler.setXAxisMaxLabelCount(4);
+		styler.setXAxisLabelRotation(270);
+		styler.setAvailableSpaceFill(0);
+		styler.setOverlapped(true);
+		styler.setXAxisLabelAlignment(TextAlignment.Centre);		
 	}
 
 	/**
@@ -50,39 +60,38 @@ public class PlotPanel extends JPanel {
 	 * @param series     a data series.
 	 * @param seriesName a name for the data series.
 	 */
-	public void addSeries(String seriesName, ArrayList<Double> series) {
-		
-		if (!chart.getSeriesMap().containsKey(seriesName)) {
-
-			double[] xvalues = new double[series.size()];
-			double[] yvalues = new double[series.size()];
-			for (int i = 0; i < xvalues.length; i++) {
-				xvalues[i] = i;
-				yvalues[i] = series.get(i);
-			}			
+	public void addSeries(String seriesName, ArrayList<String> xData, ArrayList<Double> yData) {
+		if (!getChart().getSeriesMap().containsKey(seriesName)) {
 			
-			// Series wit maximum value smaller than 1 in absolute value are plotted in a separate axis
-			if (Collections.max(series) < 0.5 && Collections.min(series) > -0.5 && chart.getSeriesMap().size() > 0) {
-				XYSeries seriesx = chart.addSeries(seriesName + "(right)", xvalues, yvalues);
-				seriesx.setMarker(SeriesMarkers.NONE);
-				seriesx.setYAxisGroup(1);
-				chart.getStyler().setYAxisMax(1, 0.5);
-				chart.getStyler().setYAxisMin(1, -0.5);
-				//seriesx.getXYSeriesRenderStyle();
-				//System.out.println(seriesx.getXYSeriesRenderStyle().name());
-			} else {
-				XYSeries seriesx = chart.addSeries(seriesName + "(left)", xvalues, yvalues);
-				seriesx.setMarker(SeriesMarkers.NONE);
-				seriesx.setYAxisGroup(0);
-				if (Collections.max(series) < 0.5 && Collections.min(series) > -0.5) {
-					chart.getStyler().setYAxisMax(0, 0.5);
-					chart.getStyler().setYAxisMin(0, -0.5);
-				} else {
-					chart.getStyler().setYAxisMax(0, null);
-					chart.getStyler().setYAxisMin(0, null);
-				}
-			}						
+			CategorySeries chartSeries = getChart().addSeries(seriesName, xData, yData);					
+			chartSeries.setLabel(seriesName);
+			chartSeries.setMarker(SeriesMarkers.NONE);
+			
+			min = 0.0;
+			max = 0.0;
+			
+			getChart().getSeriesMap().forEach( (key, value) -> {
+				
+				max  = (max > value.getYMax()) ? max : value.getYMax();
+				min  = (min < value.getYMin()) ? min : value.getYMin();
+			});
+			
+			if ( Math.abs(max-min) < 0.1) {
+				
+				System.out.println(PlotPanel.class + " same limits, changing them to larger size.");
+				min = min - 0.1;
+				max = max + 0.1;
+			}
+			
+			getChart().getStyler().setYAxisMax(max);
+			getChart().getStyler().setYAxisMin(min);
+			
+		
+		} else { // UPDATE
+			getChart().updateCategorySeries(seriesName, xData, yData, null);
 		}
+		
+		repaint();
 	}
 
 	/**
@@ -91,38 +100,18 @@ public class PlotPanel extends JPanel {
 	 * @param series     a data series.
 	 * @param seriesName the name of the data series {@code series}
 	 */
-	public void removeSeries(String seriesName, ArrayList<Double> series) {
-		if (chart.getSeriesMap().containsKey(seriesName)) {
-			chart.removeSeries(seriesName);
+	public void removeSeries(String seriesName) {
+		if (getChart().getSeriesMap().containsKey(seriesName)) {
+			getChart().removeSeries(seriesName);
 		}
 	}
 
 	/**
-	 * Remove all series and their names from the list of data series. Call
+	 * Remove all series from the chart and from the list of data series. Call
 	 * {@link #clearPlot()}
 	 */
 	public void clearSeries() {
-		chart.getSeriesMap().clear();
-		clearPlot();
-	}
-
-	/**
-	 * Remove all plotted series and their names from plot panel. Ensure that an
-	 * off-screen image is cleared to the background color
-	 */
-	public void clearPlot() {
-		Graphics2D gf = (Graphics2D) getGraphics();
-		gf.setColor(Colors.background);
-		gf.fillRect(0, 0, getWidth(), getHeight());
-	}
-
-	/**
-	 * Plots all the data this.series in the {@code series} list.
-	 */
-	public void paintSeries() {
-		Graphics2D gf = (Graphics2D) this.getGraphics();
-		chart.paint(gf, getWidth(), getHeight());
-		setPlotted(true);
+		getChart().getSeriesMap().clear();
 	}
 
 	/**
@@ -137,5 +126,30 @@ public class PlotPanel extends JPanel {
 	 */
 	public void setPlotted(boolean plotted) {
 		this.plotted = plotted;
+	}
+	
+	public void addEmptySeries() {
+		if (getChart().getSeriesMap() != null && getChart().getSeriesMap().isEmpty() ) {
+			
+			String seriesName = "no data selected";
+			ArrayList<String> xData = new ArrayList<>();
+			xData.add("0"); 
+			ArrayList<Double> yData = new ArrayList<>();
+			yData.add(0.0);
+			
+			addSeries(seriesName, xData, yData);
+		}
+	}
+	
+	public static boolean isNumeric(String strNum) {
+	    if (strNum == null) {
+	        return false;
+	    }
+	    try {
+	        Double.parseDouble(strNum);
+	    } catch (NumberFormatException nfe) {
+	        return false;
+	    }
+	    return true;
 	}
 }

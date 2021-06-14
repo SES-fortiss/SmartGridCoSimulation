@@ -11,7 +11,6 @@ package _ieeea300BusWithImport;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
 
 import powerflowApi.helper.IeeeSystemFromFile;
 import topology.ActorTopology;
@@ -19,7 +18,6 @@ import topology.ActorTopology;
 public class _ieee300BusTopologyImport {
 	
 	public static String simulationName = "IEEE300BusWithImport";
-	public static Logger log = Logger.getLogger(_ieee300BusTopologyImport.class);	
 	
 	public static ActorTopology createTopology(){		
 		ActorTopology top = new ActorTopology(simulationName);

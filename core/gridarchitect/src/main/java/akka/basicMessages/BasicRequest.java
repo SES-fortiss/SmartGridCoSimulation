@@ -9,47 +9,41 @@
 
 package akka.basicMessages;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import scala.Serializable;
 import akka.actor.ActorRef;
-import akka.systemActors.GlobalTime;
 
 /**
- * Created with IntelliJ IDEA. User: amack Date: 6/13/13 Time: 1:59 PM To change this template use File | Settings | File Templates.
+ * BasicRequest represents the message received from the parent actor.
+ * It contains some basic information for the simulation, such as TIME information 
+ * and a RequestContent (an interface for any requests content).
  */
-@SuppressWarnings("serial")
-public class BasicRequest implements Serializable {
+public class BasicRequest {
+	
 	public final int timeStep;
 	public final LocalDateTime timeValue;
+	public final Duration timeStepDuration;
 	public final List<ActorRef> actorTrace;
 	public final RequestContent requestContent;
 
-	public BasicRequest(int timeStep, List<ActorRef> actorTrace, RequestContent requestContent) {
+	public BasicRequest(
+			int timeStep, 
+			LocalDateTime timeValue, 
+			Duration timeStepDuration, 
+			List<ActorRef> actorTrace, 
+			RequestContent requestContent) {
 		this.timeStep = timeStep;
-		this.timeValue = GlobalTime.currentTime;
+		this.timeValue = timeValue;
+		this.timeStepDuration = timeStepDuration;
 		this.actorTrace = actorTrace;
 		this.requestContent = requestContent;
 	}
 
-	public BasicRequest(int timeStep) {
-		this.timeStep = timeStep;
-		this.timeValue = GlobalTime.currentTime;
-		this.actorTrace = null;
-		this.requestContent = null;
-	}
-
-	public BasicRequest() {
-		this.timeStep = GlobalTime.currentTimeStep;
-		this.timeValue = GlobalTime.currentTime;
-		this.actorTrace = null;
-		this.requestContent = null;
-	}
-
 	@Override
 	public String toString() {
-		return String.format("timeStep:%s, actorTrace:%s, requestContent:%s", timeStep, actorTrace, requestContent/* , recieverPath */);
+		return String.format("timeStep:%s, timeValue:%s, actorTrace:%s, requestContent:%s", timeStep, timeValue, actorTrace, requestContent);
 	}
-
+	
 }

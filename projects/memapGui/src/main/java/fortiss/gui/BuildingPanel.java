@@ -12,11 +12,14 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 
-import fortiss.gui.listeners.helper.ConnectionManager;
+import fortiss.components.Building;
+import fortiss.components.Connection;
 import fortiss.gui.listeners.helper.DragLayout;
-import fortiss.gui.listeners.helper.PositionManager;
 import fortiss.gui.listeners.label.ConnectorListener;
+import fortiss.gui.listeners.line.LineListener;
 import fortiss.gui.style.Colors;
+import fortiss.simulation.helper.ConnectionManager;
+import fortiss.simulation.helper.PositionManager;
 
 /**
  * Possible actions in this panel: add, drag and remove building icons, draw
@@ -25,6 +28,8 @@ import fortiss.gui.style.Colors;
 public class BuildingPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+	private ConnectionManager cm = ConnectionManager.getInstance();
+	
 	/**
 	 * <code>true</code> while the mouse is dragged with the mouse right button, and
 	 * <code>false</code> otherwise.
@@ -38,23 +43,25 @@ public class BuildingPanel extends JPanel {
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
-				PositionManager.fixPositions();
+				PositionManager pm = PositionManager.getInstance();
+				pm.fixPositions();
 			}
 		});
 		setAutoscrolls(true);
 		setLayout(new DragLayout());
+		addMouseListener(new LineListener());
 	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
+
 		/** Necessary for dark mode on/off implementation */
 		setBackground(Colors.background);
 
-		for (int i = 0; i < Designer.buildingCount; i++) {
-			Designer.buildingIcons.get(i).setForeground(Colors.defaultCol);
+		for (Building building : DesignerPanel.buildings.values()) {
+			building.getIcon().setForeground(Colors.defaultCol);
 		}
-		
+
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setStroke(new BasicStroke(2, // Width
 				BasicStroke.CAP_ROUND, // End-cap style
@@ -64,9 +71,10 @@ public class BuildingPanel extends JPanel {
 		if (isDrawing()) {
 			g2.draw(new Line2D.Float(ConnectorListener.p1, ConnectorListener.p2));
 		}
-		for (int i = 0; i < ConnectionManager.connectionNumber; i++) {
-			g2.setColor(ConnectionManager.lineColors.get(i));
-			g2.draw(ConnectionManager.lines.get(i));
+		
+		for (Connection c : cm.getConnectionList()) {
+			g2.setColor(c.getColor());
+			g2.draw(c.getLn());
 		}
 	}
 
@@ -84,6 +92,12 @@ public class BuildingPanel extends JPanel {
 	 */
 	public void setDrawing(boolean drawing) {
 		this.drawing = drawing;
+	}
+	
+	public void reset() {
+		removeAll();
+		revalidate();
+		repaint();
 	}
 
 }

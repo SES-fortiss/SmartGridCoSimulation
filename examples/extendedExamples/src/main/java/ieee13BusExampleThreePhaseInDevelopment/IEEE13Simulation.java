@@ -12,6 +12,7 @@ package ieee13BusExampleThreePhaseInDevelopment;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 
 // This is executed with Eclipse
 public class IEEE13Simulation {
@@ -26,9 +27,10 @@ public class IEEE13Simulation {
 		
 		// TODO this example is not ready. It still needs some work! BE CAREFULL WHEN USING IT
 		
-		SimulationStarter.saveGridTopologyPlot(topology);		
-        ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);        
-        SimulationStarter.startSimulation(actorSystem, startTimeStep, maxTimeStep);
+		SimulationStarter.saveGridTopologyPlot(topology);	
+		SimulationStarter simulationStarter = new SimulationStarter(new GlobalTime());
+        ActorSystem actorSystem = simulationStarter.initialiseActorSystem(topology);        
+        simulationStarter.startSimulation(actorSystem, startTimeStep, maxTimeStep);
 	}
 	
 	public static void main(String[] args){

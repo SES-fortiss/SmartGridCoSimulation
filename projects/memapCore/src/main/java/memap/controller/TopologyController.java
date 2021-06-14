@@ -1,128 +1,153 @@
 package memap.controller;
 
-import static memap.main.ConfigurationMEMAP.chosenCriteria;
-import static memap.main.ConfigurationMEMAP.chosenMEMAPLogging;
-import static memap.main.ConfigurationMEMAP.chosenOptimizationHierarchy;
-import static memap.main.ConfigurationMEMAP.chosenOptimizer;
-import static memap.main.ConfigurationMEMAP.chosenToolUsage;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.util.HashMap;
 
 import akka.actor.ActorSystem;
+import akka.timeManagement.CurrentTimeStepSubscriber;
+import akka.timeManagement.GlobalTime;
 import memap.components.prototypes.Building;
 import memap.components.prototypes.Device;
 import memap.components.prototypes.MEMAPCoordination;
-import memap.helper.EnergyPrices;
+import memap.helper.MEMAPLogging;
+import memap.helper.configurationOptions.OptHierarchy;
+import memap.helper.configurationOptions.OptimizationCriteria;
+import memap.helper.configurationOptions.Optimizer;
+import memap.helper.configurationOptions.ToolUsage;
 import memap.main.ActorFactory;
 import memap.main.ConfigurationMEMAP;
+import memap.main.SimulationProgress;
 import memap.main.TopologyConfig;
-import memap.main.ConfigurationMEMAP.MEMAPLogging;
-import memap.main.ConfigurationMEMAP.OptHierarchy;
-import memap.main.ConfigurationMEMAP.OptimizationCriteria;
-import memap.main.ConfigurationMEMAP.Optimizer;
-import memap.main.ConfigurationMEMAP.ToolUsage;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 
 /**
  * This class is used to handle the topology of the optimization. This includes
- * 1) Setting the static fields of {@linkplain TopologyConfig} and
+ * 1) Setting the fields of {@linkplain TopologyConfig} and
  * {@linkplain ConfigurationMEMAP} 2) Attaching Buildings to the Topology.
  * 
- * Note: Because {@linkplain TopologyConfig} is using static fields, creating a
- * new TopologyController will change these fields for ALL topologies.
- * Therefore: Do not try to use more than one TopologyController at the same
- * time!
+ * Note: Because {@linkplain TopologyConfig} does not use static fields, it is
+ * possible to create multiple topology controllers to run concurrently
  * 
- * @author Adrian.Krueger
- *
  */
-public class TopologyController extends TopologyConfig {
+public class TopologyController implements Runnable {
 
-	public List<BuildingController> managedBuildings = new ArrayList<BuildingController>();
+	/** Name of the simulation */
+	private String topologyName;
+	/** Simulation starter instance */
+	private SimulationStarter simulationStarter;
+	/** Global set of time-related values */
+	private GlobalTime globalTime = new GlobalTime();
+	/** General configuration for behavior of the tool */
+	private ConfigurationMEMAP memapConfig;
+	/** Parameter configuration for the topology */
+	private TopologyConfig topologyConfig = TopologyConfig.getInstance();
+	/** List of managed buildings in the topology */
+	public HashMap<String, BuildingController> managedBuildings = new HashMap<String, BuildingController>();
+	/** Actor topology */
+	private ActorTopology top;
 
-	public ActorTopology top;
-	
-	public TopologyController(OptHierarchy optHierarchy, Optimizer optimizer, OptimizationCriteria optimizationCriteria,
-			ToolUsage toolUsage, MEMAPLogging memapLogging, String name, int nrStepsMPC, int timeStepsPerDay,
-			int nrDays, String energyPriceFile, int portUndefined, int predUncertainty) {
-		
-		configureGlobalParameters(optHierarchy, optimizer, optimizationCriteria, toolUsage, memapLogging, name,
-				nrStepsMPC, timeStepsPerDay, nrDays, portUndefined, predUncertainty);
-		
-		TopologyConfig.energyPrices = new EnergyPrices(energyPriceFile);
-		
+	public TopologyController(String topologyName, OptHierarchy optHierarchy, Optimizer optimizer, OptimizationCriteria optimizationCriteria,
+			ToolUsage toolUsage, MEMAPLogging memapLogging) {
+		this.topologyName = topologyName;
+		simulationStarter = new SimulationStarter(globalTime);
+		memapConfig = new ConfigurationMEMAP(optimizer, optimizationCriteria, optHierarchy, toolUsage, memapLogging);
+		globalTime.subscribeToCurrentTimeStep(SimulationProgress.getInstance());
 	}
 	
-
-	
-	public TopologyController(OptHierarchy optHierarchy, Optimizer optimizer, OptimizationCriteria optimizationCriteria,
-			ToolUsage toolUsage, MEMAPLogging memapLogging, String name, int nrStepsMPC, int timeStepsPerDay,
-			int nrDays, double energyPriceValue, int portUndefined, int predUncertainty) {
-		
-		configureGlobalParameters(optHierarchy, optimizer, optimizationCriteria, toolUsage, memapLogging, name,
-				nrStepsMPC, timeStepsPerDay, nrDays, portUndefined, predUncertainty);
-		
-		TopologyConfig.energyPrices = new EnergyPrices(energyPriceValue);
-		
-	}
-	
-	
-	private void configureGlobalParameters(OptHierarchy optHierarchy, Optimizer optimizer,
-			OptimizationCriteria optimizationCriteria, ToolUsage toolUsage, MEMAPLogging memapLogging, String name,
-			int nrStepsMPC, int timeStepsPerDay, int nrDays, int portUndefined, int predUncertainty) {
-
-		// Configure MEMAP
-		chosenOptimizer = optimizer;
-		chosenCriteria = optimizationCriteria;
-		chosenOptimizationHierarchy = optHierarchy;
-		chosenToolUsage = toolUsage;
-		chosenMEMAPLogging = memapLogging;
-
-		// Configure topology
-		simulationName = name;
-		N_STEPS_MPC = nrStepsMPC;
-		TIMESTEPS_PER_DAY = timeStepsPerDay;
-		NR_DAYS = nrDays;
-		calcNrIterations();
-		calcNrSteps();
-		PORT_UNDEFINED = portUndefined;
-		PREDICTION_UNCERTAINTY = predUncertainty;
+	/** Attach a building to the topology */
+	public void attach(String buildingName, BuildingController buildingController) {
+		managedBuildings.put(buildingName, buildingController);
 	}
 
-	public void attach(BuildingController buildingController) {
-		managedBuildings.add(buildingController);
-	}
-
+	/** Calls creates the topology and starts the simulation */
 	public void startSimulation() {
-
 		createTopology();
-		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(this.top);
-		SimulationStarter.startSimulation(actorSystem, 0, TopologyConfig.NR_OF_ITERATIONS);
+		ActorSystem actorSystem = simulationStarter.initialiseActorSystem(this.top);
+		simulationStarter.startSimulation(actorSystem, 0, topologyConfig.getNrOfIterations());
 	}
-
+	
+	/** Calls creates the topology and starts the live-simulation 
+	 * @param duration 
+	 * @param startDate */
+	public void startLiveSimulation(LocalDate startDate, Duration duration) {
+		createTopology();
+		ActorSystem actorSystem = simulationStarter.initialiseActorSystem(this.top);
+		simulationStarter.startSimulation(actorSystem, startDate, duration);
+	}
+	
+	/** Stops the simulation */
 	public void endSimulation() {
-		SimulationStarter.stopSimulation();
+		simulationStarter.stopSimulation();
 	}
 
+	/**
+	 * Creates the topology and provides a reference of the topology to all the
+	 * devices contained
+	 */
 	private void createTopology() {
 		// Creating Actor Topology
-		this.top = new ActorTopology(TopologyConfig.simulationName);
-		top.addActor(TopologyConfig.simulationName, ActorFactory.createDevice(new MEMAPCoordination()));
+		this.top = new ActorTopology(topologyName);
+		MEMAPCoordination memapCoordination = new MEMAPCoordination(this);
+		top.addActor(topologyName, ActorFactory.createDevice(memapCoordination));
 
-		for (BuildingController managedBuilding : managedBuildings) {
+		//for (BuildingController managedBuilding : managedBuildings) {
+		for (BuildingController managedBuilding : managedBuildings.values()) {
 			String buildingName = managedBuilding.getName();
-
-			Building building = new Building(TopologyConfig.PORT_UNDEFINED);
+      
+//      Building building = new Building(this, topologyConfig.getPortUndefined());
+			Building building = new Building(this, 0);
 
 			ActorTopology buildingHead = new ActorTopology(buildingName);
 			buildingHead.addActor(buildingName, ActorFactory.createDevice(building));
 			for (Device device : managedBuilding.getDevices()) {
 				buildingHead.addActorAsChild(buildingName + "/" + device.actorName, ActorFactory.createDevice(device));
+				device.setTopologyController(this);
 			}
-			top.addSubTopology(TopologyConfig.simulationName, buildingHead);
-			TopologyConfig.PORT_UNDEFINED += 1;
+			top.addSubTopology(topologyName, buildingHead);
+			topologyConfig.increasePortUndefined();
 		}
+	}
+
+	public Optimizer getOptimizer() {
+		return memapConfig.getOptimizer();
+	}
+
+	public OptHierarchy getOptimizationHierarchy() {
+		return memapConfig.getOptimizationHierarchy();
+	}
+
+	public OptimizationCriteria getOptimizationCriteria() {
+		return memapConfig.getOptimizationCriteria();
+	}
+
+	public ToolUsage getToolUsage() {
+		return memapConfig.getToolUsage();
+	}
+
+	public MEMAPLogging getLogging() {
+		return memapConfig.getLogging();
+	}
+	
+	public String getSimulationName() {
+		return topologyName;
+	}
+	
+	public void setSimulationName(String topologyName) {
+		this.topologyName = topologyName;
+	}
+	
+	public void setOptimizationHierarchy(OptHierarchy optimizationHierarchy) {
+		memapConfig.setOptimizationHierarchy(optimizationHierarchy);
+	}
+
+	public void subscribeToCurrentTimeStep(CurrentTimeStepSubscriber subscriber) {
+		globalTime.subscribeToCurrentTimeStep(subscriber);
+	}
+	
+	@Override
+	public void run() {
+		startSimulation();
 	}
 }

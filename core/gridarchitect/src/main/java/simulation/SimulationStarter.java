@@ -9,26 +9,24 @@
 
 package simulation;
 
-import helper.GlobalOptions;
-import helper.HTMLHelper;
+import static akka.pattern.Patterns.ask;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-import resultLogger.ConstantLogger;
-import resultLogger.utils.AnswerContent_LoggerInterface;
-import resultLogger.utils.ConstantResultLogger;
-import scala.concurrent.duration.Duration;
-import topology.ActorTopology;
-import visualization.GridD3Json;
 import akka.actor.ActorSystem;
-import akka.actor.Inbox;
 import akka.basicActors.LoggingMode;
 import akka.systemActors.ActorMonitor;
 import akka.systemActors.ActorSupervisor;
 import akka.systemMessages.StartMessage;
-import configuration.GridArchitectConfiguration;
+import akka.timeManagement.GlobalTime;
+import helper.GlobalOptions;
+import helper.HTMLHelper;
+import topology.ActorTopology;
+import visualization.GridD3Json;
 
 /**
  * 
@@ -38,14 +36,18 @@ import configuration.GridArchitectConfiguration;
  * 
  */
 
-public abstract class SimulationStarter {
+public class SimulationStarter {
 	
-	public static ActorSystem actorSystemRef;
+	/** Reference to GlobalTime object */
+	private GlobalTime globalTime;
+	public static ActorSystem actorSystemRefStatic;
+	public ActorSystem actorSystemRefNonStatic;
 
-	@SuppressWarnings("deprecation")
-	public static ActorSystem initialiseActorSystem(final ActorTopology topology) {
-		
-		ConstantLogger.logNumberOfActors(topology);
+	public SimulationStarter(GlobalTime globalTime) {
+		this.globalTime = globalTime;
+	}
+	
+	public ActorSystem initialiseActorSystem(ActorTopology topology) {
 		
 		int deadline = 10; // How many seconds to wait for gridInitialization
 
@@ -54,37 +56,37 @@ public abstract class SimulationStarter {
 		System.out.println("...                   ");
 
 		ActorSystem actorSystem = ActorSystem.create(topology.simulationName);
-		actorSystemRef = actorSystem;
-		actorSystem.actorOf(ActorMonitor.create(LoggingMode.MINIMAL), "ActorMonitor");
+		actorSystemRefStatic = actorSystem;
+		actorSystemRefNonStatic = actorSystem;
+		
+		actorSystem.actorOf(ActorMonitor.create(LoggingMode.MINIMAL), "ActorMonitor");		
 		actorSystem.actorOf(ActorSupervisor.create(topology.simulationName, LoggingMode.MINIMAL, topology), "ActorSupervisor");
-
-		/*
-		 * Hier passiert folgendes:
-		 * 
-		 * Monitor bekommt die Inbox Adresse Supervisor bekommt eine Init Nachricht zum Aufbau der Systems Inbox wartet auf den Aufbau des Grids (mit
-		 * deadline)
-		 * 
-		 * Sobald das Grid aufgebaut ist, wird eine Nachricht an die Inbox zurueckgegeben
-		 */
-		if (GridArchitectConfiguration.unitTestingEnable)
-		{
-			try
-			{
-				Thread.sleep(50);
-			}
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-        }
+		
+		/**
+		* Here's what happens:
+		*
+		* Monitor receives the inbox address Supervisor receives an init message to set up the systems Inbox is waiting for the grid to be set up (with
+		* deadline)
+		*
+		* As soon as the grid is set up, a message is returned to the inbox
+		*/
         
-        Inbox inbox = Inbox.create(actorSystem);
-        
-        inbox.send(actorSystem.actorFor("/user/ActorMonitor"), "Inbox intitialize");
-        inbox.receive(Duration.create(deadline, TimeUnit.SECONDS));
-
-		System.out.println("Actor System initiated");
-		System.out.println("****************************************************************");
+		actorSystem.actorSelection("/user/ActorSupervisor").tell(globalTime, null);
+		actorSystem.actorSelection("/user/ActorMonitor").tell(globalTime, null);	
+		
+		CompletableFuture<Void> future =
+			    ask(actorSystem.actorSelection("/user/ActorMonitor"), "Inbox intitialize", 
+			    		Duration.ofSeconds(deadline)).toCompletableFuture().thenAccept(s -> {}); 
+		
+		try {
+			future.get(); // blocking, i.e. it waits until the topology is created
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+			
+			System.out.println("Actor System could not be created correctly. Actor System terminating...");
+			actorSystem.terminate();
+			return null;
+		} 
 
 		return actorSystem;
 	}
@@ -114,7 +116,7 @@ public abstract class SimulationStarter {
 	 * @param startTimeStep
 	 * @param maxTimeStep
 	 */
-	public static void startSimulation(ActorSystem actorSystem, int startTimeStep, int maxTimeStep) {
+	public void startSimulation(ActorSystem actorSystem, int startTimeStep, int maxTimeStep) {
 		StartMessage message = new StartMessage(startTimeStep, maxTimeStep);
 		startNow(actorSystem, message);
 	}
@@ -128,7 +130,7 @@ public abstract class SimulationStarter {
 	 * @param endTime
 	 * @param timeInterval
 	 */
-	public static void startSimulation(ActorSystem actorSystem, LocalDateTime startTime, LocalDateTime endTime, java.time.Duration timeInterval) {
+	public void startSimulation(ActorSystem actorSystem, LocalDateTime startTime, LocalDateTime endTime, java.time.Duration timeInterval) {
 		StartMessage message = new StartMessage(startTime, endTime, timeInterval);
 		startNow(actorSystem, message);
 	}
@@ -142,7 +144,7 @@ public abstract class SimulationStarter {
 	 * @param endTime
 	 * @param timeInterval
 	 */
-	public static void startSimulation(ActorSystem actorSystem, LocalDate localDate, java.time.Duration timeInterval) {
+	public void startSimulation(ActorSystem actorSystem, LocalDate localDate, java.time.Duration timeInterval) {
     	StartMessage message = new StartMessage(localDate, timeInterval);
     	startNow(actorSystem, message);
     }
@@ -150,39 +152,35 @@ public abstract class SimulationStarter {
 	/**
 	 * @param message
 	 */
-	@SuppressWarnings("deprecation")
-	private static void startNow(ActorSystem actorSystem, StartMessage message) {
+	private void startNow(ActorSystem actorSystem, StartMessage message) {
     	// Maximal time to wait until simulation ends in TimeUnis.* (see below)
     	int deadline = 100000; 
-    	
-        /*
-         * NOTE:
-         * The inbox is required, to check when the simulation finished. 
-         * The depricated method is the easiest way of implementation, 
-         * as the Inbox.send() method requires an ActorRef Object. 
-         */
-        Inbox inbox = Inbox.create(actorSystem);
+		
+		CompletableFuture<Void> future =
+			    ask(actorSystem.actorSelection("/user/ActorMonitor"), 
+			    		message,
+			    		Duration.ofSeconds(deadline)).toCompletableFuture().thenAccept(s -> {}); 
+		
+		try {
+			future.get(); // blocking, i.e. it waits until the topology is created			
+			System.out.println("SimulationStarter: Simulation completed. Terminating system.");			
+			actorSystem.terminate();
+			
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		} 
         
-        /*
-         *  Send the monitor the address Reference of the inbox and the StartMessage
-         */
-        inbox.send(actorSystem.actorFor("/user/ActorMonitor"), "Inbox registration for start"); 
-        actorSystem.actorSelection("/user/ActorMonitor").tell(message, null);    	
-       	
-        // Inbox receives a message from Monitor when Simulation is completed
-        inbox.receive(Duration.create(deadline, TimeUnit.SECONDS));
-        actorSystem.shutdown();
-        actorSystem.awaitTermination();
         return;
-   }
-
-	public static void setResultLogger(AnswerContent_LoggerInterface answerlogger) {
-		ConstantResultLogger myResultLogger = new ConstantResultLogger(answerlogger);
-		ConstantLogger.setResultLogger(myResultLogger);
+    }
+	
+	public static void stopSimulationStatic(){
+		actorSystemRefStatic.terminate();
 	}
 	
-	public static void stopSimulation(){
-		actorSystemRef.shutdown();
+	public void stopSimulation(){
+		actorSystemRefNonStatic.terminate();
 	}
-
+	
 }
+
+

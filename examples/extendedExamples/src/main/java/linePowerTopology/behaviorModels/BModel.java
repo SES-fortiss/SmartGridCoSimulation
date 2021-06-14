@@ -9,18 +9,14 @@
 
 package linePowerTopology.behaviorModels;
 
-import java.util.LinkedList;
-
-import helper.SolarProfile;
-import powerflowApi.ActorResults;
-import powerflowApi.PowerflowMapping;
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.advancedMessages.GenericAnswerContent;
 import akka.advancedMessages.GenericRequestContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
+import helper.SolarProfile;
+import powerflowApi.ActorResults;
+import powerflowApi.PowerflowMapping;
 
 /**
  * Class for the solver connection 
@@ -40,6 +36,8 @@ public class BModel extends BehaviorModel{
     // ActorResults linked to the SovlerTopology.resultMap HashMap
     public ActorResults actorResults;
     
+    int currentTimeStep = 0;
+    
     /*
      * Constructor
      */
@@ -50,14 +48,15 @@ public class BModel extends BehaviorModel{
 	
 	@Override
 	public void handleRequest() {
+		currentTimeStep = this.actor.requestReceived.timeStep;
 	}
 
     // Entscheidung
     @Override
     public void makeDecision() {   	
     	    	
-    	actualPower = installedPower*SolarProfile.getSolarProfileSummer(GlobalTime.currentTimeStep);
-    	plannedPower = installedPower*SolarProfile.getSolarProfileSummer(GlobalTime.currentTimeStep+1);
+    	actualPower = installedPower*SolarProfile.getSolarProfileSummer(currentTimeStep);
+    	plannedPower = installedPower*SolarProfile.getSolarProfileSummer(currentTimeStep+1);
     	
     	GenericRequestContent request = (GenericRequestContent) requestContentReceived;
 		double factor = request.reductionFactor;
@@ -90,10 +89,5 @@ public class BModel extends BehaviorModel{
 	@Override
 	public RequestContent returnRequestContentToSend() {
 		return null;
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		
 	}
 }

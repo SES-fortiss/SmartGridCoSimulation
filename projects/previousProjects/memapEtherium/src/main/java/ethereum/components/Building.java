@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,10 +18,8 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.FastRawTransactionManager;
 import org.web3j.utils.Async;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import ethereum.Simulation;
 import ethereum.contracts.DoubleSidedAuctionMarket;
@@ -150,7 +147,7 @@ public abstract class Building extends BehaviorModel {
 			nrOfTransactions++;
 			boughtElectricity = contract.getElectricityToConsume().send();
 			nrOfTransactions++;
-			logger.print(GlobalTime.currentTimeStep + "," + currentHeatConsumption + "," + currentElectricityConsumption  + "," + 
+			logger.print(this.actor.getCurrentTimeStep() + "," + currentHeatConsumption + "," + currentElectricityConsumption  + "," + 
 					soldHeat+ "," + boughtHeat+ "," + soldElectricity+ "," + boughtElectricity+ "," + paidDownPayments);
 			System.out.println("["+ name + "] Withdrawing released payments...");
 			TransactionReceipt receipt = contract.withdrawReleasedPayments().send();
@@ -179,14 +176,6 @@ public abstract class Building extends BehaviorModel {
 	public AnswerContent returnAnswerContentToSend() {
 		return timestepInfo;
 	}
-
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		// TODO Auto-generated method stub
-		
-	}
-
 
 	@Override
 	public void handleRequest() {

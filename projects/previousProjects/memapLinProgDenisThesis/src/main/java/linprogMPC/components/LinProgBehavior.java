@@ -3,14 +3,11 @@ package linprogMPC.components;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import linprogMPC.ThesisTopologySimple;
 import linprogMPC.helper.HelperConcat;
@@ -43,9 +40,6 @@ public class LinProgBehavior extends BehaviorModel {
 	public LinProgBehavior() {}
 
 	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
-
-	@Override
 	public void handleRequest() {}
 	
 
@@ -67,7 +61,7 @@ public class LinProgBehavior extends BehaviorModel {
 		}
 		
 		if (ThesisTopologySimple.MEMAP_ON) {
-			if (GlobalTime.getCurrentTimeStep() == 0) {
+			if (this.actor.getCurrentTimeStep() == 0) {
 				
 				int nrOfStorages = 0;
 				int nrOfProducers = 0;
@@ -98,7 +92,7 @@ public class LinProgBehavior extends BehaviorModel {
 			MatrixBuildup mb = new MatrixBuildup();			
 			OptimizationProblem problem = mb.multipleBuildings(
 					buildingMessageList,
-					ThesisTopologySimple.MEMAP_LDHeating);
+					ThesisTopologySimple.MEMAP_LDHeating, this.actor.getCurrentTimeStep());
 			
 			OptimizationStarter os = new OptimizationStarter();
 			double[] sol = os.runLinProg(problem);
@@ -108,7 +102,7 @@ public class LinProgBehavior extends BehaviorModel {
 			double[] memapCostPerTimestep = solHandler.calculateTimeStepCosts(sol, problem.lambda);
 			System.out.println();
 			
-			costForTimestepMEMAP[GlobalTime.getCurrentTimeStep()] = memapCostPerTimestep[0];
+			costForTimestepMEMAP[this.actor.getCurrentTimeStep()] = memapCostPerTimestep[0];
 			
 			// ******** Erstellung des Ergebnisvektors *********************
 			double[] currentOptVector = solHandler.getSolutionForThisTimeStep(sol, nStepsMPC);
@@ -129,10 +123,10 @@ public class LinProgBehavior extends BehaviorModel {
 			System.out.println(this.actorName + " " + Arrays.toString(vectorAll));									
 			
 			//********* Speichern
-			memapSolutionPerTimeStep[this.getActualTimeStep()] = vectorAll;
+			memapSolutionPerTimeStep[this.actor.getCurrentTimeStep()] = vectorAll;
 			
 			
-			if  (GlobalTime.getCurrentTimeStep() == (ThesisTopologySimple.NR_OF_ITERATIONS-1))  {
+			if  (this.actor.getCurrentTimeStep() == (ThesisTopologySimple.NR_OF_ITERATIONS-1))  {
 				String saveString = ThesisTopologySimple.simulationName + "MPC"+ThesisTopologySimple.N_STEPS_MPC+"/";
 				saveString += this.actorName+"MPC"+nStepsMPC+".csv";
 				solHandler.exportMatrixWithHeader(memapSolutionPerTimeStep, saveString, namesAll);
@@ -140,7 +134,7 @@ public class LinProgBehavior extends BehaviorModel {
 
 			// ================= Handling the result ================== 	
 		
-			if (GlobalTime.getCurrentTimeStep() == (ThesisTopologySimple.NR_OF_ITERATIONS-1)) {
+			if (this.actor.getCurrentTimeStep() == (ThesisTopologySimple.NR_OF_ITERATIONS-1)) {
 				double totalCostsMEMAP = 0;
 				for (int j=0; j < ThesisTopologySimple.NR_OF_ITERATIONS; j++) {
 					totalCostsMEMAP += costForTimestepMEMAP[j];

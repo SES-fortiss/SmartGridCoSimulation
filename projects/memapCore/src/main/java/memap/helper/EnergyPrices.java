@@ -1,82 +1,55 @@
 package memap.helper;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import memap.examples.ExampleFiles;
-import memap.main.TopologyConfig;
-import simulation.SimulationStarter;
-
 /**
- * Helper class to return the gas price.
+ * Helper class to return the energy prices.
  */
 public class EnergyPrices {
-	/** Electricity price per KWp */
-	private ArrayList<Double> electricityPrices;
 
 	/**
-	 * Constructor with double value. Creates a array list with all its entries
-	 * equal to MarketPrice
-	 * 
-	 * @param MarketPrice a double value
-	 * 
-	 *                    The latter two parameters are necessary because their
-	 *                    global values are not available when this object is
-	 *                    created.
+	 * This is a Singleton class. It builds and holds an instance of the
+	 * ElectricityPrices and the HeatPrices classes.
 	 */
-	public EnergyPrices(double MarketPrice) {
-		electricityPrices = new ArrayList<Double>();
-		for (int i = 0; i < TopologyConfig.N_STEPS * 2; i++) {
-			electricityPrices.add(MarketPrice);
-		}
+	private static EnergyPrices instance = new EnergyPrices();
+
+	private Price elecBuyingPrice;
+	private Price elecSellingPrice;
+	private Price heatBuyingPrices;
+
+	
+	public void init(Price elecBuyingPrice2, Price elecSellingPrice2, Price heatBuyingPrice) {
+		this.elecBuyingPrice = elecBuyingPrice2;
+		this.elecSellingPrice = elecSellingPrice2;
+		this.heatBuyingPrices = heatBuyingPrice;
+	}
+
+	public double getElecBuyingPrice(int timestep) {
+		return elecBuyingPrice.getPriceForTimeStep(timestep);
+	}
+
+	public double getElecSellingPrice(int timestep) {
+		return elecSellingPrice.getPriceForTimeStep(timestep);
+	}
+
+	public double getHeatBuyingPrice(int timestep) {
+		return heatBuyingPrices.getPriceForTimeStep(timestep);
 	}
 
 	/**
-	 * Constructor with CSV. Creates a array list reading from the file path
-	 * MarketPrice
+	 * Returns the electricity price in cents per kWh at any given time step in
+	 * ct/kJ, read from a CSV-file.
 	 * 
-	 * @param MarketPriceCSV a path to a CSV file
-	 */
-	public EnergyPrices(String MarketPriceCSV) {
-		setEnergyPrices(MarketPriceCSV);
-	}
-
-	/**
-	 * Assign values to electricityPrices
+	 * Prices vary between 25-50 ct/kWh within 7days converted to EUR/kWh The prices
+	 * are expected to have a time interval of 15 minutes (see readEnergyPrices)
 	 * 
-	 * @param csvFile
-	 */
-	private void setEnergyPrices(String csvFile) {
-		try {
-			if (csvFile.isEmpty()) {
-				readElectricityPrices(getBuffer("ELECTRICITYPRICEEXAMPLE"));
-				System.err.println("Variable market price selected but not input file was provided. Using example file");
-			} else {
-				readElectricityPrices(getBuffer(csvFile));
-			}
-		} catch (IOException | ParseException e) {
-			System.err.println("Error reading or parsing CSV data from " + csvFile);
-			SimulationStarter.stopSimulation();
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Returns the gas price in cents per kWh at any given time step. For now, it
-	 * constantly returns .0017ct/kJ, which equals 6.12 ct/kWh, but here CSV-files
-	 * or web services or other mechanisms could be plugged in.
+	 * @param time the time step for which to get the electricity price
+	 * @return electricity price in ct/kWh at specified time step
 	 * 
-	 * @param time the time step for which to get the gas price
-	 * @return gas price in ct/kWh at specified time step
+	 *         Kept for compatibility
 	 */
-	public double getGasPriceInEuro(int timestep) {
-		return 0.0685d;
-	}
+	//@Deprecated
+	//public double getElectricityPriceInEuro(int timestep) {
+	//	return getElecBuyingPrice(timestep);
+	//}
 
 	/**
 	 * Returns the heat price in Euro per kWh at any given time step. For now, it
@@ -85,75 +58,20 @@ public class EnergyPrices {
 	 * 
 	 * @param time the time step for which to get the gas price
 	 * @return gas price in ct/kWh at specified time step
+	 * 
+	 *         Kept for compatibility. Note that since commit
+	 *         31ea694b186cd3eda7ad8b17649c386864a6f748 the returned value does not
+	 *         coincide with the description.
 	 */
+	/*@Deprecated
 	public double getHeatPriceInEuro(int timestep) {
 		double value = 0.0534d;
 		value = 0.7;
 		return value;
-	}
+	}*/
 
-	/**
-	 * Returns the electricity price in cents per kWh at any given time step in
-	 * ct/kJ, read from a CSV-file.
-	 * 
-	 * Prices vary between 25-50 ct/kWh within 7days converted to EUR/kWh The prices
-	 * are set to be constant throughout one day
-	 * 
-	 * @param time the time step for which to get the electricity price
-	 * @return electricity price in ct/kWh at specified time step
-	 */
-	public double getElectricityPriceInEuro(int timestep) {
-		return electricityPrices.get(timestep % electricityPrices.size());
-	}
-
-	/**
-	 * @return a buffer with the data from csv filename
-	 * @param filename CSV file
-	 */
-	private BufferedReader getBuffer(String csvFile) {
-		FileManager mgr = new FileManager();
-		ExampleFiles examples = new ExampleFiles();
-		if (examples.isExample(csvFile)) {
-			System.out.println(">> Reading from resources: " + csvFile);
-			return mgr.readFromResources(examples.getFile(csvFile));
-		} else {
-			System.out.println(">> Reading from source: " + csvFile);
-			return mgr.readFromSource(csvFile);
-		}
-	}
-
-	/**
-	 * Assign values to electricity prices {@link #electricityPrices} from buffer
-	 * 
-	 * @return br buffer
-	 */
-	private void readElectricityPrices(BufferedReader br) throws IOException, ParseException {
-		NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
-		ArrayList<Double> originalValues = new ArrayList<Double>();
-		electricityPrices = new ArrayList<Double>();
-		String row;
-
-		while ((row = br.readLine()) != null) {
-			originalValues.add(nf.parse(row).doubleValue());
-		}
-
-		double[] x = new double[originalValues.size()];
-		double[] y = new double[originalValues.size()];
-		for (int i = 0; i < originalValues.size(); i++) {
-			x[i] = i; // 24h * 7 Days -1 = 167
-			y[i] = originalValues.get(i);
-		}
-
-		double[] xi = new double[TopologyConfig.N_STEPS];
-		for (int j = 0; j < TopologyConfig.N_STEPS; j++) {
-			xi[j] = j * MyTimeUnit.stepLength(TimeUnit.HOURS);
-		}
-
-		double[] yi = Interpolation.interpLinear(x, y, xi);
-		for (int k = 0; k < yi.length; k++) {
-			electricityPrices.add(yi[k]);
-		}
-		br.close();
+	public static EnergyPrices getInstance() {
+		return instance;
 	}
 
 }

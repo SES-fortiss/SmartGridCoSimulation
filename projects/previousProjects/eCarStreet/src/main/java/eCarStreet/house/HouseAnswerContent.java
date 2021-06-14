@@ -9,11 +9,11 @@
 
 package eCarStreet.house;
 
-import eCarStreet.eCar.ECar;
 import akka.basicMessages.AnswerContent;
-import akka.systemActors.GlobalTime;
+import eCarStreet.eCar.ECar;
 
 public class HouseAnswerContent implements AnswerContent{
+	
 	
 	public double demandHouse;
 	public double demandCar;
@@ -28,7 +28,6 @@ public class HouseAnswerContent implements AnswerContent{
 	
 	public String toString(){
 		return 
-				GlobalTime.currentTime + ", " + 
 				demandHouse + ", " + 
 				demandCar + ", " + 
 				demandTotal + ", " + 

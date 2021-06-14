@@ -1,25 +1,27 @@
 package fortiss.gui;
 
+import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
 
+import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.border.TitledBorder;
 
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.FormSpecs;
-import com.jgoodies.forms.layout.RowSpec;
-
+import fortiss.gui.icons.BuildingIcon;
+import fortiss.gui.icons.ComponentIcon;
 import fortiss.gui.listeners.label.DragListener;
 import fortiss.gui.listeners.label.DropListener;
 import fortiss.gui.style.Colors;
+import fortiss.gui.style.FontSize;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
-import fortiss.media.Icon;;
+import fortiss.media.IconStore;
+import net.miginfocom.swing.MigLayout;;
 
 /**
  * Contains objects that can added to a topology.
@@ -28,10 +30,9 @@ public class ObjectPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
+	private Box componentBox = Box.createVerticalBox();
 	private JLabel lblInstructions = new JLabel();
 	private JLabel lbInstructions2 = new JLabel();
-	public JLabel lb_new_ems = new JLabel("EMS");
-	public ComponentBox comp_box = new ComponentBox();
 	private final JPanel panel = new JPanel();
 
 	/** Necessary for dark mode on/off implementation */
@@ -57,46 +58,90 @@ public class ObjectPanel extends JPanel {
 	private void initialize() {
 		setSize(new Dimension(150, 655));
 		setPreferredSize(new Dimension(150, 655));
-		setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
-
-		panel.setPreferredSize(new Dimension(150, 250));
-		panel.setLayout(new FormLayout(
-				new ColumnSpec[] { ColumnSpec.decode("5dlu"), ColumnSpec.decode("132px:grow"),
-						ColumnSpec.decode("5dlu"), },
-				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("max(20dlu;default)"),
-						FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("20dlu"), FormSpecs.UNRELATED_GAP_ROWSPEC,
-						RowSpec.decode("80px"), RowSpec.decode("max(4dlu;default)"), }));
-		add(panel);
+		setLayout(new MigLayout("insets 0 0 0 0, filly, center, width 99%", 
+				"[center]", 
+				"[center]10[center]10[center]30[center]80[bottom]5[bottom]"));
 
 		lblInstructions.setText("<html><center> Energy Management <br/> System (EMS) </center></html>");
-		lblInstructions.setFont(Fonts.getOswald());
-		panel.add(lblInstructions, "2, 2, center, default");
+		lblInstructions.setFont(Fonts.getOswald(FontSize.SMALL));
+		add(lblInstructions, "wrap");
 
-		lbInstructions2.setText("<html><center> Drag the icon to add <br/> a new EMS </center></html>");
-		lbInstructions2.setFont(Fonts.getOpenSans());
-		panel.add(lbInstructions2, "2, 4, center, center");
+		lbInstructions2.setText("<html><center> Drag the icon to <br/> add a new EMS </center></html>");
+		lbInstructions2.setFont(Fonts.getOpenSans(FontSize.TINY));
+		add(lbInstructions2, "wrap");
 
 		// Add "Add New EMS" icon
-		lb_new_ems.setVerticalTextPosition(JLabel.BOTTOM);
-		lb_new_ems.setHorizontalTextPosition(JLabel.CENTER);
-		lb_new_ems.setIcon(Icon.uBuilding);
-		lb_new_ems.setToolTipText("Drag to create a new EMS");
-		panel.add(lb_new_ems, "2, 6, center, center");
+		BuildingIcon buildingIcon = new BuildingIcon("EMS", IconStore.uBuilding, "Drag to create a new EMS");
+		add(buildingIcon, "wrap");
 
-		add(comp_box);
-		comp_box.setVisible(false);
+		// Component box
+		componentBox.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "EMS COMPONENTS", TitledBorder.CENTER,
+				TitledBorder.TOP, null, Colors.accent1));
+		
+		String toolTip = "Click on a component to add it to the building devices.";
 
+		Component verticalStrut = Box.createVerticalStrut(2);
+		verticalStrut.setPreferredSize(new Dimension(0, 10));
+		componentBox.add(verticalStrut);
+
+		ComponentIcon demandIcon = new ComponentIcon("Demand", IconStore.uDemandMenu, toolTip);
+		demandIcon.setAlignmentX(Box.CENTER_ALIGNMENT);
+		componentBox.add(demandIcon);
+		
+		Component verticalStrut_1 = Box.createVerticalStrut(2);
+		verticalStrut_1.setPreferredSize(new Dimension(0, 10));
+		componentBox.add(verticalStrut_1);
+		
+		ComponentIcon storageIcon = new ComponentIcon("Storage", IconStore.uStorageMenu, toolTip);
+		storageIcon.setAlignmentX(Box.CENTER_ALIGNMENT);
+		componentBox.add(storageIcon);
+
+		Component verticalStrut_2 = Box.createVerticalStrut(2);
+		verticalStrut_2.setPreferredSize(new Dimension(0, 10));
+		componentBox.add(verticalStrut_2);
+
+		ComponentIcon volatileIcon = new ComponentIcon("Volatile", IconStore.uVolatileMenu, toolTip);
+		volatileIcon.setAlignmentX(Box.CENTER_ALIGNMENT);
+		componentBox.add(volatileIcon);
+
+		Component verticalStrut_3 = Box.createVerticalStrut(2);
+		verticalStrut_3.setPreferredSize(new Dimension(0, 10));
+		componentBox.add(verticalStrut_3);
+
+		ComponentIcon controllableIcon = new ComponentIcon("Controllable", IconStore.uControllableMenu, toolTip);
+		controllableIcon.setAlignmentX(Box.CENTER_ALIGNMENT);
+		componentBox.add(controllableIcon);
+
+		Component verticalStrut_4 = Box.createVerticalStrut(2);
+		verticalStrut_4.setPreferredSize(new Dimension(0, 10));
+		componentBox.add(verticalStrut_4);
+
+		ComponentIcon couplerIcon = new ComponentIcon("Coupler", IconStore.uCouplerMenu, toolTip);
+		couplerIcon.setAlignmentX(Box.CENTER_ALIGNMENT);
+		componentBox.add(couplerIcon);
+		
+		add(componentBox, "growx, wrap");
+		componentBox.setVisible(false);
+		
+		JLabel lblFortissLogo = new JLabel(IconStore.smallFortissLogo);
+		JLabel lblTumLogo = new JLabel(IconStore.smallTumLogo);
+		
+		add(lblFortissLogo, "wrap");
+		add(lblTumLogo, "wrap");
+		
 		// Enable dragging label
 		DragSource ds = new DragSource();
-		ds.createDefaultDragGestureRecognizer(lb_new_ems, DnDConstants.ACTION_COPY, new DragListener());
-		new DropListener(Designer.pl_ems);
+		ds.createDefaultDragGestureRecognizer(buildingIcon, DnDConstants.ACTION_COPY, new DragListener());
+		new DropListener(DesignerPanel.pl_ems);
 	}
 
 	public void showComponentBox() {
-		comp_box.setVisible(true);
+		if(!componentBox.isVisible())
+			componentBox.setVisible(true);
 	}
 
 	public void hideComponentBox() {
-		comp_box.setVisible(false);
+		if(componentBox.isVisible())
+			componentBox.setVisible(false);
 	}
 }

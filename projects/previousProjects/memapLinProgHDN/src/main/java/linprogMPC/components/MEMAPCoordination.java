@@ -4,9 +4,7 @@ import static linprogMPC.ConfigurationMEMAP.chosenOptimizationHierarchy;
 import static linprogMPC.ConfigurationMEMAP.chosenOptimizer;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -47,9 +45,6 @@ public class MEMAPCoordination extends BehaviorModel {
 	private BuildingMessageHandler buildingMessageHandler = new BuildingMessageHandler();
 	
 	public MEMAPCoordination() {}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 
 	@Override
 	public void handleRequest() {}	
@@ -110,7 +105,7 @@ public class MEMAPCoordination extends BehaviorModel {
 		LPSolver lpsolver = new LPSolver(
 				buildingMessage, nStepsMPC, lpSolHandler, 
 				totalEURVector, totalCO2Vector, 
-				getActualTimeStep(), solutionPerTimeStep,
+				this.actor.getCurrentTimeStep(), solutionPerTimeStep,
 				this.actorName, optResult);		
 		lpsolver.setBuildingMessageList(buildingMessageList);		
 		lpsolver.solveLPOptProblem();
@@ -120,7 +115,7 @@ public class MEMAPCoordination extends BehaviorModel {
 		LPSolver lpsolver = new LPSolver(
 					buildingMessage, nStepsMPC, lpSolHandler, 
 					totalEURVector, totalCO2Vector, 
-					getActualTimeStep(), solutionPerTimeStep,
+					this.actor.getCurrentTimeStep(), solutionPerTimeStep,
 					this.actorName, optResult);
 		lpsolver.solveLPOptProblem();		
 	}
@@ -129,7 +124,7 @@ public class MEMAPCoordination extends BehaviorModel {
 		MILPSolverNoConnections milpSolver = new MILPSolverNoConnections(
 				buildingMessage, nStepsMPC, milpSolHandler,
 				totalEURVector, totalCO2Vector, 
-				getActualTimeStep(), solutionPerTimeStep,
+				this.actor.getCurrentTimeStep(), solutionPerTimeStep,
 				this.actorName, optResult);
 		try {
 			milpSolver.createModel();				
@@ -143,7 +138,7 @@ public class MEMAPCoordination extends BehaviorModel {
 		MILPSolverWithConnections milpWithConnections = new MILPSolverWithConnections(
 				answerListReceived, nStepsMPC, milpSolHandler, 
 				totalEURVector, totalCO2Vector, 
-				getActualTimeStep(), solutionPerTimeStep, 
+				this.actor.getCurrentTimeStep(), solutionPerTimeStep, 
 				actorName, optResult);				
 		try {
 			milpWithConnections.createModel();

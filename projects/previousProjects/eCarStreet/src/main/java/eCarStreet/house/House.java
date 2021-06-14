@@ -9,16 +9,10 @@
 
 package eCarStreet.house;
 
-import helper.standardLastProfil.StandardLastProfil;
+import java.time.LocalDateTime;
 
-import java.util.LinkedList;
-
-import powerflowApi.ActorResults;
-import powerflowApi.PowerflowMapping;
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import eCarStreet.coordinator.RequestCoordinatorContent;
 import eCarStreet.eCar.ECar;
@@ -27,6 +21,9 @@ import eCarStreet.eCar.helper.decisions.PriceOptimizedDecision;
 import eCarStreet.eCar.helper.decisions.SimpleDecision;
 import eCarStreet.eCar.helper.decisions.SimpleTwoTariffDecision;
 import eCarStreet.helper.PriceHack;
+import helper.standardLastProfil.StandardLastProfil;
+import powerflowApi.ActorResults;
+import powerflowApi.PowerflowMapping;
 
 public class House extends BehaviorModel {
 
@@ -78,7 +75,10 @@ public class House extends BehaviorModel {
 	}
 
 	private void prepareAnswer() {
-		answer.demandHouse = -StandardLastProfil.getH0Demand(jahresVerbrauch,GlobalTime.currentTime);				
+		
+		LocalDateTime currentTime = this.actor.getCurrentTime();
+		
+		answer.demandHouse = -StandardLastProfil.getH0Demand(jahresVerbrauch,currentTime);				
 		
 		if (eCar != null){						
 			RequestCoordinatorContent rcc = (RequestCoordinatorContent) requestContentReceived;
@@ -92,14 +92,14 @@ public class House extends BehaviorModel {
 				
 				double remainingCarLoad = (eCar.getSOC() - eCar.endSOC) * eCar.capacity;				
 				double powerToLoad = rcc.carLoad * remainingCarLoad / remainingTotalLoad;
-				eCar.setPower(powerToLoad);
+				eCar.setPower(powerToLoad, this.actor.getTimeStepDuration());
 				answer.demandCar = -powerToLoad;
 				answer.eCarSOC = eCar.getSOC();
 			}
 			
 			// Wenn eigenständig entschieden wird
 			else {
-				answer.demandCar = eCar.getDemandAndCharge(GlobalTime.currentTime);
+				answer.demandCar = eCar.getDemandAndCharge(currentTime, this.actor.getTimeStepDuration());
 				answer.eCarSOC = eCar.getSOC();
 			}
 			
@@ -113,16 +113,13 @@ public class House extends BehaviorModel {
 			actorResults.activePower = answer.demandTotal * (-1000);
 		}
 
-		answer.price = PriceHack.price[GlobalTime.currentTimeStep];
+		answer.price = PriceHack.price[this.actor.getCurrentTimeStep()];
 		answer.cost = -answer.demandCar * answer.price;
 		answer.totalCost += answer.cost;
 		answer.eCarInformation = eCar;
 		answer.jahresVerbrauch = jahresVerbrauch;
 		
 		
-	}
-
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
 	}
 
 	public AnswerContent returnAnswerContentToSend() {

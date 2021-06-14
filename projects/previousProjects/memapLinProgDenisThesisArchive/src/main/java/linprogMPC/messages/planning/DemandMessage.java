@@ -1,7 +1,6 @@
 package linprogMPC.messages.planning;
 
 import akka.basicMessages.AnswerContent;
-import linprogMPC.ThesisTopologySimple;
 import linprogMPC.messages.BuildingMessage;
 import linprogMPC.messages.extension.NetworkType;
 

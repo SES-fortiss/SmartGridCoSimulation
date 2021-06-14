@@ -5,20 +5,33 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
+import org.apache.commons.io.FilenameUtils;
+
 /**
- * Allows file selection from directory
+ * Allow the selection of a file from the file system, through save and open
+ * dialogs
  */
-public class Chooser {
-	private String path;
+public class Chooser extends JFileChooser {
 
-	public String choosePath() {
+	private static final long serialVersionUID = 1L;
 
-		// Open dialog in current directory
-		JFileChooser chooser = new JFileChooser();
-		chooser.setFileFilter(new FileFilter() {
+	public Chooser(FileType fileType) {
+		super(new File(System.getProperty("user.dir")));
+		String descriptor;
+		String extension;
+
+		if (fileType.equals(FileType.CSV)) {
+			extension = ".csv";
+			descriptor = "CSV Files (*.csv)";
+		} else {
+			extension = ".json";
+			descriptor = "JSON Files (*.json)";
+		}
+
+		setFileFilter(new FileFilter() {
 
 			public String getDescription() {
-				return "CSV Files (*.csv)";
+				return descriptor;
 			}
 
 			public boolean accept(File f) {
@@ -26,18 +39,30 @@ public class Chooser {
 					return true;
 				} else {
 					String filename = f.getName().toLowerCase();
-					return filename.endsWith(".csv");
+					return filename.endsWith(extension);
 				}
 			}
 		});
+	}
 
-		chooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-
-		int rVal = chooser.showOpenDialog(chooser);
+	public File showOpenDialog() {
+		int rVal = showOpenDialog(this);
+		File file = null;
 		if (rVal == JFileChooser.APPROVE_OPTION) {
-			File file = chooser.getSelectedFile();
-			path = file.getPath();
+			file = getSelectedFile();
 		}
-		return path;
+		return file;
+	}
+
+	public File showSaveDialog() {
+		int rVal = showSaveDialog(this);
+		File file = null;
+		if (rVal == JFileChooser.APPROVE_OPTION) {
+			file = getSelectedFile();
+			if (!FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("json")) {
+				file = new File(file.toString() + ".json");
+			}
+		}
+		return file;
 	}
 }

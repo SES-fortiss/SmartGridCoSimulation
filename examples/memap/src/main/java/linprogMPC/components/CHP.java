@@ -2,7 +2,6 @@ package linprogMPC.components;
 
 import java.util.concurrent.TimeUnit;
 
-import akka.systemActors.GlobalTime;
 import linprog.LinProgSimulation;
 import linprogMPC.helper.EnergyPrices;
 
@@ -27,7 +26,7 @@ public class CHP extends Producer {
 	public void makeDecision() {
 		super.makeDecision();
 //		Calendar currentTime = startTime;
-		int cts = GlobalTime.getCurrentTimeStep();
+		int cts = timeStep;
 		for (int i = 0; i < n; i++) {
 			specificationToSend.cost[i] = 0.00001 + EnergyPrices.getGasPriceInEuro(cts+i); 
 //			currentTime.add(Calendar.SECOND, stepSize);
@@ -44,5 +43,4 @@ public class CHP extends Producer {
 		
 		display.update(gson.toJson(specificationToSend));
 	}
-
 }

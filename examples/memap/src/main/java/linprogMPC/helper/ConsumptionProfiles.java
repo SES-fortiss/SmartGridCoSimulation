@@ -85,7 +85,7 @@ public class ConsumptionProfiles {
 		    
 		} catch (IOException | ParseException e1) {
 				e1.printStackTrace();
-				SimulationStarter.stopSimulation();
+				SimulationStarter.stopSimulationStatic();
 				return null;
 		}
 		return profiles;

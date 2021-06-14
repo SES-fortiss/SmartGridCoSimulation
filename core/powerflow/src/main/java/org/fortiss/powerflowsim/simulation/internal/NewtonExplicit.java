@@ -11,8 +11,10 @@ package org.fortiss.powerflowsim.simulation.internal;
 
 import java.util.Arrays;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.fortiss.powerflowsim.simulation.helper.ExtendedMatrixFunctions;
 import org.jblas.ComplexDoubleMatrix;
 import org.jblas.DoubleMatrix;
@@ -24,7 +26,7 @@ import org.jblas.Solve;
  */
 public class NewtonExplicit {
 	
-	private static Logger log  = Logger.getLogger(NewtonExplicit.class);
+	private static Logger log  = LogManager.getLogger(NewtonExplicit.class);
 	private static int maxIterationSteps = 10;
 	private static double tolerance = 1e-6;
 	
@@ -49,7 +51,10 @@ public class NewtonExplicit {
 			ComplexDoubleMatrix sPowerInjectionVector,
 			ComplexDoubleMatrix voltVector, ComplexDoubleMatrix yMatrix) {		
 		
-		log.setLevel(Level.INFO);
+		// previous solution only as reminder 
+		// log.setLevel(Level.INFO);
+		Configurator.setLevel(log.getName(), Level.INFO);
+		
 		log.debug("enter newtonIterations() method\n");		
 		log.debug("Initial voltages: " + voltVector);
 		

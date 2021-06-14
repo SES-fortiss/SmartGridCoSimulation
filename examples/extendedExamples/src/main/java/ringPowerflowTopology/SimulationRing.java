@@ -12,6 +12,7 @@ package ringPowerflowTopology;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 
 // This is executed with Eclipse
 public class SimulationRing {
@@ -23,9 +24,10 @@ public class SimulationRing {
 	public void run(){
 		topology = TopologyRing.createTopology();
 		
-		SimulationStarter.saveGridTopologyPlot(topology);		
-        ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);        
-        SimulationStarter.startSimulation(actorSystem, startTimeStep, maxTimeStep);
+		SimulationStarter.saveGridTopologyPlot(topology);	
+		SimulationStarter simulationStarter = new SimulationStarter(new GlobalTime());
+        ActorSystem actorSystem = simulationStarter.initialiseActorSystem(topology);        
+        simulationStarter.startSimulation(actorSystem, startTimeStep, maxTimeStep);
 	}
 	
 	public static void main(String[] args){

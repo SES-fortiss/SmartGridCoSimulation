@@ -13,9 +13,9 @@ import opcMEMAP.ConfigInterface;
 
 /**
  * 
- * Zust‰nding f¸r die Konvertierung von einem Objekt in einer JSON Repr‰sentation.
+ * Zust√§nding f√ºr die Konvertierung von einem Objekt in einer JSON Repr√§sentation.
  * Aktuell ist die Idee, dass beliebige Objekte auf Ordner (Folder) gemappt werden,
- * w‰hrend die Datenpunkte (String, Double, Boolean) auf "WerteNodes" des OPCUA.
+ * w√§hrend die Datenpunkte (String, Double, Boolean) auf "WerteNodes" des OPCUA.
  * 
  * @author bytschkow
  */

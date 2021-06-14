@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.fortiss.memap</groupId>
 	<artifactId>memapGui</artifactId>
-	<version>0.1</version>
+	<version>0.5</version>
 	<packaging>jar</packaging>
 
 	<name>memapGui</name>
@@ -15,6 +15,11 @@
 	</properties>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -35,7 +40,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>src/</classpathPrefix>
-							<mainClass>fortiss.gui.Designer</mainClass>
+							<mainClass>fortiss.simulation.PlanningTool</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -68,7 +73,7 @@
 		<dependency>
 			<groupId>org.knowm.xchart</groupId>
 			<artifactId>xchart</artifactId>
-			<version>3.6.1</version>
+			<version>3.8.0</version>
 		</dependency>
 
 
@@ -85,6 +90,13 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.miglayout</groupId>
+			<artifactId>miglayout-swing</artifactId>
+			<version>5.2</version>
+		</dependency>
+
+
+		<dependency>
 			<groupId>com.jgoodies</groupId>
 			<artifactId>jgoodies-common</artifactId>
 			<version>1.8.0</version>
@@ -93,12 +105,6 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.8.5</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

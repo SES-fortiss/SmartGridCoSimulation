@@ -1,36 +1,72 @@
 package memap.main;
 
+import memap.helper.MEMAPLogging;
+import memap.helper.configurationOptions.OptHierarchy;
+import memap.helper.configurationOptions.OptimizationCriteria;
+import memap.helper.configurationOptions.Optimizer;
+import memap.helper.configurationOptions.ToolUsage;
+
 /**
- * This class is used to configure the general behavior of the tool.
- * It is not intended to configure the topology or its parameters, etc.
+ * This class is used to configure the general behavior of the tool. It is not
+ * intended to configure the topology or its parameters, etc.
  * 
  * @author bytschkow
  */
 public class ConfigurationMEMAP {
-		
-	public static Optimizer chosenOptimizer = Optimizer.LP;
-	public static OptimizationCriteria chosenCriteria = OptimizationCriteria.EUR;
-	public static OptHierarchy chosenOptimizationHierarchy = OptHierarchy.BUILDING;
-	public static ToolUsage chosenToolUsage = ToolUsage.PLANNING;
-	public static MEMAPLogging chosenMEMAPLogging =  MEMAPLogging.RESULTS_ONLY;
-	
-	public enum OptHierarchy {
-        BUILDING, MEMAP;
-    }
-	
-	public enum Optimizer {
-		MILP, LP, MILPwithConnections, LPwithConnections;
+
+	private Optimizer optimizer;
+	private OptimizationCriteria optimizationCriteria;
+	private OptHierarchy optimizationHierarchy;
+	private ToolUsage toolUsage;
+	private MEMAPLogging logging;
+
+	public ConfigurationMEMAP(Optimizer optimizer, OptimizationCriteria optimizationCriteria,
+			OptHierarchy optimizationHierarchy, ToolUsage toolUsage, MEMAPLogging logging) {
+		setOptimizer(optimizer);
+		setOptimizationCriteria(optimizationCriteria);
+		setOptimizationHierarchy(optimizationHierarchy);
+		setToolUsage(toolUsage);
+		setLogging(logging);
+	}
+
+	public Optimizer getOptimizer() {
+		return optimizer;
+	}
+
+	private void setOptimizer(Optimizer optimizer) {
+		this.optimizer = optimizer;
+	}
+
+	public OptHierarchy getOptimizationHierarchy() {
+		return optimizationHierarchy;
+	}
+
+	public void setOptimizationHierarchy(OptHierarchy optimizationHierarchy) {
+		this.optimizationHierarchy = optimizationHierarchy;
+	}
+
+	public OptimizationCriteria getOptimizationCriteria() {
+		return optimizationCriteria;
+	}
+
+	private void setOptimizationCriteria(OptimizationCriteria optimizationCriteria) {
+		this.optimizationCriteria = optimizationCriteria;
+	}
+
+	public ToolUsage getToolUsage() {
+		return toolUsage;
+	}
+
+	private void setToolUsage(ToolUsage toolUsage) {
+		this.toolUsage = toolUsage;
+	}
+
+	public MEMAPLogging getLogging() {
+		return logging;
+	}
+
+	private void setLogging(MEMAPLogging logging) {
+		this.logging = logging;
 	}
 	
-	public enum OptimizationCriteria {
-		CO2, EUR
-	}
-	
-	public enum ToolUsage{
-		PLANNING, SERVER;
-	}
-	
-	public enum MEMAPLogging{
-		ALL, FILES, RESULTS_ONLY
-	}
 }

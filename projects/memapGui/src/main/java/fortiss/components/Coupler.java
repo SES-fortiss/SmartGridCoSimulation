@@ -1,17 +1,30 @@
 package fortiss.components;
 
+import com.google.gson.annotations.Expose;
+
+import fortiss.gui.icons.ComponentIcon;
+import fortiss.media.IconStore;
+
 /**
  * Coupler is the class for representing Coupler objects. Example: CHP, HeatPump
  */
-public class Coupler {
-	private String name;
+public class Coupler extends Component {
+
+	@Expose
 	private String networkTypeP; // Primary, Values: Heat or Electricity
+	@Expose
 	private String networkTypeS; // Secondary, Values: Heat or Electricity
+	@Expose
 	private double minimumPower;
+	@Expose
 	private double maximumPower;
+	@Expose
 	private double efficiencyPrimary;
+	@Expose
 	private double efficiencySecondary;
+	@Expose
 	private double cost;
+	@Expose
 	private double coEmission;
 
 	/**
@@ -29,25 +42,18 @@ public class Coupler {
 	 * @param cost                cost [EUR]
 	 * @param coEmission          CO2 Emissions measured in [g/kWh]
 	 */
-	public Coupler(String name, String networkTypeP, String networkTypeS, double minimumPower, double maximumPower,
+	public Coupler(Building building, String name, String networkTypeP, String networkTypeS, double minimumPower, double maximumPower,
 			double efficiencyPrimary, double efficiencySecondary, double cost, double coEmission) {
-		this.setName(name);
-		this.setNetworkTypeP(networkTypeP);
-		this.setNetworkTypeS(networkTypeS);
-		this.setMinimumPower(minimumPower);
-		this.setMaximumPower(maximumPower);
-		this.setEfficiencyPrimary(efficiencyPrimary);
-		this.setEfficiencySecondary(efficiencySecondary);
-		this.setCost(cost);
-		this.setCOEmission(coEmission);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+		super(name, building);
+		setNetworkTypeP(networkTypeP);
+		setNetworkTypeS(networkTypeS);
+		setMinimumPower(minimumPower);
+		setMaximumPower(maximumPower);
+		setEfficiencyPrimary(efficiencyPrimary);
+		setEfficiencySecondary(efficiencySecondary);
+		setCost(cost);
+		setCOEmission(coEmission);
+		setIcon(new ComponentIcon(this, "coupler", IconStore.sCoupler, IconStore.uCoupler));
 	}
 
 	public String getNetworkTypeP() {
@@ -56,6 +62,7 @@ public class Coupler {
 
 	public void setNetworkTypeP(String networkTypeP) {
 		this.networkTypeP = networkTypeP;
+		setSaved(false);
 	}
 
 	public String getNetworkTypeS() {
@@ -64,6 +71,7 @@ public class Coupler {
 
 	public void setNetworkTypeS(String networkTypeS) {
 		this.networkTypeS = networkTypeS;
+		setSaved(false);
 	}
 
 	public double getMinimumPower() {
@@ -72,6 +80,7 @@ public class Coupler {
 
 	public void setMinimumPower(double minimumPower) {
 		this.minimumPower = minimumPower;
+		setSaved(false);
 	}
 
 	public double getMaximumPower() {
@@ -80,6 +89,7 @@ public class Coupler {
 
 	public void setMaximumPower(double maximumPower) {
 		this.maximumPower = maximumPower;
+		setSaved(false);
 	}
 
 	public double getEfficiencyPrimary() {
@@ -88,6 +98,7 @@ public class Coupler {
 
 	public void setEfficiencyPrimary(double efficiencyNetworkP) {
 		this.efficiencyPrimary = efficiencyNetworkP;
+		setSaved(false);
 	}
 
 	public double getEfficiencySecondary() {
@@ -96,6 +107,7 @@ public class Coupler {
 
 	public void setEfficiencySecondary(double efficiencyNetworkS) {
 		this.efficiencySecondary = efficiencyNetworkS;
+		setSaved(false);
 	}
 
 	public double getCost() {
@@ -104,6 +116,7 @@ public class Coupler {
 
 	public void setCost(double cost) {
 		this.cost = cost;
+		setSaved(false);
 	}
 
 	public double getCOEmission() {
@@ -112,6 +125,7 @@ public class Coupler {
 
 	public void setCOEmission(double coEmission) {
 		this.coEmission = coEmission;
+		setSaved(false);
 	}
 
 }

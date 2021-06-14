@@ -7,10 +7,13 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
-import fortiss.gui.Designer;
-import fortiss.gui.listeners.helper.PositionManager;
+import fortiss.gui.DesignerPanel;
+import fortiss.gui.icons.BuildingIcon;
+import fortiss.simulation.helper.PositionManager;
 
 public class PositionListener extends MouseAdapter {
+
+	private PositionManager pm = PositionManager.getInstance();
 
 	/**
 	 * Sets cursor to <code> Cursor.HAND_CURSOR</code> if the left mouse button is
@@ -19,7 +22,7 @@ public class PositionListener extends MouseAdapter {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if (SwingUtilities.isLeftMouseButton(e)) {
-			Designer.pl_ems.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			DesignerPanel.pl_ems.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		}
 	}
 
@@ -30,11 +33,10 @@ public class PositionListener extends MouseAdapter {
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if (SwingUtilities.isLeftMouseButton(e)) {
-			JLabel icon = (JLabel) e.getComponent();
+			BuildingIcon icon = (BuildingIcon) e.getComponent();
 			icon.setLocation(icon.getX() + e.getX() - icon.getWidth() / 2,
 					icon.getY() + e.getY() - icon.getHeight() / 2);
-			PositionManager.updateBuildingPosition(icon);
-			// repaint of component panel is triggered by the FocusManager
+			pm.updateCenterPositionOf(icon);
 		}
 	}
 
@@ -46,11 +48,11 @@ public class PositionListener extends MouseAdapter {
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if (SwingUtilities.isLeftMouseButton(e)) {
-			Designer.pl_ems.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			DesignerPanel.pl_ems.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
-			JLabel icon = (JLabel) e.getComponent();
-			if (!PositionManager.getVisibleArea().contains(icon.getX(), icon.getY())) {
-				PositionManager.fixPosition(icon);
+			BuildingIcon icon = (BuildingIcon) e.getComponent();
+			if (!pm.getVisibleArea().contains(icon.getX(), icon.getY())) {
+				pm.fixPosition(icon);
 			}
 		}
 	}

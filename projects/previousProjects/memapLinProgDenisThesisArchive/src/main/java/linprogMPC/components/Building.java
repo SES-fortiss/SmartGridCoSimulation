@@ -2,15 +2,12 @@ package linprogMPC.components;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import linprogMPC.ThesisTopologySimple;
 import linprogMPC.helper.EnergyPrices;
@@ -142,22 +139,22 @@ public class Building extends BehaviorModel {
 			
 			// ******* Optimierung ********************************
 			MatrixBuildup mb = new MatrixBuildup();			
-			problem = mb.singleBuilding(buildingMessage);
+			problem = mb.singleBuilding(buildingMessage, this.actor.getCurrentTimeStep());
 			OptimizationStarter os = new OptimizationStarter();
 			double[] optSolution = os.runLinProg(problem);
 			
 			// ******** Ermittlung der Kosten *********************
 			double[] buildingCostPerTimestep = new double[nStepsMPC];
 			buildingCostPerTimestep = solHandler.calculateTimeStepCosts(optSolution, problem.lambda);		
-			buildingsTotalCosts[GlobalTime.getCurrentTimeStep()] += buildingCostPerTimestep[0];			
+			buildingsTotalCosts[this.actor.getCurrentTimeStep()] += buildingCostPerTimestep[0];			
 
 			// ******** Erstellung des Ergebnisvektors *********************
-			double[] currentStep = {getActualTimeStep()};
+			double[] currentStep = {this.actor.getCurrentTimeStep()};
 			double[] currentOptVector = solHandler.getSolutionForThisTimeStep(optSolution, nStepsMPC);
 			double[] currentDemand = solHandler.getDemandForThisTimestep(problem, nStepsMPC);
 			double[] currentSOC = solHandler.getCurrentSOC(buildingMessage.storageList);
 			double[] currentCost = {buildingCostPerTimestep[0]};
-			double[] electricalPrice = {energyPrices.getElectricityPriceInEuro(this.getActualTimeStep())};			
+			double[] electricalPrice = {energyPrices.getElectricityPriceInEuro(this.actor.getCurrentTimeStep())};			
 			double[] vectorAll = HelperConcat.concatAlldoubles(currentStep, currentDemand, currentOptVector, currentSOC, currentCost, electricalPrice);
 			
 			String[] timeStep = {"timeStep"};
@@ -174,12 +171,12 @@ public class Building extends BehaviorModel {
 			
 			//********* Speichern
 			
-			buildingsSolutionPerTimeStep[this.getActualTimeStep()] = vectorAll;
+			buildingsSolutionPerTimeStep[this.actor.getCurrentTimeStep()] = vectorAll;
 			
 			if (!ThesisTopologySimple.MEMAP_ON) {
 				String saveString = ThesisTopologySimple.simulationName + "MPC"+ThesisTopologySimple.N_STEPS_MPC+"/";
 				saveString += this.actorName+"MPC"+nStepsMPC+"Solutions.csv";
-				if (GlobalTime.getCurrentTimeStep() == (ThesisTopologySimple.NR_OF_ITERATIONS-1)) {
+				if (this.actor.getCurrentTimeStep() == (ThesisTopologySimple.NR_OF_ITERATIONS-1)) {
 					solHandler.exportMatrixWithHeader(buildingsSolutionPerTimeStep, saveString, namesAll);
 				}
 			}
@@ -269,7 +266,7 @@ public class Building extends BehaviorModel {
 	@Override
 	public AnswerContent returnAnswerContentToSend() {		
 		
-		if (this.getActualTimeStep() == 0) {
+		if (this.actor.getCurrentTimeStep() == 0) {
 			//String filePath = "src/main/java/Building1.json";
 									
 			if (port != 0) {
@@ -319,8 +316,5 @@ public class Building extends BehaviorModel {
 		}		
 		super.stop();
 	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 
 }

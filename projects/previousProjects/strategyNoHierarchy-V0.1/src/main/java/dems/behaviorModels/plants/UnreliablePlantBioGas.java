@@ -9,22 +9,19 @@
 
 package dems.behaviorModels.plants;
 
-import java.util.LinkedList;
+import java.time.LocalDateTime;
 
+import akka.basicMessages.AnswerContent;
+import akka.basicMessages.RequestContent;
+import behavior.BehaviorModel;
 import dems.behaviorType.StrategyBehaviorType;
 import dems.helper.CheckRequest;
 import dems.helper.Costs;
-import dems.helper.TriggerPlantOut;
 import dems.messageContents.DEMSRequestContent;
 import dems.messageContents.UnreliableAnswerContent;
 import helper.MyDateTimeFormatter;
 import helper.MyDoubleFormat;
 import helper.Swmcsv;
-import akka.advancedMessages.ErrorAnswerContent;
-import akka.basicMessages.AnswerContent;
-import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
-import behavior.BehaviorModel;
 
 /**
  * 
@@ -72,7 +69,7 @@ public class UnreliablePlantBioGas extends BehaviorModel {
 			
 		} else {
 			individualRequestApplicable = false;
-			setPointPower = installedPower*Swmcsv.getSWMProfileBioGas(GlobalTime.currentTime);
+			setPointPower = installedPower*Swmcsv.getSWMProfileBioGas(this.actor.getCurrentTime());
 			htmlIndividualRequest = "<br>individualRequest: null";
 		}
 	}	
@@ -82,8 +79,12 @@ public class UnreliablePlantBioGas extends BehaviorModel {
 	
 	public void makeDecision() {
 		
-		if (GlobalTime.currentTimeStep == 1) {
-			setPointPower = installedPower*Swmcsv.getSWMProfileBioGas(GlobalTime.currentTime);
+		int currentTimeStep = this.actor.getCurrentTimeStep();
+		LocalDateTime currentTime = this.actor.getCurrentTime();
+		LocalDateTime nextTime = currentTime.plus(this.actor.getTimeStepDuration());
+		
+		if (currentTimeStep == 1) {
+			setPointPower = installedPower*Swmcsv.getSWMProfileBioGas(currentTime);
 		}
 		
 		actualPower = setPointPower;
@@ -93,9 +94,12 @@ public class UnreliablePlantBioGas extends BehaviorModel {
 			available = true;
 		}		
 
-		// Hier wird der Ausfall der Anlage getriggert
+		// Hier wird der Ausfall der Anlage getriggert, Ausfallwahrscheinlichkeit 5%
 		if (available){
-			if (TriggerPlantOut.checkTrigger(GlobalTime.currentTime)) {
+			
+			double random = Math.random();		
+			
+			if (random <= 0.05) {
 				available = false;
 				timeBroken = 5;
 			}			
@@ -108,7 +112,7 @@ public class UnreliablePlantBioGas extends BehaviorModel {
 		
 		answerContentToSend.availability = available;
 		
-		expectedPower = installedPower*Swmcsv.getSWMProfileBioGas(GlobalTime.nextTime);
+		expectedPower = installedPower*Swmcsv.getSWMProfileBioGas(nextTime);
 		
 		answerContentToSend.currentProduction = actualPower;
 		answerContentToSend.scheduledProduction = setPointPower;
@@ -122,8 +126,7 @@ public class UnreliablePlantBioGas extends BehaviorModel {
 			answerContentToSend.factorConformation = null;
 		}
 				
-		answerContentToSend.time = GlobalTime.currentTimeStep;
-		answerContentToSend.dateTime = GlobalTime.currentTime.format(MyDateTimeFormatter.formatter);
+		answerContentToSend.dateTime = currentTime.format(MyDateTimeFormatter.formatter);
 		answerContentToSend.type = strategyBehaviorType;
 		
 		answerContentToSend.IN = request.toHTML() + htmlIndividualRequest;
@@ -142,6 +145,4 @@ public class UnreliablePlantBioGas extends BehaviorModel {
 		return null;
 	}
 	
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 }

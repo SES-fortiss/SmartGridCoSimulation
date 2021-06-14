@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import akka.systemActors.GlobalTime;
 import ethereum.Simulation;
 import ethereum.helper.ConsumptionProfiles;
 import ethereum.helper.Market;
@@ -139,17 +138,17 @@ public class Building5 extends Building {
 		
 		BigInteger nextHeatConsumption = consumptionProfiles.getHeatConsumption(
 				consumerIndex,
-				GlobalTime.currentTimeStep
+				this.actor.getCurrentTimeStep()
 		);
 		
 		BigInteger nextElectricityConsumption = consumptionProfiles.getElectricityConsumption(
 				consumerIndex,
-				GlobalTime.currentTimeStep
+				this.actor.getCurrentTimeStep()
 		);
 		
 		BigInteger nextSTProduction = 
 				BigInteger.valueOf(
-						(long) (SolarRadiation.getRadiation(GlobalTime.currentTimeStep)
+						(long) (SolarRadiation.getRadiation(this.actor.getCurrentTimeStep())
 								* stArea * stEfficiency * 1000000000) //kW * 1000000000
 					).multiply(BigInteger.valueOf(1000)) //W * 1000000000
 				.multiply(Simulation.TIMESTEP_DURATION_IN_SECONDS).divide(BigInteger.valueOf(1000000000)); //Ws

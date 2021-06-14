@@ -9,22 +9,19 @@
 
 package dems.behaviorModels.plants;
 
-import java.util.LinkedList;
+import java.time.LocalDateTime;
 
+import akka.basicMessages.AnswerContent;
+import akka.basicMessages.RequestContent;
+import behavior.BehaviorModel;
 import dems.behaviorType.StrategyBehaviorType;
 import dems.helper.CheckRequest;
 import dems.helper.Costs;
-import dems.helper.TriggerCommunicationOut;
 import dems.messageContents.DEMSRequestContent;
 import dems.messageContents.GenericAnswerContent;
 import helper.MyDateTimeFormatter;
 import helper.MyDoubleFormat;
 import helper.Swmcsv;
-import akka.advancedMessages.ErrorAnswerContent;
-import akka.basicMessages.AnswerContent;
-import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
-import behavior.BehaviorModel;
 
 /**
  * 
@@ -86,20 +83,26 @@ public class UnreliableCommunicationWater extends BehaviorModel {
 			htmlIndividualRequest  = "<br>individualRequest: <br> setPointPower: " + MyDoubleFormat.f.format(setPointPower);				
 		} else {
 			individualRequestApplicable = false;
-			setPointPower = installedPower * Swmcsv.getSWMProfileWater(GlobalTime.currentTime);
+			setPointPower = installedPower * Swmcsv.getSWMProfileWater(this.actor.getCurrentTime());
 			htmlIndividualRequest = "<br>individualRequest: null";
 		}
 	}
 
 	@Override 
 	public void makeDecision() {			
-		if (GlobalTime.currentTimeStep == 1) {
-			setPointPower = installedPower*Swmcsv.getSWMProfileWater(GlobalTime.currentTime);
+		
+		int currentTimeStep = this.actor.getCurrentTimeStep();
+		LocalDateTime currentTime = this.actor.getCurrentTime();
+		LocalDateTime nextTime = currentTime.plus(this.actor.getTimeStepDuration());
+		
+		
+		if (currentTimeStep == 1) {
+			setPointPower = installedPower*Swmcsv.getSWMProfileWater(currentTime);
 		}
 
 		actualPower = setPointPower;
 	
-		expectedPower = installedPower*Swmcsv.getSWMProfileWater(GlobalTime.nextTime);
+		expectedPower = installedPower*Swmcsv.getSWMProfileWater(nextTime);
 		
 		answerContentToSend.currentProduction = actualPower;
 		answerContentToSend.scheduledProduction = setPointPower;
@@ -114,15 +117,14 @@ public class UnreliableCommunicationWater extends BehaviorModel {
 			answerContentToSend.factorConformation = null;
 		}
 		
-		answerContentToSend.time = GlobalTime.currentTimeStep;
-		answerContentToSend.dateTime = GlobalTime.currentTime.format(MyDateTimeFormatter.formatter);
+		answerContentToSend.dateTime = currentTime.format(MyDateTimeFormatter.formatter);
 		
 		// zuerst alle Werte Setzen und zum schluss die Strings
 		answerContentToSend.IN = request.toHTML() + htmlIndividualRequest ;
 		
 		boolean communicationAvailable = true;
 		
-		if (TriggerCommunicationOut.checkTrigger(GlobalTime.currentTime)) {
+		if (Math.random() <= 0.1) {
 			communicationAvailable = false;				
 		}
 		
@@ -147,7 +149,5 @@ public class UnreliableCommunicationWater extends BehaviorModel {
 		return null;
 	}
 	
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 
 }

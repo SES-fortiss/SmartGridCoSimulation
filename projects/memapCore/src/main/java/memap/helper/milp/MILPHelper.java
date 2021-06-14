@@ -82,8 +82,8 @@ public abstract class MILPHelper {
 		
 		for (int i = 0; i < nStepsMPC; i++) {			
 			int index = i + 1 + addon;
-			String string1 = connectionMessage.name+"_From"+connectionMessage.connectedBuildingFrom+"_To" + connectionMessage.connectedBuildingTo + "_T" + i;
-			String string2 = connectionMessage.name+"_From"+connectionMessage.connectedBuildingTo+"_To" + connectionMessage.connectedBuildingFrom + "_T" + i;
+			String string1 = connectionMessage.name + "Frwd_T" + i;
+			String string2 = connectionMessage.name + "Back_T" + i;
 			problem.setColName(index, string1);
 			problem.setColName(index + nStepsMPC, string2);
 		}		

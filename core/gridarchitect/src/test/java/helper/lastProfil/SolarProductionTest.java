@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 

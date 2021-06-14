@@ -9,23 +9,17 @@
 
 package dems.behaviorModels.DEMS;
 
-import helper.IoHelper;
-import helper.MyDateTimeFormatter;
-
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-
-import akka.advancedMessages.ErrorAnswerContent;
-import akka.basicMessages.AnswerContent;
-import akka.basicMessages.BasicAnswer;
-import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
-import behavior.BehaviorModel;
 
 import com.google.gson.Gson;
 
+import akka.basicMessages.AnswerContent;
+import akka.basicMessages.BasicAnswer;
+import akka.basicMessages.RequestContent;
+import behavior.BehaviorModel;
 import dems.Simulation;
 import dems.helper.Costs;
 import dems.helper.DEMSSchedule;
@@ -35,6 +29,8 @@ import dems.messageContents.DEMSAggregatorAnswerContent;
 import dems.messageContents.DEMSRequestContent;
 import dems.messageContents.GenericAnswerContent;
 import dems.messageContents.IndividualRequest;
+import helper.IoHelper;
+import helper.MyDateTimeFormatter;
 
 /**
  * DEMSAggregator bekommt alle Nachrichten und kann diese Verarbeiten
@@ -77,7 +73,7 @@ public class DEMSPriorityControl extends BehaviorModel{
 	
 	@Override
 	public void handleRequest() {
-		scheduledPowerProduction = DEMSSchedule.getSchedule(GlobalTime.currentTime);			
+		scheduledPowerProduction = DEMSSchedule.getSchedule(this.actor.getCurrentTime());			
     	requestContentToSend.reductionFactor = decideGeneralReductionFactor();    	
     	updatePlantList();
     	
@@ -95,6 +91,9 @@ public class DEMSPriorityControl extends BehaviorModel{
 
 	@Override
     public void makeDecision() {
+		
+		LocalDateTime currentTime = this.actor.getCurrentTime();
+		
     	actualAggregatedPowerProduction = 0.0;
     	expectedAggregatedPowerProduction = 0.0;
     	costPowerPlants = 0.0;
@@ -118,7 +117,7 @@ public class DEMSPriorityControl extends BehaviorModel{
     		}
     	}
       	
-      	final double PERIOD = GlobalTime.period.getSeconds() / 3600.0;
+      	final double PERIOD = this.actor.getTimeStepDuration().getSeconds() / 3600.0;
       	
       	costPowerPlants -= costPurchase;
       	costPunishment = Math.abs(actualAggregatedPowerProduction - scheduledPowerProduction) * Costs.PENALTY / 1e3;      	
@@ -128,8 +127,7 @@ public class DEMSPriorityControl extends BehaviorModel{
       	
     	answerContentToSend.currentProduction = actualAggregatedPowerProduction;
     	answerContentToSend.expectedProduction = expectedAggregatedPowerProduction;
-    	answerContentToSend.time = GlobalTime.currentTimeStep;
-    	answerContentToSend.dateTime = GlobalTime.currentTime.format(MyDateTimeFormatter.formatter);
+    	answerContentToSend.dateTime = currentTime.format(MyDateTimeFormatter.formatter);
     	answerContentToSend.scheduledProduction = scheduledPowerProduction;
     	answerContentToSend.cpMinusGuesses = actualAggregatedPowerProduction - guesses;
     	
@@ -170,7 +168,7 @@ public class DEMSPriorityControl extends BehaviorModel{
 			i++;
 		}				
 		
-		if (GlobalTime.currentTimeStep + 1 == GlobalTime.lastTimeStep){				
+		if (this.actor.getCurrentTimeStep() + 1 == Simulation.getMaxTimeSteps()){				
 			
 			jsonString = jsonString.substring(0, jsonString.length()-2) +"], \n\"children\" : [";
 			for (int j = 0; j < super.answerListReceived.size(); j++){
@@ -344,7 +342,4 @@ public class DEMSPriorityControl extends BehaviorModel{
 		}
     	
 	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 }

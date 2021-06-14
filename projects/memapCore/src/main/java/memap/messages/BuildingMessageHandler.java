@@ -136,9 +136,6 @@ public class BuildingMessageHandler {
 				heatDemand.networkType = NetworkType.HEAT;
 				elecDemand.networkType = NetworkType.ELECTRICITY;
 
-				heatDemand.optimizationCriteria = demandMessage.optimizationCriteria;
-				elecDemand.optimizationCriteria = demandMessage.optimizationCriteria;
-
 				int length = demandMessage.getDemandVector().length / 2;
 				double[] aInput = new double[length];
 				double[] bInput = new double[length];

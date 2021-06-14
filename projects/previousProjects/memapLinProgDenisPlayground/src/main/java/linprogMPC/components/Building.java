@@ -1,10 +1,7 @@
 package linprogMPC.components;
 
-import java.util.LinkedList;
-
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -84,12 +81,6 @@ public class Building extends BehaviorModel {
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
 		return buildingMessage;
-	}
-
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		// TODO Auto-generated method stub	
 	}
 
 

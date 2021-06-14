@@ -12,6 +12,7 @@ package _ieee14BusExample;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 import configuration.GridArchitectConfiguration;
 
 /**
@@ -31,10 +32,11 @@ public class IEEE14Simulation {
 		
 		GridArchitectConfiguration.showPowerFlowDetails = true;
 		
+		SimulationStarter simStarter = new SimulationStarter(new GlobalTime());
 		
 		SimulationStarter.saveGridTopologyPlot(topology);		
-        ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);        
-        SimulationStarter.startSimulation(actorSystem, startTimeStep, maxTimeStep);
+        ActorSystem actorSystem = simStarter.initialiseActorSystem(topology);        
+        simStarter.startSimulation(actorSystem, startTimeStep, maxTimeStep);
         
 	}
 	

@@ -12,6 +12,7 @@ package _3busExampleIowa;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 
 /**
  * This simulation example was created to test a simple power flow model.
@@ -30,9 +31,11 @@ public class Iowa3BusSimulation {
 	public void run(){
 		topology = Iowa3BusTopology.createTopology();
 		
+		SimulationStarter simStarter = new SimulationStarter(new GlobalTime());
+		
 		SimulationStarter.saveGridTopologyPlot(topology);		
-        ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(topology);        
-        SimulationStarter.startSimulation(actorSystem, startTimeStep, maxTimeStep);
+        ActorSystem actorSystem = simStarter.initialiseActorSystem(topology);        
+        simStarter.startSimulation(actorSystem, startTimeStep, maxTimeStep);
 	}
 	
 	public static void main(String[] args){

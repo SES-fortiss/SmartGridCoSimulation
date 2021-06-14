@@ -10,11 +10,9 @@
 package meritorder.components;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -158,7 +156,4 @@ public class AggregatorBehavior extends BehaviorModel {
 	public RequestContent returnRequestContentToSend() {
 		return null;
 	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}	
 }

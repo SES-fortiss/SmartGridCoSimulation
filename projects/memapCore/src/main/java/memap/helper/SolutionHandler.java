@@ -9,14 +9,26 @@ import java.util.Locale;
 
 import memap.helper.lp.LPOptimizationProblem;
 import memap.main.TopologyConfig;
+import memap.media.Strings;
 import memap.messages.BuildingMessage;
+import memap.messages.extension.NetworkType;
+import memap.messages.planning.ConnectionMessage;
+import memap.messages.planning.CouplerMessage;
+import memap.messages.planning.ProducerMessage;
 import memap.messages.planning.StorageMessage;
+
 
 public class SolutionHandler {
 
-	/** MPC horizon */
-	int nMPC = TopologyConfig.N_STEPS_MPC;
-
+	/** MPC horizon: Initialization must be delayed until after {@link TopologyConfig} initialization */
+	private int nStepsMPC;
+	private TopologyConfig topConfig;
+	
+	public SolutionHandler(int nStepsMPC, TopologyConfig topConfig){
+		this.nStepsMPC = nStepsMPC;
+		this.topConfig = topConfig;
+	}
+	
 	/**
 	 * Export a matrix with or without header.
 	 * 
@@ -25,6 +37,7 @@ public class SolutionHandler {
 	 * @param header   if null, the matrix is exported without header
 	 */
 	public void exportMatrix(double[][] data, String filename, String[] header) {
+		
 		BufferedWriter bw = null;
 		String source = File.separator + DirectoryConfiguration.mainDir + File.separator + DirectoryConfiguration.resultDir + File.separator + filename;
 		String location = System.getProperty("user.dir");
@@ -33,13 +46,12 @@ public class SolutionHandler {
 		 * or or the directory from which the .jar was executed.
 		 */
 		location = location + source;
-		System.out.println("Try file location: " + location);
+		System.out.println("WRITE solutions, SolitionHandler, try file location: " + location);
+		
 		
 	    File destination = new File(location);
-	    destination.getParentFile().mkdirs();
-	    destination.setWritable(true);
-	    destination.setReadable(true);
-        
+	    
+	    FileManager.setUpDirectoryHierarchy(destination);
 		
 		File file = destination;
 		try {
@@ -95,26 +107,6 @@ public class SolutionHandler {
 			}
 		}
 	}
-
-	// TODO: Not used. Remove?
-	public double[][] getCorrectedSolutionVector(double[][] matrix, double[] vec, int NumberOfStorages)
-			throws IOException {
-		if (matrix[0].length == vec.length) {
-			int size = (int) (matrix[0].length / nMPC - 4);
-			double[][] TotalDeviceProduction = new double[size + NumberOfStorages][2];
-
-			for (int i = 0; i < size + NumberOfStorages; i++) {
-				for (int j = 0; j < nMPC; j++) {
-
-					TotalDeviceProduction[i][0] += matrix[j][i * nMPC + j] * vec[i * nMPC + j]; // Heat
-					TotalDeviceProduction[i][1] += matrix[j + nMPC][i * nMPC + j] * vec[i * nMPC + j]; // Electricity
-				}
-			}
-			return TotalDeviceProduction;
-		}
-		return null;
-
-	}
 	
 	/**
 	 * @param optSolution optimization solution
@@ -124,96 +116,11 @@ public class SolutionHandler {
 	public double calculateTimeStepCosts(double[] optSolution, double[] lambda) {
 		double result = 0;
 
-		for (int i = 0; i < lambda.length / nMPC; i++) {
-			result += lambda[(i * nMPC)] * optSolution[(i * nMPC)] * 0.25;
+		for (int i = 0; i < lambda.length / nStepsMPC; i++) {
+			result += lambda[(i * nStepsMPC)] * optSolution[(i * nStepsMPC)] * topConfig.getStepLengthInHours();
 		}
 
 		return result;
-	}
-
-	// TODO: Not used. Remove?
-	public double[] matrixMultiplication(double[][] matrix, double[] vec) throws IOException {
-		if (matrix[0].length == vec.length) {
-			double[] result = new double[matrix[0].length];
-
-			for (int i = 0; i < matrix.length; i++) {
-				for (int j = 0; j < vec.length; j++) {
-					result[i] += matrix[i][j] * vec[j];
-				}
-			}
-			return result;
-		}
-		return null;
-
-	}
-
-	/**
-	 * Calculates the autarky or economic independence or self-sufficiency.
-	 * 
-	 * @param problem     A linear programming problem
-	 * @param optSolution optimization solution
-	 * @return autarky
-	 */
-	// TODO: Not used. Remove?
-	public double calcAutarky(LPOptimizationProblem problem, double[] optSolution) {
-
-		double summeB_H = 0;
-		double summeB_el = 0;
-		for (int j = 0; j < problem.b_eq.length / 2; j++) {
-			summeB_H += problem.b_eq[j];
-			summeB_el += problem.b_eq[nMPC + j];
-		}
-
-		int x1 = (int) (optSolution.length - 4 * nMPC);
-		double purchase_el = 0;
-		double purchase_H = 0;
-
-		for (int i = x1; i < x1 + nMPC; i++) {
-			// difference between purchased and sold electricity
-			purchase_el += optSolution[nMPC + i] - optSolution[i];
-			// difference between purchased and sold heat
-			purchase_H += optSolution[3 * nMPC + i] - optSolution[2 * nMPC + i];
-		}
-
-		double purchasedEnergy = purchase_el + purchase_H;
-		double consumption = summeB_H + summeB_el;
-
-		double autarky = (consumption - purchasedEnergy) / consumption; // in %
-
-		return 100 * autarky;
-
-	}
-
-	// TODO: Not used. Remove?
-	public void calcNewCosts(LPOptimizationProblem problem, double[] sol, ArrayList<BuildingMessage> buildingSpecs) {
-
-		int nrOfStorages2 = 0;
-		int nrOfProducers2 = 0;
-		int building = 0;
-		int range1 = 0;
-		int range2 = 0;
-		double tradingCosts = 0;
-
-		System.out.println(" << New Costs >>");
-
-		for (BuildingMessage buildingSpec : buildingSpecs) {
-			double newBuildingCosts = 0;
-			nrOfProducers2 += buildingSpec.getNrOfVolatileProducers() + buildingSpec.getNrOfControllableProducers();
-			nrOfStorages2 += buildingSpec.getNrOfStorages();
-			range2 = nMPC * (nrOfProducers2 + 2 * nrOfStorages2);
-			for (int j = range1; j < range2; j++) {
-				newBuildingCosts += problem.lambda[j] * sol[j];
-			}
-			range1 = range2;
-			building++;
-
-			System.out.println("Building " + building + ": " + String.format("%.02f", newBuildingCosts));
-		}
-
-		for (int j = range1; j < problem.lambda.length; j++) {
-			tradingCosts += problem.lambda[j] * sol[j];
-		}
-		System.out.println("Trading with energy supplier: " + String.format("%.02f", tradingCosts));
 	}
 
 	/**
@@ -228,6 +135,7 @@ public class SolutionHandler {
 		}
 		return result;
 	}
+	
 
 	/**
 	 * @param demand    combined demand vector
@@ -240,23 +148,10 @@ public class SolutionHandler {
 		for (int i = 0; i < result.length; i++) {
 			result[i] = demand[i * nStepsMPC];
 		}
-
+		
 		return result;
 	}
 
-	/**
-	 * @param optSolution optimization solution
-	 * @param etas        transformation vectors
-	 * @param nStepsMPC   the number of steps for MPC
-	 * @return an array with the demand values for a given time step
-	 */
-	public double[] getEffSolutionForThisTimeStep(double[] optSolution, double[] etas, int nStepsMPC) {
-		double[] result = new double[optSolution.length / nStepsMPC];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = optSolution[i * nStepsMPC] * etas[i * nStepsMPC];
-		}
-		return result;
-	}
 
 	/**
 	 * @param problem   A linear programming problem
@@ -286,6 +181,14 @@ public class SolutionHandler {
 		}
 		return result;
 	}
+	
+	public double[] getCurrentSOCEnergy(ArrayList<StorageMessage> storageMessageList) {
+		double[] result = new double[storageMessageList.size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = storageMessageList.get(i).storageEnergyContent;
+		}
+		return result;
+	}
 
 	/**
 	 * @param buildingMessageList a list of building messages
@@ -300,61 +203,42 @@ public class SolutionHandler {
 
 		return getCurrentSOC(storeMessageList);
 	}
+	
+	public double[] getCurrentSOCEnergyMB(ArrayList<BuildingMessage> buildingMessageList) {
+		ArrayList<StorageMessage> storeMessageList = new ArrayList<StorageMessage>();
+
+		for (BuildingMessage bm : buildingMessageList) {
+			storeMessageList.addAll(bm.storageList);
+		}
+
+		return getCurrentSOCEnergy(storeMessageList);
+	}
 
 	/**
 	 * @param buildingMessageList a list of building messages
 	 * @param nStepsMPC           the number of steps for MPC
 	 * @return an array with the demand names when Global MEMAP optimization is ON
 	 */
-	// TODO: Decide whether this function should be here or in a message handler
 	public String[] getNamesForDemand(ArrayList<BuildingMessage> buildingMessageList, int nStepsMPC) {
-		String[] result = new String[buildingMessageList.size() + 1];
+		
+		// following structure is intended: result["System heat demand", "Heat demand - building 1", ..., "System electricity demand"]
+		String[] result = new String[2 + buildingMessageList.size()];
 
-		for (int i = 0; i < result.length - 1; i++) {
-			result[i] = "Heat demand - " + buildingMessageList.get(i).name;
+		result[0] = Strings.heatDemand;
+		
+		for (int i = 1; i <= buildingMessageList.size(); i++) {
+			result[i] = "Heat demand - " + buildingMessageList.get(i-1).name;
 		}
-		result[result.length - 1] = "Combined electricity demand";
+		
+		result[result.length - 1] = Strings.electricityDemand;
 		return result;
 	}
 
 	/**
-	 * @return an array with the demand type names
+	 * @return an array with the demand names
 	 */
-	// TODO: Decide whether this function should be here or in a message handler
-	public String[] getNamesForDemand() {
-		String[] result = { "Heat demand", "Electricity demand" };
-		return result;
-	}
-
-	/**
-	 * @return an array with the demand names when Global MEMAP optimization is ON
-	 */
-	public String[] getNamesForPositiveDemand(ArrayList<BuildingMessage> buildingMessageList) {
-		String[] result = new String[buildingMessageList.size() + 2];
-
-		for (int i = 0; i < result.length - 2; i++) {
-			result[i] = "(+) Heat demand - " + buildingMessageList.get(i).name;
-		}
-		result[result.length - 2] = "Combined heat demand";
-		result[result.length - 1] = "Combined electricity demand";
-		return result;
-	}
-
-	/**
-	 * @param names     an array with the names for every time steps
-	 * @param nStepsMPC the number of steps for MPC
-	 * @return an array with the efficiency names when Global MEMAP optimization is
-	 *         ON
-	 */
-	public String[] getEffNamesForThisTimeStep(String[] names, int nStepsMPC) {
-		String[] result = new String[names.length / nStepsMPC];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = names[i * nStepsMPC];
-			if (result[i].contains(".")) {
-				String[] strSplit = result[i].split("\\.");
-				result[i] = "(+) " + strSplit[strSplit.length - 1] + " times ETA";
-			}
-		}
+	public String[] getNamesForDemandSingleBuilding() {
+		String[] result = { Strings.heatDemand, Strings.electricityDemand };
 		return result;
 	}
 
@@ -391,7 +275,20 @@ public class SolutionHandler {
 				String[] strSplit = result[i].split("\\.");
 				result[i] = strSplit[strSplit.length - 1];
 			}
-			result[i] += " SOC";
+			result[i] =  result[i] + "_SOC";
+		}
+		return result;
+	}
+	
+	public String[] getNamesForSOCEnergy(ArrayList<StorageMessage> storageMessageList) {
+		String[] result = new String[storageMessageList.size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = storageMessageList.get(i).name;
+			if (result[i].contains(".")) {
+				String[] strSplit = result[i].split("\\.");
+				result[i] = strSplit[strSplit.length - 1];
+			}
+			result[i] =  result[i] + "_SOC_Energy";
 		}
 		return result;
 	}
@@ -400,13 +297,129 @@ public class SolutionHandler {
 	 * @param buildingMessageList a list of building messages
 	 * @return an array with the names of storage objects
 	 */
-	// TODO: Not used	
-public String[] getNamesForSOCs(ArrayList<BuildingMessage> buildingMessageList) {
+	public String[] getNamesForSOCs(ArrayList<BuildingMessage> buildingMessageList) {
 		ArrayList<StorageMessage> storeMessageList = new ArrayList<StorageMessage>();
 		for (BuildingMessage bm : buildingMessageList) {
 			storeMessageList.addAll(bm.storageList);
 		}
 		return getNamesForSOC(storeMessageList);
+	}
+
+	public String[] getNamesForSOCEnergyMB(ArrayList<BuildingMessage> buildingMessageList) {
+		ArrayList<StorageMessage> storeMessageList = new ArrayList<StorageMessage>();
+		for (BuildingMessage bm : buildingMessageList) {
+			storeMessageList.addAll(bm.storageList);
+		}
+		return getNamesForSOCEnergy(storeMessageList);
+	}
+
+	public ArrayList<String> createNamesForCorrEfficiency(BuildingMessage singleBuildingMessage, String[] names) {
+		ArrayList<String> additionalNames = new ArrayList<>();
+		
+		for (ProducerMessage producerMessage : singleBuildingMessage.controllableProducerList) {
+			for (int i = 0; i < names.length; i++) {
+				if(names[i].contains(producerMessage.name + "_T")) {
+					additionalNames.add(names[i] + "_withEfficiency");
+				}
+			}
+		}
+		
+		for (CouplerMessage couplerMessage : singleBuildingMessage.couplerList) {
+			for (int i = 0; i < names.length; i++) {
+				if(names[i].contains(couplerMessage.name + "_T")) {
+					additionalNames.add(names[i] +  "_withEffieciency" +"_"+ couplerMessage.primaryNetwork);
+					additionalNames.add(names[i] +  "_withEffieciency" +"_"+ couplerMessage.secondaryNetwork);
+				}
+			}
+		}
+		return additionalNames;
+	}
+
+	public ArrayList<Double> createValuesForCorrEfficiency(
+			BuildingMessage singleBuildingMessage, 
+			String[] names,
+			double[] optSolution) {
+		
+		ArrayList<Double> additionalValues = new ArrayList<>();
+		
+		for (ProducerMessage producerMessage : singleBuildingMessage.controllableProducerList) {			
+			for (int i = 0; i < names.length; i++) {
+				if(names[i].contains(producerMessage.name + "_T")) {
+					additionalValues.add(optSolution[i]*producerMessage.efficiency);				
+				}
+			}
+		}
+		
+		for (CouplerMessage couplerMessage : singleBuildingMessage.couplerList) {
+			
+			for (int i = 0; i < names.length; i++) {
+				if(names[i].contains(couplerMessage.name + "_T")) {
+					//System.out.println(names[i]);
+					if(couplerMessage.primaryNetwork == NetworkType.HEAT) {
+						additionalValues.add(optSolution[i]*couplerMessage.efficiencyHeat);
+						additionalValues.add(optSolution[i]*couplerMessage.efficiencyElec);
+					} else if (couplerMessage.primaryNetwork == NetworkType.ELECTRICITY) {
+						additionalValues.add(optSolution[i]*couplerMessage.efficiencyElec);
+						additionalValues.add(optSolution[i]*couplerMessage.efficiencyHeat);
+					}
+				}
+			}
+		}		
+				
+		return additionalValues;
+	}
+
+	public ArrayList<String> createNamesForCorrEfficiency(ArrayList<BuildingMessage> multipleBuildingMessages, String[] names) {		
+		ArrayList<String> buffer = new ArrayList<>();
+				
+		for (BuildingMessage bm : multipleBuildingMessages) {						
+			buffer.addAll(createNamesForCorrEfficiency(bm, names));			
+		}		
+		
+		for (BuildingMessage bm : multipleBuildingMessages) {						
+			for (ConnectionMessage cm : bm.connectionList) {
+				for (int i = 0; i < names.length; i++) {
+					if(names[i].contains(cm.name)) {	
+						buffer.add(names[i] + "_withEfficiency");
+					}
+				}
+			}			
+		}
+		return buffer;
+	}
+
+	public ArrayList<Double> createValuesForCorrEfficiency(ArrayList<BuildingMessage> multipleBuildingMessages,
+			String[] names, double[] optSolution) {
+		ArrayList<Double> buffer = new ArrayList<>();
+		
+		for (BuildingMessage bm : multipleBuildingMessages) {	
+			buffer.addAll(createValuesForCorrEfficiency(bm, names, optSolution));
+		}
+		
+		for (BuildingMessage bm : multipleBuildingMessages) {
+			for (ConnectionMessage cm : bm.connectionList) {
+				for (int i = 0; i < names.length; i++) {					
+					if(names[i].contains(cm.name)) {
+						buffer.add(optSolution[i]*cm.efficiency);				
+					}
+				}
+			}
+		}
+		return buffer;
+	}
+
+	public int[] getIndicesByTO(String[] names, int nStepsMPC2) {
+		int[] result = new int[ names.length / nStepsMPC2];
+		int counter = 0;
+		
+		for (int i = 0; i < names.length; i++) {
+			if(names[i].contains("_T0")) {
+				result[counter] = i;
+				counter++;
+			}
+		}
+				
+		return result;
 	}
 
 }

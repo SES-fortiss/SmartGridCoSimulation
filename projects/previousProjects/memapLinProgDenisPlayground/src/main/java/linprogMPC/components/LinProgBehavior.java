@@ -2,16 +2,13 @@ package linprogMPC.components;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import linprogMPC.MPCDenisSimulation;
 import linprogMPC.external.M2MDisplay;
@@ -53,12 +50,6 @@ public class LinProgBehavior extends BehaviorModel {
 	}
 
 	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void handleRequest() {
 		// TODO Auto-generated method stub
 		
@@ -92,7 +83,7 @@ public class LinProgBehavior extends BehaviorModel {
 		}		
 		
 	
-		if (GlobalTime.getCurrentTimeStep() == 0) {
+		if (this.actor.getCurrentTimeStep() == 0) {
 		 
 			// Calculate total Number of Storages & Producers
 			nrOfStorages += storageSpecs.size();
@@ -127,7 +118,7 @@ public class LinProgBehavior extends BehaviorModel {
 		
 			counterBuilding++;				
 			
-			OptimizationProblem problem = MatrixBuildup.SingleBuilding(buildingMessage);
+			OptimizationProblem problem = MatrixBuildup.getOptProblemForSingleBuilding(buildingMessage, this.actor.getCurrentTimeStep());
 			
 			//System.out.println(problem);
 			
@@ -142,19 +133,21 @@ public class LinProgBehavior extends BehaviorModel {
 		}
 	
 		for (int i=0; i<buildingMessageList.size(); i++) {
-			buildingsTotalCosts[GlobalTime.getCurrentTimeStep()] += buildingCostPerTimestep[i][0];
+			buildingsTotalCosts[this.actor.getCurrentTimeStep()] += buildingCostPerTimestep[i][0];
 		}
 
 		
 
 		// ------------ MEMAP - OPTIMIZATION ------------ 
 
-		OptimizationProblem problem = MatrixBuildup.memapMatrices(nrOfProducers,nrOfStorages,
-				buildingMessageList,consumptionProfiles,producerSpecs,storageSpecs, MPCDenisSimulation.MEMAP_LDHeating);
+		OptimizationProblem problem = MatrixBuildup.getMemapMatrices(nrOfProducers,nrOfStorages,
+				buildingMessageList,consumptionProfiles,producerSpecs,storageSpecs, 
+				MPCDenisSimulation.MEMAP_LDHeating, this.actor.getCurrentTimeStep());
+		
 		double[] sol = OptimizationStarter.runLinProg(problem);
 
 		double[] memapCostPerTimestep = SolutionHandler.exportCosts(sol, problem.lambda, "CostVectorMEMAP.csv");
-		costsMEMAP[GlobalTime.getCurrentTimeStep()] = memapCostPerTimestep[0];
+		costsMEMAP[this.actor.getCurrentTimeStep()] = memapCostPerTimestep[0];
 
 		// Print consumption and calculate energy autarky
 //		double autarkyMEMAP = SolutionHandler.calcAutarky(problem, sol);
@@ -177,7 +170,7 @@ public class LinProgBehavior extends BehaviorModel {
 
 
 		
-		if (GlobalTime.getCurrentTimeStep() == (MPCDenisSimulation.NR_OF_ITERATIONS-1)) {
+		if (this.actor.getCurrentTimeStep() == (MPCDenisSimulation.NR_OF_ITERATIONS-1)) {
 			
 			
 			double totalCostsMEMAP = 0;

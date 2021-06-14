@@ -17,6 +17,7 @@ import dems.topologies.*;
 import simulation.SimulationStarter;
 import topology.ActorTopology;
 import akka.actor.ActorSystem;
+import akka.timeManagement.GlobalTime;
 
 /**
  * 
@@ -45,7 +46,12 @@ public class Simulation {
 	public static LocalDateTime startTime;
 	public static LocalDateTime endTime;			
 	public static Duration timeInterval;
+	private static long maxTimeSteps;
 	
+	public static long getMaxTimeSteps() {
+		return maxTimeSteps;
+	}
+
 	public static String season;
 	public static String fileName;
 	public static ActorTopology grid;
@@ -98,6 +104,13 @@ public class Simulation {
 		startTime = LocalDateTime.of(2013,1,13,0,0);
 		endTime = LocalDateTime.of(2013,1,15,0,0);				
 		timeInterval = Duration.ofMinutes(15);
+		
+		Duration simulationTimeOfInterest = Duration.between(startTime, endTime);
+		long timeIntervalMillis = timeInterval.toMillis();
+		long simulationTimeOfInterestMillis = simulationTimeOfInterest.toMillis();
+		
+		maxTimeSteps = simulationTimeOfInterestMillis / timeIntervalMillis + 1;
+		
 		season = "winter";
 		runAllSzenarios();
 	}
@@ -115,13 +128,23 @@ public class Simulation {
 		endTime = LocalDateTime.of(2013,8,7,23,45);				
 		timeInterval = Duration.ofMinutes(15);		
 		season = "sommer";
+		
+		Duration simulationTimeOfInterest = Duration.between(startTime, endTime);
+		long timeIntervalMillis = timeInterval.toMillis();
+		long simulationTimeOfInterestMillis = simulationTimeOfInterest.toMillis();
+		
+		maxTimeSteps = simulationTimeOfInterestMillis / timeIntervalMillis + 1;
+		
 		runAllSzenarios();
 	}
 	
 	public static void start(){
 		SimulationStarter.saveGridTopologyPlot(grid);
-		ActorSystem actorSystem = SimulationStarter.initialiseActorSystem(grid);
-        SimulationStarter.startSimulation(actorSystem, startTime, endTime, timeInterval);	
+		
+		SimulationStarter simulationStarter = new SimulationStarter(new GlobalTime());
+		
+		ActorSystem actorSystem = simulationStarter.initialiseActorSystem(grid);
+		simulationStarter.startSimulation(actorSystem, startTime, endTime, timeInterval);	
 	}
 	
 	/************************************************************************************

@@ -9,13 +9,10 @@
 
 package eCarStreet.coordinator;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
-import akka.systemActors.GlobalTime;
 import behavior.BehaviorModel;
 import eCarStreet.ECarStreetTopology;
 import eCarStreet.house.HouseAnswerContent;
@@ -61,13 +58,10 @@ public class Coordinator extends BehaviorModel{
 			}
 		}
 		
+		answer.currentTime = this.actor.getCurrentTime();
 		answer.demandTotal = totalDemand;
 		answer.demandECars = demandECars; 
 		answer.demandHouses = demandHouses;
-	}
-
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {
 	}
 
 	@Override
@@ -87,17 +81,20 @@ public class Coordinator extends BehaviorModel{
 
 	private void prepareRequest() {
 		
+		CoordinatorOptimizeLine.setCurrentTime(this.actor.getCurrentTime());
+		CoordinatorOptimizeLine.setCurrentDuration(this.actor.getTimeStepDuration());
+		
 		if (optimizeLine){
 			eCarLoadList = CoordinatorOptimizeLine.prepareRequest(super.answerListReceived);
 		}
 		
 		if (eCarLoadList != null){
-			request.carLoad = eCarLoadList.get(getActualTimeStep()-1);
+			request.carLoad = eCarLoadList.get(this.actor.getCurrentTimeStep()-1);
 			
 			// das wird angepasst bei sehr wenig verbleibendem Speicher.
 			if (request.carLoad >= Math.abs(CoordinatorOptimizeLine.totalLoadRemaining)) request.carLoad = Math.abs(CoordinatorOptimizeLine.totalLoadRemaining);			
 			
-			request.carLoad *= 3600.0 / GlobalTime.period.getSeconds();
+			request.carLoad *= 3600.0 / this.actor.getTimeStepDuration().getSeconds();
 		}		
 		
 		request.optimizeLine = this.optimizeLine;

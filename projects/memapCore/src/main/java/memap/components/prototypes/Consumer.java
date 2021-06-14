@@ -3,9 +3,7 @@ package memap.components.prototypes;
 import java.util.List;
 
 import akka.basicMessages.AnswerContent;
-import akka.systemActors.GlobalTime;
-import memap.main.ConfigurationMEMAP;
-import memap.messages.extension.NetworkType;
+import memap.controller.TopologyController;
 import memap.messages.planning.DemandMessage;
 
 /**
@@ -20,6 +18,9 @@ import memap.messages.planning.DemandMessage;
  */
 public abstract class Consumer extends Device {
 
+	/** Reference to the topology */
+	protected TopologyController topologyController;
+	
 	/**
 	 * @param name
 	 * @param port
@@ -28,38 +29,11 @@ public abstract class Consumer extends Device {
 		super(name, port);
 	}
 
-	public DemandMessage consumptionMessage = new DemandMessage();
-
-	@Override
-	public void makeDecision() {
-		double[] demandVectorB = new double[2 * nStepsMPC];
-		int cts = GlobalTime.getCurrentTimeStep();
-		// Getting the HeatProfiles at the current time step with predictions
-		List<Double> currentHeatProfile = getHeatProfile(cts, nStepsMPC);
-		List<Double> currentElectricityProfile = getElectricityProfile(cts, nStepsMPC);
-		// Creating demand vector
-		for (int i = 0; i < nStepsMPC; i++) {
-			try {
-				demandVectorB[i] = -currentHeatProfile.get(0 + i);
-				demandVectorB[nStepsMPC + i] = -currentElectricityProfile.get(0 + i);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		consumptionMessage.name = actorName;
-		consumptionMessage.id = fullActorPath;
-		consumptionMessage.setDemandVector(demandVectorB);
-		consumptionMessage.forecastType = "Profile";
-		consumptionMessage.optimizationCriteria = ConfigurationMEMAP.chosenCriteria;
-		consumptionMessage.networkType = NetworkType.DEMANDWITHBOTH;
-
-		super.updateDisplay(consumptionMessage);
-	}
+	public DemandMessage demandMessage = new DemandMessage();
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
-		return consumptionMessage;
+		return demandMessage;
 	}
 
 	/**
@@ -82,4 +56,8 @@ public abstract class Consumer extends Device {
 	 */
 	public abstract List<Double> getElectricityProfile(int timeStep, int mpcHorizon);
 
+	@Override
+	public void setTopologyController(TopologyController topologyController) {
+		this.topologyController = topologyController;
+	}
 }

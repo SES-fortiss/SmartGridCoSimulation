@@ -9,9 +9,6 @@
 
 package vppClusterHeads.clusterHead;
 
-import java.util.LinkedList;
-
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
 import akka.basicMessages.RequestContent;
@@ -115,6 +112,4 @@ public class ClusterHead extends BehaviorModel{
 		return requestContentToSend;
 	}
 
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 }

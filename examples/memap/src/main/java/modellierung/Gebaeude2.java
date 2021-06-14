@@ -1,10 +1,7 @@
 package modellierung;
 
-import java.util.LinkedList;
-
 import com.google.gson.Gson;
 
-import akka.advancedMessages.ErrorAnswerContent;
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.RequestContent;
 import behavior.BehaviorModel;
@@ -47,10 +44,6 @@ public class Gebaeude2 extends BehaviorModel {
 		display = new M2MDisplay(8082);
 		display.run();
 	}
-	
-	
-	@Override
-	public void handleError(LinkedList<ErrorAnswerContent> errors) {}
 
 	@Override
 	public void handleRequest() {
@@ -70,7 +63,7 @@ public class Gebaeude2 extends BehaviorModel {
 	public void makeDecision() {
 		double pricereceived = ((MEMAPmsg) requestContentReceived).preis;
 		
-		verbrauchWaerme = reader.getLoad(actualTimeValue);
+		verbrauchWaerme = reader.getLoad(this.actor.getCurrentTime());
 		
 		kostenProduktion = kostenErzeugung*erzeugungWaerme;
 		einnahmeProduktion = pricereceived*erzeugungWaerme;

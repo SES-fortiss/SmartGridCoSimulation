@@ -1,0 +1,647 @@
+{
+    "project": {
+        "id": 14,
+        "name": "test2",
+        "description": "",
+        "endpoints": [
+            {
+                "name": "s1",
+                "description": "",
+                "url": "opc.tcp:\/\/10.10.10.9:4880",
+                "opcua_namespaceindex": 2,
+                "config": {
+                    "LS02EMS02OBJ01": {
+                        "COUPL": {
+                            "1": [
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "MEMAPflag": "ns=2;i=76"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "CO2PerKWh": "ns=2;i=75",
+                                            "EffPrim": "ns=2;i=66",
+                                            "EffSec": "ns=2;i=67",
+                                            "GenCosts": "ns=2;i=74",
+                                            "MaxPower": "ns=2;i=69",
+                                            "MaxPower2": "ns=2;i=70",
+                                            "MaxTemp": "ns=2;i=72",
+                                            "MinPower": "ns=2;i=68",
+                                            "MinTemp": "ns=2;i=71",
+                                            "PrimEnCost": "ns=2;i=73",
+                                            "PrimSect": "ns=2;i=64",
+                                            "SecdSect": "ns=2;i=65"
+                                        },
+                                        "XX": {
+                                            "nameID": "ns=2;i=63"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "curPwrPrim": "ns=2;i=77",
+                                            "curPwrSec": "ns=2;i=78"
+                                        }
+                                    }
+                                },
+                                {
+                                    "VM": {
+                                        "HT": {
+                                            "SPDevPwr": "ns=2;i=81",
+                                            "SPDevPwrAr": "ns=2;i=80"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "DEMND": {
+                            "1": {
+                                "1": {
+                                    "ZM": {
+                                        "HT": {
+                                            "GrdBuyCost": "ns=2;i=13",
+                                            "GrdBuyCostAr": "ns=2;i=14",
+                                            "GrdSellCost": "ns=2;i=15",
+                                            "GrdSellCostAr": "ns=2;i=16",
+                                            "MaxTempDC": "ns=2;i=12",
+                                            "MinTempDH": "ns=2;i=11",
+                                            "NumDFCstp": "ns=2;i=17",
+                                            "PrimSect": "ns=2;i=10",
+                                            "SizeDFCstp": "ns=2;i=18"
+                                        },
+                                        "XX": {
+                                            "nameID": "ns=2;i=9"
+                                        }
+                                    }
+                                },
+                                "2": {
+                                    "ZM": {
+                                        "HT": {
+                                            "curDem": "ns=2;i=19",
+                                            "DemandFC": "ns=2;i=21"
+                                        }
+                                    }
+                                },
+                                "3": {
+                                    "VM": {
+                                        "HT": {
+                                            "DemndSetPt": "ns=2;i=23",
+                                            "SPGrdBuy": "ns=2;i=24",
+                                            "SPGrdBuyAr": "ns=2;i=25",
+                                            "SPGrdSell": "ns=2;i=26",
+                                            "SPGrdSellAr": "ns=2;i=27"
+                                        }
+                                    }
+                                }
+                            },
+                            "2": {
+                                "1": {
+                                    "ZM": {
+                                        "EL": {
+                                            "GrdBuyCost": "ns=2;i=33",
+                                            "GrdBuyCostAr": "ns=2;i=34",
+                                            "GrdSellCost": "ns=2;i=35",
+                                            "GrdSellCostAr": "ns=2;i=36",
+                                            "MaxTempDC": "ns=2;i=32",
+                                            "MinTempDH": "ns=2;i=31",
+                                            "NumDFCstp": "ns=2;i=37",
+                                            "PrimSect": "ns=2;i=30",
+                                            "SizeDFCstp": "ns=2;i=38"
+                                        },
+                                        "XX": {
+                                            "nameID": "ns=2;i=29"
+                                        }
+                                    }
+                                },
+                                "2": {
+                                    "ZM": {
+                                        "EL": {
+                                            "curDem": "ns=2;i=39",
+                                            "DemandFC": "ns=2;i=41"
+                                        }
+                                    }
+                                },
+                                "3": {
+                                    "VM": {
+                                        "EL": {
+                                            "DemndSetPt": "ns=2;i=43",
+                                            "SPGrdBuy": "ns=2;i=44",
+                                            "SPGrdBuyAr": "ns=2;i=45",
+                                            "SPGrdSell": "ns=2;i=46",
+                                            "SPGrdSellAr": "ns=2;i=47"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "NO": [
+                            [
+                                {
+                                    "ZM": {
+                                        "XX": {
+                                            "ConnStat": "ns=2;i=102",
+                                            "EndPoint": "ns=2;i=100",
+                                            "nameID": "ns=2;i=106",
+                                            "trigger": "ns=2;i=5000"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "XX": {
+                                            "BCategory": "ns=2;i=108",
+                                            "MemapAct": "ns=2;i=8013"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "STRGE": {
+                            "1": [
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "MEMAPflag": "ns=2;i=97"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "Capacity": "ns=2;i=89",
+                                            "CO2PerKWh": "ns=2;i=96",
+                                            "DisEffPrim": "ns=2;i=86",
+                                            "EffPrim": "ns=2;i=85",
+                                            "GenCosts": "ns=2;i=95",
+                                            "MaxPower": "ns=2;i=87",
+                                            "MaxPowerIn": "ns=2;i=88",
+                                            "PrimEnCost": "ns=2;i=94",
+                                            "PrimSect": "ns=2;i=84",
+                                            "StorLossPD": "ns=2;i=90",
+                                            "TDeChrgmin": "ns=2;i=93",
+                                            "TmaxStorHt": "ns=2;i=92",
+                                            "TminStorHt": "ns=2;i=91"
+                                        },
+                                        "XX": {
+                                            "nameID": "ns=2;i=83"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "curChrg": "ns=2;i=98",
+                                            "curDeChrg": "ns=2;i=99",
+                                            "curSOC": "ns=2;i=101"
+                                        }
+                                    }
+                                },
+                                {
+                                    "VM": {
+                                        "HT": {
+                                            "SPCharge": "ns=2;i=109",
+                                            "SPChargeAr": "ns=2;i=105",
+                                            "SPDisChrg": "ns=2;i=110",
+                                            "SPDisChrgAr": "ns=2;i=107"
+                                        }
+                                    }
+                                },
+                                {
+                                    "VM": {
+                                        "HT": {
+                                            "calcSOC": "ns=2;i=103"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "VPROD": {
+                            "1": [
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "MEMAPflag": "ns=2;i=59"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "CO2PerKWh": "ns=2;i=56",
+                                            "GenCosts": "ns=2;i=55",
+                                            "MaxPower": "ns=2;i=51",
+                                            "MaxTemp": "ns=2;i=53",
+                                            "MinTemp": "ns=2;i=52",
+                                            "NumPFCstp": "ns=2;i=57",
+                                            "PrimEnCost": "ns=2;i=54",
+                                            "PrimSect": "ns=2;i=50",
+                                            "SizePFCstp": "ns=2;i=58"
+                                        },
+                                        "XX": {
+                                            "nameID": "ns=2;i=49"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "curPwrPrim": "ns=2;i=60",
+                                            "ProdFC": "ns=2;i=61"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "name": "s2",
+                "description": "",
+                "url": "opc.tcp:\/\/10.10.10.9:4890",
+                "opcua_namespaceindex": 2,
+                "config": {
+                    "LS02EMS02OBJ01": {
+                        "COUPL": {
+                            "1": [
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "MEMAPflag": "ns=2;i=76"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "CO2PerKWh": "ns=2;i=75",
+                                            "EffPrim": "ns=2;i=66",
+                                            "EffSec": "ns=2;i=67",
+                                            "GenCosts": "ns=2;i=74",
+                                            "MaxPower": "ns=2;i=69",
+                                            "MaxPower2": "ns=2;i=70",
+                                            "MaxTemp": "ns=2;i=72",
+                                            "MinPower": "ns=2;i=68",
+                                            "MinTemp": "ns=2;i=71",
+                                            "PrimEnCost": "ns=2;i=73",
+                                            "PrimSect": "ns=2;i=64",
+                                            "SecdSect": "ns=2;i=65"
+                                        },
+                                        "XX": {
+                                            "nameID": "ns=2;i=63"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "curPwrPrim": "ns=2;i=77",
+                                            "curPwrSec": "ns=2;i=78"
+                                        }
+                                    }
+                                },
+                                {
+                                    "VM": {
+                                        "HT": {
+                                            "SPDevPwr": "ns=2;i=81",
+                                            "SPDevPwrAr": "ns=2;i=80"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "DEMND": {
+                            "1": {
+                                "1": {
+                                    "ZM": {
+                                        "HT": {
+                                            "GrdBuyCost": "ns=2;i=13",
+                                            "GrdBuyCostAr": "ns=2;i=14",
+                                            "GrdSellCost": "ns=2;i=15",
+                                            "GrdSellCostAr": "ns=2;i=16",
+                                            "MaxTempDC": "ns=2;i=12",
+                                            "MinTempDH": "ns=2;i=11",
+                                            "NumDFCstp": "ns=2;i=17",
+                                            "PrimSect": "ns=2;i=10",
+                                            "SizeDFCstp": "ns=2;i=18"
+                                        },
+                                        "XX": {
+                                            "nameID": "ns=2;i=9"
+                                        }
+                                    }
+                                },
+                                "2": {
+                                    "ZM": {
+                                        "HT": {
+                                            "curDem": "ns=2;i=19",
+                                            "DemandFC": "ns=2;i=21"
+                                        }
+                                    }
+                                },
+                                "3": {
+                                    "VM": {
+                                        "HT": {
+                                            "DemndSetPt": "ns=2;i=23",
+                                            "SPGrdBuy": "ns=2;i=24",
+                                            "SPGrdBuyAr": "ns=2;i=25",
+                                            "SPGrdSell": "ns=2;i=26",
+                                            "SPGrdSellAr": "ns=2;i=27"
+                                        }
+                                    }
+                                }
+                            },
+                            "2": {
+                                "1": {
+                                    "ZM": {
+                                        "EL": {
+                                            "GrdBuyCost": "ns=2;i=33",
+                                            "GrdBuyCostAr": "ns=2;i=34",
+                                            "GrdSellCost": "ns=2;i=35",
+                                            "GrdSellCostAr": "ns=2;i=36",
+                                            "MaxTempDC": "ns=2;i=32",
+                                            "MinTempDH": "ns=2;i=31",
+                                            "NumDFCstp": "ns=2;i=37",
+                                            "PrimSect": "ns=2;i=30",
+                                            "SizeDFCstp": "ns=2;i=38"
+                                        },
+                                        "XX": {
+                                            "nameID": "ns=2;i=29"
+                                        }
+                                    }
+                                },
+                                "2": {
+                                    "ZM": {
+                                        "EL": {
+                                            "curDem": "ns=2;i=39",
+                                            "DemandFC": "ns=2;i=41"
+                                        }
+                                    }
+                                },
+                                "3": {
+                                    "VM": {
+                                        "EL": {
+                                            "DemndSetPt": "ns=2;i=43",
+                                            "SPGrdBuy": "ns=2;i=44",
+                                            "SPGrdBuyAr": "ns=2;i=45",
+                                            "SPGrdSell": "ns=2;i=46",
+                                            "SPGrdSellAr": "ns=2;i=47"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "NO": [
+                            [
+                                {
+                                    "ZM": {
+                                        "XX": {
+                                            "ConnStat": "ns=2;i=102",
+                                            "EndPoint": "ns=2;i=100",
+                                            "nameID": "ns=2;i=106",
+                                            "trigger": "ns=2;i=5000"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "XX": {
+                                            "BCategory": "ns=2;i=108",
+                                            "MemapAct": "ns=2;i=8013"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "STRGE": {
+                            "1": [
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "MEMAPflag": "ns=2;i=97"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "Capacity": "ns=2;i=89",
+                                            "CO2PerKWh": "ns=2;i=96",
+                                            "DisEffPrim": "ns=2;i=86",
+                                            "EffPrim": "ns=2;i=85",
+                                            "GenCosts": "ns=2;i=95",
+                                            "MaxPower": "ns=2;i=87",
+                                            "MaxPowerIn": "ns=2;i=88",
+                                            "PrimEnCost": "ns=2;i=94",
+                                            "PrimSect": "ns=2;i=84",
+                                            "StorLossPD": "ns=2;i=90",
+                                            "TDeChrgmin": "ns=2;i=93",
+                                            "TmaxStorHt": "ns=2;i=92",
+                                            "TminStorHt": "ns=2;i=91"
+                                        },
+                                        "XX": {
+                                            "nameID": "ns=2;i=83"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "curChrg": "ns=2;i=98",
+                                            "curDeChrg": "ns=2;i=99",
+                                            "curSOC": "ns=2;i=101"
+                                        }
+                                    }
+                                },
+                                {
+                                    "VM": {
+                                        "HT": {
+                                            "SPCharge": "ns=2;i=109",
+                                            "SPChargeAr": "ns=2;i=105",
+                                            "SPDisChrg": "ns=2;i=110",
+                                            "SPDisChrgAr": "ns=2;i=107"
+                                        }
+                                    }
+                                },
+                                {
+                                    "VM": {
+                                        "HT": {
+                                            "calcSOC": "ns=2;i=103"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "VPROD": {
+                            "1": [
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "MEMAPflag": "ns=2;i=59"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "CO2PerKWh": "ns=2;i=56",
+                                            "GenCosts": "ns=2;i=55",
+                                            "MaxPower": "ns=2;i=51",
+                                            "MaxTemp": "ns=2;i=53",
+                                            "MinTemp": "ns=2;i=52",
+                                            "NumPFCstp": "ns=2;i=57",
+                                            "PrimEnCost": "ns=2;i=54",
+                                            "PrimSect": "ns=2;i=50",
+                                            "SizePFCstp": "ns=2;i=58"
+                                        },
+                                        "XX": {
+                                            "nameID": "ns=2;i=49"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "curPwrPrim": "ns=2;i=60",
+                                            "ProdFC": "ns=2;i=61"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "name": "SETS",
+                "description": "",
+                "url": "opc.tcp:\/\/10.10.10.101:4840",
+                "opcua_namespaceindex": 3,
+                "config": {
+                    "LS01EMS03OBJ01": {
+                        "STRGE": {
+                            "1": [
+                                {
+                                    "ZM": {
+                                        "EL": {
+                                            "MEMAPflag": "ns=3;i=20"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "EL": {
+                                            "Capacity": "ns=3;i=12",
+                                            "CO2PerKWh": "ns=3;i=19",
+                                            "DisEffPrim": "ns=3;i=9",
+                                            "EffPrim": "ns=3;i=8",
+                                            "GenCosts": "ns=3;i=18",
+                                            "MaxPower": "ns=3;i=10",
+                                            "MaxPowerIn": "ns=3;i=11",
+                                            "PrimEnCost": "ns=3;i=17",
+                                            "PrimSect": "ns=3;i=7",
+                                            "StorLossPD": "ns=3;i=13",
+                                            "TDeChrgmin": "ns=3;i=16",
+                                            "TmaxStorHt": "ns=3;i=15",
+                                            "TminStorHt": "ns=3;i=14"
+                                        },
+                                        "XX": {
+                                            "nameID": "ns=3;i=6"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "EL": {
+                                            "curChrg": "ns=3;i=21",
+                                            "curDeChrg": "ns=3;i=22",
+                                            "curSOC": "ns=3;i=23"
+                                        }
+                                    }
+                                },
+                                {
+                                    "VM": {
+                                        "EL": {
+                                            "SPCharge": "ns=3;i=28", 
+											"SPChargeAr": "ns=3;i=26",
+                                            "SPDisChrg": "ns=3;i=29",
+                                            "SPDisChrgAr": "ns=3;i=27"
+                                        }
+                                    }
+                                },
+                                {
+                                    "VM": {
+                                        "EL": {
+											"calcSOC": "ns=3;i=24"
+                                        }
+                                    }
+                                }
+                            ],
+                            "2": [
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "MEMAPflag": "ns=3;i=45"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "Capacity": "ns=3;i=37",
+                                            "CO2PerKWh": "ns=3;i=44",
+                                            "DisEffPrim": "ns=3;i=34",
+                                            "EffPrim": "ns=3;i=33",
+                                            "GenCosts": "ns=3;i=44",
+                                            "MaxPower": "ns=3;i=35",
+                                            "MaxPowerIn": "ns=3;i=36",
+                                            "PrimEnCost": "ns=3;i=42",
+                                            "PrimSect": "ns=3;i=32",
+                                            "StorLossPD": "ns=3;i=38",
+                                            "TDeChrgmin": "ns=3;i=41",
+                                            "TmaxStorHt": "ns=3;i=40",
+                                            "TminStorHt": "ns=3;i=39"
+                                        },
+                                        "XX": {
+                                            "nameID": "ns=3;i=31"
+                                        }
+                                    }
+                                },
+                                {
+                                    "ZM": {
+                                        "HT": {
+                                            "curChrg": "ns=3;i=46",
+                                            "curDeChrg": "ns=3;i=47",
+                                            "curSOC": "ns=3;i=48"
+                                        }
+                                    }
+                                },
+                                {
+                                    "VM": {
+                                        "HT": {
+                                            "SPCharge": "ns=3;i=53", 
+											"SPChargeAr": "ns=3;i=51",
+                                            "SPDisChrg": "ns=3;i=54",
+                                            "SPDisChrgAr": "ns=3;i=52"
+                                        }
+                                    }
+                                },
+                                {
+                                    "VM": {
+                                        "EL": {
+											"calcSOC": "ns=3;i=49"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}

@@ -1,16 +1,27 @@
 package fortiss.components;
 
+import com.google.gson.annotations.Expose;
+
+import fortiss.gui.icons.ComponentIcon;
+import fortiss.media.IconStore;
+
 /**
  * Controllable is the class for representing controllable Producer objects.
  * Example: Gas Boiler
  */
-public class Controllable {
-	private String name;
+public class Controllable extends Component {
+	
+	@Expose
 	private String networkType; // Values: Heat or Electricity
+	@Expose
 	private double minimumPower;
+	@Expose
 	private double maximumPower;
+	@Expose
 	private double efficiency;
+	@Expose
 	private double cost;
+	@Expose
 	private double coEmission;
 
 	/**
@@ -24,23 +35,16 @@ public class Controllable {
 	 * @param cost        a positive double [EUR]
 	 * @param coEmission  CO2 Emissions measured in [g/kWh]
 	 */
-	public Controllable(String name, String networkType, double minimumPower, double maximumPower, double efficiency, double cost,
+	public Controllable(Building building, String name, String networkType, double minimumPower, double maximumPower, double efficiency, double cost,
 			double coEmission) {
-		this.setName(name);
-		this.setNetworkType(networkType);
-		this.setMinimumPower(minimumPower);
-		this.setMaximumPower(maximumPower);
-		this.setEfficiency(efficiency);
-		this.setCost(cost);
-		this.setCOEmission(coEmission);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String producerId) {
-		this.name = producerId;
+		super(name, building);
+		setNetworkType(networkType);
+		setMinimumPower(minimumPower);
+		setMaximumPower(maximumPower);
+		setEfficiency(efficiency);
+		setCost(cost);
+		setCOEmission(coEmission);
+		setIcon(new ComponentIcon(this, "controllable", IconStore.sControllable, IconStore.uControllable));
 	}
 
 	public String getNetworkType() {
@@ -49,6 +53,7 @@ public class Controllable {
 
 	public void setNetworkType(String networkType) {
 		this.networkType = networkType;
+		setSaved(false);
 	}
 
 	public double getMinimumPower() {
@@ -57,6 +62,7 @@ public class Controllable {
 
 	public void setMinimumPower(double minimumPower) {
 		this.minimumPower = minimumPower;
+		setSaved(false);
 	}
 	
 	public double getMaximumPower() {
@@ -65,6 +71,7 @@ public class Controllable {
 
 	public void setMaximumPower(double maximumPower) {
 		this.maximumPower = maximumPower;
+		setSaved(false);
 	}
 
 	public double getEfficiency() {
@@ -73,6 +80,7 @@ public class Controllable {
 
 	public void setEfficiency(double efficiency) {
 		this.efficiency = efficiency;
+		setSaved(false);
 	}
 
 	public double getCost() {
@@ -81,6 +89,7 @@ public class Controllable {
 
 	public void setCost(double cost) {
 		this.cost = cost;
+		setSaved(false);
 	}
 
 	public double getCOEmission() {
@@ -89,6 +98,7 @@ public class Controllable {
 
 	public void setCOEmission(double coEmission) {
 		this.coEmission = coEmission;
+		setSaved(false);
 	}
 
 }

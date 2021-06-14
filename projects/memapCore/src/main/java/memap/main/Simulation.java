@@ -1,7 +1,9 @@
 package memap.main;
 
+import java.sql.SQLException;
 import memap.controller.TopologyController;
 import memap.examples.ExampleLoader;
+import memap.messages.planning.ConnectionDB;
 import memap.websocket.JettyWebsocket;
 import opcMEMAP.ConfigInterface;
 
@@ -28,23 +30,46 @@ import opcMEMAP.ConfigInterface;
 
 public class Simulation {
 
-	public static void main(String[] args) {
+	/* TODO: Global Input Parameters
+	 * temporary solution
+	 * Add TimeStepsPerDay or Stepsize as Input
+	 */
+	public static int N_STEPS_MPC = 5;
+	public static int PauseInSec = 90;
+	// ...
+	
+	public static void main(String[] args) throws SQLException {
 		// Show help screen by default
 		String arg = "help";
 
+
 		if (args.length != 0) {
 			arg = args[0];
+			if (args.length > 2 ) {
+				try {
+					N_STEPS_MPC = Integer.parseInt(args[1]);
+					PauseInSec = Integer.parseInt(args[2]);
+				} catch(NumberFormatException e) {
+				} 
+			} else if (args.length > 1) {
+				try {
+					N_STEPS_MPC = Integer.parseInt(args[1]);
+				} catch(NumberFormatException e) {
+				} 
+			}
 		}
 
 		argParser(arg);
 
 	}
 
-	private static void run(TopologyController topologyController) {
+	private static void run(TopologyController topologyController) throws SQLException {
+		ConnectionDB.connectToDB();
 		topologyController.startSimulation();
 	}
 
-	private static void argParser(String arg) {
+	
+	private static void argParser(String arg) throws SQLException {
 		switch (arg) {
 		case "help":
 		case "h":
@@ -55,7 +80,7 @@ public class Simulation {
 		case "start":
 		case "s":
 			System.out.println("========= START OPCUA SIMULATION =========");
-			run(ExampleLoader.OpcUaExample());
+			run(ExampleLoader.OpcUaExample(N_STEPS_MPC));
 			break;
 
 		// run the simulation in a loop
@@ -63,7 +88,7 @@ public class Simulation {
 		case "l":
 			while (true) {
 				System.out.println("========= START OPCUA SIMULATION =========");
-				run(ExampleLoader.OpcUaExample());
+				run(ExampleLoader.OpcUaExample(N_STEPS_MPC));
 			}
 
 			// run csv example in a loop

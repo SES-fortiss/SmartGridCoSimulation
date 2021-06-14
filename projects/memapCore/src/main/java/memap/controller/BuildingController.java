@@ -46,4 +46,5 @@ public interface BuildingController {
 	 * @see memap.components
 	 */
 	public void attach(Device device);
+	
 }

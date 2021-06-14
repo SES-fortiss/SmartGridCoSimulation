@@ -1,7 +1,6 @@
 package linprogMPC.components;
 
 import akka.basicMessages.AnswerContent;
-import akka.systemActors.GlobalTime;
 import linprogMPC.components.prototypes.Device;
 import linprogMPC.helper.ConsumptionProfiles;
 import linprogMPC.messages.extension.NetworkType;
@@ -33,7 +32,7 @@ public class Consumer extends Device {
 	@Override
 	public void makeDecision() {
 		double[] demandVectorB = new double[2*nStepsMPC];
-		int cts = GlobalTime.getCurrentTimeStep();
+		int cts = this.actor.getCurrentTimeStep();
 		int elFactor = (consumerIndex < 2) ? 2 : 4;
 		for (int i = 0; i < nStepsMPC; i++) {
 			

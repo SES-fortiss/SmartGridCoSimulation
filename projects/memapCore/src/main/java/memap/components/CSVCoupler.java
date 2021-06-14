@@ -1,6 +1,7 @@
 package memap.components;
 
 import memap.components.prototypes.Coupler;
+import memap.controller.TopologyController;
 import memap.messages.extension.NetworkType;
 
 public class CSVCoupler extends Coupler {
@@ -44,6 +45,11 @@ public class CSVCoupler extends Coupler {
 		couplerMessage.maxPower = maxPower;
 
 		// super.updateDisplay(couplerMessage);
+	}
+	
+	/** Passes a reference of an object of class {@link TopologyController} to the parent class */
+	public void setTopologyController(TopologyController topologyController) {
+		super.setTopologyController(topologyController);
 	}
 
 }

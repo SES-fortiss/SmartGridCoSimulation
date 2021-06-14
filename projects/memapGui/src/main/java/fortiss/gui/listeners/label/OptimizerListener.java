@@ -3,7 +3,8 @@ package fortiss.gui.listeners.label;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import fortiss.gui.Designer;
+import fortiss.simulation.Parameters;
+import fortiss.simulation.PlanningTool;
 
 public class OptimizerListener extends MouseAdapter {
 
@@ -12,6 +13,7 @@ public class OptimizerListener extends MouseAdapter {
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		Designer.parameterPanel.pars.nextOptimizer();
+		Parameters pars = PlanningTool.getInstance().getParameters();
+		pars.nextOptimizer();
 	}
 }
