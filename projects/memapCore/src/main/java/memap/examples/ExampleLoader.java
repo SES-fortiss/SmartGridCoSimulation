@@ -52,7 +52,7 @@ public abstract class ExampleLoader {
 			JsonObject jsonEndpoint1 = (JsonObject) Jsoner.deserialize(endpoint1);
 			JsonObject jsonNodes1 = (JsonObject) Jsoner.deserialize(nodes1);
 			BuildingController sampleBuilding1 = new OpcUaBuildingController(topologyController, jsonEndpoint1,
-					jsonNodes1);
+					jsonNodes1, null);
 			topologyController.attach(sampleBuilding1.getName(), sampleBuilding1);
 
 		} catch (JsonException e1) {
@@ -78,7 +78,7 @@ public abstract class ExampleLoader {
 			JsonObject jsonEndpoint2 = (JsonObject) Jsoner.deserialize(endpoint2);
 			JsonObject jsonNodes2 = (JsonObject) Jsoner.deserialize(nodes2);
 			BuildingController sampleBuilding2 = new OpcUaBuildingController(topologyController, jsonEndpoint2,
-					jsonNodes2);
+					jsonNodes2, null);
 			topologyController.attach(sampleBuilding2.getName(), sampleBuilding2);
 		} catch (JsonException e1) {
 			System.err.println("WARNING: Failed to read JSON config files. Building has not been initalised.");

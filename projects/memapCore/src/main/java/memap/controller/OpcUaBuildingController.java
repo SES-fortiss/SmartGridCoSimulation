@@ -44,7 +44,7 @@ import memap.helperOPCua.BasicClient;
  * It is not okay, if OpcUaBuildingController cannot connect to the OPC-Server.
  * An IllegalStateException will be raised.
  * 
- * @author Adrian.Krueger
+ * @author Adrian.Krueger, Jan.Axel.Mayer
  * @see BuildingController
  * @see EndpointConfigHandler
  * @see NodesConfigHandler
@@ -56,6 +56,7 @@ public class OpcUaBuildingController implements BuildingController {
 	private static AtomicInteger nextId = new AtomicInteger(0); // Counter for providing unique names
 
 	public JsonObject endpointConfig;
+	public JsonObject connectionConfig;
 	public JsonObject fullNodesConfig;
 	public JsonObject nodesConfig;
 	protected Gson gson = new Gson();
@@ -75,21 +76,25 @@ public class OpcUaBuildingController implements BuildingController {
 	 * Creating subscriptions/reading values might fail, but creating the client
 	 * cannot.
 	 * 
-	 * @param opcUaEndpointConfig the endpoint config file (@see
-	 *                            EndpointConfigHandler)
-	 * @param opcUaNodesConfig    the nodes config file (@see NodesConfigHandler)
+	 * @param opcUaEndpointConfig 		the endpoint config file (@see
+	 *                            		EndpointConfigHandler)
+	 * @param opcUaNodesConfig    		the nodes config file (@see NodesConfigHandler)
+	 * @param thisBuildingConnection 	the heat-connection details, if availible (!=null)
 	 * @throws IllegalStateException when connection to server cannot be established
 	 */
 	public OpcUaBuildingController(TopologyController topologyController, JsonObject opcUaEndpointConfig,
-			JsonObject opcUaNodesConfig) throws IllegalStateException {
+			JsonObject opcUaNodesConfig, JsonObject thisBuildingConnection) throws IllegalStateException {
 
 		this.topologyController = topologyController;
 		this.endpointConfig = opcUaEndpointConfig;
 		if (opcUaNodesConfig != null) {
 			this.fullNodesConfig = opcUaNodesConfig;
 		}
+		this.connectionConfig = thisBuildingConnection;
+		
 		EndpointConfigHandler endpointConfigHandler = new EndpointConfigHandler();
 		NodesConfigHandler nodesConfigHandler = new NodesConfigHandler();
+		
 		// Initialize the client which connects to the OpcUaServer
 		endpointConfigHandler.initEndpoint();
 		try {
@@ -99,10 +104,11 @@ public class OpcUaBuildingController implements BuildingController {
 					+ " failed. Please check network settings.");
 			throw new IllegalStateException();
 		}
+		
 		// Subscribe to all devices on the OpcUaServer which are referenced in the
 		// nodesConfig File
 		nodesConfigHandler.initDevices();
-		// TODO: Better way to use House-Name in initDevice class for defining Connections
+
 	}
 
 	@Override
@@ -235,24 +241,33 @@ public class OpcUaBuildingController implements BuildingController {
 							NodeId nid0 = NodeId.parse((String) info.get("nameID"));
 							NodeId triggerId = NodeId.parse((String) info.get("trigger")); // Trigger for Synchronization , CoSES-Lab
 							String EmsName = client.readFinalStringValue(nid0);
+							System.out.println("EMS-Description (nameID) = " + EmsName);
+
+							if (connectionConfig != null) {
+								//NodeId ConnEffId = NodeId.parse((String) info.get("EffHtNetReceive")); // can be removed?
+								String sourceBuilding = (String) connectionConfig.get("nameNodeA");
+								String connectedBuilding = (String) connectionConfig.get("nameNodeB");
+								double pipeLengthInMeter = ((Number) connectionConfig.get("length")).doubleValue();
+								double lossesPer100m = ((Number) connectionConfig.get("losses")).doubleValue();
+								double q_max = ((Number) connectionConfig.get("maxTransportCapacity")).doubleValue();
+								System.out.println("Connection is considered from " + sourceBuilding + " to " + connectedBuilding);
 							
-							NodeId ConnEffId = null;
-							String connTo = null;
-							if (topologyController.getOptimizer() == Optimizer.MILPwithConnections) {
-								ConnEffId = NodeId.parse((String) info.get("EffHtNetReceive"));
-								// TODO: This is CoSES hardcoded! Change asap
-								if (name.equals("CoSES_H1")) connTo = "CoSES_H2";
-								if (name.equals("CoSES_H2")) connTo = "CoSES_H1";
+								ClientEMS ems = new ClientEMS(client, topologyController, name, triggerId, sourceBuilding, connectedBuilding, pipeLengthInMeter, lossesPer100m, q_max, 0);
+								attach(ems);
+								ems.setTopologyController(topologyController);
+			
+							} else {
+								ClientEMS ems = new ClientEMS(client, topologyController, name, triggerId, 0);
+								attach(ems);
 							}
 							
-							System.out.println("EMS-Description (nameID) = " + EmsName);
-							ClientEMS ems = new ClientEMS(client, topologyController, EMSkey, name, connTo, triggerId, ConnEffId, 0);
-							attach(ems);
-							ems.setTopologyController(topologyController);
+							
 							System.out.println("EMS (" + EMSkey + ") added. ");
 							} catch (Exception e) {
-							System.err.println("WARNING: Could not add name string to building " + name
+							System.err.println("WARNING: Could not add EMS info to building " + name
 									+ ".\nPlease check " + info.toString());
+							
+							
 						}
 						break;
 					

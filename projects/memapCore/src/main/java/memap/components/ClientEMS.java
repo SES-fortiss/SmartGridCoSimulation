@@ -6,6 +6,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
+import com.github.cliftonlabs.json_simple.JsonObject;
+
 import akka.basicMessages.AnswerContent;
 import memap.components.prototypes.Connection;
 import memap.controller.TopologyController;
@@ -34,12 +36,25 @@ public class ClientEMS extends Connection {
 	public NodeId connEffId;
 	public double trigger;
 	
-	public ClientEMS(BasicClient client, TopologyController topologyController, String name, String connFrom, String connTo, NodeId triggerId, NodeId connEffId, int port) throws InterruptedException, ExecutionException {
-		super(connFrom, connTo, 50, client.readFinalDoubleValue(connEffId), 999);
+	// Constructor with Connection
+	public ClientEMS(BasicClient client, TopologyController topologyController, String name, NodeId triggerId, String connFrom, String connTo, double connLength, double connLosses, double q_max, int port) throws InterruptedException, ExecutionException {
+		super(connFrom, connTo, connLength, connLosses, q_max);
+
 		this.client = client;
 		this.topologyController = topologyController;
 		this.triggerId = triggerId; 
 	}
+
+	// Constructor without Connection
+	public ClientEMS(BasicClient client, TopologyController topologyController, String name, NodeId triggerId,
+			int port) {
+		super("None", "None", 0, 0, 0);
+
+		this.client = client;
+		this.topologyController = topologyController;
+		this.triggerId = triggerId; 
+	}
+
 
 	@Override
 	public void makeDecision() {
@@ -54,8 +69,7 @@ public class ClientEMS extends Connection {
 			connectionMessage.connectedBuildingTo = connectedBuilding;
 			
 			connectionMessage.efficiency = efficiency;
-			connectionMessage.maxPower = 0.0; //q_max;
-			// TODO: efficiency = 0 seems to not prevent heat transfer
+			connectionMessage.maxPower = q_max;
 			connectionMessage.pipeLengthInMeter = pipeLengthInMeter;
 			connectionMessage.operationalCostEUR = 0.0001;
 			connectionMessage.operationalCostCO2 = 0.0001;

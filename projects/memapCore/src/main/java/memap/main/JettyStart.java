@@ -66,65 +66,108 @@ public class JettyStart {
 	 * for their status. (Currently 0 = connected, 1 = not connected)
 	 * 
 	 * @param memapStartMessage JsonArray. Contains the buildingName, the OPC-UA
-	 *                          address, the endpointDescriptor, and the nodesConfig
-	 *                          Json file.
+	 *                          address, the endpointDescriptor, the nodesConfig
+	 *                          Json file, and optional the heat-connections.
 	 */
 
 	public void run(JsonObject memapStartMessage) {
 
-		topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILPwithConnections,
-				OptimizationCriteria.EUR, ToolUsage.SERVER, MEMAPLogging.ALL);
+		// Collect information from memapStartMessage (JSON)
+		
+		int num = 0;
 
-		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 7020, 0);
+		errorCode = new JsonObject();
+		
+		JsonObject project = null;
+		JsonArray endpoints = null;
+		JsonArray connections = null;
+		
+		try {
+			project = (JsonObject) memapStartMessage.get("project");
+			endpoints = (JsonArray) project.get("endpoints");
+		} catch (Exception e1) {
+			System.err.println("JSON Object startMessage has bad format.");
+			e1.printStackTrace();
+		}
+		
+		// TODO: Further distinguish here between MILP/LP optimizer and between EUR/CO2 criteria
+		// ****************************
+		if (project.toJson().contains("connections")){
+			System.out.println(">> Heat connection information availible.");
+			connections = (JsonArray) project.get("connections");
+			
+			topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILPwithConnections,
+				OptimizationCriteria.EUR, ToolUsage.SERVER, MEMAPLogging.ALL);		
+		} else {
+			System.out.println(">> No heat connection information availible. Assuming unlimited heat exchange.");
+			topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILP ,
+					OptimizationCriteria.EUR, ToolUsage.SERVER, MEMAPLogging.ALL);
+		}
+		// ****************************
+		
+		// MPC input through start of the simulation environment. For MPC as an input parameter, 
+		// probably the global variable Simulation.N_STEPS_MPC has to be changed here.
+		
 		System.out.println(">> MPC set to " + Simulation.N_STEPS_MPC);
+		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 7020, 0);
+		
+		
+		// Global EnergyPrices: Import can be designed similar to connection (see planning tool), 
+		// but is not necessary, if buildings provide price values via OPC UA.
 		EnergyPrices.getInstance().init(new ElectricityPrice(0.285, Simulation.N_STEPS_MPC),
 				new ElectricityPrice(0.285, Simulation.N_STEPS_MPC), new HeatPrice(0.285, Simulation.N_STEPS_MPC));
 
+		// Starts additional simulation threads on the building level if doubleSim = true.
 		if (doubleSim) {
 			topologyMemapOff = new TopologyController("MemapOff", OptHierarchy.BUILDING, Optimizer.MILP,
 					OptimizationCriteria.EUR, ToolUsage.SERVER, MEMAPLogging.ALL);
 		}
 
-		errorCode = new JsonObject();
-
-		int num = 0;
-
-		JsonArray endpoints = null;
-		try {
-			JsonObject project = (JsonObject) memapStartMessage.get("project");
-			endpoints = (JsonArray) project.get("endpoints");
-			num = endpoints.size();
-		} catch (Exception e1) {
-			System.err.println("JSON Object startMessage has bad format.");
-			e1.printStackTrace();
-		}
-
-		setNumofBuildings(num);
-		System.out.println(">> Number of buildings: " + num);
+		
+		
+		setNumofBuildings(endpoints.size());
+		System.out.println(">> Number of buildings: " + endpoints.size());
 
 		for (int i = 0; i < endpoints.size(); i++) {
 
 			JsonObject jsonEndpoint = (JsonObject) endpoints.get(i);
 			JsonObject configNodes = null;
 
+			// Check if a heat connection exists for this building:
+			String endpointName = (String) jsonEndpoint.get("name");
+			String nameNodeA = null;
+			JsonObject thisBuildingConnection = null;
+			
+			for (int j = 0; j < connections.size(); j++) {
+				JsonObject jsonConnection = (JsonObject) connections.get(j);
+				nameNodeA = (String) jsonConnection.get("nameNodeA");		
+				if (nameNodeA.equals(endpointName)) {
+					thisBuildingConnection = jsonConnection;
+					System.out.println(">> Heat connection found for Building " + (i + 1) + ":");
+					System.out.println(thisBuildingConnection.toString());
+				
+				}
+				
+			}
+			
 			try {
 
 				configNodes = (JsonObject) jsonEndpoint.get("config");
 
-				System.out.println("Building " + (i + 1) + " will be added...");
+				System.out.println(">> Building " + (i + 1) + " (" + endpointName + ") will be added...");
 				BuildingController sampleBuilding = new OpcUaBuildingController(topologyMemapOn, jsonEndpoint,
-						configNodes);
+						configNodes, thisBuildingConnection);
 				topologyMemapOn.attach(sampleBuilding.getName(), sampleBuilding);
 				if (doubleSim) {
 					topologyMemapOff.attach(sampleBuilding.getName(), sampleBuilding);
 				}
-				errorCode.put((String) jsonEndpoint.get("name"), 0);
-				System.out.println("Building " + (i + 1) + " was added...");
+				errorCode.put(endpointName, 0);
+				System.out.println(">> Building " + (i + 1) + " (" + endpointName + ") was added...");
 
 			} catch (IllegalStateException e2) {
-				System.err.println("WARNING: Failed to create Client. Building has not been initialised");
+				System.err.println(">> WARNING: Failed to create Client. Building has not been initialised");
 				e2.printStackTrace();
-				errorCode.put((String) jsonEndpoint.get("name"), 1);
+				errorCode.put((String) endpointName, 1);
 			}
 		}
 
