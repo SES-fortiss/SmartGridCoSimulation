@@ -4,10 +4,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
+import java.util.ArrayList;
 import com.google.gson.Gson;
 
-import akka.basicMessages.AnswerContent;
 import helper.IoHelper;
 import memap.helper.DirectoryConfiguration;
 
@@ -15,11 +14,12 @@ public class OpcServerContextGenerator {
 
 	public static Gson gson = new Gson();
 
-	public static void generateJson(String actorName, AnswerContent content) {
-		String result = gson.toJson(content);
+	public static void generateJson(String actorName, ArrayList<Object> list) {
+		String result = gson.toJson(list);
 		writeFile(actorName, result);
 	}
 
+	
 	// TODO adapt the output folder
 	private static void writeFile(String filename, String result) {
 		String source = "/" + DirectoryConfiguration.mainDir + "/" + DirectoryConfiguration.configDir + "/" + filename
