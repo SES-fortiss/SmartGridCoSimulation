@@ -71,37 +71,14 @@ public class JettyStart {
 	 */
 
 	public void run(JsonObject memapStartMessage) {
-
-		// Collect information from memapStartMessage (JSON)
-		topologyMemapOn = new TopologyController(
-				"MemapOn", 
-				OptHierarchy.MEMAP, 
-				Optimizer.MILPwithConnections,
-				OptimizationCriteria.EUR, 
-				ToolUsage.SERVER, 
-				MEMAPLogging.ALL
-				);
-
-		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 7020, 0);
-		System.out.println(">> MPC set to " + Simulation.N_STEPS_MPC);
-		
-		EnergyPrices.getInstance().init(
-				new ElectricityPrice(0.285, Simulation.N_STEPS_MPC), //global buying price
-				new ElectricityPrice(0.08, Simulation.N_STEPS_MPC),  //global selling price
-				new HeatPrice(0.13, Simulation.N_STEPS_MPC) 		 //global heat price
-				);
-
-		if (doubleSim) {
-			topologyMemapOff = new TopologyController("MemapOff", OptHierarchy.BUILDING, Optimizer.MILP,
-					OptimizationCriteria.EUR, ToolUsage.SERVER, MEMAPLogging.ALL);
-		}
-
+	
 		errorCode = new JsonObject();
 		
 		JsonObject project = null;
 		JsonArray endpoints = null;
 		JsonArray connections = null;
 		
+		// Collect information from memapStartMessage (JSON)
 		try {
 			project = (JsonObject) memapStartMessage.get("project");
 			endpoints = (JsonArray) project.get("endpoints");
@@ -110,39 +87,60 @@ public class JettyStart {
 			e1.printStackTrace();
 		}
 		
-		// TODO: Further distinguish here between MILP/LP optimizer and between EUR/CO2 criteria
 		// ****************************
+		// TODO: Further distinguish here between MILP/LP optimizer and between EUR/CO2 criteria
+		//
 		if (project.toJson().contains("connections")){
-			System.out.println(">> Heat connection information availible.");
 			connections = (JsonArray) project.get("connections");
 			
-			topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILPwithConnections,
-				OptimizationCriteria.EUR, ToolUsage.SERVER, MEMAPLogging.ALL);		
+			System.out.println(">> Heat connection information availible.");
+			topologyMemapOn = new TopologyController(
+					"MemapOn", 
+					OptHierarchy.MEMAP, 
+					Optimizer.MILPwithConnections,
+					OptimizationCriteria.EUR, 
+					ToolUsage.SERVER, 
+					MEMAPLogging.ALL
+					);	
 		} else {
+			
 			System.out.println(">> No heat connection information availible. Assuming unlimited heat exchange.");
-			topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILP ,
-					OptimizationCriteria.EUR, ToolUsage.SERVER, MEMAPLogging.ALL);
+			topologyMemapOn = new TopologyController(
+					"MemapOn", 
+					OptHierarchy.MEMAP, 
+					Optimizer.MILP,
+					OptimizationCriteria.EUR, 
+					ToolUsage.SERVER, 
+					MEMAPLogging.ALL
+					);	
 		}
+		
 		// ****************************
 		
 		// MPC input through start of the simulation environment. For MPC as an input parameter, 
 		// probably the global variable Simulation.N_STEPS_MPC has to be changed here.
-		
 		System.out.println(">> MPC set to " + Simulation.N_STEPS_MPC);
 		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 7020, 0);
 		
 		
 		// Global EnergyPrices: Import can be designed similar to connection (see planning tool), 
 		// but is not necessary, if buildings provide price values via OPC UA.
-		EnergyPrices.getInstance().init(new ElectricityPrice(0.285, Simulation.N_STEPS_MPC),
-				new ElectricityPrice(0.285, Simulation.N_STEPS_MPC), new HeatPrice(0.285, Simulation.N_STEPS_MPC));
-
+		EnergyPrices.getInstance().init(
+				new ElectricityPrice(0.285, Simulation.N_STEPS_MPC), //global buying price
+				new ElectricityPrice(0.08, Simulation.N_STEPS_MPC),  //global selling price
+				new HeatPrice(0.13, Simulation.N_STEPS_MPC) 		 //global heat price
+				);
+		
 		// Starts additional simulation threads on the building level if doubleSim = true.
 		if (doubleSim) {
-			topologyMemapOff = new TopologyController("MemapOff", OptHierarchy.BUILDING, Optimizer.MILP,
-					OptimizationCriteria.EUR, ToolUsage.SERVER, MEMAPLogging.ALL);
+			topologyMemapOff = new TopologyController(
+					"MemapOff", 
+					OptHierarchy.BUILDING, 
+					Optimizer.MILP,
+					OptimizationCriteria.EUR, 
+					ToolUsage.SERVER, MEMAPLogging.ALL
+					);
 		}
-
 		
 		
 		setNumofBuildings(endpoints.size());
