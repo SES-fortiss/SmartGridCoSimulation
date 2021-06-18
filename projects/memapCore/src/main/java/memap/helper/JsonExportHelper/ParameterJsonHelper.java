@@ -37,9 +37,7 @@ public class ParameterJsonHelper {
 	@Expose
 	private PriceJsonHelper co2Emissions;
 
-	/**
-	 * Constructor for class Parameters
-	 */
+	
 	public ParameterJsonHelper(int simulationSteps, int mpcHorizon, int days, String optCriteria,
 			String optimizer, String loggingMode, PriceJsonHelper elecBuyingPrice, PriceJsonHelper elecSellingPrice,
 			PriceJsonHelper heatBuyingPrice, PriceJsonHelper co2Emissions) {
@@ -60,9 +58,6 @@ public class ParameterJsonHelper {
 		return simulationName;
 	}
 
-	/**
-	 * Must be manually set after deserialization!
-	 */
 	public void setSimulationName(String simulationName) {
 		this.simulationName = simulationName;
 	}
@@ -79,13 +74,9 @@ public class ParameterJsonHelper {
 		return mpcHorizon;
 	}
 
-//	public void setMPCHorizon(int mpcHorizon) {
-//		this.mpcHorizon = mpcHorizon;
-//		elecBuyingPrice.updateMPCHorizon(mpcHorizon);
-//		elecSellingPrice.updateMPCHorizon(mpcHorizon);
-//		heatBuyingPrice.updateMPCHorizon(mpcHorizon);
-//		setSaved(false);
-//	}
+	public void setMPCHorizon(int mpcHorizon) {
+		this.mpcHorizon = mpcHorizon;
+	}
 
 	public int getDays() {
 		return days;

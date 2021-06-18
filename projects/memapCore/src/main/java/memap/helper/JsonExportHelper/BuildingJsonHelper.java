@@ -28,24 +28,15 @@ public class BuildingJsonHelper {
 	private ArrayList<VolatileJsonHelper> volatile_list = new ArrayList<VolatileJsonHelper>();
 	@Expose
 	private ArrayList<StorageJsonHelper> storage_list = new ArrayList<StorageJsonHelper>();
-
 	@Expose
 	private BuildingIconJsonHelper icon = new BuildingIconJsonHelper(0);
 
-//	/**
-//	 * Constructor for class Building
-//	 * 
-//	 * @param name an alphanumeric string
-//	 * @param port an integer between 1024 and 49151, or 0
-//	 * 
-//	 */
+	
 	public BuildingJsonHelper(BuildingMessage buildingMessage) {
-		// Do not use setName() in the constructor!
 
 		this.name = buildingMessage.name;
 		setFormattedName(name);
 		this.setPort(port);
-
 	}
 
 	public String getName() {
@@ -75,18 +66,6 @@ public class BuildingJsonHelper {
 		this.port = port;
 	}
 
-	
-	
-//	public ArrayList<Device> getComponents(){
-//		ArrayList<Device> components = new ArrayList<Device>();
-//		components.addAll(demand_list);
-//		components.addAll(storage_list);
-//		components.addAll(volatile_list);
-//		components.addAll(controllable_list);
-//		components.addAll(coupler_list);
-//		return components;
-//	}
-
 	public void addCoupler(CouplerJsonHelper coupler) {
 		coupler_list.add(coupler);
 	}
@@ -106,6 +85,5 @@ public class BuildingJsonHelper {
 	public void addDemand(DemandJsonHelper demand) {
 		demand_list.add(demand);
 	}
-
 
 }

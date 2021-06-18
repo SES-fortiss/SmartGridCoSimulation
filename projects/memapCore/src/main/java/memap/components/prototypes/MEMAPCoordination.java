@@ -1,9 +1,6 @@
 package memap.components.prototypes;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.google.gson.Gson;
 
 import akka.basicMessages.AnswerContent;
@@ -14,31 +11,18 @@ import behavior.BehaviorModel;
 import lpsolve.LpSolveException;
 import memap.controller.TopologyController;
 import memap.helper.SolutionHandler;
-import memap.helper.JsonExportHelper.BuildingJsonHelper;
-import memap.helper.JsonExportHelper.CouplerJsonHelper;
-import memap.helper.JsonExportHelper.DemandJsonHelper;
-import memap.helper.JsonExportHelper.ParameterJsonHelper;
-import memap.helper.JsonExportHelper.PriceJsonHelper;
-import memap.helper.JsonExportHelper.ProducerJsonHelper;
-import memap.helper.JsonExportHelper.StorageJsonHelper;
-import memap.helper.JsonExportHelper.VolatileJsonHelper;
+import memap.helper.JsonExportHelper.JsonExportHelper;
 import memap.helper.configurationOptions.OptHierarchy;
 import memap.helper.configurationOptions.Optimizer;
 import memap.helper.configurationOptions.ToolUsage;
 import memap.helper.lp.LPSolver;
 import memap.helper.milp.MILPSolverNoConnections;
 import memap.helper.milp.MILPSolverWithConnections;
-import memap.helperOPCua.OpcServerContextGenerator;
-import memap.main.Simulation;
 import memap.main.TopologyConfig;
 import memap.messages.BuildingMessage;
 import memap.messages.BuildingMessageHandler;
 import memap.messages.OptimizationResultMessage;
 import memap.messages.extension.ChildSpecification;
-import memap.messages.planning.CouplerMessage;
-import memap.messages.planning.DemandMessage;
-import memap.messages.planning.ProducerMessage;
-import memap.messages.planning.StorageMessage;
 import opcMEMAP.MemapOpcServerStarter;
 /**
  * This model optimizes over several buildings for the planning tool.
@@ -186,71 +170,12 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 					e.printStackTrace();
 				}
 			}
-			
-			
-			// Option to save topology as json for usage in planning tool:
-			if (true) {			
-				if (currentTimeStep == 0) { 
-					ArrayList<Object> list = new ArrayList<Object>();
-					Set<BuildingJsonHelper> buildingSet = new HashSet<BuildingJsonHelper>();
-					BuildingJsonHelper bjh = null;
 					
-					for (BasicAnswer basicAnswer : answerListReceived) {
-						AnswerContent answerContent = basicAnswer.answerContent;
-						if (answerContent instanceof BuildingMessage) {
-							BuildingMessage bmsg = (BuildingMessage) answerContent;
-												
-							bjh = new BuildingJsonHelper(bmsg);
-							
-							for (DemandMessage dm : bmsg.demandList) {
-								DemandJsonHelper djh = new DemandJsonHelper(dm);
-								bjh.addDemand(djh);
-							}
-							for (CouplerMessage cm : bmsg.couplerList) {
-								CouplerJsonHelper cjh = new CouplerJsonHelper(cm);
-								bjh.addCoupler(cjh);
-							}
-							for (ProducerMessage pm : bmsg.controllableProducerList) {
-								ProducerJsonHelper pjh = new ProducerJsonHelper(pm);
-								bjh.addContProduction(pjh);
-							}
-							for (ProducerMessage vpm : bmsg.volatileProducerList) {
-								VolatileJsonHelper vjh = new VolatileJsonHelper(vpm);
-								bjh.addVolProduction(vjh);
-							}
-							for (StorageMessage sm : bmsg.storageList) {
-								StorageJsonHelper sjh = new StorageJsonHelper(sm);
-								bjh.addStorage(sjh);
-							}
-						}
-					buildingSet.add(bjh);
-					}
-					list.add(buildingSet);
-					
-					Set<Object> connections = new HashSet<Object>();
-					list.add(connections);
-					
-					Set<ParameterJsonHelper> parameterSet = new HashSet<ParameterJsonHelper>();
-					ParameterJsonHelper paramjh = new ParameterJsonHelper(
-							96,
-							Simulation.N_STEPS_MPC,
-							2,
-							topologyController.getOptimizationCriteria().toString(),
-							topologyController.getOptimizer().toString(),
-							topologyController.getLogging().toString(),
-							new PriceJsonHelper(true, 0.3, "", Simulation.N_STEPS_MPC),   // elecBuyingPrice
-							new PriceJsonHelper(true, 0.08, "", Simulation.N_STEPS_MPC),  // elecSellingPrice
-							new PriceJsonHelper(true, 0.13, "", Simulation.N_STEPS_MPC),  // heatBuyingPrice
-							new PriceJsonHelper(true, 0.404, "", Simulation.N_STEPS_MPC)  // co2Emissions
-							);
-					parameterSet.add(paramjh);
-					list.add(parameterSet);
-					// gson.toJson(list, new FileWriter("PATH\\OutputForPlanningTool.json"));
-					OpcServerContextGenerator.generateJson(this.actorName + "_forPlanningTool", list);
-				}
-			}		
-		}
-		
+			if (currentTimeStep == 0) { 
+				// Save topology as json for usage in planning tool:
+				JsonExportHelper.exportMemapTopology(topologyController, answerListReceived);
+			}	
+		}	
 		return buildingMessage;
 	}
 
