@@ -18,6 +18,7 @@ import fortiss.gui.listeners.button.VBrowseListener;
 import fortiss.gui.listeners.button.VPlotListener;
 import fortiss.gui.listeners.button.VReloadListener;
 import fortiss.gui.listeners.selectionitem.VNetworkTypeListener;
+import fortiss.gui.listeners.textfield.ComponentFieldListener;
 import fortiss.gui.listeners.textfield.VCOEmissionListener;
 import fortiss.gui.listeners.textfield.VCostListener;
 import fortiss.gui.listeners.textfield.VForecastFileListener;
@@ -120,8 +121,9 @@ public class VolatileInputPanel extends InformationPanel {
 		add(lbVName);
 
 		txtVName = new JTextField();
-		txtVName.addKeyListener(new VNameListener());
-		txtVName.addFocusListener(new VNameListener());
+		ComponentFieldListener nameListener = new VNameListener();
+		txtVName.addKeyListener(nameListener);
+		txtVName.addFocusListener(nameListener);
 		txtVName.setColumns(10);
 		add(txtVName, "spanx 4, growx");
 
@@ -133,16 +135,18 @@ public class VolatileInputPanel extends InformationPanel {
 		sVNetworkType.setFocusTraversalKeysEnabled(false);
 		sVNetworkType.setModel(new DefaultComboBoxModel<String>(
 				new String[] { "Heat", "Electricity" }));
-		sVNetworkType.addItemListener(new VNetworkTypeListener());
-		sVNetworkType.addMouseListener(new VNetworkTypeListener());
+		VNetworkTypeListener networkTypeListener = new VNetworkTypeListener();
+		sVNetworkType.addItemListener(networkTypeListener);
+		sVNetworkType.addMouseListener(networkTypeListener);
 		add(sVNetworkType, "spanx 4, growx");
 
 		lbVMinimumPower = new JLabel("Minimum power [kW]");
 		add(lbVMinimumPower);
 
 		txtVMinimumPower = new JTextField();
-		txtVMinimumPower.addKeyListener(new VMinPowerListener());
-		txtVMinimumPower.addFocusListener(new VMinPowerListener());
+		ComponentFieldListener minPowerListener = new VMinPowerListener();
+		txtVMinimumPower.addKeyListener(minPowerListener);
+		txtVMinimumPower.addFocusListener(minPowerListener);
 		txtVMinimumPower.setColumns(10);
 		add(txtVMinimumPower, "spanx 4, growx");
 
@@ -150,8 +154,9 @@ public class VolatileInputPanel extends InformationPanel {
 		add(lbVMaximumPower);
 
 		txtVMaximumPower = new JTextField();
-		txtVMaximumPower.addKeyListener(new VMaxPowerListener());
-		txtVMaximumPower.addFocusListener(new VMaxPowerListener());
+		ComponentFieldListener maxPowerListener = new VMaxPowerListener();
+		txtVMaximumPower.addKeyListener(maxPowerListener);
+		txtVMaximumPower.addFocusListener(maxPowerListener);
 		txtVMaximumPower.setColumns(10);
 		add(txtVMaximumPower, "spanx 4, growx");
 
@@ -159,8 +164,9 @@ public class VolatileInputPanel extends InformationPanel {
 		add(lbVCost);
 
 		txtVCost = new JTextField();
-		txtVCost.addKeyListener(new VCostListener());
-		txtVCost.addFocusListener(new VCostListener());
+		ComponentFieldListener costListener = new VCostListener();
+		txtVCost.addKeyListener(costListener);
+		txtVCost.addFocusListener(costListener);
 		add(txtVCost, "spanx 4, growx");
 		txtVCost.setColumns(10);
 
@@ -168,8 +174,9 @@ public class VolatileInputPanel extends InformationPanel {
 		add(lbVCOEmission);
 
 		txtVCOEmission = new JTextField();
-		txtVCOEmission.addKeyListener(new VCOEmissionListener());
-		txtVCOEmission.addFocusListener(new VCOEmissionListener());
+		ComponentFieldListener emissionsListener = new VCOEmissionListener();
+		txtVCOEmission.addKeyListener(emissionsListener);
+		txtVCOEmission.addFocusListener(emissionsListener);
 		txtVCOEmission.setColumns(10);
 		add(txtVCOEmission, "spanx 4, growx");
 		
@@ -177,8 +184,9 @@ public class VolatileInputPanel extends InformationPanel {
 		add(lbVForecastFile);
 
 		txtVForecastFile = new JTextField();
-		txtVForecastFile.addKeyListener(new VForecastFileListener());
-		txtVForecastFile.addFocusListener(new VForecastFileListener());
+		ComponentFieldListener forecastFileListener = new VForecastFileListener();
+		txtVForecastFile.addKeyListener(forecastFileListener);
+		txtVForecastFile.addFocusListener(forecastFileListener);
 		txtVForecastFile.setColumns(10);
 		add(txtVForecastFile, "wmin 200, growx");
 

@@ -10,6 +10,7 @@ import javax.swing.border.TitledBorder;
 import fortiss.components.Building;
 import fortiss.gui.listeners.textfield.BNameListener;
 import fortiss.gui.listeners.textfield.BPortListener;
+import fortiss.gui.listeners.textfield.ComponentFieldListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
@@ -69,8 +70,9 @@ public class BuildingInputPanel extends InformationPanel {
 		add(lb_id);
 
 		txtBName = new JTextField();
-		txtBName.addKeyListener(new BNameListener());
-		txtBName.addFocusListener(new BNameListener());
+		ComponentFieldListener bnameListener = new BNameListener();
+		txtBName.addKeyListener(bnameListener);
+		txtBName.addFocusListener(bnameListener);
 		txtBName.setColumns(10);
 		add(txtBName, "growx");
 
@@ -78,8 +80,9 @@ public class BuildingInputPanel extends InformationPanel {
 		add(lb_port);
 		txtBPort = new JTextField();// integerFormat);
 		txtBPort.setColumns(10);
-		txtBPort.addKeyListener(new BPortListener());
-		txtBPort.addFocusListener(new BPortListener());
+		ComponentFieldListener bPortListener = new BPortListener();
+		txtBPort.addKeyListener(bPortListener);
+		txtBPort.addFocusListener(bPortListener);
 		add(txtBPort, "growx");
 	}
 

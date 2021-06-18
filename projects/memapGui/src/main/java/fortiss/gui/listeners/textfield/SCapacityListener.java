@@ -1,22 +1,23 @@
 package fortiss.gui.listeners.textfield;
 
 import fortiss.components.Storage;
+import fortiss.gui.listeners.helper.NumberVerifier;
 
-public class SCapacityListener extends NumberListener{
+public class SCapacityListener extends ComponentFieldListener {
 
 	public SCapacityListener() {
-		super(false, true, 10);
+		super("Invalid number!", new NumberVerifier().withDecimalAllowed().withMaxLength(10));
 	}
 
 	@Override
-	void update(String text) {
-		((Storage) component).setCapacity(Double.parseDouble(text));	
+	public void update(String text) {
+		((Storage) component).setCapacity(Double.parseDouble(text));
 	}
 
 	@Override
-	String getAttribute() {
+	public String getAttribute() {
 		double capacity = ((Storage) component).getCapacity();
 		return String.valueOf(capacity);
 	}
-	
+
 }

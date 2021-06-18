@@ -1,20 +1,21 @@
 package fortiss.gui.listeners.textfield;
 
 import fortiss.components.Controllable;
+import fortiss.gui.listeners.helper.NumberVerifier;
 
-public class CPEfficiencyListener extends NumberListener{
+public class CPEfficiencyListener extends ComponentFieldListener{
 
 	public CPEfficiencyListener() {
-		super(true, true, 0, 1, 10);
+		super("Invalid number!", new NumberVerifier().withNegativeAllowed().withDecimalAllowed().withMin(0).withMax(1).withMaxLength(10));
 	}
 
 	@Override
-	void update(String text) {
+	public void update(String text) {
 		((Controllable) component).setEfficiency(Double.parseDouble(text));
 	}
 
 	@Override
-	String getAttribute() {
+	public String getAttribute() {
 		double efficiency = ((Controllable) component).getEfficiency();
 		return String.valueOf(efficiency);
 	}
