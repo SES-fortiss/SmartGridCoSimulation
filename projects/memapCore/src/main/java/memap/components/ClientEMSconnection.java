@@ -33,6 +33,7 @@ public class ClientEMSconnection extends Connection {
 	public NodeId triggerId;
 	public NodeId connEffId;
 	public double trigger;
+	public double connLosses;
 	
 	// Constructor with Connection
 	public ClientEMSconnection(BasicClient client, TopologyController topologyController, String name, NodeId triggerId, String connFrom, String connTo, double connLength, double connLosses, double q_max, int port) throws InterruptedException, ExecutionException {
@@ -41,6 +42,7 @@ public class ClientEMSconnection extends Connection {
 		this.client = client;
 		this.topologyController = topologyController;
 		this.triggerId = triggerId; 
+		this.connLosses = connLosses;
 	}
 
 	@Override
@@ -55,9 +57,10 @@ public class ClientEMSconnection extends Connection {
 			connectionMessage.connectedBuildingFrom = sourceBuilding;
 			connectionMessage.connectedBuildingTo = connectedBuilding;
 			
-			connectionMessage.efficiency = efficiency;
 			connectionMessage.maxPower = q_max;
 			connectionMessage.pipeLengthInMeter = pipeLengthInMeter;
+			connectionMessage.losses = connLosses;
+			connectionMessage.efficiency = efficiency;
 			connectionMessage.operationalCostEUR = 0.0001;
 			connectionMessage.operationalCostCO2 = 0.0001;
 		}
