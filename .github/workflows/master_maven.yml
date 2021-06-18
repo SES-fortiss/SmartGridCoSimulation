@@ -1,4 +1,4 @@
-#  This workflow will build the MEMAP project with Maven and generate artifacts
+#  This workflow builds the MEMAP project with Maven and generates artifacts
 
 name: Master build with maven
 
@@ -18,7 +18,7 @@ jobs:
     - name: Checkout memap
       uses: actions/checkout@v2
       with:
-        ref: master
+        ref: ${{ github.ref }}
     - name: Set up JDK 8
       uses: actions/setup-java@v2
       with:
