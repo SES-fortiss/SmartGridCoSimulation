@@ -16,9 +16,9 @@ import com.google.gson.Gson;
 
 import memap.components.prototypes.Device;
 import memap.helper.HelperUnnestingJSON;
-import memap.helper.configurationOptions.Optimizer;
 import memap.components.ClientDemand;
 import memap.components.ClientEMS;
+import memap.components.ClientEMSconnection;
 import memap.components.ClientCoupler;
 import memap.components.ClientProducer;
 import memap.components.ClientStorage;
@@ -252,15 +252,16 @@ public class OpcUaBuildingController implements BuildingController {
 								double q_max = ((Number) connectionConfig.get("maxTransportCapacity")).doubleValue();
 								System.out.println("Connection is considered from " + sourceBuilding + " to " + connectedBuilding);
 							
-								ClientEMS ems = new ClientEMS(client, topologyController, name, triggerId, sourceBuilding, connectedBuilding, pipeLengthInMeter, lossesPer100m, q_max, 0);
+								ClientEMSconnection ems = new ClientEMSconnection(client, topologyController, name, triggerId, sourceBuilding, connectedBuilding, pipeLengthInMeter, lossesPer100m, q_max, 0);
 								attach(ems);
 								ems.setTopologyController(topologyController);
 			
 							} else {
-								ClientEMS ems = new ClientEMS(client, topologyController, name, triggerId, 0);
+								
+								ClientEMS ems = new ClientEMS(client, name, triggerId, 0);
 								attach(ems);
+								ems.setTopologyController(topologyController);
 							}
-							
 							
 							System.out.println("EMS (" + EMSkey + ") added. ");
 							} catch (Exception e) {
