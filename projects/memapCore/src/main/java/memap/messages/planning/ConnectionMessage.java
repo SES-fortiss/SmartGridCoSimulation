@@ -11,6 +11,7 @@ public class ConnectionMessage implements AnswerContent {
 	public String connectedBuildingFrom;
 	
 	public double maxPower;	
+	public double losses;
 	public double efficiency;
 	public double pipeLengthInMeter;
 	

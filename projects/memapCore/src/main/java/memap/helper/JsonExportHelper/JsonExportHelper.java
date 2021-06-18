@@ -12,6 +12,7 @@ import memap.helperOPCua.OpcServerContextGenerator;
 import memap.main.Simulation;
 import memap.main.TopologyConfig;
 import memap.messages.BuildingMessage;
+import memap.messages.planning.ConnectionMessage;
 import memap.messages.planning.CouplerMessage;
 import memap.messages.planning.DemandMessage;
 import memap.messages.planning.ProducerMessage;
@@ -21,7 +22,10 @@ public class JsonExportHelper {
 
 	public static void exportMemapTopology(TopologyController topologyController, ArrayList<BasicAnswer> answerListReceived) {
 		ArrayList<Object> list = new ArrayList<Object>();
+		
 		Set<BuildingJsonHelper> buildingSet = new HashSet<BuildingJsonHelper>();
+		Set<ConnectionJsonHelper> connections = new HashSet<ConnectionJsonHelper>();
+		
 		BuildingJsonHelper bjh = null;
 		
 		for (BasicAnswer basicAnswer : answerListReceived) {
@@ -51,13 +55,14 @@ public class JsonExportHelper {
 					StorageJsonHelper sjh = new StorageJsonHelper(sm);
 					bjh.addStorage(sjh);
 				}
+				
+				for (ConnectionMessage cm : bmsg.connectionList) {
+					ConnectionJsonHelper connjh = new ConnectionJsonHelper(cm);
+					connections.add(connjh);
+				}
 			}
 		buildingSet.add(bjh);
 		}
-		list.add(buildingSet);
-		
-		Set<Object> connections = new HashSet<Object>();
-		list.add(connections);
 		
 		Set<ParameterJsonHelper> parameterSet = new HashSet<ParameterJsonHelper>();
 		ParameterJsonHelper paramjh = new ParameterJsonHelper(
@@ -73,8 +78,11 @@ public class JsonExportHelper {
 				new PriceJsonHelper(true, 0.404, "", Simulation.N_STEPS_MPC)  // co2Emissions
 				);
 		parameterSet.add(paramjh);
+		
+		list.add(buildingSet);
+		list.add(connections);
 		list.add(parameterSet);
-
+		
 		OpcServerContextGenerator.generateJson("ExportForPlanningTool", list);
 	}
 	
