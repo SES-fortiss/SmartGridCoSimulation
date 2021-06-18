@@ -1,7 +1,6 @@
 package memap.components.prototypes;
 
 import java.util.ArrayList;
-
 import com.google.gson.Gson;
 
 import akka.basicMessages.AnswerContent;
@@ -12,6 +11,7 @@ import behavior.BehaviorModel;
 import lpsolve.LpSolveException;
 import memap.controller.TopologyController;
 import memap.helper.SolutionHandler;
+import memap.helper.JsonExportHelper.JsonExportHelper;
 import memap.helper.configurationOptions.OptHierarchy;
 import memap.helper.configurationOptions.Optimizer;
 import memap.helper.configurationOptions.ToolUsage;
@@ -170,8 +170,12 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 					e.printStackTrace();
 				}
 			}
-		}
-		
+					
+			if (currentTimeStep == 0) { 
+				// Save topology as json for usage in planning tool:
+				JsonExportHelper.exportMemapTopology(topologyController, answerListReceived);
+			}	
+		}	
 		return buildingMessage;
 	}
 

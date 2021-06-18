@@ -72,13 +72,23 @@ public class JettyStart {
 
 	public void run(JsonObject memapStartMessage) {
 
-		topologyMemapOn = new TopologyController("MemapOn", OptHierarchy.MEMAP, Optimizer.MILPwithConnections,
-				OptimizationCriteria.EUR, ToolUsage.SERVER, MEMAPLogging.ALL);
+		topologyMemapOn = new TopologyController(
+				"MemapOn", 
+				OptHierarchy.MEMAP, 
+				Optimizer.MILPwithConnections,
+				OptimizationCriteria.EUR, 
+				ToolUsage.SERVER, 
+				MEMAPLogging.ALL
+				);
 
 		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 7020, 0);
 		System.out.println(">> MPC set to " + Simulation.N_STEPS_MPC);
-		EnergyPrices.getInstance().init(new ElectricityPrice(0.285, Simulation.N_STEPS_MPC),
-				new ElectricityPrice(0.285, Simulation.N_STEPS_MPC), new HeatPrice(0.285, Simulation.N_STEPS_MPC));
+		
+		EnergyPrices.getInstance().init(
+				new ElectricityPrice(0.285, Simulation.N_STEPS_MPC), //global buying price
+				new ElectricityPrice(0.08, Simulation.N_STEPS_MPC),  //global selling price
+				new HeatPrice(0.13, Simulation.N_STEPS_MPC) 		 //global heat price
+				);
 
 		if (doubleSim) {
 			topologyMemapOff = new TopologyController("MemapOff", OptHierarchy.BUILDING, Optimizer.MILP,
