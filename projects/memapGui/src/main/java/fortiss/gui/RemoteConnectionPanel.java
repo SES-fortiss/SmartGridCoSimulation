@@ -1,18 +1,26 @@
 package fortiss.gui;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
+import fortiss.biminterface.BimSession;
 import fortiss.biminterface.UserCredential;
 import fortiss.biminterface.listeners.PasswordListener;
 import fortiss.biminterface.listeners.UserNameListener;
+import fortiss.gui.commands.LoadFromServerCommand;
+import fortiss.gui.commands.OpenBIMSession;
+import fortiss.gui.listeners.action.ButtonListener;
 import fortiss.gui.listeners.textfield.TextFieldListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import net.miginfocom.swing.MigLayout;
 
+/**
+ * This panel shows fields to input a user name and password for the BIM server
+ */
 public class RemoteConnectionPanel extends InformationPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -22,7 +30,8 @@ public class RemoteConnectionPanel extends InformationPanel {
 	private JLabel lblPassword;
 	private JTextField txtUserName;
 	private JPasswordField txtPassword;
-	private UserCredential userCredential= new UserCredential();
+	private JButton btnOption;
+	private JButton btnLoadFromServer;
 
 	public RemoteConnectionPanel() {
 		initialize();
@@ -39,7 +48,6 @@ public class RemoteConnectionPanel extends InformationPanel {
 		add(lblTitle, "spanx, center, gapbottom 30");
 
 		lblUserName = new JLabel("User name");
-		lblUserName.setFont(Fonts.getOswald());
 		add(lblUserName);
 
 		txtUserName = new JTextField();
@@ -50,7 +58,6 @@ public class RemoteConnectionPanel extends InformationPanel {
 		add(txtUserName, "growx");
 
 		lblPassword = new JLabel("Password");
-		lblPassword.setFont(Fonts.getOswald());
 		add(lblPassword);
 
 		txtPassword = new JPasswordField();
@@ -60,11 +67,21 @@ public class RemoteConnectionPanel extends InformationPanel {
 		txtPassword.setColumns(10);
 		add(txtPassword, "growx");
 		
+		btnOption = new JButton("Connect");
+		btnOption.addMouseListener(new ButtonListener(new OpenBIMSession()));
+		add(btnOption, "center, span, gaptop 10");
+		
+		btnLoadFromServer = new JButton("Load topology from server");
+		btnLoadFromServer.addMouseListener(new ButtonListener(new LoadFromServerCommand()));
+		add(btnLoadFromServer, "center, span, gaptop 10");
+		btnLoadFromServer.setVisible(false);
 	}
 
 	@Override
 	public void update() {
-
+		UserCredential userCredential = BimSession.getInstance().getUserCredential();
+		txtUserName.setText(userCredential.getUserName());
+		txtPassword.setText(userCredential.getPassword());
 	}
 
 }

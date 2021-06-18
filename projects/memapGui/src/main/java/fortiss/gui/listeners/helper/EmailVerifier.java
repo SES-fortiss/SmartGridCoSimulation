@@ -1,7 +1,8 @@
 package fortiss.gui.listeners.helper;
 
 import java.awt.event.KeyEvent;
-import java.util.regex.Pattern;
+
+import org.apache.commons.validator.routines.EmailValidator;
 
 public class EmailVerifier extends InputVerifier {
 
@@ -13,16 +14,14 @@ public class EmailVerifier extends InputVerifier {
 		validKeys.add('-');
 		validKeys.add('@');
 	}
+
 	@Override
 	public boolean isValidField(String text) {
-		if(text.isEmpty())
+		if (text.isEmpty())
 			return false;
-		
-		String regex = "/^[A-Za-z0-9_-]+(?:\\.[a-zA-Z0-9_-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";
-		Pattern pattern = Pattern.compile(regex);
-		if(pattern.matcher(text).matches())
-			return true;
-		return false;
+
+		EmailValidator emailValidator = EmailValidator.getInstance(true);
+		return emailValidator.isValid(text);
 	}
 
 	@Override

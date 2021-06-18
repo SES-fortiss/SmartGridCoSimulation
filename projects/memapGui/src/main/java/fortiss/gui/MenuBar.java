@@ -91,6 +91,7 @@ public class MenuBar extends JMenuBar implements ActionListener {
 			break;
 		case RESET:
 			new ResetCommand().execute();
+			break;
 		}
 	}
 }
