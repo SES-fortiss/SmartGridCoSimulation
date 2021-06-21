@@ -455,7 +455,7 @@ public class MILPProblemNoConnections extends MILPProblem {
         			if (dm.varNetworkBuyCostEUR != null && dm.varNetworkBuyCostEUR[0] < bestBuyPrice[0])
         			bestBuyPrice = dm.varNetworkBuyCostEUR;
         			
-        			if (dm.varNetworkSellCostEUR != null && dm.varNetworkSellCostEUR[0] > bestBuyPrice[0])
+        			if (dm.varNetworkSellCostEUR != null && dm.varNetworkSellCostEUR[0] > bestSellPrice[0])
             		bestSellPrice = dm.varNetworkSellCostEUR;
         		} 
         	}
