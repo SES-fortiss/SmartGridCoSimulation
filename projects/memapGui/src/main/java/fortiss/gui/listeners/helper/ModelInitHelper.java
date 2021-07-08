@@ -26,7 +26,6 @@ import com.google.gson.reflect.TypeToken;
 import fortiss.components.Building;
 import fortiss.components.Connection;
 import fortiss.gui.DesignerPanel;
-import fortiss.gui.commands.ResetCommand;
 import fortiss.serialization.BuildingTypeAdapter;
 import fortiss.serialization.ConnectionTypeAdapter;
 import fortiss.serialization.ParametersTypeAdapter;
@@ -39,11 +38,11 @@ import fortiss.simulation.helper.Logger;
 public class ModelInitHelper {
 
 	private FileManager fm;
-	
+
 	public ModelInitHelper() {
 		fm = new FileManager();
 	}
-	
+
 	/**
 	 * Load a topology
 	 * 
@@ -54,27 +53,23 @@ public class ModelInitHelper {
 		try {
 			PlanningTool planningTool = PlanningTool.getInstance();
 
-			// Reset simulation
-			new ResetCommand().execute();
-			
 			BufferedReader br = fm.readFromSource(topologyFilePath);
 
 			GsonBuilder gsonBuilder = new GsonBuilder();
-			gsonBuilder.registerTypeAdapter(Point2D.class, new Point2DTypeAdapter());
 			gsonBuilder.registerTypeAdapter(Building.class, new BuildingTypeAdapter());
 			gsonBuilder.registerTypeAdapter(Parameters.class, new ParametersTypeAdapter());
 			gsonBuilder.registerTypeAdapter(Connection.class, new ConnectionTypeAdapter());
 			Type buildingSetType = new TypeToken<HashSet<Building>>() {
 			}.getType();
 
-			Gson gson = gsonBuilder.setPrettyPrinting().enableComplexMapKeySerialization().excludeFieldsWithoutExposeAnnotation().create();
+			Gson gson = gsonBuilder.setPrettyPrinting().enableComplexMapKeySerialization()
+					.excludeFieldsWithoutExposeAnnotation().create();
 
 			JsonStreamParser p = new JsonStreamParser(br);
 			JsonArray root = p.next().getAsJsonArray();
 
 			// Import topology
 			JsonElement topology = root.get(0);
-
 			DesignerPanel.buildings = new TreeMap<String, Building>();
 
 			try {
@@ -112,7 +107,7 @@ public class ModelInitHelper {
 			planningTool.setParameters(gson.fromJson(parameters, Parameters.class));
 			String fileName = Paths.get(topologyFilePath).getFileName().toString().replaceAll(".json", "");
 			planningTool.getParameters().setSimulationName(fileName);
-			
+
 			DesignerPanel.parameterPanel.update();
 			Logger.getInstance().writeInfo("Parameters: " + gson.toJson(planningTool.getParameters()));
 
@@ -121,13 +116,13 @@ public class ModelInitHelper {
 			planningTool.setWorkingFile(topologyFilePath);
 			planningTool.setSaved(true);
 			Logger.getInstance().writeInfo("Topology loaded from: " + topologyFilePath);
-			
+
 		} catch (FileNotFoundException e1) {
 			Logger.getInstance().writeError("File not found: " + topologyFilePath);
 			e1.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Save a topology
 	 * 
@@ -147,14 +142,14 @@ public class ModelInitHelper {
 			Building building = entry.getValue();
 			mySet.add(building);
 		}
-		
+
 		Collection<Object> root = new ArrayList<Object>();
 		root.add(mySet);
 
 		// Export connections
 		ConnectionManager cm = ConnectionManager.getInstance();
 		root.add(cm.getConnectionList());
-		
+
 		// Export parameters
 		Parameters pars = PlanningTool.getInstance().getParameters();
 
@@ -162,9 +157,9 @@ public class ModelInitHelper {
 		pars.setSimulationName(fileName);
 		DesignerPanel.parameterPanel.update();
 		root.add(pars);
-		
+
 		String str = gson.toJson(root);
-		
+
 		fm.writeFile(str, new File(topologyFilePath));
 
 		Logger.getInstance().writeInfo("Writing MEMAP model in: " + topologyFilePath);
