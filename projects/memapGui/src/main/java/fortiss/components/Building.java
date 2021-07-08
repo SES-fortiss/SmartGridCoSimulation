@@ -19,6 +19,8 @@ public class Building {
 	protected String formattedName;
 	@Expose
 	private int port;
+	@Expose
+	private int max_buy_limit;
 
 	@Expose
 	private ArrayList<Demand> demand_list;
@@ -46,6 +48,7 @@ public class Building {
 		this.name = name;
 		setFormattedName(name);
 		this.setPort(port);
+		this.setMax_buy_limit(9999);
 
 		demand_list = new ArrayList<Demand>();
 		coupler_list = new ArrayList<Coupler>();
@@ -195,6 +198,15 @@ public class Building {
 		for (Component component : components) {
 			component.icon.showComponent(false);
 		}
+	}
+
+	public int getMax_buy_limit() {
+		return max_buy_limit;
+	}
+
+	public void setMax_buy_limit(int max_buy_limit) {
+		this.max_buy_limit = max_buy_limit;
+		setSaved(false);
 	}
 
 }
