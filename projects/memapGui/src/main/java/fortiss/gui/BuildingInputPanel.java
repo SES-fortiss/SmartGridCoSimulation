@@ -8,6 +8,7 @@ import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 
 import fortiss.components.Building;
+import fortiss.gui.listeners.textfield.BMaxLimitListener;
 import fortiss.gui.listeners.textfield.BNameListener;
 import fortiss.gui.listeners.textfield.BPortListener;
 import fortiss.gui.listeners.textfield.ComponentFieldListener;
@@ -31,6 +32,10 @@ public class BuildingInputPanel extends InformationPanel {
 	private JLabel lb_id;
 	/** Building port label */
 	private JLabel lb_port;
+	
+	/** Building max buy level */
+	private JLabel lb_b_max_limit;
+	public JTextField txt_b_max_limit;
 
 	private static final long serialVersionUID = 1L;
 
@@ -42,6 +47,7 @@ public class BuildingInputPanel extends InformationPanel {
 		setForeground(Colors.normal);
 		lb_id.setForeground(Colors.normal);
 		lb_port.setForeground(Colors.normal);
+		lb_b_max_limit.setForeground(Colors.normal);
 		lblBuilding.setForeground(Colors.title);
 	}
 
@@ -84,6 +90,18 @@ public class BuildingInputPanel extends InformationPanel {
 		txtBPort.addKeyListener(bPortListener);
 		txtBPort.addFocusListener(bPortListener);
 		add(txtBPort, "growx");
+		
+		lb_b_max_limit = new JLabel("Elecricity Buy Limit");
+		add(lb_b_max_limit);
+		txt_b_max_limit = new JTextField();// integerFormat);
+		txt_b_max_limit.setColumns(10);
+		txt_b_max_limit.addKeyListener(new BMaxLimitListener());
+		txt_b_max_limit.addFocusListener(new BMaxLimitListener());		
+		String tool_tip_max_limit = "Limits are of type INT and in range [1..9999]";
+		lb_b_max_limit.setToolTipText(tool_tip_max_limit);
+		txt_b_max_limit.setToolTipText(tool_tip_max_limit);		
+		
+		add(txt_b_max_limit, "growx");
 	}
 
 	@Override
@@ -91,6 +109,7 @@ public class BuildingInputPanel extends InformationPanel {
 		Building building = DesignerPanel.selectedBuilding;
 		txtBName.setText(building.getName());
 		txtBPort.setText(String.valueOf(building.getPort()));
+		txt_b_max_limit.setText(String.valueOf(building.getMax_buy_limit()));
 	}
 
 }
