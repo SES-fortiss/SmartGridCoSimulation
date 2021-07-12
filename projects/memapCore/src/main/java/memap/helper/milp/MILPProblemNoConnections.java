@@ -457,6 +457,10 @@ public class MILPProblemNoConnections extends MILPProblem {
         			
         			if (dm.varNetworkSellCostEUR != null && dm.varNetworkSellCostEUR[0] > bestSellPrice[0])
             		bestSellPrice = dm.varNetworkSellCostEUR;
+        			
+        			if (dm.varNetworkBuyCap != null) {
+        				// A maximum withdraw cap from the grid, could be set here!
+        			}
         		} 
         	}
 

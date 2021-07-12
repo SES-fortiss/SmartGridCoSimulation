@@ -32,7 +32,7 @@ public class ClientProducer extends Producer {
 	
 	NetworkType networkType;
 	public double opCost;
-	public Double opCostFC[];
+	public Double opCostFC[] = new Double[topologyConfig.getNrStepsMPC()];
 	public double costCO2;
 	public double[] costCO2Array = new double[topologyConfig.getNrStepsMPC()];
 	
@@ -74,7 +74,13 @@ public class ClientProducer extends Producer {
 		this.client = client;		
 		this.setpointId = setpointId;
 		this.setpointsId = setpointsId;
-		this.networkType = this.setNetworkType(client, nodeIdSector);
+		
+		if (nodeIdSector.equals(nodeIdSector)) {
+			networkType = NetworkType.HEAT;
+		} else {
+			networkType = setNetworkType(client, nodeIdSector);
+		}
+//		this.networkType = this.setNetworkType(client, nodeIdSector);
 		
 		if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, costCO2Id).getValue().getValue().getClass().isArray()) {
 			this.costCO2Array = client.readFinalDoubleArrayValue(costCO2Id);

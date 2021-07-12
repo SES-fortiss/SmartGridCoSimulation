@@ -75,7 +75,8 @@ public class OpcuaClient {
 
 	    logger.warn("Using endpoint: {} [{}]", endpoint.getEndpointUrl(), securityPolicy);
 
-	    OpcUaClientConfig config = OpcUaClientConfig.builder().setApplicationName(LocalizedText.english(clientName))
+	    OpcUaClientConfig config = OpcUaClientConfig.builder()
+	    	.setApplicationName(LocalizedText.english(clientName))
 		    .setApplicationUri(clientURI)
 //            .setCertificateValidator(certificateValidator)
 //			    .setCertificate(loader.getClientCertificate())

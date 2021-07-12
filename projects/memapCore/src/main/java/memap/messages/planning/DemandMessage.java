@@ -17,6 +17,8 @@ public class DemandMessage implements AnswerContent {
 	public double[] varNetworkSellCostEUR;
 	// only needed in a perspective CO2-optimization in dependence on the RES share in the grid:
 	public double[] varNetworkCostCO2;
+	
+	public double[] varNetworkBuyCap; // Maximum to buy from the grid per timestep
 
 	public DemandMessage() {
 		demandForecast = null;
@@ -24,6 +26,10 @@ public class DemandMessage implements AnswerContent {
 
 	public void setDemandVector(double[] consumption) {
 		demandForecast = consumption;
+	}
+	
+	public void setNetworkBuyCap(double[] networkBuyCap) {
+		varNetworkBuyCap = networkBuyCap;
 	}
 
 	public void addConsumption(double[] consumption) {

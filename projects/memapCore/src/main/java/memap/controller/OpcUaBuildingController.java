@@ -1,9 +1,11 @@
 package memap.controller;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -13,16 +15,15 @@ import org.slf4j.LoggerFactory;
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import memap.components.prototypes.Device;
 import memap.helper.HelperUnnestingJSON;
+import memap.components.ClientCoupler;
 import memap.components.ClientDemand;
 import memap.components.ClientEMS;
 import memap.components.ClientEMSconnection;
-import memap.components.ClientCoupler;
 import memap.components.ClientProducer;
-import memap.components.ClientStorage;
-import memap.components.ClientVolatileProducer;
 import memap.helperOPCua.BasicClient;
 
 /**
@@ -66,6 +67,9 @@ public class OpcUaBuildingController implements BuildingController {
 	private int endpointDescriptor;
 	private Set<Device> devices = new HashSet<Device>();
 	private Logger logger = LoggerFactory.getLogger(OpcUaBuildingController.class);
+	
+	public boolean Sauter = true;
+	public final String defaultNodeId = "ns=2;g=c1d83946-c242-46a3-adf8-1593ac637e62";
 
 	/**
 	 * Initializing the OpcUaBuildingController has two steps: i) Creating a Client
@@ -99,7 +103,7 @@ public class OpcUaBuildingController implements BuildingController {
 		endpointConfigHandler.initEndpoint();
 		try {
 			this.client = new BasicClient(endpointURL, endpointDescriptor);
-		} catch (InterruptedException | ExecutionException e1) {
+		} catch (Exception e1) {
 			System.err.println("ERROR: Connection to " + endpointURL + " with endpoint descriptor " + endpointDescriptor
 					+ " failed. Please check network settings.");
 			throw new IllegalStateException();
@@ -227,6 +231,13 @@ public class OpcUaBuildingController implements BuildingController {
 		
 		private void initDevices() {
 			
+			try (Writer writer = new FileWriter("Input.json")) {
+			    Gson gson = new GsonBuilder().create();
+			    gson.toJson(fullNodesConfig, writer);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
 			for ( String EMSkey : fullNodesConfig.keySet()) {
 				JsonObject emsNodesConfig = (JsonObject) fullNodesConfig.get(EMSkey);
 				System.out.println("Found EMS " + EMSkey + " (reading...)");
@@ -310,17 +321,28 @@ public class OpcUaBuildingController implements BuildingController {
 						for (int i = 0; i < demands.keySet().size(); i++) {							
 							JsonObject demnd = HelperUnnestingJSON.unnestJsonObj(i, demands);
 							try {
-								NodeId demndSectId = NodeId.parse((String) demnd.get("PrimSect"));
-								NodeId arrayDemandForecastId = NodeId.parse((String) demnd.get("DemandFC"));
-								NodeId buyPriceId = NodeId.parse((String) demnd.get("GrdBuyCost"));
-								NodeId sellPriceId = NodeId.parse((String) demnd.get("GrdSellCost"));
-//								NodeId consumptionId = NodeId.parse((String) demnd.get("curDem"));
-								NodeId consumptionId = null;
-								NodeId setpointsGridBuyId = NodeId.parse((String) demnd.get("SPGrdBuyAr"));
-								NodeId setpointGridBuyId = NodeId.parse((String) demnd.get("SPGrdBuy"));
-								NodeId setpointsGridSellId = NodeId.parse((String) demnd.get("SPGrdSellAr"));
-								NodeId setpointGridSellId = NodeId.parse((String) demnd.get("SPGrdSell"));
+								NodeId demndSectId = NodeId.parse(defaultNodeId);
+								NodeId arrayDemandForecastId = NodeId.parse((String) demnd.get("DemandFC    "));
+								NodeId buyPriceId = NodeId.parse(defaultNodeId);
+								NodeId sellPriceId = NodeId.parse(defaultNodeId);
+								NodeId consumptionId = NodeId.parse((String) demnd.get("currentDem  "));
+								NodeId setpointsGridBuyId = NodeId.parse(defaultNodeId);
+								NodeId setpointGridBuyId = NodeId.parse(defaultNodeId);
+								NodeId setpointsGridSellId = NodeId.parse(defaultNodeId);
+								NodeId setpointGridSellId = NodeId.parse(defaultNodeId);
 								
+								if (!Sauter) {
+									demndSectId = NodeId.parse((String) demnd.get("PrimSect"));
+									arrayDemandForecastId = NodeId.parse((String) demnd.get("DemandFC"));
+									buyPriceId = NodeId.parse((String) demnd.get("GrdBuyCost"));
+									sellPriceId = NodeId.parse((String) demnd.get("GrdSellCost"));
+	//								NodeId consumptionId = NodeId.parse((String) demnd.get("curDem"));
+									consumptionId = null;
+									setpointsGridBuyId = NodeId.parse((String) demnd.get("SPGrdBuyAr"));
+									setpointGridBuyId = NodeId.parse((String) demnd.get("SPGrdBuy"));
+									setpointsGridSellId = NodeId.parse((String) demnd.get("SPGrdSellAr"));
+									setpointGridSellId = NodeId.parse((String) demnd.get("SPGrdSell"));
+									}
 								String demandName = EMSkey + "_DEMND" + String.format("%02d",  i+1);
 								ClientDemand cd = new ClientDemand(client, demandName, demndSectId, consumptionId, 
 										arrayDemandForecastId, buyPriceId, sellPriceId, 
@@ -340,18 +362,34 @@ public class OpcUaBuildingController implements BuildingController {
 						for (int i = 0; i < controllableProd.keySet().size(); i++) {
 							JsonObject cprod = HelperUnnestingJSON.unnestJsonObj(i, controllableProd);
 							try {
-								NodeId primarySectId = NodeId.parse((String) cprod.get("PrimSect"));	
-								NodeId minPowerId = NodeId.parse((String) cprod.get("MinPower"));
-								NodeId maxPowerId = NodeId.parse((String) cprod.get("MaxPower"));
-								NodeId effId = NodeId.parse((String) cprod.get("EffPrim"));
 								
-//								NodeId opCostId = NodeId.parse((String) cprod.get("PrimEnCost"));
-								NodeId opCostId = null;
-								NodeId priceFCId = NodeId.parse((String) cprod.get("GenCosts"));
-								NodeId costCO2Id = NodeId.parse((String) cprod.get("CO2PerKWh"));
-								NodeId setpointsId = NodeId.parse((String) cprod.get("SPDevPwrAr"));
-								NodeId setpointId = NodeId.parse((String) cprod.get("SPDevPwr"));
 								
+								NodeId primarySectId = NodeId.parse(defaultNodeId);	
+								NodeId minPowerId = NodeId.parse((String) cprod.get("MinPower    "));
+								NodeId maxPowerId = NodeId.parse((String) cprod.get("MaxPower    "));
+								NodeId effId = NodeId.parse((String) cprod.get("EffPrim     "));
+								
+								NodeId opCostId = NodeId.parse((String) cprod.get("GenCosts    "));
+
+								NodeId priceFCId = NodeId.parse((String) cprod.get("GenCosts    "));
+								NodeId costCO2Id = NodeId.parse((String) cprod.get("CO2PerKWh   "));
+								NodeId setpointsId = NodeId.parse((String) cprod.get("SPDevPwr    "));
+								NodeId setpointId = NodeId.parse((String) cprod.get("SPDevPwr    "));
+								
+								
+								if (!Sauter) {
+									primarySectId = NodeId.parse((String) cprod.get("PrimSect"));	
+									minPowerId = NodeId.parse((String) cprod.get("MinPower"));
+									maxPowerId = NodeId.parse((String) cprod.get("MaxPower"));
+									effId = NodeId.parse((String) cprod.get("EffPrim"));
+
+	//								NodeId opCostId = NodeId.parse((String) cprod.get("PrimEnCost"));
+									opCostId = null;
+									priceFCId = NodeId.parse((String) cprod.get("GenCosts"));
+									costCO2Id = NodeId.parse((String) cprod.get("CO2PerKWh"));
+									setpointsId = NodeId.parse((String) cprod.get("SPDevPwrAr"));
+									setpointId = NodeId.parse((String) cprod.get("SPDevPwr"));
+									}
 								String producerName = EMSkey + "_CPROD" + String.format("%02d",  i+1);
 								ClientProducer cp = new ClientProducer(client, producerName, primarySectId, minPowerId, maxPowerId,
 										effId, opCostId, priceFCId, costCO2Id, setpointsId, setpointId, 0);
@@ -366,70 +404,70 @@ public class OpcUaBuildingController implements BuildingController {
 						}
 						break;
 	
-					case "VPROD":
-						JsonObject volatileProd = (JsonObject) emsNodesConfig.get("VPROD");
-						for (int i = 0; i < volatileProd.keySet().size(); i++) {
-							JsonObject vprod = HelperUnnestingJSON.unnestJsonObj(i, volatileProd);
-							try {
-								NodeId primarySectId = NodeId.parse((String) vprod.get("PrimSect"));
-	//							NodeId effId = NodeId.parse((String) vprod.get("EffPrim"));
-	//							NodeId minPowerId = NodeId.parse((String) vprod.get("MinPower"));
-								NodeId maxPowerId = NodeId.parse((String) vprod.get("MaxPower"));
-								NodeId productionId = NodeId.parse((String) vprod.get("curPwrPrim"));
-								NodeId opCostId = NodeId.parse((String) vprod.get("PrimEnCost"));
-//								NodeId priceFCId = NodeId.parse((String) vprod.get("GenCosts"));
-								NodeId costCO2Id = NodeId.parse((String) vprod.get("CO2PerKWh"));
-								
-								String vproducerName = EMSkey + "_VPROD" + String.format("%02d",  i+1);
-								ClientVolatileProducer cvp = new ClientVolatileProducer(client, vproducerName, primarySectId,
-										maxPowerId, productionId, opCostId, costCO2Id, 0);
-								attach(cvp);
-								cvp.setTopologyController(topologyController);
-								System.out.println("Volatile producer (" + (i+1) + "/" + volatileProd.keySet().size() + ") added to " + EMSkey);
-							} catch (Exception e) {
-								System.err.println("WARNING: Could not add volatile producer " + i + " to " + EMSkey
-										+ ".\nPlease check " + vprod.toString());
-							}
-						}
-						break;
-						
-					case "STRGE":
-						JsonObject storages = (JsonObject) emsNodesConfig.get("STRGE");
-						for (int i = 0; i < storages.keySet().size(); i++) {
-							JsonObject strge = HelperUnnestingJSON.unnestJsonObj(i, storages);
-							try {
-								NodeId primarySectId = NodeId.parse((String) strge.get("PrimSect"));
-								NodeId effInId = NodeId.parse((String) strge.get("EffPrim"));
-								NodeId effOutId = NodeId.parse((String) strge.get("DisEffPrim"));
-								NodeId maxChargingId = NodeId.parse((String) strge.get("MaxPowerIn"));
-								NodeId maxDischargingId = NodeId.parse((String) strge.get("MaxPower"));
-								NodeId capacityId = NodeId.parse((String) strge.get("Capacity"));
-								NodeId stateOfChargeId = NodeId.parse((String) strge.get("curSOC"));
-								NodeId calculatedSocId = NodeId.parse((String) strge.get("calcSOC"));  // Only available in CoSES
-//								NodeId calculatedSocId = null;
-								NodeId storageLossId = NodeId.parse((String) strge.get("StorLossPD"));
-								NodeId opCostId = NodeId.parse((String) strge.get("PrimEnCost"));
-								NodeId costCO2Id = NodeId.parse((String) strge.get("CO2PerKWh"));
-								NodeId inputSetpointId = NodeId.parse((String) strge.get("SPCharge"));
-								NodeId inputSetpointsId = NodeId.parse((String) strge.get("SPChargeAr"));
-//								NodeId inputSetpointsId = null;
-								NodeId outputSetpointId = NodeId.parse((String) strge.get("SPDisChrg"));
-								NodeId outputSetpointsId = NodeId.parse((String) strge.get("SPDisChrgAr"));
-//								NodeId outputSetpointsId = null;
-	
-								String storageName = EMSkey + "_STRGE" + String.format("%02d",  i+1);
-								ClientStorage cs = new ClientStorage(client, storageName, capacityId, stateOfChargeId, calculatedSocId,
-										maxChargingId, maxDischargingId, effInId, effOutId, storageLossId, primarySectId,
-										opCostId, costCO2Id, inputSetpointsId, outputSetpointsId, inputSetpointId, outputSetpointId, 0);
-								attach(cs);
-								cs.setTopologyController(topologyController);
-								System.out.println("Storgae (" + (i+1) + "/" + storages.keySet().size() + ") added to " + EMSkey);
-							} catch (Exception e) {
-								System.err.println("WARNING: Could not add storage " + i + " to " + EMSkey
-										+ ".\nPlease check " + strge.toString());
-							}
-						}
-						break;
+//					case "VPROD":
+//						JsonObject volatileProd = (JsonObject) emsNodesConfig.get("VPROD");
+//						for (int i = 0; i < volatileProd.keySet().size(); i++) {
+//							JsonObject vprod = HelperUnnestingJSON.unnestJsonObj(i, volatileProd);
+//							try {
+//								NodeId primarySectId = NodeId.parse((String) vprod.get("PrimSect"));
+//	//							NodeId effId = NodeId.parse((String) vprod.get("EffPrim"));
+//	//							NodeId minPowerId = NodeId.parse((String) vprod.get("MinPower"));
+//								NodeId maxPowerId = NodeId.parse((String) vprod.get("MaxPower"));
+//								NodeId productionId = NodeId.parse((String) vprod.get("curPwrPrim"));
+//								NodeId opCostId = NodeId.parse((String) vprod.get("PrimEnCost"));
+////								NodeId priceFCId = NodeId.parse((String) vprod.get("GenCosts"));
+//								NodeId costCO2Id = NodeId.parse((String) vprod.get("CO2PerKWh"));
+//								
+//								String vproducerName = EMSkey + "_VPROD" + String.format("%02d",  i+1);
+//								ClientVolatileProducer cvp = new ClientVolatileProducer(client, vproducerName, primarySectId,
+//										maxPowerId, productionId, opCostId, costCO2Id, 0);
+//								attach(cvp);
+//								cvp.setTopologyController(topologyController);
+//								System.out.println("Volatile producer (" + (i+1) + "/" + volatileProd.keySet().size() + ") added to " + EMSkey);
+//							} catch (Exception e) {
+//								System.err.println("WARNING: Could not add volatile producer " + i + " to " + EMSkey
+//										+ ".\nPlease check " + vprod.toString());
+//							}
+//						}
+//						break;
+//						
+//					case "STRGE":
+//						JsonObject storages = (JsonObject) emsNodesConfig.get("STRGE");
+//						for (int i = 0; i < storages.keySet().size(); i++) {
+//							JsonObject strge = HelperUnnestingJSON.unnestJsonObj(i, storages);
+//							try {
+//								NodeId primarySectId = NodeId.parse((String) strge.get("PrimSect"));
+//								NodeId effInId = NodeId.parse((String) strge.get("EffPrim"));
+//								NodeId effOutId = NodeId.parse((String) strge.get("DisEffPrim"));
+//								NodeId maxChargingId = NodeId.parse((String) strge.get("MaxPowerIn"));
+//								NodeId maxDischargingId = NodeId.parse((String) strge.get("MaxPower"));
+//								NodeId capacityId = NodeId.parse((String) strge.get("Capacity"));
+//								NodeId stateOfChargeId = NodeId.parse((String) strge.get("curSOC"));
+//								NodeId calculatedSocId = NodeId.parse((String) strge.get("calcSOC"));  // Only available in CoSES
+////								NodeId calculatedSocId = null;
+//								NodeId storageLossId = NodeId.parse((String) strge.get("StorLossPD"));
+//								NodeId opCostId = NodeId.parse((String) strge.get("PrimEnCost"));
+//								NodeId costCO2Id = NodeId.parse((String) strge.get("CO2PerKWh"));
+//								NodeId inputSetpointId = NodeId.parse((String) strge.get("SPCharge"));
+//								NodeId inputSetpointsId = NodeId.parse((String) strge.get("SPChargeAr"));
+////								NodeId inputSetpointsId = null;
+//								NodeId outputSetpointId = NodeId.parse((String) strge.get("SPDisChrg"));
+//								NodeId outputSetpointsId = NodeId.parse((String) strge.get("SPDisChrgAr"));
+////								NodeId outputSetpointsId = null;
+//	
+//								String storageName = EMSkey + "_STRGE" + String.format("%02d",  i+1);
+//								ClientStorage cs = new ClientStorage(client, storageName, capacityId, stateOfChargeId, calculatedSocId,
+//										maxChargingId, maxDischargingId, effInId, effOutId, storageLossId, primarySectId,
+//										opCostId, costCO2Id, inputSetpointsId, outputSetpointsId, inputSetpointId, outputSetpointId, 0);
+//								attach(cs);
+//								cs.setTopologyController(topologyController);
+//								System.out.println("Storgae (" + (i+1) + "/" + storages.keySet().size() + ") added to " + EMSkey);
+//							} catch (Exception e) {
+//								System.err.println("WARNING: Could not add storage " + i + " to " + EMSkey
+//										+ ".\nPlease check " + strge.toString());
+//							}
+//						}
+//						break;
 					}
 				}
 			}
