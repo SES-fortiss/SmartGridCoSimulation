@@ -47,4 +47,10 @@ public interface BuildingController {
 	 */
 	public void attach(Device device);
 	
+	/**
+	 * Try to make sure to use unique names for buildings.
+	 * 
+	 * @return name of the building
+	 */
+	public double[] getElecBuyLimit();
 }

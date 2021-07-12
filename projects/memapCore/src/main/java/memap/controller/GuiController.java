@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,6 +33,7 @@ import memap.helper.configurationOptions.OptHierarchy;
 import memap.helper.configurationOptions.OptimizationCriteria;
 import memap.helper.configurationOptions.Optimizer;
 import memap.helper.configurationOptions.ToolUsage;
+import memap.main.Simulation;
 import memap.main.SimulationProgress;
 import memap.main.Status;
 import memap.main.TopologyConfig;
@@ -204,10 +206,14 @@ public class GuiController {
 			JsonObject jObject = (JsonObject) jsonElement;
 
 			// Creating the building
-			BuildingController building;
+			CSVBuildingController building;
 			
 			try {
 				building = new CSVBuildingController(jObject.get("formattedName").getAsString());
+				double[] elecBuyLimit = new double[Simulation.N_STEPS_MPC];
+				Arrays.fill(elecBuyLimit,jObject.get("max_buy_limit").getAsInt());
+				building.setElecBuylimit(elecBuyLimit);
+				System.out.println("Value set to CSV BuildingController");
 			} catch (Exception e) {
 				building = new CSVBuildingController(jObject.get("name").getAsString());
 			}

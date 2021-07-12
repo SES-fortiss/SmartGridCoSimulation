@@ -1,5 +1,7 @@
 package memap.components.prototypes;
 
+import java.util.Arrays;
+
 import com.google.gson.Gson;
 
 import akka.basicMessages.AnswerContent;
@@ -36,6 +38,7 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 	private BuildingMessageHandler buildingMessageHandler = new BuildingMessageHandler();
 
 	// some long term values
+	double[] networkBuyCapFC;
 	double[] totalEURVector;
 	double[] totalCO2Vector;
 	double[][] solutionPerTimeStep;
@@ -60,6 +63,8 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 		nStepsMPC = topologyConfig.getNrStepsMPC();
 		lpSolHandler = new SolutionHandler(nStepsMPC, topologyConfig);
 		milpSolHandler = new SolutionHandler(nStepsMPC, topologyConfig);
+		networkBuyCapFC = new double[nStepsMPC];
+  
 	}
 
 	@Override
@@ -68,6 +73,7 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 		buildingMessage = new BuildingMessage();
 		buildingMessage.id = this.fullActorPath;
 		buildingMessage.name = this.actorName;
+		buildingMessage.varNetworkBuyCap = this.networkBuyCapFC;
 
 		this.actor.getContext().getChildren().forEach(child -> buildingMessage.childrenList
 				.add(new ChildSpecification(this.fullActorPath + "/" + child.path().name())));
@@ -176,4 +182,11 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 		this.currentTimeStep = currentTimeStep;
 	}
 
+	public double[] getElecBuylimit() {
+		return this.networkBuyCapFC;
+	}
+
+	public void setElecBuylimit(double[] max_buy_limit) {
+		this.networkBuyCapFC = max_buy_limit;
+	}
 }

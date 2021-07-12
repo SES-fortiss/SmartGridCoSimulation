@@ -60,6 +60,7 @@ public abstract class MILPHelper {
 			String string2 = storageMessage.name+"Charge_T" + i;
 			problem.setColName(index, string1);
 			problem.setColName(index + nStepsMPC, string2);
+			System.out.println("StorageDischarge at index " + index);
 		}		
 	}
 
@@ -73,6 +74,7 @@ public abstract class MILPHelper {
 			String string2 = "ElecSell_T" + i;
 			problem.setColName(index, string1);
 			problem.setColName(index + nStepsMPC, string2);
+			System.out.println("ElecBuy at index " + index);
 		}
 	}
 

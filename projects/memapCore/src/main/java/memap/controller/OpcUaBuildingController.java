@@ -62,6 +62,7 @@ public class OpcUaBuildingController implements BuildingController {
 	protected Gson gson = new Gson();
 
 	public String name;
+	public double[] elecBuylimit;
 	private String endpointURL;
 	private int endpointDescriptor;
 	private Set<Device> devices = new HashSet<Device>();
@@ -438,5 +439,10 @@ public class OpcUaBuildingController implements BuildingController {
 
 	private static String getNextId() {
 		return Integer.toString(nextId.incrementAndGet());
+	}
+
+	@Override
+	public double[] getElecBuyLimit() {
+		return this.elecBuylimit;
 	}
 }

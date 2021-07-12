@@ -15,6 +15,7 @@ public class DemandMessage implements AnswerContent {
 	
 	public double[] varNetworkBuyCostEUR;
 	public double[] varNetworkSellCostEUR;
+	public double[] varNetworkBuyCap; // Maximum to buy from the grid per timestep
 	// only needed in a perspective CO2-optimization in dependence on the RES share in the grid:
 	public double[] varNetworkCostCO2;
 

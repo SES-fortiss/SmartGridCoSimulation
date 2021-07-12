@@ -178,6 +178,8 @@ public class BuildingMessageHandler {
 			if (demand.networkType == NetworkType.ELECTRICITY) {
 				cmv.name = "ELECTRICITYDemand";
 				cmv.id = fullActorPath + "/ELECTRICITYDemand";
+				
+				demand.varNetworkBuyCap = bmIn.varNetworkBuyCap;
 			}
 			cmv.networkType = demand.networkType;
 			cmv.powerInjection = demand.getDemandVector()[0];
