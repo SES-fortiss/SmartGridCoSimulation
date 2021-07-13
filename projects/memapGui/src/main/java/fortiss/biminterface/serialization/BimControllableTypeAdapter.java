@@ -30,8 +30,8 @@ public class BimControllableTypeAdapter implements JsonDeserializer<Controllable
 		String buildingNameRaw = others.get("ebene").getAsString();
 		String buildingName = buildingNameRaw.replace("Ebene: ", "").replaceAll("-", "").replaceAll("_", "").replaceAll("\\.", "");
 		String networkType = (others.get("network type_wärme").getAsInt() == 1) ? "Heat" : "Electricity";
-		double minimumPower = others.get("minimum power").getAsDouble();
-		double maximumPower = others.get("maximum power").getAsDouble();
+		double minimumPower = others.get("minimum power").getAsDouble() / 1000;
+		double maximumPower = others.get("maximum power").getAsDouble() / 1000;
 		double efficiency = others.get("primary network efficiency").getAsDouble();
 		double cost = others.get("cost").getAsDouble();
 		double coEmission = others.get("co2 emissions").getAsDouble();

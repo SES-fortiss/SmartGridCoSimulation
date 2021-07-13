@@ -30,11 +30,11 @@ public class BimStorageTypeAdapter implements JsonDeserializer<Storage> {
 		String buildingNameRaw = others.get("ebene").getAsString();
 		String buildingName = buildingNameRaw.replace("Ebene: ", "").replaceAll("-", "").replaceAll("_", "").replaceAll("\\.", "");
 		String networkType = (others.get("network type_wärme").getAsInt() == 1) ? "Heat" : "Electricity";
-		double capacity = others.get("installed capacity").getAsDouble();
-		double soc = others.get("state of charge").getAsDouble();
+		double capacity = others.get("installed capacity").getAsDouble() / 1000;
+		double soc = others.get("state of charge").getAsDouble() / 100;
 		double losses = 0.01;
-		double maxCharging = others.get("max. charge rate").getAsDouble();
-		double maxDischarging = others.get("max. discharge rate").getAsDouble();
+		double maxCharging = others.get("max. charge rate").getAsDouble() / 1000;
+		double maxDischarging = others.get("max. discharge rate").getAsDouble() / 1000;
 		double effIN = others.get("charge efficiency").getAsDouble();
 		double effOUT = others.get("discharge efficiency").getAsDouble();
 

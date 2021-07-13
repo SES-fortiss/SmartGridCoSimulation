@@ -66,7 +66,7 @@ public class ActionPanel extends JPanel {
 		// Add load button
 		JLabel lblConfigureBIMSession = new JLabel("");
 		lblConfigureBIMSession.setBorder(new EmptyBorder(3, 3, 3, 3));
-		lblConfigureBIMSession.setIcon(IconStore.open);
+		lblConfigureBIMSession.setIcon(IconStore.smallBimLogo);
 		lblConfigureBIMSession.setToolTipText("Load from BIM Server");
 		lblConfigureBIMSession.addMouseListener(new ButtonListener(new ConfigureBIMSession()));
 		lblConfigureBIMSession.addMouseListener(new HoverMouseListener());
