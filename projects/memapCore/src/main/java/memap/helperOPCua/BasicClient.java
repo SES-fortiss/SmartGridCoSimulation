@@ -3,6 +3,8 @@ package memap.helperOPCua;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -37,7 +39,8 @@ public class BasicClient {
 				    .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri())).findFirst()
 				    .orElseThrow(() -> new Exception("no desired endpoints returned"));
 	  
-//			endpoint = updateEndpointUrl(endpoint, "desktop-bg2n0te:48040");
+//			System.out.println("Endpoint = " + endpoint);
+			endpoint = updateEndpointUrl(endpoint, "10.10.10.52");
 		    
 			cfg.setApplicationName(LocalizedText.english("MEMAP Test Client"));
 			cfg.setApplicationUri("urn:eclipse:memap:client");
@@ -45,18 +48,31 @@ public class BasicClient {
 	//		cfg.setCertificateValidator(certificateValidator);
 	//		cfg.setCertificate(loader.getClientCertificate());
 	//		cfg.setKeyPair(loader.getClientKeyPair());
-			cfg.setIdentityProvider(new UsernameProvider("OPCUA", "OPCUA"));
+			cfg.setIdentityProvider(new UsernameProvider("MEMAP", "memap"));
 			cfg.setRequestTimeout(uint(5000)).build();
 	
 			this.client = new OpcUaClient(cfg.build());
-
+			
 	        client.connect().get();
 	        
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        e.getMessage();
 	        e.getCause();
+	        e.getLocalizedMessage();
 	    }
+	}
+	
+	private static EndpointDescription updateEndpointUrl(EndpointDescription original, String hostname)
+		    throws URISyntaxException {
+
+		URI uri = new URI(original.getEndpointUrl()).parseServerAuthority();
+
+		String endpointUrl = String.format("%s://%s:%s%s", uri.getScheme(), hostname, uri.getPort(), uri.getPath());
+
+		return new EndpointDescription(endpointUrl, original.getServer(), original.getServerCertificate(),
+			original.getSecurityMode(), original.getSecurityPolicyUri(), original.getUserIdentityTokens(),
+			original.getTransportProfileUri(), original.getSecurityLevel());
 	}
 	
 	public DataValue readValue(int maxAge, TimestampsToReturn timestampstoreturn, NodeId nodeId)

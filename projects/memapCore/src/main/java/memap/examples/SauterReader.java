@@ -63,7 +63,7 @@ public class SauterReader implements MemapClient{
         // reads any DataTypeDictionary nodes present in the server upon
         // connecting and dynamically generates codecs for custom structures.
         //Object value = xo.decode(client.getDataTypeManager());
-        try (FileWriter file = new FileWriter("C:/Users/apsara.murali-simha/Desktop/Sauter.json"))
+        try (FileWriter file = new FileWriter("Sauter.json"))
         		{
         	file.write("Datenpunkte von Wärmemengenzählern:\n");
         	file.write("End point URL:"+ getEndpointUrl()+"\n");
