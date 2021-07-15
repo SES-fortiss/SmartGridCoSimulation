@@ -16,6 +16,7 @@ import fortiss.gui.listeners.action.HoverMouseListener;
 import fortiss.gui.listeners.button.DBrowseListener;
 import fortiss.gui.listeners.button.DPlotListener;
 import fortiss.gui.listeners.button.DReloadListener;
+import fortiss.gui.listeners.textfield.ComponentFieldListener;
 import fortiss.gui.listeners.textfield.DConsumptionListener;
 import fortiss.gui.listeners.textfield.DNameListener;
 import fortiss.gui.style.Colors;
@@ -90,8 +91,9 @@ public class DemandInputPanel extends InformationPanel {
 
 		txtDName = new JTextField();
 		txtDName.setName("txtDName");
-		txtDName.addKeyListener(new DNameListener());
-		txtDName.addFocusListener(new DNameListener());
+		ComponentFieldListener nameListener = new DNameListener();
+		txtDName.addKeyListener(nameListener);
+		txtDName.addFocusListener(nameListener);
 		txtDName.setColumns(10);
 		add(txtDName, "spanx 4, growx");
 
@@ -99,8 +101,9 @@ public class DemandInputPanel extends InformationPanel {
 		add(lbDConsumption);
 
 		txtDConsumption = new JTextField();
-		txtDConsumption.addKeyListener(new DConsumptionListener());
-		txtDConsumption.addFocusListener(new DConsumptionListener());
+		ComponentFieldListener consumptionFileListener = new DConsumptionListener();
+		txtDConsumption.addKeyListener(consumptionFileListener);
+		txtDConsumption.addFocusListener(consumptionFileListener);
 		txtDConsumption.setColumns(10);
 		add(txtDConsumption, "wmin 200, growx");
 

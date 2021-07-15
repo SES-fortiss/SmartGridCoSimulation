@@ -38,6 +38,8 @@ public class DesignerPanel extends JPanel {
 	public static BuildingInputPanel pl_ems_detail; // Split 1: panel for EMS details
 	public static JPanel pl_comp_detail; // Split 2: panel for components details
 	public static InitialPanel initialPanel;
+	public static RemoteConnectionPanel remoteConnectionPanel;
+	public static RemoteConnectionPanel2 remoteConnectionPanel2;
 	public static DemandInputPanel demandPanel; // Panel demand components
 	public static StorageInputPanel storagePanel; // Panel storage components
 	public static VolatileInputPanel volatilePanel; // Panel volatilePanel components
@@ -91,7 +93,7 @@ public class DesignerPanel extends JPanel {
 		parameterPanel = new ParameterInputPanel();
 		pl_comp_detail.add(parameterPanel, "parameter");
 		informationPanels.put("parameter", parameterPanel);
-		
+
 		// Add prices panel
 		pricesPanel = new PricesPanel();
 		pl_comp_detail.add(pricesPanel, "prices");
@@ -101,6 +103,16 @@ public class DesignerPanel extends JPanel {
 		initialPanel = new InitialPanel();
 		pl_comp_detail.add(initialPanel, "initial");
 		informationPanels.put("initial", initialPanel);
+
+		// Add panel for remote connection (BIM server)
+		remoteConnectionPanel = new RemoteConnectionPanel();
+		pl_comp_detail.add(remoteConnectionPanel, "remoteConnection");
+		informationPanels.put("remoteConnection", remoteConnectionPanel);
+
+		// Add panel for remote connection information (BIM server)
+		remoteConnectionPanel2 = new RemoteConnectionPanel2();
+		pl_comp_detail.add(remoteConnectionPanel2, "remoteConnection2");
+		informationPanels.put("remoteConnection2", remoteConnectionPanel2);
 
 		// Add panel for buildings
 		pl_comp_detail.add(pl_ems_detail, "building");

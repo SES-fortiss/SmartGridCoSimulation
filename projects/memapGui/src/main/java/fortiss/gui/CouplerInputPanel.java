@@ -18,6 +18,7 @@ import fortiss.gui.listeners.textfield.CEfficiencySecondaryListener;
 import fortiss.gui.listeners.textfield.CMaxPowerListener;
 import fortiss.gui.listeners.textfield.CMinPowerListener;
 import fortiss.gui.listeners.textfield.CNameListener;
+import fortiss.gui.listeners.textfield.ComponentFieldListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
@@ -112,8 +113,9 @@ public class CouplerInputPanel extends InformationPanel{
 		add(lbCName);
 
 		txtCName = new JTextField();
-		txtCName.addKeyListener(new CNameListener());
-		txtCName.addFocusListener(new CNameListener());
+		ComponentFieldListener cNameListener = new CNameListener();
+		txtCName.addKeyListener(cNameListener);
+		txtCName.addFocusListener(cNameListener);
 		add(txtCName, "growx");
 		txtCName.setColumns(10);
 
@@ -124,8 +126,9 @@ public class CouplerInputPanel extends InformationPanel{
 		sCPrimaryNetworkType.setFocusable(false);
 		sCPrimaryNetworkType.setFocusTraversalKeysEnabled(false);
 		sCPrimaryNetworkType.setModel(new DefaultComboBoxModel<String>(new String[] { "Heat", "Electricity" }));
-		sCPrimaryNetworkType.addItemListener(new CNewtworkTypePListener());
-		sCPrimaryNetworkType.addMouseListener(new CNewtworkTypePListener());
+		CNewtworkTypePListener networkTypePListener = new CNewtworkTypePListener();
+		sCPrimaryNetworkType.addItemListener(networkTypePListener);
+		sCPrimaryNetworkType.addMouseListener(networkTypePListener);
 		add(sCPrimaryNetworkType, "growx");
 
 		lbCSecondaryNetworkType = new JLabel("Secondary network");
@@ -140,8 +143,9 @@ public class CouplerInputPanel extends InformationPanel{
 		add(lbCMinimumPower);
 		
 		txtCMinimumPower = new JTextField();
-		txtCMinimumPower.addKeyListener(new CMinPowerListener());
-		txtCMinimumPower.addFocusListener(new CMinPowerListener());
+		ComponentFieldListener minPowerListener = new CMinPowerListener();
+		txtCMinimumPower.addKeyListener(minPowerListener);
+		txtCMinimumPower.addFocusListener(minPowerListener);
 		txtCMinimumPower.setColumns(10);
 		add(txtCMinimumPower, "growx");
 
@@ -149,8 +153,9 @@ public class CouplerInputPanel extends InformationPanel{
 		add(lbCMaximumPower);
 
 		txtCMaximumPower = new JTextField();
-		txtCMaximumPower.addKeyListener(new CMaxPowerListener());
-		txtCMaximumPower.addFocusListener(new CMaxPowerListener());
+		ComponentFieldListener maxPowerListener = new CMaxPowerListener();
+		txtCMaximumPower.addKeyListener(maxPowerListener);
+		txtCMaximumPower.addFocusListener(maxPowerListener);
 		txtCMaximumPower.setColumns(10);
 		add(txtCMaximumPower, "growx");
 
@@ -158,8 +163,9 @@ public class CouplerInputPanel extends InformationPanel{
 		add(lbCPrimaryNetworkEfficiency);
 
 		txtCEfficiencyPrimary = new JTextField();
-		txtCEfficiencyPrimary.addKeyListener(new CEfficiencyPrimaryListener());
-		txtCEfficiencyPrimary.addFocusListener(new CEfficiencyPrimaryListener());
+		ComponentFieldListener efficiencyListenerP = new CEfficiencyPrimaryListener();
+		txtCEfficiencyPrimary.addKeyListener(efficiencyListenerP);
+		txtCEfficiencyPrimary.addFocusListener(efficiencyListenerP);
 		txtCEfficiencyPrimary.setColumns(10);
 		add(txtCEfficiencyPrimary, "growx");
 
@@ -167,8 +173,9 @@ public class CouplerInputPanel extends InformationPanel{
 		add(lbCSecondaryNetworkEfficiency);
 
 		txtCEfficiencySecondary = new JTextField();
-		txtCEfficiencySecondary.addKeyListener(new CEfficiencySecondaryListener());
-		txtCEfficiencySecondary.addFocusListener(new CEfficiencySecondaryListener());
+		ComponentFieldListener efficiencyListenerS = new CEfficiencySecondaryListener();
+		txtCEfficiencySecondary.addKeyListener(efficiencyListenerS);
+		txtCEfficiencySecondary.addFocusListener(efficiencyListenerS);
 		txtCEfficiencySecondary.setColumns(10);
 		add(txtCEfficiencySecondary, "growx");
 
@@ -176,8 +183,9 @@ public class CouplerInputPanel extends InformationPanel{
 		add(lbCCost);
 
 		txtCCost = new JTextField();
-		txtCCost.addKeyListener(new CCostListener());
-		txtCCost.addFocusListener(new CCostListener());
+		ComponentFieldListener costListener = new CCostListener();
+		txtCCost.addKeyListener(costListener);
+		txtCCost.addFocusListener(costListener);
 		txtCCost.setColumns(10);
 		add(txtCCost, "growx");
 
@@ -185,8 +193,9 @@ public class CouplerInputPanel extends InformationPanel{
 		add(lbCCOEmission);
 
 		txtCCOEmission = new JTextField();
-		txtCCOEmission.addKeyListener(new CCOEmissionListener());
-		txtCCOEmission.addFocusListener(new CCOEmissionListener());
+		ComponentFieldListener emissionsListener = new CCOEmissionListener();
+		txtCCOEmission.addKeyListener(emissionsListener);
+		txtCCOEmission.addFocusListener(emissionsListener);
 		txtCCOEmission.setColumns(10);
 		add(txtCCOEmission, "growx");
 	}

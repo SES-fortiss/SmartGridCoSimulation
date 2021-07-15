@@ -1,20 +1,21 @@
 package fortiss.gui.listeners.textfield;
 
 import fortiss.components.Controllable;
+import fortiss.gui.listeners.helper.NumberVerifier;
 
-public class CPMinPowerListener extends NumberListener{
+public class CPMinPowerListener extends ComponentFieldListener{
 
 	public CPMinPowerListener() {
-		super(false, true, 10);
+		super("Invalid number!", new NumberVerifier().withDecimalAllowed().withMaxLength(10));
 	}
 
 	@Override
-	void update(String text) {
+	public void update(String text) {
 		((Controllable) component).setMinimumPower(Double.parseDouble(text));
 	}
 
 	@Override
-	String getAttribute() {
+	public String getAttribute() {
 		double power = ((Controllable) component).getMinimumPower();
 		return String.valueOf(power);
 	}

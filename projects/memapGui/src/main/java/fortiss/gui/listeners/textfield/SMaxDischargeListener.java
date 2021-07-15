@@ -1,20 +1,21 @@
 package fortiss.gui.listeners.textfield;
 
 import fortiss.components.Storage;
+import fortiss.gui.listeners.helper.NumberVerifier;
 
-public class SMaxDischargeListener extends NumberListener{
+public class SMaxDischargeListener extends ComponentFieldListener{
 
 	public SMaxDischargeListener() {
-		super(false, true, 10);
+		super("Invalid number!", new NumberVerifier().withDecimalAllowed().withMaxLength(10));
 	}
 
 	@Override
-	void update(String text) {
+	public void update(String text) {
 		((Storage) component).setMaxDischarging(Double.parseDouble(text));
 	}
 
 	@Override
-	String getAttribute() {
+	public String getAttribute() {
 		double charge = ((Storage) component).getMaxDischarging();
 		return String.valueOf(charge);
 	}

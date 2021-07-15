@@ -1,21 +1,22 @@
 package fortiss.gui.listeners.textfield;
 
 import fortiss.components.Volatile;
+import fortiss.gui.listeners.helper.NumberVerifier;
 
-public class VCostListener extends NumberListener {
+public class VCostListener extends ComponentFieldListener {
 
 	public VCostListener() {
-		super(true, true, 10);
+		super("Invalid number!", new NumberVerifier().withNegativeAllowed().withDecimalAllowed().withMaxLength(10));
 	}
 
 	@Override
-	String getAttribute() {
+	public String getAttribute() {
 		double cost = ((Volatile) component).getCost();
 		return String.valueOf(cost);
 	}
 
 	@Override
-	void update(String text) {
-		((Volatile) component).setCost(Double.parseDouble(text));		
+	public void update(String text) {
+		((Volatile) component).setCost(Double.parseDouble(text));
 	}
 }

@@ -11,10 +11,11 @@ import javax.swing.border.TitledBorder;
 
 import fortiss.components.Storage;
 import fortiss.gui.listeners.selectionitem.SNetworkTypeListener;
+import fortiss.gui.listeners.textfield.ComponentFieldListener;
 import fortiss.gui.listeners.textfield.SCapacityListener;
 import fortiss.gui.listeners.textfield.SEffINListener;
 import fortiss.gui.listeners.textfield.SEffOUTListener;
-import fortiss.gui.listeners.textfield.SLooses;
+import fortiss.gui.listeners.textfield.SLossesListener;
 import fortiss.gui.listeners.textfield.SMaxChargeListener;
 import fortiss.gui.listeners.textfield.SMaxDischargeListener;
 import fortiss.gui.listeners.textfield.SNameListener;
@@ -113,8 +114,9 @@ public class StorageInputPanel extends InformationPanel {
 
 		txtSName = new JTextField();
 		txtSName.setName("txtSName"); // Required in Modify
-		txtSName.addKeyListener(new SNameListener());
-		txtSName.addFocusListener(new SNameListener());
+		ComponentFieldListener nameListener = new SNameListener();
+		txtSName.addKeyListener(nameListener);
+		txtSName.addFocusListener(nameListener);
 		txtSName.setColumns(10);
 		add(txtSName, "growx");
 
@@ -126,24 +128,27 @@ public class StorageInputPanel extends InformationPanel {
 		sSNetworkType.setFocusTraversalKeysEnabled(false);
 		sSNetworkType.setFocusable(false);
 		sSNetworkType.setModel(new DefaultComboBoxModel<String>(new String[] { "Heat", "Electricity" }));
-		sSNetworkType.addItemListener(new SNetworkTypeListener());
-		sSNetworkType.addMouseListener(new SNetworkTypeListener());
+		SNetworkTypeListener networkTypeListener = new SNetworkTypeListener();
+		sSNetworkType.addItemListener(networkTypeListener);
+		sSNetworkType.addMouseListener(networkTypeListener);
 		add(sSNetworkType, "growx");
 
 		lbSCapacity = new JLabel("Installed capacity [kWh]");
 		add(lbSCapacity);
 
 		txtSCapacity = new JTextField();
-		txtSCapacity.addKeyListener(new SCapacityListener());
-		txtSCapacity.addFocusListener(new SCapacityListener());
+		ComponentFieldListener capacityListener = new SCapacityListener();
+		txtSCapacity.addKeyListener(capacityListener);
+		txtSCapacity.addFocusListener(capacityListener);
 		add(txtSCapacity, "growx");
 		
 		lbSStateOfCharge = new JLabel("State of charge [%] (0..1)");
 		add(lbSStateOfCharge);
 		
 		txtSStateOfCharge = new JTextField();
-		txtSStateOfCharge.addKeyListener(new SStateOfChargeListener());
-		txtSStateOfCharge.addFocusListener(new SStateOfChargeListener());
+		ComponentFieldListener stateOfChargeListener = new SStateOfChargeListener();
+		txtSStateOfCharge.addKeyListener(stateOfChargeListener);
+		txtSStateOfCharge.addFocusListener(stateOfChargeListener);
 		txtSStateOfCharge.setColumns(10);
 		add(txtSStateOfCharge, "growx");
 		
@@ -151,8 +156,9 @@ public class StorageInputPanel extends InformationPanel {
 		add(lbSLosses);
 		
 		txtSLooses = new JTextField();
-		txtSLooses.addKeyListener(new SLooses());
-		txtSLooses.addFocusListener(new SLooses());
+		ComponentFieldListener lossesListener = new SLossesListener();
+		txtSLooses.addKeyListener(lossesListener);
+		txtSLooses.addFocusListener(lossesListener);
 		txtSLooses.setColumns(10);
 		add(txtSLooses, "growx");
 		
@@ -160,8 +166,9 @@ public class StorageInputPanel extends InformationPanel {
 		add(lbMaxCharge);
 
 		txtSMaxCharge = new JTextField();
-		txtSMaxCharge.addKeyListener(new SMaxChargeListener());
-		txtSMaxCharge.addFocusListener(new SMaxChargeListener());
+		ComponentFieldListener maxChargeListener = new SMaxChargeListener();
+		txtSMaxCharge.addKeyListener(maxChargeListener);
+		txtSMaxCharge.addFocusListener(maxChargeListener);
 		txtSMaxCharge.setColumns(10);
 		add(txtSMaxCharge, "growx");
 	
@@ -169,8 +176,9 @@ public class StorageInputPanel extends InformationPanel {
 		add(lbSMaxDRate);
 
 		txtSMaxDischarge = new JTextField();
-		txtSMaxDischarge.addKeyListener(new SMaxDischargeListener());
-		txtSMaxDischarge.addFocusListener(new SMaxDischargeListener());
+		ComponentFieldListener maxDischargeListener = new SMaxDischargeListener();
+		txtSMaxDischarge.addKeyListener(maxDischargeListener);
+		txtSMaxDischarge.addFocusListener(maxDischargeListener);
 		txtSMaxDischarge.setColumns(10);
 		add(txtSMaxDischarge, "growx");
 
@@ -178,8 +186,9 @@ public class StorageInputPanel extends InformationPanel {
 		add(lbSChargeE);
 
 		txtSEffIN = new JTextField();
-		txtSEffIN.addKeyListener(new SEffINListener());
-		txtSEffIN.addFocusListener(new SEffINListener());
+		ComponentFieldListener efficiencyInListener = new SEffINListener();
+		txtSEffIN.addKeyListener(efficiencyInListener);
+		txtSEffIN.addFocusListener(efficiencyInListener);
 		txtSEffIN.setColumns(10);
 		add(txtSEffIN, "growx");
 
@@ -187,8 +196,9 @@ public class StorageInputPanel extends InformationPanel {
 		add(lbSDischargeE);
 
 		txtSEffOUT = new JTextField();
-		txtSEffOUT.addKeyListener(new SEffOUTListener());
-		txtSEffOUT.addFocusListener(new SEffOUTListener());
+		ComponentFieldListener efficiencyOutListener = new SEffOUTListener();
+		txtSEffOUT.addKeyListener(efficiencyOutListener);
+		txtSEffOUT.addFocusListener(efficiencyOutListener);
 		txtSEffOUT.setColumns(10);
 		add(txtSEffOUT, "growx");
 	}
