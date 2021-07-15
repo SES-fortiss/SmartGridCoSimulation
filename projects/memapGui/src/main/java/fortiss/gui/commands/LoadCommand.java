@@ -13,6 +13,8 @@ public class LoadCommand implements Command {
 		Chooser chooser = new Chooser(FileType.JSON);
 		File file = chooser.showOpenDialog();
 		if (file != null) {
+			// Reset simulation
+			new ResetCommand().execute();
 			new ModelInitHelper().loadFromFile(file.getAbsolutePath());
 		}
 	}

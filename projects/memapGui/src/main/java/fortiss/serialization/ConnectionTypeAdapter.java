@@ -15,7 +15,6 @@ import com.google.gson.JsonSerializer;
 import fortiss.components.Connection;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.icons.BuildingIcon;
-import fortiss.simulation.helper.ConnectionManager;
 
 public class ConnectionTypeAdapter implements JsonSerializer<Connection>, JsonDeserializer<Connection> {
 
@@ -31,9 +30,6 @@ public class ConnectionTypeAdapter implements JsonSerializer<Connection>, JsonDe
 
 		Gson gson = gsonBuilder.enableComplexMapKeySerialization().excludeFieldsWithoutExposeAnnotation().create();
 		Connection connection = gson.fromJson(json, Connection.class);
-
-		ConnectionManager cm = ConnectionManager.getInstance();
-		cm.getLines().add(connection.getLn());
 
 		BuildingIcon nodeA = DesignerPanel.buildings.get(nameNodeA).getIcon();
 		BuildingIcon nodeB = DesignerPanel.buildings.get(nameNodeB).getIcon();

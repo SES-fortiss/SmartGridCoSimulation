@@ -20,8 +20,6 @@ public class ConnectionManager {
 
 	/** Total number of connections in the topology */
 	private int connectionNumber = 0;
-	/** List of lines in the topology */
-	private ArrayList<Line2D> lines = new ArrayList<Line2D>();
 	/** List of connections in the topology */
 	@Expose
 	private ArrayList<Connection> connectionList = new ArrayList<Connection>();
@@ -43,8 +41,6 @@ public class ConnectionManager {
 		if (!isConnection(nodeA, nodeB)) {
 			Connection c = new Connection(nodeA, nodeB);
 			getConnectionList().add(c);
-			getLines().add(c.getLn());
-			System.out.println("addConnection - Manager");
 			setConnectionNumber(getConnectionNumber() + 1);
 		}
 	}
@@ -54,8 +50,8 @@ public class ConnectionManager {
 	 * 
 	 * @param nodeA
 	 * @param nodeB
-	 * @return <code>true</code> if a connection between nodeA and nodeB exist,
-	 *         and <code>false</code> otherwise
+	 * @return <code>true</code> if a connection between nodeA and nodeB exist, and
+	 *         <code>false</code> otherwise
 	 */
 	private boolean isConnection(JLabel nodeA, JLabel nodeB) {
 		boolean connectionExist = false;
@@ -85,7 +81,6 @@ public class ConnectionManager {
 			}
 		}
 		getConnectionList().removeAll(rm);
-		getLines().removeAll(rm2);
 	}
 
 	/**
@@ -97,7 +92,6 @@ public class ConnectionManager {
 	 */
 	public void removeConnection(Connection connection) {
 		if (getConnectionList().contains(connection)) {
-			getLines().remove(connection.getLn());
 			getConnectionList().remove(connection);
 			setConnectionNumber(getConnectionNumber() - 1);
 			DesignerPanel.pl_ems.repaint();
@@ -112,7 +106,6 @@ public class ConnectionManager {
 	 */
 	public void resetConnections() {
 		getConnectionList().clear();
-		getLines().clear();
 		setConnectionNumber(0);
 	}
 
@@ -121,12 +114,10 @@ public class ConnectionManager {
 	 * {@link ConnectionManager#connectionList}
 	 */
 	public void updateLines() {
-		ArrayList<Line2D> newLines = new ArrayList<Line2D>();
 		for (Connection c : getConnectionList()) {
 			c.updateLine();
-			newLines.add(c.getLn());
 		}
-		setLines(newLines);
+		DesignerPanel.pl_ems.repaint();
 	}
 
 	/**
@@ -159,22 +150,6 @@ public class ConnectionManager {
 	}
 
 	/**
-	 * @return the lines between buildings
-	 */
-	public ArrayList<Line2D> getLines() {
-		return lines;
-	}
-
-	/**
-	 * {@link #lines} is not to be modified from outside the class. This parameter
-	 * is automatically updated when a new connection is added and when the list of
-	 * connections is set.
-	 */
-	private void setLines(ArrayList<Line2D> lines) {
-		this.lines = lines;
-	}
-
-	/**
 	 * @return the list of connections between buildings
 	 */
 	public ArrayList<Connection> getConnectionList() {
@@ -189,8 +164,7 @@ public class ConnectionManager {
 		this.connectionList = connectionList;
 		this.connectionNumber = connectionList.size();
 	}
-	
-	
+
 	public ArrayList<Connection> getConnectionsOf(String buildingName) {
 		ArrayList<Connection> connections = new ArrayList<Connection>();
 		for (Connection c : getConnectionList()) {
@@ -200,7 +174,7 @@ public class ConnectionManager {
 		}
 		return connections;
 	}
-	
+
 	/**
 	 * Update the name of a building
 	 * 
@@ -208,7 +182,7 @@ public class ConnectionManager {
 	 */
 	public void updateBuildingsName(String oldName) {
 		for (Connection c : getConnectionsOf(oldName)) {
-				c.updateBuildingsName();
+			c.updateBuildingsName();
 		}
 	}
 

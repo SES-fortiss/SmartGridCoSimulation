@@ -1,22 +1,21 @@
 package fortiss.simulation.helper;
 
+import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.geom.Point2D;
 
 import javax.swing.JLabel;
 
 import fortiss.components.Building;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.icons.BuildingIcon;
-import fortiss.media.IconStore;
+import fortiss.gui.icons.Icon;
 
 /**
- * Manages the centerPositions of building icons.
+ * Manages the positions of building icons.
  */
 public class PositionManager {
 
 	private static PositionManager pm = new PositionManager();
-	private ConnectionManager cm = ConnectionManager.getInstance();
 
 	/**
 	 * @return PositionManager instance
@@ -24,52 +23,6 @@ public class PositionManager {
 	public static PositionManager getInstance() {
 		return pm;
 	}
-
-	/**
-	 * Updates positions of a building label. Calls
-	 * {@link fortiss.simulation.helper.ConnectionManager#updateLines()}
-	 * 
-	 * @param buildingName the name of a building
-	 * @param icon         a building icon
-	 */
-	public void updateCenterPositionOf(BuildingIcon icon) {
-		icon.setPosition(getCentralPoint(icon));
-		cm.updateLines();
-		DesignerPanel.pl_ems.repaint();
-	}
-
-	/**
-	 * Returns the central point of an icon.
-	 * 
-	 * @param icon a building icon
-	 */
-	public Point2D getCentralPoint(JLabel icon) {
-		Point2D p = new Point2D.Float(icon.getX() + IconStore.sBuilding.getIconWidth() / 2, icon.getY() + IconStore.sBuilding.getIconHeight() / 2);
-		return p;
-	}
-
-	/**
-	 * Returns the upper left point of an icon. Intended for the deserialization
-	 * process
-	 * 
-	 * @param icon         a building icon
-	 * @param centralPoint the central point where the icon is to be located.
-	 */
-	public Point2D getUpperLeftPoint(Point2D centralPoint) {
-		Point2D p = new Point2D.Float((int) centralPoint.getX() - IconStore.sBuilding.getIconWidth() / 2,
-				(int) centralPoint.getY() - IconStore.sBuilding.getIconHeight() / 2);
-		return p;
-	}
-
-	/**
-	 * Returns the position of a building.
-	 * 
-	 * @param buildingName the name of a building
-	 */
-	/*
-	 * public Point2D getPositionOf(String buildingName) { return
-	 * getCenterPositions().get(buildingName); }
-	 */
 
 	/**
 	 * Corrects the position of a building icon that has been dragged out of the
@@ -80,21 +33,22 @@ public class PositionManager {
 		int x = icon.getX();
 		int y = icon.getY();
 		
-		if (x < getVisibleArea().x) {
-			x = getVisibleArea().x;
+		Rectangle visibleArea = getVisibleArea(icon);
+		
+		if (x < visibleArea.x) {
+			x = visibleArea.x;
 		}
-		if (x > getVisibleArea().width) {
-			x = getVisibleArea().width;
+		if (x > visibleArea.width) {
+			x = visibleArea.width;
 		}
-		if (y < getVisibleArea().y) {
-			y = getVisibleArea().y;
+		if (y < visibleArea.y) {
+			y = visibleArea.y;
 		}
-		if (y > getVisibleArea().height) {
-			y = getVisibleArea().height;
+		if (y > visibleArea.height) {
+			y = visibleArea.height;
 		}
 
-		icon.setLocation(x, y);
-		updateCenterPositionOf(icon);
+		icon.setTopLeftPosition(new Point(x, y));
 		DesignerPanel.pl_ems.repaint();
 	}
 
@@ -115,12 +69,12 @@ public class PositionManager {
 	 * 
 	 * @return visibleRec area in which an icon is fully visible
 	 */
-	public Rectangle getVisibleArea() {
+	public Rectangle getVisibleArea(Icon icon) {
 		Rectangle visibleRec = DesignerPanel.pl_ems.getVisibleRect();
-		visibleRec.x += IconStore.sBuilding.getIconWidth() / 3;
-		visibleRec.y += IconStore.sBuilding.getIconHeight() / 3 ;
-		visibleRec.width -= IconStore.sBuilding.getIconWidth() * 1.5;
-		visibleRec.height -= IconStore.sBuilding.getIconHeight() * 1.5;
+		visibleRec.x += icon.getWidth() / 3;
+		visibleRec.y += icon.getHeight() / 3 ;
+		visibleRec.width -= icon.getWidth() * 1.5;
+		visibleRec.height -= icon.getHeight() * 1.5;
 		return visibleRec;
 	}
 

@@ -15,11 +15,9 @@ import javax.swing.SwingUtilities;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.icons.BuildingIcon;
 import fortiss.simulation.helper.ConnectionManager;
-import fortiss.simulation.helper.PositionManager;
 
 public class ConnectorListener extends MouseAdapter implements MouseMotionListener {
 
-	private PositionManager pm = PositionManager.getInstance();
 	private ConnectionManager cm = ConnectionManager.getInstance();
 	private static Rectangle area1 = new Rectangle();
 	public static Point2D p1 = new Point(0, 0);
@@ -33,9 +31,9 @@ public class ConnectorListener extends MouseAdapter implements MouseMotionListen
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON3) {
-			JLabel icon = (JLabel) e.getSource();
+			BuildingIcon icon = (BuildingIcon) e.getSource();
 			area1 = icon.getBounds();
-			p1 = pm.getCentralPoint(icon);
+			p1 = icon.getCentralPosition();
 			DesignerPanel.pl_ems.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 		}
 	}
@@ -62,8 +60,8 @@ public class ConnectorListener extends MouseAdapter implements MouseMotionListen
 				Component iconf = (Component) DesignerPanel.pl_ems
 						.getComponentAt(new Point((int) p2.getX(), (int) p2.getY()));
 
-				if (iconf instanceof JLabel) {
-					p2 = pm.getCentralPoint((JLabel) iconf);
+				if (iconf instanceof BuildingIcon) {
+					p2 = ((BuildingIcon) iconf).getCentralPosition();
 
 					// Add connection to structure
 					BuildingIcon icon = (BuildingIcon) e.getSource();
