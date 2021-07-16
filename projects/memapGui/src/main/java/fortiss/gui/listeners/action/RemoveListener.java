@@ -7,6 +7,7 @@ import fortiss.gui.DesignerPanel;
 import fortiss.gui.icons.BuildingIcon;
 import fortiss.gui.icons.ComponentIcon;
 import fortiss.gui.icons.Icon;
+import fortiss.simulation.PlanningTool;
 import fortiss.simulation.helper.ConnectionManager;
 
 public class RemoveListener extends KeyAdapter {
@@ -51,8 +52,8 @@ public class RemoveListener extends KeyAdapter {
 				}
 				removeComponentIcon(componentIcon);
 				hidePanels();
-
 			}
+			PlanningTool.getInstance().setSaved(false);
 		}
 	}
 
@@ -84,6 +85,7 @@ public class RemoveListener extends KeyAdapter {
 		DesignerPanel.buildingCount = DesignerPanel.buildingCount - 1;
 
 		hidePanels();
+		PlanningTool.getInstance().setSaved(false);
 	}
 
 	/**
@@ -102,5 +104,6 @@ public class RemoveListener extends KeyAdapter {
 	private void removeComponentIcon(ComponentIcon componentIcon) {
 		DesignerPanel.pl_comp.remove(componentIcon);
 		DesignerPanel.pl_comp.repaint();
+		PlanningTool.getInstance().setSaved(false);
 	}
 }
