@@ -169,16 +169,11 @@ public class BuildingMessageHandler {
 
 		BuildingMessage result = bmIn;
 
-		System.out.println("BUILDING addMetering AT THIS POINT! - Dmd-Size: " + bmIn.demandList.size());
-		
 		for (DemandMessage demand : bmIn.demandList) {
 			CurrentMeterValues cmv = new CurrentMeterValues();
 			if (demand.networkType == NetworkType.HEAT) {
 				cmv.name = "HEATDemand";
 				cmv.id = fullActorPath + "/HEATDemand";
-			} else {
-				demand.setElecCapVector(bmIn.varNetworkBuyCap);
-				System.out.println("§§§ > " + bmIn.varNetworkBuyCap[0] + " to " + demand.varNetworkBuyCap[0]);
 			}
 			if (demand.networkType == NetworkType.ELECTRICITY) {
 				cmv.name = "ELECTRICITYDemand";

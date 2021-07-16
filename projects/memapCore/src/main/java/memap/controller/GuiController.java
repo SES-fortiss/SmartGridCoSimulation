@@ -33,7 +33,6 @@ import memap.helper.configurationOptions.OptHierarchy;
 import memap.helper.configurationOptions.OptimizationCriteria;
 import memap.helper.configurationOptions.Optimizer;
 import memap.helper.configurationOptions.ToolUsage;
-import memap.main.Simulation;
 import memap.main.SimulationProgress;
 import memap.main.Status;
 import memap.main.TopologyConfig;
@@ -213,7 +212,6 @@ public class GuiController {
 				double[] elecBuyLimit = new double[TopologyConfig.getInstance().getNrStepsMPC()];			
 				Arrays.fill(elecBuyLimit,(int) jObject.get("max_buy_limit").getAsDouble());
 				building.setElecBuylimit(elecBuyLimit);
-				System.out.println("Value " + elecBuyLimit[0] + " set to CSV BuildingController of " + building.getName());
 			} catch (Exception e) {
 				building = new CSVBuildingController(jObject.get("name").getAsString());
 			}

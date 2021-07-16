@@ -20,6 +20,8 @@ import memap.messages.BuildingMessage;
 import memap.messages.BuildingMessageHandler;
 import memap.messages.OptimizationResultMessage;
 import memap.messages.extension.ChildSpecification;
+import memap.messages.extension.NetworkType;
+import memap.messages.planning.DemandMessage;
 import opcMEMAP.MemapOpcServerStarter;
 
 public class Building extends BehaviorModel implements CurrentTimeStepSubscriber {
@@ -79,13 +81,16 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 		buildingMessage = buildingMessageHandler.aggregateBuildingMessages(buildingMessage, answerListReceived);
 		buildingMessage = buildingMessageHandler.refactorDemandList(buildingMessage);
 
-		buildingMessage = buildingMessageHandler.addMetering(buildingMessage, this.fullActorPath);
+		// set upper limit for electricity purchase from building to demand
+		for (DemandMessage demand : buildingMessage.demandList) {
+			if (demand.networkType != NetworkType.HEAT) demand.setElecCapVector(buildingMessage.varNetworkBuyCap);
+		}
 		
 		if (topologyController.getOptimizationHierarchy() == OptHierarchy.BUILDING) {
 			optimizeBuilding();
 		}
-
-
+		
+		buildingMessage = buildingMessageHandler.addMetering(buildingMessage, this.fullActorPath);
 	}
 
 	private void optimizeBuilding() {

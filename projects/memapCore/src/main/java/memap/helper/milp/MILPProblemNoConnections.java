@@ -181,7 +181,7 @@ public class MILPProblemNoConnections extends MILPProblem {
 	public LpSolve createComponentBoundaries(LpSolve problem, BuildingMessage buildingMessage) throws LpSolveException {
 
 		double[] networkBuyCap = new double[nStepsMPC];
-    	Arrays.fill(networkBuyCap, 99999.0); // fill with 99999 kWh
+    	Arrays.fill(networkBuyCap, 99999.0); // fill with 99999 kWh -> (no) upper limit.
     	
 		for (int i = 0; i < nStepsMPC; i++) {
 			MILPIndexHelper ih = new MILPIndexHelper(nStepsMPC);
@@ -271,13 +271,10 @@ public class MILPProblemNoConnections extends MILPProblem {
 			}
 			
 			// ADD Market Constraints
-			
-        	
+
         	int index = i + 1 + nStepsMPC * ((ih.controllableHandled * 2) + ih.volatileHandled
 					+ (ih.couplerHandled * 2) + (ih.storageHandled * 2));
-        	
-        	System.out.println("Write Cap at Index " + index + " (Market) for " + buildingMessage.name);
-        	
+        		
         	/* 
         	This routine takes the minimum Electricity Buy Cap from all houses to be overtaken by memap
         	This solution has to be revised. Maybe an addition would be better.
@@ -292,15 +289,12 @@ public class MILPProblemNoConnections extends MILPProblem {
         			if ( (dm.varNetworkBuyCap[i] < networkBuyCap[i])) {
         				networkBuyCap = dm.varNetworkBuyCap;	
         			}
-        			System.out.println("Cap read from Demand " + buildingMessage.name + ", " + dm.varNetworkBuyCap[i]);
-       			} else {
-       				System.out.println("Cap read from Demand " + buildingMessage.name + " is null");
-       			}
+       			} 
         	}
         	rowN[index] = 1;
         	
         	problem.addConstraint(rowN, LpSolve.LE, networkBuyCap[i]);
-			System.out.println(Arrays.toString(rowN) + ": ElecBuy for " + buildingMessage.name + " limited to " + networkBuyCap[i] + " at index " + index );		
+//			System.out.println(Arrays.toString(rowN) + ": ElecBuy for " + buildingMessage.name + " limited to " + networkBuyCap[i] + " at index " + index );		
 
 		}
 		return problem;
