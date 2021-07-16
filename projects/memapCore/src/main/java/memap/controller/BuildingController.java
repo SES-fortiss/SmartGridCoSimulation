@@ -48,9 +48,9 @@ public interface BuildingController {
 	public void attach(Device device);
 	
 	/**
-	 * Try to make sure to use unique names for buildings.
+	 * For the use case 'Hochlastzeitfenster' a time dependent limit can be set.
 	 * 
-	 * @return name of the building
+	 * @return building imit for electricity purchase from the grid
 	 */
 	public double[] getElecBuyLimit();
 }

@@ -49,7 +49,6 @@ public class Building {
 		this.name = name;
 		setFormattedName(name);
 		this.setPort(port);
-		this.setMax_buy_limit(9999);
 
 		demand_list = new ArrayList<Demand>();
 		coupler_list = new ArrayList<Coupler>();

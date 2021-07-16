@@ -210,10 +210,10 @@ public class GuiController {
 			
 			try {
 				building = new CSVBuildingController(jObject.get("formattedName").getAsString());
-				double[] elecBuyLimit = new double[Simulation.N_STEPS_MPC];
-				Arrays.fill(elecBuyLimit,jObject.get("max_buy_limit").getAsInt());
+				double[] elecBuyLimit = new double[TopologyConfig.getInstance().getNrStepsMPC()];			
+				Arrays.fill(elecBuyLimit,(int) jObject.get("max_buy_limit").getAsDouble());
 				building.setElecBuylimit(elecBuyLimit);
-				System.out.println("Value set to CSV BuildingController");
+				System.out.println("Value " + elecBuyLimit[0] + " set to CSV BuildingController of " + building.getName());
 			} catch (Exception e) {
 				building = new CSVBuildingController(jObject.get("name").getAsString());
 			}

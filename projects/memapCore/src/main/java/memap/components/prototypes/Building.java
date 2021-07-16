@@ -1,7 +1,5 @@
 package memap.components.prototypes;
 
-import java.util.Arrays;
-
 import com.google.gson.Gson;
 
 import akka.basicMessages.AnswerContent;
@@ -81,11 +79,13 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 		buildingMessage = buildingMessageHandler.aggregateBuildingMessages(buildingMessage, answerListReceived);
 		buildingMessage = buildingMessageHandler.refactorDemandList(buildingMessage);
 
+		buildingMessage = buildingMessageHandler.addMetering(buildingMessage, this.fullActorPath);
+		
 		if (topologyController.getOptimizationHierarchy() == OptHierarchy.BUILDING) {
 			optimizeBuilding();
 		}
 
-		buildingMessage = buildingMessageHandler.addMetering(buildingMessage, this.fullActorPath);
+
 	}
 
 	private void optimizeBuilding() {

@@ -26,6 +26,10 @@ public class DemandMessage implements AnswerContent {
 	public void setDemandVector(double[] consumption) {
 		demandForecast = consumption;
 	}
+	
+	public void setElecCapVector(double[] elecLimit) {
+		varNetworkBuyCap = elecLimit;
+	}
 
 	public void addConsumption(double[] consumption) {
 		if (consumption == null) {
