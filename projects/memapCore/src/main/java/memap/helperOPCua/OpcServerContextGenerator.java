@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 
 import helper.IoHelper;
 import memap.helper.DirectoryConfiguration;
+import memap.messages.BuildingMessage;
 
 public class OpcServerContextGenerator {
 
@@ -16,6 +17,11 @@ public class OpcServerContextGenerator {
 
 	public static void generateJson(String actorName, ArrayList<Object> list) {
 		String result = gson.toJson(list);
+		writeFile(actorName, result);
+	}
+	
+	public static void generateJson(String actorName, BuildingMessage bmsg) {
+		String result = gson.toJson(bmsg);
 		writeFile(actorName, result);
 	}
 

@@ -28,14 +28,18 @@ public class ServerUpdater {
 		this.myServerImpl = serverImpl;
 	}
 	
-	public void update(String json) throws IOException {				
+	public void update(String json) throws IOException {	
+		System.out.println("Update Config from JSON...");
 		ConfigInterface opcIterface = GenericJsonReader.createConfigFromString(json);
+		
+		System.out.println("Server Interface updated.");
+		
 		
 		List<MyVariableNode> myVarNodeList = opcIterface.getVariableNodeList(); // neue Werte
 		listOfNodes = myServerImpl.getAnalogNodeList(); // vorhandene Nodes
 		
 		for (MyVariableNode myVariableNode : myVarNodeList) {			
-			//System.out.println("myVariableNode.nodeID: " + myVariableNode.nodeID);
+			System.out.println("myVariableNode.nodeID: " + myVariableNode.nodeID);
 
 			for (AnalogItemNode analogItemNode : listOfNodes) {				
 				if(analogItemNode.getNodeId().toString().contains(myVariableNode.nodeID)) {

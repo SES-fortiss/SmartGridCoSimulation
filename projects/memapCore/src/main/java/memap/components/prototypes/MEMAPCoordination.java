@@ -1,7 +1,11 @@
 package memap.components.prototypes;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
@@ -18,6 +22,7 @@ import memap.helper.configurationOptions.ToolUsage;
 import memap.helper.lp.LPSolver;
 import memap.helper.milp.MILPSolverNoConnections;
 import memap.helper.milp.MILPSolverWithConnections;
+import memap.helperOPCua.OpcServerContextGenerator;
 import memap.main.TopologyConfig;
 import memap.messages.BuildingMessage;
 import memap.messages.BuildingMessageHandler;
@@ -165,7 +170,13 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 		if (topologyController.getToolUsage() == ToolUsage.SERVER) {			
 			if(port != 0 && optResult != null) {
 				try {
-//					this.mServer.update(gson.toJson(optResult));
+					try (Writer writer = new FileWriter("Update.json")) {
+					    Gson gson1 = new GsonBuilder().create();
+					    gson1.toJson(optResult, writer);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					this.mServer.update(gson.toJson(optResult));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

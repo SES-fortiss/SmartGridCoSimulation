@@ -95,12 +95,12 @@ public class MILPMetricsHandler implements MetricsHandler {
 			double[] efficiencies = getEfficiencyFor(solutionNames[i]);
 			double heatEfficiency = efficiencies[0];
 			double electricityEfficiency = efficiencies[1];
-			double[] heatContribution = optResult.metricsMap.get("H_" + solutionNames[i]);
-			double[] electricityContribution = optResult.metricsMap.get("E_" + solutionNames[i]);
-			heatContribution[currentTimeStep] = currentOptVector[i] * heatEfficiency;
-			electricityContribution[currentTimeStep] = currentOptVector[i] * electricityEfficiency;
-			optResult.metricsMap.put("H_" + solutionNames[i], heatContribution);
-			optResult.metricsMap.put("E_" + solutionNames[i], electricityContribution);
+//			double[] heatContribution = optResult.metricsMap.get("H_" + solutionNames[i]);
+//			double[] electricityContribution = optResult.metricsMap.get("E_" + solutionNames[i]);
+//			heatContribution[currentTimeStep] = currentOptVector[i] * heatEfficiency;
+//			electricityContribution[currentTimeStep] = currentOptVector[i] * electricityEfficiency;
+//			optResult.metricsMap.put("H_" + solutionNames[i], heatContribution);
+//			optResult.metricsMap.put("E_" + solutionNames[i], electricityContribution);
 		}
 
 		if (currentTimeStep == (nrIterations - 1)) {
@@ -112,8 +112,8 @@ public class MILPMetricsHandler implements MetricsHandler {
 	public void initializeMetrics(int nrIterations, int nrContributors) {
 		String[] solutionNames = getSolutionNames(nrContributors);
 		for (int i = 0; i < nrContributors; i++) {
-			optResult.metricsMap.put("H_" + solutionNames[i], new double[nrIterations]);
-			optResult.metricsMap.put("E_" + solutionNames[i], new double[nrIterations]);
+//			optResult.metricsMap.put("H_" + solutionNames[i], new double[nrIterations]);
+//			optResult.metricsMap.put("E_" + solutionNames[i], new double[nrIterations]);
 		}
 	}
 
@@ -199,18 +199,18 @@ public class MILPMetricsHandler implements MetricsHandler {
 		System.out.println("WRITE solutions, MILP, try file location: " + location);
 		FileWriter csvWriter = new FileWriter(location);
 
-		for (Entry<String, double[]> entry : optResult.metricsMap.entrySet()) {
-
-			if (Collections.frequency(Arrays.asList(entry.getValue()), 0) != entry.getValue().length) {
-				String line = String.join(";", entry.getKey());
-
-				for (double array : entry.getValue()) {
-					line = String.join(";", line, String.format(Locale.GERMAN, "%.4f", array));
-				}
-
-				csvWriter.append(line + "\n");
-			}
-		}
+//		for (Entry<String, double[]> entry : optResult.metricsMap.entrySet()) {
+//
+//			if (Collections.frequency(Arrays.asList(entry.getValue()), 0) != entry.getValue().length) {
+//				String line = String.join(";", entry.getKey());
+//
+//				for (double array : entry.getValue()) {
+//					line = String.join(";", line, String.format(Locale.GERMAN, "%.4f", array));
+//				}
+//
+//				csvWriter.append(line + "\n");
+//			}
+//		}
 
 		csvWriter.flush();
 		csvWriter.close();

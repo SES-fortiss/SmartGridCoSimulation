@@ -100,7 +100,7 @@ public class JettyStart {
 					Optimizer.MILPwithConnections,
 					OptimizationCriteria.EUR, 
 					ToolUsage.SERVER, 
-					MEMAPLogging.ALL
+					MEMAPLogging.RESULTS_ONLY
 					);	
 		} else {
 			
@@ -111,7 +111,7 @@ public class JettyStart {
 					Optimizer.MILP,
 					OptimizationCriteria.EUR, 
 					ToolUsage.SERVER, 
-					MEMAPLogging.ALL
+					MEMAPLogging.RESULTS_ONLY
 					);	
 		}
 		
@@ -138,7 +138,8 @@ public class JettyStart {
 					OptHierarchy.BUILDING, 
 					Optimizer.MILP,
 					OptimizationCriteria.EUR, 
-					ToolUsage.SERVER, MEMAPLogging.ALL
+					ToolUsage.SERVER, 
+					MEMAPLogging.ALL
 					);
 		}
 		

@@ -96,14 +96,14 @@ public class LPMetricsHandler implements MetricsHandler {
 
 				// Update global metrics
 				// Heat production of contributor in index i per time step
-				double[] heatProduction = optResult.metricsMap.get("H_" + problem.namesUB[i * nStepsMPC]);
-				heatProduction[currentTimeStep] = currentHeatProd[i];
-				optResult.metricsMap.put("H_" + problem.namesUB[i * nStepsMPC], heatProduction);
+//				double[] heatProduction = optResult.metricsMap.get("H_" + problem.namesUB[i * nStepsMPC]);
+//				heatProduction[currentTimeStep] = currentHeatProd[i];
+//				optResult.metricsMap.put("H_" + problem.namesUB[i * nStepsMPC], heatProduction);
 
 				// Electricity production of contributor in index i per time step
-				double[] electricityProduction = optResult.metricsMap.get("E_" + problem.namesUB[i * nStepsMPC]);
-				electricityProduction[currentTimeStep] = currentElectricityProd[i];
-				optResult.metricsMap.put("E_" + problem.namesUB[i * nStepsMPC], electricityProduction);
+//				double[] electricityProduction = optResult.metricsMap.get("E_" + problem.namesUB[i * nStepsMPC]);
+//				electricityProduction[currentTimeStep] = currentElectricityProd[i];
+//				optResult.metricsMap.put("E_" + problem.namesUB[i * nStepsMPC], electricityProduction);
 			}
 
 		} else {
@@ -115,14 +115,14 @@ public class LPMetricsHandler implements MetricsHandler {
 
 				// Update global metrics
 				// Heat production of contributor in index i per time step
-				double[] heatProduction = optResult.metricsMap.get("H_" + problem.namesUB[i * nStepsMPC]);
-				heatProduction[currentTimeStep] = currentHeatProd[i];
-				optResult.metricsMap.put("H_" + problem.namesUB[i * nStepsMPC], heatProduction);
-
-				// Electricity production of contributor in index i per time step
-				double[] electricityProduction = optResult.metricsMap.get("E_" + problem.namesUB[i * nStepsMPC]);
-				electricityProduction[currentTimeStep] = currentElectricityProd[i];
-				optResult.metricsMap.put("E_" + problem.namesUB[i * nStepsMPC], electricityProduction);
+//				double[] heatProduction = optResult.metricsMap.get("H_" + problem.namesUB[i * nStepsMPC]);
+//				heatProduction[currentTimeStep] = currentHeatProd[i];
+//				optResult.metricsMap.put("H_" + problem.namesUB[i * nStepsMPC], heatProduction);
+//
+//				// Electricity production of contributor in index i per time step
+//				double[] electricityProduction = optResult.metricsMap.get("E_" + problem.namesUB[i * nStepsMPC]);
+//				electricityProduction[currentTimeStep] = currentElectricityProd[i];
+//				optResult.metricsMap.put("E_" + problem.namesUB[i * nStepsMPC], electricityProduction);
 			}
 		}
 
@@ -134,10 +134,10 @@ public class LPMetricsHandler implements MetricsHandler {
 
 	@Override
 	public void initializeMetrics(int nrIterations, int nrContributors) {
-		for (int i = 0; i < nrContributors; i++) {
-			optResult.metricsMap.put("H_" + problem.namesUB[i * nStepsMPC], new double[nrIterations]);
-			optResult.metricsMap.put("E_" + problem.namesUB[i * nStepsMPC], new double[nrIterations]);
-		}
+//		for (int i = 0; i < nrContributors; i++) {
+//			optResult.metricsMap.put("H_" + problem.namesUB[i * nStepsMPC], new double[nrIterations]);
+//			optResult.metricsMap.put("E_" + problem.namesUB[i * nStepsMPC], new double[nrIterations]);
+//		}
 	}
 
 	@Override
@@ -155,18 +155,18 @@ public class LPMetricsHandler implements MetricsHandler {
 		System.out.println("WRITE solutions, LP, try file location" + location);
 		FileWriter csvWriter = new FileWriter(location);
 
-		for (Entry<String, double[]> entry : optResult.metricsMap.entrySet()) {
-
-			if (Collections.frequency(Arrays.asList(entry.getValue()), 0) != entry.getValue().length) {
-				String line = String.join(";", entry.getKey());
-
-				for (double array : entry.getValue()) {
-					line = String.join(";", line, String.format(Locale.GERMAN, "%.4f", array));
-				}
-
-				csvWriter.append(line + "\n");
-			}
-		}
+//		for (Entry<String, double[]> entry : optResult.metricsMap.entrySet()) {
+//
+//			if (Collections.frequency(Arrays.asList(entry.getValue()), 0) != entry.getValue().length) {
+//				String line = String.join(";", entry.getKey());
+//
+//				for (double array : entry.getValue()) {
+//					line = String.join(";", line, String.format(Locale.GERMAN, "%.4f", array));
+//				}
+//
+//				csvWriter.append(line + "\n");
+//			}
+//		}
 
 		csvWriter.flush();
 		csvWriter.close();
