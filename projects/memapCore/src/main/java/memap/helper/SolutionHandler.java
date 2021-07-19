@@ -227,7 +227,7 @@ public class SolutionHandler {
 		result[0] = Strings.heatDemand;
 		
 		for (int i = 1; i <= buildingMessageList.size(); i++) {
-			result[i] = "Heat demand - " + buildingMessageList.get(i-1).name;
+			result[i] = "Heat_demand_" + buildingMessageList.get(i-1).name;
 		}
 		
 		result[result.length - 1] = Strings.electricityDemand;

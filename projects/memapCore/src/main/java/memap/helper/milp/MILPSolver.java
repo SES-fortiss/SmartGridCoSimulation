@@ -321,8 +321,7 @@ public class MILPSolver {
 		}
 		
 		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
-			ConnectionDB.addResults(topologyController.getOptimizationHierarchy(),currentTimeStep, namesResult_this_TimeStep, currentStep, currentDemand, currentOptVector, currentSOC,
-				currentEnergyPrices, totalCostsEUR, totalCO2emissions, nrOfBuildings);
+			ConnectionDB.addResults(topologyController.getOptimizationHierarchy(), currentTimeStep, namesResult_this_TimeStep, vectorResult_this_TimeStep , nrOfBuildings);
 		}		
 
 		// Format results vector for printing

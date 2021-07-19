@@ -5,11 +5,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
-import memap.helper.EnergyPrices;
 import memap.helper.configurationOptions.OptHierarchy;
 import memap.main.JettyStart;
 
@@ -25,8 +25,7 @@ public class ConnectionDB {
 		return con;
     }
 	
-	public static void addResults(OptHierarchy Hierarchy, int currentTimeStep, String[] namesResult, double[] currentStep, double[] currentDemand, double[] currentOptVector, double[] currentSOC,
-			double[] currentEnergyPrice, double[] totalCostsEUR, double[] totalCO2emissions, int nrOfBuildings)
+	public static void addResults(OptHierarchy Hierarchy, int currentTimeStep, String[] namesResult, double[] vectorResult_this_TimeStep , int nrOfBuildings)
 	{
 		int num =  JettyStart.numofBuildings;
 		
@@ -37,8 +36,9 @@ public class ConnectionDB {
 			itr.set(itr.next().replaceAll("\\s", ""));
 		}
 		
-//		System.out.println("LÄNGE = " + namesResult.length + ", 4. Name: " + names.get(3)+ ", 5. Name: " + names.get(4));
-		
+//		System.out.println("LENGTH NAMES = " + namesResult.length );
+//		System.out.println("LENGTH VALUES = " + vectorResult_this_TimeStep.length );
+//		
 		switch(Hierarchy) {
 			
 		case MEMAP:
@@ -46,13 +46,13 @@ public class ConnectionDB {
 			
 			String columns = "";
 			String list = "";
-			for(int i=0 ; i < names.size()-3 ; i++)
+			for(int i=0 ; i < names.size() ; i++)
 			{
-				columns += "MEMAP_" + names.get(i) + " DOUBLE PRECISION NULL" + ", ";
-				list += "MEMAP_" + names.get(i) + ", ";
+				columns += "\"MEMAP_" + names.get(i) + "\" DOUBLE PRECISION NULL" + ", ";
+				list += "\"MEMAP_" + names.get(i) + "\", ";
 			}
 			
-			writeResultsToDB(tablename, columns, list, currentTimeStep, currentDemand, currentOptVector, currentSOC, totalCostsEUR, totalCO2emissions);
+			writeResultsToDB(tablename, columns, list, currentTimeStep, vectorResult_this_TimeStep );
 			break;
 			
 		case BUILDING:	
@@ -67,37 +67,29 @@ public class ConnectionDB {
 					bColumns += "B" + b + "_" + names.get(i).substring(names.get(i).indexOf("_")+1).trim() + " DOUBLE PRECISION NULL" + ", ";
 					bList += "B" + b + "_" + names.get(i).substring(names.get(i).indexOf("_")+1).trim() + ", ";
 				}
-				writeResultsToDB(tablename, bColumns, bList, currentTimeStep, currentDemand, currentOptVector, currentSOC, totalCostsEUR, totalCO2emissions);			
+				writeResultsToDB(tablename, bColumns, bList, currentTimeStep, vectorResult_this_TimeStep );			
 			}
 			break;
 		}	
 	}
 
 	
-	private static void writeResultsToDB(String tablename, String columns, String list, int currentTimeStep, double[] currentDemand, 
-			double[] currentOptVector, double[] currentSOC, double[] totalCostsEUR, double[] totalCO2emissions) {
+	private static void writeResultsToDB(String tablename, String columns, String list, int currentTimeStep, double[] vectorResult_this_TimeStep ) {
 		String createtable = "CREATE TABLE IF NOT EXISTS " + tablename + "(";
 		
 		long step = System.currentTimeMillis() / 1000L;
-		double heatdemand = currentDemand[0];
-		double elecdemand = currentDemand[1];
-		double priceEl = EnergyPrices.getInstance().getElecBuyingPrice(currentTimeStep);
-		double priceHt = EnergyPrices.getInstance().getHeatBuyingPrice(currentTimeStep);
-		double cost = totalCostsEUR[0];
-		double CO2 = totalCO2emissions[0];
 		
 		String sql1 = createtable + columns;
-		sql1 = sql1 + "ElectricityPrice_EUR DOUBLE PRECISION NULL, HeatPrice_EUR DOUBLE PRECISION NULL, TotalCostsEUR DOUBLE PRECISION NULL, TotalCO2emissions DOUBLE PRECISION NULL, timestamp TIMESTAMPTZ NULL);";
-		list = "INSERT INTO " + tablename + "(" + list + "ElectricityPrice_EUR, HeatPrice_EUR, TotalCostsEUR, TotalCO2emissions, timestamp) VALUES('" + step + "','" + heatdemand + "','" + elecdemand;
-		for(double i : currentOptVector) {
+		sql1 = sql1 + "timestamp TIMESTAMPTZ NULL);";
+		list = "INSERT INTO " + tablename + "(" + list + "timestamp) VALUES('" + step ;
+		
+		double[] valueArray = Arrays.copyOfRange(vectorResult_this_TimeStep, 1, vectorResult_this_TimeStep.length);
+		for(double i : valueArray ) {
 			list += "','" + i;
 		}	
-		for(double j : currentSOC) {
-			list += "','" + j;
-		}
-		list += "','" + priceEl + "','" + priceHt + "','" + cost + "','" + CO2 + "', NOW());";
+		list += "', NOW());";
 		sql1 += list;
-		
+
 		try {
 			Connection conn = connectToDB();
 			PreparedStatement pst = conn.prepareStatement(sql1);
