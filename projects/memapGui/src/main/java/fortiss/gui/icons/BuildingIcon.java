@@ -15,6 +15,7 @@ import fortiss.gui.listeners.label.ConnectorListener;
 import fortiss.gui.listeners.label.PositionListener;
 import fortiss.gui.style.Fonts;
 import fortiss.media.IconStore;
+import fortiss.simulation.PlanningTool;
 import fortiss.simulation.helper.ConnectionManager;
 import fortiss.simulation.helper.PositionManager;
 
@@ -117,6 +118,7 @@ public class BuildingIcon extends Icon {
 		this.centralPosition = centralPosition;
 		updateTopLeftPosition();
 		ConnectionManager.getInstance().updateLines();
+		PlanningTool.getInstance().setSaved(false);
 	}
 
 	/**
@@ -126,6 +128,7 @@ public class BuildingIcon extends Icon {
 		setLocation(topLeftPosition);
 		updateCentralPosition();
 		ConnectionManager.getInstance().updateLines();
+		PlanningTool.getInstance().setSaved(false);
 	}
 
 	/**

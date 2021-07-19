@@ -10,6 +10,7 @@ import com.google.gson.annotations.Expose;
 import fortiss.components.Connection;
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.icons.BuildingIcon;
+import fortiss.simulation.PlanningTool;
 
 /**
  * Manager of connections between building icons/labels
@@ -95,6 +96,7 @@ public class ConnectionManager {
 			getConnectionList().remove(connection);
 			setConnectionNumber(getConnectionNumber() - 1);
 			DesignerPanel.pl_ems.repaint();
+			PlanningTool.getInstance().setSaved(false);
 		}
 	}
 
