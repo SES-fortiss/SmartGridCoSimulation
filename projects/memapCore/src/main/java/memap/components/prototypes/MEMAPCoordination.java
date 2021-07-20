@@ -167,7 +167,22 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
-		if (topologyController.getToolUsage() == ToolUsage.SERVER) {			
+		
+		if (currentTimeStep == 0) { 
+			// Save topology as json for usage in planning tool:
+			JsonExportHelper.exportMemapTopology(topologyController, answerListReceived);
+			if (topologyController.getToolUsage() == ToolUsage.SERVER && port != 0 && optResult != null) {
+				this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult), port);
+				try {
+					this.mServer.start();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				OpcServerContextGenerator.generateJson2(this.actorName, optResult);
+			}
+		}	
+		
+		if (topologyController.getToolUsage() == ToolUsage.SERVER)  {			
 			if(port != 0 && optResult != null) {
 				try {
 					try (Writer writer = new FileWriter("Update.json")) {
@@ -181,11 +196,6 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 					e.printStackTrace();
 				}
 			}
-					
-			if (currentTimeStep == 0) { 
-				// Save topology as json for usage in planning tool:
-				JsonExportHelper.exportMemapTopology(topologyController, answerListReceived);
-			}	
 		}	
 		return buildingMessage;
 	}
@@ -193,19 +203,6 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 	@Override
 	public RequestContent returnRequestContentToSend() {
 		
-		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
-			if (currentTimeStep == 0) {
-				if (port != 0) {
-					this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult), port);
-					try {
-						this.mServer.start();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}						
-//				OpcServerContextGenerator.generateJson(this.actorName, buildingMessage);
-			}
-		}
 		return optResult;
 	}
 

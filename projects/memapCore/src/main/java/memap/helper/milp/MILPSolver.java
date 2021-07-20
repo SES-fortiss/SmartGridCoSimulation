@@ -192,6 +192,11 @@ public class MILPSolver {
 			optResult.resultMap.put(str, values);
 		}
 
+		/** TASK ONE 1/2 - creation of OPC UA Interface from results
+		
+		
+		
+		
 		// Memory is cleaned up in the child classes  
 		
 		
@@ -323,6 +328,9 @@ public class MILPSolver {
 		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
 			ConnectionDB.addResults(topologyController.getOptimizationHierarchy(),currentTimeStep, namesResult_this_TimeStep, currentStep, currentDemand, currentOptVector, currentSOC,
 				currentEnergyPrices, totalCostsEUR, totalCO2emissions, nrOfBuildings);
+			
+			
+			
 		}		
 
 		// Format results vector for printing

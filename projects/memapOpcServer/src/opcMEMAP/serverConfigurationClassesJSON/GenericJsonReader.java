@@ -110,7 +110,7 @@ public class GenericJsonReader {
                 lastFolderNode.nodeID = buffer;                
                 
                 folderNodeList.add(lastFolderNode);                
-                System.out.println("new Folder: " + buffer + "/");                
+//                System.out.println("new Folder: " + buffer + "/");                
                 
                 arrayStack.push(false);
                 break;
@@ -120,7 +120,7 @@ public class GenericJsonReader {
                 nameStack.pop();
                 parentStack.pop();
                 arrayStack.pop();
-                System.out.println("END OBJECT");
+//                System.out.println("END OBJECT");
                 break;
             
             case BEGIN_ARRAY:
@@ -144,7 +144,7 @@ public class GenericJsonReader {
 				lastFolderNode.nodeID = bufferArray;
 				               
 				folderNodeList.add(lastFolderNode);
-				System.out.println("new Folder: " + bufferArray + "/");
+//				System.out.println("new Folder: " + bufferArray + "/");
 				
                 break;
                 
@@ -159,7 +159,7 @@ public class GenericJsonReader {
             case NAME:
             	String nextName = reader.nextName();
                 nameStack.push(nextName);
-                System.out.println("new name: " + nextName);
+//                System.out.println("new name: " + nextName);
                 break;
                 
             case STRING:
