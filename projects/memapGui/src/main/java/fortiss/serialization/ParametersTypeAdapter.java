@@ -34,7 +34,7 @@ public class ParametersTypeAdapter implements JsonSerializer<Parameters>, JsonDe
 		String optimizer = obj.get("optimizer").getAsString();
 		String loggingMode = obj.get("loggingMode").getAsString();
 
-		JsonObject maxBuyLimitObj = obj.get("powerThreshold").getAsJsonObject();
+		JsonObject maxBuyLimitObj = obj.get("maxBuyLimit").getAsJsonObject();
 		
 		JsonObject elecBuyingPriceObj = obj.get("elecBuyingPrice").getAsJsonObject();
 		JsonObject elecSellingPriceObj = obj.get("elecSellingPrice").getAsJsonObject();

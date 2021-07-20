@@ -24,6 +24,7 @@ import memap.components.CSVProducer;
 import memap.components.CSVStorage;
 import memap.components.CSVVolatileProducer;
 import memap.components.prototypes.Connection;
+import memap.helper.MaxBuyLimit;
 import memap.helper.ElectricityPrice;
 import memap.helper.EnergyPrices;
 import memap.helper.HeatPrice;
@@ -111,10 +112,16 @@ public class GuiController {
 		// Must come before prices are set!
 		topologyConfig.init(mpcHorizon, timeStepsPerDay, nrDays, 0, 0);
 		
+		JsonObject maxBuyLimitObj = jObject.get("maxBuyLimit").getAsJsonObject();
+		
 		JsonObject elecBuyingPriceObj = jObject.get("elecBuyingPrice").getAsJsonObject();
 		JsonObject elecSellingPriceObj = jObject.get("elecSellingPrice").getAsJsonObject();
 		JsonObject heatBuyingPriceObj = jObject.get("heatBuyingPrice").getAsJsonObject();
 
+		Price maxBuyLimit = new MaxBuyLimit(maxBuyLimitObj.get("fixed").getAsBoolean(),
+				maxBuyLimitObj.get("price").getAsDouble(), maxBuyLimitObj.get("priceFilePath").getAsString(),
+				mpcHorizon);
+		
 		Price elecBuyingPrice = new ElectricityPrice(elecBuyingPriceObj.get("fixed").getAsBoolean(),
 				elecBuyingPriceObj.get("price").getAsDouble(), elecBuyingPriceObj.get("priceFilePath").getAsString(),
 				mpcHorizon);
@@ -126,7 +133,7 @@ public class GuiController {
 				mpcHorizon);
 
 		EnergyPrices energyPrices = EnergyPrices.getInstance();
-		energyPrices.init(elecBuyingPrice, elecSellingPrice, heatBuyingPrice);
+		energyPrices.init(maxBuyLimit, elecBuyingPrice, elecSellingPrice, heatBuyingPrice);
 
 		Optimizer optimizer = null;
 		String optimizerType = jObject.get("optimizer").getAsString();

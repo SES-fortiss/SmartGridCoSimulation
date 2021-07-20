@@ -23,7 +23,7 @@ public class MaxBuyPanel extends InformationPanel {
 
 		setLayout(new MigLayout("insets 0 0 0 0, fillx, wrap 1, hidemode 2, width 99%", "[center]", ""));
 
-		maxBuyElecBoard = new PriceBoard("Power Threshold");
+		maxBuyElecBoard = new PriceBoard("Electricity Buy Limit (scaling factor)");
 		add(maxBuyElecBoard, "growx");
 	}
 

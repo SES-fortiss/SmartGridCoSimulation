@@ -180,6 +180,7 @@ public class MILPProblemNoConnections extends MILPProblem {
 
 	public LpSolve createComponentBoundaries(LpSolve problem, BuildingMessage buildingMessage) throws LpSolveException {
 
+		int cts = currentTimeStep;
 		double[] networkBuyCap = new double[nStepsMPC];
     	Arrays.fill(networkBuyCap, 99999.0); // fill with 99999 kWh -> (no) upper limit.
     	
@@ -287,9 +288,11 @@ public class MILPProblemNoConnections extends MILPProblem {
         		
         		if ((dm.networkType == NetworkType.ELECTRICITY) && (dm.varNetworkBuyCap != null)) {
         			if ( (dm.varNetworkBuyCap[i] < networkBuyCap[i])) {
-        				networkBuyCap = dm.varNetworkBuyCap;	
+        				networkBuyCap[i] = dm.varNetworkBuyCap[i]*energyPrices.getMaxBuyLimit(cts + i);	
+        				if (energyPrices.getMaxBuyLimit(cts + i) == 0) networkBuyCap[i] = 9999.0;
         			}
-       			} 
+       			}
+//        		if (dm.networkType == NetworkType.ELECTRICITY && i == 0) System.out.println("ElecBuy for " + buildingMessage.name + " limited to " + networkBuyCap[0]);
         	}
         	rowN[index] = 1;
         	
@@ -347,7 +350,7 @@ public class MILPProblemNoConnections extends MILPProblem {
     			}
                 
     			// Add the factor vectors to the problem as constraint:
-    			problem.addConstraint(rowDISCHARGE, LpSolve.LE, (SOC_perc * Math.pow(alpha, i+1)));
+    			problem.addConstraint(rowDISCHARGE, LpSolve.LE, (SOC_perc * Math.pow(alpha, i+1)) - 0.1);
     			problem.addConstraint(rowCHARGE, LpSolve.LE, (1-(SOC_perc * Math.pow(alpha, i+1))));
             }
             
