@@ -107,7 +107,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 			if ((client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, buyPriceId).getValue().getValue().getClass().isArray()) 
 			&& (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, sellPriceId).getValue().getValue().getClass().isArray())) {
 				priceIsArray = true;
-				System.out.println("Price for network " + this.networkType + " is an Array.");
+				System.out.println("   . Price for network " + this.networkType + " is an Array.");
 			}
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
@@ -138,7 +138,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 				if (var.getValue() instanceof Number[]) {
 					networkBuyCostFC = (Double[]) var.getValue();
 				} else {
-					System.out.println("Value " + value + " is not in Number[] format");
+					System.out.println("   . ERR: Value " + value + " is not in Number[] format");
 				}
 			};
 			
@@ -182,7 +182,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 				if (var.getValue() instanceof Number[]) {
 					networkSellCostFC = (Double[]) var.getValue();
 				} else {
-					System.out.println("Value " + value + " is not in Number[] format");
+					System.out.println("   . ERR: Value " + value + " is not in Number[] format");
 				}
 			};
 	
@@ -205,7 +205,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 			this.sellPrice = networkSellCostFC[0];
 		
 		} else {
-			System.out.println("Price for network " + this.networkType + " is single value.");
+			System.out.println("   . Price for network " + this.networkType + " is single value.");
 			
 			try {
 				buyPrice = client.readFinalDoubleValue(buyPriceId);
@@ -229,7 +229,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		try {
 			if ((client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, arrayDemandForecastId).getValue().getValue().getClass().isArray()))
 				forecastIsArray = true;
-				System.out.println("Forecast " + this.networkType + " is no Array.");
+				System.out.println("   . Forecast " + this.networkType + " is no Array.");
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

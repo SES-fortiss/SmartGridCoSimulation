@@ -23,9 +23,11 @@ public class MemapWebController {
 	
 	public void startMemap() {
 		
+		System.out.println();
 		System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 		System.out.println("============================= STARTING MEMAP =============================");
 		System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+		System.out.println();
 		
 		Runnable simulationRunnable = new Runnable() {
 		public void run() {

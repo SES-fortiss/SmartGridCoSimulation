@@ -87,6 +87,10 @@ public class JettyStart {
 			e1.printStackTrace();
 		}
 		
+		// Check if one endpoint contains multiple buildings (as for the test site Riemerling): 
+		endpoints = HelperUnnestingJSON.checkForMultipleBuildingEndpoints(endpoints);
+		
+		
 		// ****************************
 		// TODO: Further distinguish here between MILP/LP optimizer and between EUR/CO2 criteria
 		//
@@ -100,7 +104,7 @@ public class JettyStart {
 					Optimizer.MILPwithConnections,
 					OptimizationCriteria.EUR, 
 					ToolUsage.SERVER, 
-					MEMAPLogging.ALL
+					MEMAPLogging.RESULTS_ONLY
 					);	
 		} else {
 			
@@ -111,7 +115,7 @@ public class JettyStart {
 					Optimizer.MILP,
 					OptimizationCriteria.EUR, 
 					ToolUsage.SERVER, 
-					MEMAPLogging.ALL
+					MEMAPLogging.RESULTS_ONLY
 					);	
 		}
 		
@@ -120,7 +124,8 @@ public class JettyStart {
 		// MPC input through start of the simulation environment. For MPC as an input parameter, 
 		// probably the global variable Simulation.N_STEPS_MPC has to be changed here.
 		// TODO: Second init() method without int timeStepsPerDay, int nrDays input
-		System.out.println(">> MPC set to " + Simulation.N_STEPS_MPC);
+		System.out.println(">> MPC set to " + Simulation.N_STEPS_MPC + "\n");
+		System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n");
 		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 7020, 0);
 		
 		
@@ -144,11 +149,9 @@ public class JettyStart {
 					);
 		}
 		
-		// Check if one endpoint contains multiple buildings (as for the test site Riemerling): 
-		endpoints = HelperUnnestingJSON.checkForMultipleBuildingEndpoints(endpoints);
 		
 		setNumofBuildings(endpoints.size());
-		System.out.println(">> Number of buildings: " + endpoints.size());
+//		System.out.println(">> Number of buildings: " + endpoints.size() + "\n");
 
 		for (int i = 0; i < endpoints.size(); i++) {
 
@@ -186,7 +189,7 @@ public class JettyStart {
 					topologyMemapOff.attach(sampleBuilding.getName(), sampleBuilding);
 				}
 				errorCode.put(endpointName, 0);
-				System.out.println(">> Building " + (i + 1) + " (" + endpointName + ") was added...");
+				System.out.println(">> Building " + (i + 1) + " (" + endpointName + ") was added... \n");
 
 			} catch (IllegalStateException e2) {
 				System.err.println(">> WARNING: Failed to create Client. Building has not been initialised");
