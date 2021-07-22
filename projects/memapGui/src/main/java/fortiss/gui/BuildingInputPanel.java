@@ -92,11 +92,12 @@ public class BuildingInputPanel extends InformationPanel {
 		add(txtBPort, "growx");
 		
 		lb_b_max_limit = new JLabel("Elecricity Buy Limit");
+		ComponentFieldListener bMaxListener = new BMaxLimitListener();
 		add(lb_b_max_limit);
 		txt_b_max_limit = new JTextField();// integerFormat);
 		txt_b_max_limit.setColumns(10);
-		txt_b_max_limit.addKeyListener(new BMaxLimitListener());
-		txt_b_max_limit.addFocusListener(new BMaxLimitListener());		
+		txt_b_max_limit.addKeyListener(bMaxListener);
+		txt_b_max_limit.addFocusListener(bMaxListener);		
 		String tool_tip_max_limit = "Limits are of type INT and in range [1..9999]";
 		lb_b_max_limit.setToolTipText(tool_tip_max_limit);
 		txt_b_max_limit.setToolTipText(tool_tip_max_limit);		

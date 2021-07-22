@@ -1,18 +1,20 @@
 package fortiss.gui.listeners.textfield;
 
-public class BMaxLimitListener extends NumberListener {
+import fortiss.gui.listeners.helper.NumberVerifier;
+
+public class BMaxLimitListener extends ComponentFieldListener {
 
 		public BMaxLimitListener() {
-			super(false, true, 10000);
+			super("Invalid number!", new NumberVerifier().withDecimalAllowed().withMaxLength(10000));	
 		}
 		
 		@Override
-		void update(String text) {
+		public void update(String text) {
 			building.setMax_buy_limit(Integer.parseInt(text));
 		}
 
 		@Override
-		String getAttribute() {			
+		public String getAttribute() {			
 			return String.valueOf(building.getMax_buy_limit());
 		}
 }
