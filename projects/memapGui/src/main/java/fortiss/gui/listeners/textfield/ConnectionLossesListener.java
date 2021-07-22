@@ -1,18 +1,20 @@
 package fortiss.gui.listeners.textfield;
 
-public class ConnectionLossesListener extends NumberListener {
+import fortiss.gui.listeners.helper.NumberVerifier;
+
+public class ConnectionLossesListener extends ComponentFieldListener {
 
 	public ConnectionLossesListener() {
-		super(false, true, 0, 100, 10);
+		super("Invalid number!", new NumberVerifier().withDecimalAllowed().withMin(0).withMax(100).withMaxLength(10));
 	}
 
 	@Override
-	void update(String text) {
+	public void update(String text) {
 		connection.setLosses(Double.parseDouble(text));
 	}
 
 	@Override
-	String getAttribute() {
+	public String getAttribute() {
 		return String.valueOf(connection.getLosses());
 	}
 

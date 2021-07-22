@@ -1,18 +1,19 @@
 package fortiss.gui.listeners.textfield;
 
 import fortiss.gui.PriceBoard;
+import fortiss.gui.listeners.helper.NumberVerifier;
 import fortiss.gui.listeners.helper.Price;
 import fortiss.simulation.Parameters;
 import fortiss.simulation.PlanningTool;
 
-public class PriceListener extends NumberListener{
+public class PriceListener extends TextFieldListener {
 
 	public PriceListener() {
-		super(true, true, 10);
+		super("Invalid number!", new NumberVerifier().withDecimalAllowed().withNegativeAllowed().withMaxLength(10));
 	}
 
 	@Override
-	void update(String text) {
+	public void update(String text) {
 		Parameters parameters = PlanningTool.getInstance().getParameters();
 		PriceBoard priceBoard = (PriceBoard) source.getParent();
 		Price price = priceBoard.getPrice();
@@ -20,10 +21,10 @@ public class PriceListener extends NumberListener{
 	}
 
 	@Override
-	String getAttribute() {
+	public String getAttribute() {
 		PriceBoard priceBoard = (PriceBoard) source.getParent();
 		Price price = priceBoard.getPrice();
 		return price.getPriceString();
 	}
-	
+
 }

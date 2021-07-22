@@ -45,8 +45,8 @@ public class LineListener extends MouseAdapter {
 		Line2D clickedLine = null;
 
 		ConnectionManager cm = ConnectionManager.getInstance();
-		for (Line2D line : cm.getLines()) {
-
+		for (Connection connection : cm.getConnectionList()) {
+			Line2D line = connection.getLn();
 			if (line.intersects(clickLocation.getX() - 2, clickLocation.getY() - 2, 4, 4)) {
 				clickedLine = line;
 				break;

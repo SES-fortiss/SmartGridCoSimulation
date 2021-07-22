@@ -1,18 +1,20 @@
 package fortiss.gui.listeners.textfield;
 
-public class ConnectionLengthListener extends NumberListener {
+import fortiss.gui.listeners.helper.NumberVerifier;
+
+public class ConnectionLengthListener extends ComponentFieldListener {
 
 	public ConnectionLengthListener() {
-		super(false, true, 10);
+		super("Invalid number!", new NumberVerifier().withDecimalAllowed().withMaxLength(10));
 	}
 
 	@Override
-	void update(String text) {
+	public void update(String text) {
 		connection.setLength(Double.parseDouble(text));
 	}
 
 	@Override
-	String getAttribute() {
+	public String getAttribute() {
 		return String.valueOf(connection.getLength());
 	}
 

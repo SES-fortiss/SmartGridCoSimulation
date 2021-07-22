@@ -1,7 +1,11 @@
 package memap.components.prototypes;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import akka.basicMessages.AnswerContent;
 import akka.basicMessages.BasicAnswer;
@@ -18,6 +22,7 @@ import memap.helper.configurationOptions.ToolUsage;
 import memap.helper.lp.LPSolver;
 import memap.helper.milp.MILPSolverNoConnections;
 import memap.helper.milp.MILPSolverWithConnections;
+import memap.helperOPCua.OpcServerContextGenerator;
 import memap.main.TopologyConfig;
 import memap.messages.BuildingMessage;
 import memap.messages.BuildingMessageHandler;
@@ -162,19 +167,35 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
-		if (topologyController.getToolUsage() == ToolUsage.SERVER) {			
+		
+		if (currentTimeStep == 0) { 
+			// Save topology as json for usage in planning tool:
+			JsonExportHelper.exportMemapTopology(topologyController, answerListReceived);
+			if (topologyController.getToolUsage() == ToolUsage.SERVER && port != 0 && optResult != null) {
+				this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult), port);
+				try {
+					this.mServer.start();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				OpcServerContextGenerator.generateJson2(this.actorName, optResult);
+			}
+		}	
+		
+		if (topologyController.getToolUsage() == ToolUsage.SERVER)  {			
 			if(port != 0 && optResult != null) {
 				try {
-//					this.mServer.update(gson.toJson(optResult));
+					try (Writer writer = new FileWriter("Update.json")) {
+					    Gson gson1 = new GsonBuilder().create();
+					    gson1.toJson(optResult, writer);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					this.mServer.update(gson.toJson(optResult));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-					
-			if (currentTimeStep == 0) { 
-				// Save topology as json for usage in planning tool:
-				JsonExportHelper.exportMemapTopology(topologyController, answerListReceived);
-			}	
 		}	
 		return buildingMessage;
 	}
@@ -182,19 +203,6 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 	@Override
 	public RequestContent returnRequestContentToSend() {
 		
-		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
-			if (currentTimeStep == 0) {
-				if (port != 0) {
-					this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult), port);
-					try {
-						this.mServer.start();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}						
-//				OpcServerContextGenerator.generateJson(this.actorName, buildingMessage);
-			}
-		}
 		return optResult;
 	}
 

@@ -1,16 +1,21 @@
 package fortiss.gui.listeners.textfield;
 
 import fortiss.components.Volatile;
+import fortiss.gui.listeners.helper.NameVerifier;
 
-public class VNameListener extends NameListener {
+public class VNameListener extends ComponentFieldListener {
+
+	public VNameListener() {
+		super("Invalid component name", new NameVerifier());
+	}
 
 	@Override
-	void update(String text) {
+	public void update(String text) {
 		((Volatile) component).setName(text);
 	}
 
 	@Override
-	String getAttribute() {
+	public String getAttribute() {
 		return ((Volatile) component).getName();
 	}
 	

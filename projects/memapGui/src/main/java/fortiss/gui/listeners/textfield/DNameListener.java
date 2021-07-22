@@ -1,16 +1,21 @@
 package fortiss.gui.listeners.textfield;
 
 import fortiss.components.Demand;
+import fortiss.gui.listeners.helper.NameVerifier;
 
-public class DNameListener extends NameListener{
+public class DNameListener extends ComponentFieldListener{
+
+	public DNameListener() {
+		super("Invalid component name", new NameVerifier());
+	}
 
 	@Override
-	void update(String text) {
+	public void update(String text) {
 		((Demand) component).setName(text);
 	}
 
 	@Override
-	String getAttribute() {
+	public String getAttribute() {
 		return ((Demand) component).getName();
 	}
 	

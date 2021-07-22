@@ -31,9 +31,6 @@ public class BuildingTypeAdapter implements JsonSerializer<Building>, JsonDeseri
 		JsonObject obj = json.getAsJsonObject();
 		JsonObject icon = obj.get("icon").getAsJsonObject();
 		JsonObject pos = icon.get("position").getAsJsonObject();
-		double x = pos.get("x").getAsDouble();
-		double y = pos.get("y").getAsDouble();
-		Point2D position = new Point2D.Double(x, y);
 
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Point2D.class, new Point2DTypeAdapter());
@@ -44,6 +41,7 @@ public class BuildingTypeAdapter implements JsonSerializer<Building>, JsonDeseri
 		gsonBuilder.registerTypeAdapter(Coupler.class, new CouplerTypeAdapter());
 
 		Gson gson = gsonBuilder.enableComplexMapKeySerialization().excludeFieldsWithoutExposeAnnotation().create();
+		Point2D position = gson.fromJson(pos, Point2D.class);
 		Building building = gson.fromJson(json, Building.class);
 
 		for (Component component : building.getComponents()) {

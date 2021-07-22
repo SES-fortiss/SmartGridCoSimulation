@@ -20,6 +20,7 @@ import fortiss.gui.listeners.helper.Price;
 import fortiss.gui.listeners.label.PriceTypeListener;
 import fortiss.gui.listeners.textfield.PriceFileListener;
 import fortiss.gui.listeners.textfield.PriceListener;
+import fortiss.gui.listeners.textfield.TextFieldListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.FontSize;
 import fortiss.gui.style.Fonts;
@@ -73,8 +74,9 @@ public class PriceBoard extends JPanel implements OptionObserver {
 		txtPrice = new JTextField("");
 		txtPrice.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		txtPrice.setText("");
-		txtPrice.addKeyListener(new PriceListener());
-		txtPrice.addFocusListener(new PriceListener());
+		TextFieldListener priceListener = new PriceListener();
+		txtPrice.addKeyListener(priceListener);
+		txtPrice.addFocusListener(priceListener);
 		txtPrice.setColumns(10);
 		add(txtPrice, " hidemode 3");
 		
@@ -82,8 +84,9 @@ public class PriceBoard extends JPanel implements OptionObserver {
 		add(lbPriceFileInstruction, "hidemode 3");
 
 		txtPriceFile = new JTextField("");
-		txtPriceFile.addKeyListener(new PriceFileListener());
-		txtPriceFile.addFocusListener(new PriceFileListener());
+		TextFieldListener priceFileListener = new PriceFileListener();
+		txtPriceFile.addKeyListener(priceFileListener);
+		txtPriceFile.addFocusListener(priceFileListener);
 		txtPriceFile.setColumns(30);
 		add(txtPriceFile, "hidemode 3");
 		

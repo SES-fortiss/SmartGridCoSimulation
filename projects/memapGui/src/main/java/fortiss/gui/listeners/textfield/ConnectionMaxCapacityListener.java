@@ -1,18 +1,20 @@
 package fortiss.gui.listeners.textfield;
 
-public class ConnectionMaxCapacityListener extends NumberListener {
+import fortiss.gui.listeners.helper.NumberVerifier;
+
+public class ConnectionMaxCapacityListener extends ComponentFieldListener {
 
 	public ConnectionMaxCapacityListener() {
-		super(false, true, 10);
+		super("Invalid number!", new NumberVerifier().withDecimalAllowed().withMaxLength(10));
 	}
 
 	@Override
-	void update(String text) {
+	public void update(String text) {
 		connection.setMaxTransportCapacity(Double.parseDouble(text));
 	}
 
 	@Override
-	String getAttribute() {
+	public String getAttribute() {
 		return String.valueOf(connection.getMaxTransportCapacity());
 	}
 

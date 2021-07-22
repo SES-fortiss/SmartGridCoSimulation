@@ -54,7 +54,6 @@ public class MyOpcUaServer implements Runnable {
         jsonInterface = createInterfaceFromFile(interfaceString);
       } else {
         jsonInterface = createInterfaceFromJson(interfaceString);
-
       }
 
 

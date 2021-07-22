@@ -7,6 +7,7 @@ import com.google.gson.annotations.Expose;
 
 import fortiss.gui.DesignerPanel;
 import fortiss.gui.icons.BuildingIcon;
+import fortiss.gui.icons.Icon;
 import fortiss.simulation.PlanningTool;
 
 /**
@@ -41,7 +42,7 @@ public class Building {
 	 * @param port an integer between 1024 and 49151, or 0
 	 * 
 	 */
-	public Building(String name, int port, Point2D position) {
+	public Building(String name, int port, Point2D centralPosition) {
 		// Do not use setName() in the constructor!
 		this.name = name;
 		setFormattedName(name);
@@ -53,15 +54,16 @@ public class Building {
 		volatile_list = new ArrayList<Volatile>();
 		storage_list = new ArrayList<Storage>();
 
-		setIcon(new BuildingIcon(this, position));
+		setIcon(new BuildingIcon(this, centralPosition));
 	}
 
 	public String getName() {
 		return name;
 	}
-	
-	public String getFormattedName() {		
-		if (formattedName == null) return name;		
+
+	public String getFormattedName() {
+		if (formattedName == null)
+			return name;
 		return formattedName;
 	}
 
@@ -75,7 +77,7 @@ public class Building {
 		getIcon().setName(name);
 		setSaved(false);
 	}
-	
+
 	/**
 	 * Set the formatted name of a component, i.e. without Umlaut (diaeresis).
 	 */
@@ -96,19 +98,19 @@ public class Building {
 	public int getDemandCount() {
 		return demand_list.size();
 	}
-	
+
 	public int getStorageCount() {
 		return storage_list.size();
 	}
-	
+
 	public int getVolatileCount() {
 		return volatile_list.size();
 	}
-	
+
 	public int getControllableCount() {
 		return controllable_list.size();
 	}
-	
+
 	public int getCouplerCount() {
 		return coupler_list.size();
 	}
@@ -132,8 +134,8 @@ public class Building {
 	public ArrayList<Coupler> getCoupler() {
 		return coupler_list;
 	}
-	
-	public ArrayList<Component> getComponents(){
+
+	public ArrayList<Component> getComponents() {
 		ArrayList<Component> components = new ArrayList<Component>();
 		components.addAll(demand_list);
 		components.addAll(storage_list);
@@ -158,7 +160,7 @@ public class Building {
 	public void addStorage(Storage storage) {
 		storage_list.add(storage);
 	}
-	
+
 	public void addDemand(Demand demand) {
 		demand_list.add(demand);
 	}
@@ -176,7 +178,7 @@ public class Building {
 	public void setIcon(BuildingIcon icon) {
 		this.icon = icon;
 	}
-	
+
 	public void setSaved(boolean saved) {
 		PlanningTool.getInstance().setSaved(saved);
 	}

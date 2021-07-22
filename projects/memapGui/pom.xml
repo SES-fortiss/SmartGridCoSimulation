@@ -57,6 +57,24 @@
 	</build>
 
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/com.squareup.retrofit2/retrofit -->
+		<dependency>
+			<groupId>com.squareup.retrofit2</groupId>
+			<artifactId>retrofit</artifactId>
+			<version>2.9.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.squareup.retrofit2/converter-gson -->
+		<dependency>
+			<groupId>com.squareup.retrofit2</groupId>
+			<artifactId>converter-gson</artifactId>
+			<version>2.9.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-validator/commons-validator -->
+		<dependency>
+			<groupId>commons-validator</groupId>
+			<artifactId>commons-validator</artifactId>
+			<version>1.7</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-io -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -75,27 +93,27 @@
 			<artifactId>xchart</artifactId>
 			<version>3.8.0</version>
 		</dependency>
-
-
+		<!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>4.9.1</version>
+		</dependency>
 		<dependency>
 			<groupId>org.fortiss</groupId>
 			<artifactId>gridarchitect</artifactId>
 			<version>0.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.fortiss.memap</groupId>
 			<artifactId>memapCore</artifactId>
 			<version>0.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.miglayout</groupId>
 			<artifactId>miglayout-swing</artifactId>
 			<version>5.2</version>
 		</dependency>
-
-
 		<dependency>
 			<groupId>com.jgoodies</groupId>
 			<artifactId>jgoodies-common</artifactId>

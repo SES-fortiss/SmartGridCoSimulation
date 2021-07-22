@@ -1,21 +1,23 @@
 package fortiss.gui.listeners.textfield;
 
 import fortiss.components.Coupler;
+import fortiss.gui.listeners.helper.NumberVerifier;
 
-public class CCOEmissionListener extends NumberListener {
+public class CCOEmissionListener extends ComponentFieldListener {
 
 	public CCOEmissionListener() {
-		super(true, true, 10);
+		super("Error. Invalid value!",
+				new NumberVerifier().withNegativeAllowed().withDecimalAllowed().withMaxLength(10));
 	}
 
 	@Override
-	String getAttribute() {
+	public String getAttribute() {
 		double co2 = ((Coupler) component).getCOEmission();
 		return String.valueOf(co2);
 	}
 
 	@Override
-	void update(String text) {
-		((Coupler) component).setCOEmission(Double.parseDouble(text));	
+	public void update(String text) {
+		((Coupler) component).setCOEmission(Double.parseDouble(text));
 	}
 }

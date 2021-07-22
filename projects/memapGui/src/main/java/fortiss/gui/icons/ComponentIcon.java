@@ -48,7 +48,7 @@ public class ComponentIcon extends Icon {
 	@Override
 	public void highlight() {
 		setSelectedIcon();
-		revalidate();
+		repaint();
 		
 		getComponent().getBuilding().getIcon().highlight();
 	}
@@ -56,7 +56,7 @@ public class ComponentIcon extends Icon {
 	@Override
 	public void playDown() {
 		setUnselectedIcon();
-		revalidate();
+		repaint();
 		
 		getComponent().getBuilding().getIcon().playDown();
 	}

@@ -21,6 +21,7 @@ import fortiss.gui.listeners.label.OptimizerListener;
 import fortiss.gui.listeners.textfield.DaysListener;
 import fortiss.gui.listeners.textfield.MPCHorizonListener;
 import fortiss.gui.listeners.textfield.StepsPerDayListener;
+import fortiss.gui.listeners.textfield.TextFieldListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
@@ -140,8 +141,9 @@ public class ParameterInputPanel extends InformationPanel {
 		txtLength = new JTextField();
 		txtLength.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		txtLength.setText("");
-		txtLength.addKeyListener(new StepsPerDayListener());
-		txtLength.addFocusListener(new StepsPerDayListener());
+		TextFieldListener stepsPerDayListener = new StepsPerDayListener();
+		txtLength.addKeyListener(stepsPerDayListener);
+		txtLength.addFocusListener(stepsPerDayListener);
 		txtLength.setColumns(7);
 		innerPanel.add(txtLength, "growx");
 
@@ -151,8 +153,9 @@ public class ParameterInputPanel extends InformationPanel {
 		txtSteps = new JTextField();
 		txtSteps.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		txtSteps.setText("");
-		txtSteps.addKeyListener(new MPCHorizonListener());
-		txtSteps.addFocusListener(new MPCHorizonListener());
+		TextFieldListener mpcHorizonListener = new MPCHorizonListener();
+		txtSteps.addKeyListener(mpcHorizonListener);
+		txtSteps.addFocusListener(mpcHorizonListener);
 		txtSteps.setColumns(7);
 		innerPanel.add(txtSteps, "growx");
 
@@ -162,8 +165,9 @@ public class ParameterInputPanel extends InformationPanel {
 		txtDays = new JTextField();
 		txtDays.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		txtDays.setText("");
-		txtDays.addKeyListener(new DaysListener());
-		txtDays.addFocusListener(new DaysListener());
+		TextFieldListener daysListener = new DaysListener();
+		txtDays.addKeyListener(daysListener);
+		txtDays.addFocusListener(daysListener);
 		txtDays.setColumns(7);
 		innerPanel.add(txtDays, " growx");
 

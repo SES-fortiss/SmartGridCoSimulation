@@ -2,7 +2,7 @@ package fortiss.components;
 
 import java.awt.Color;
 import java.awt.geom.Line2D;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 import javax.swing.JLabel;
 
@@ -170,7 +170,7 @@ public class Connection {
 	 * deserialization
 	 */
 	public void setLn() {
-		ln = new Line2D.Float(nodeA.getPosition(), nodeB.getPosition());
+		ln = new Line2D.Double(nodeA.getCentralPosition(), nodeB.getCentralPosition());
 	}
 
 	/**
@@ -231,21 +231,13 @@ public class Connection {
 	 * Set a random color to {@link #color}
 	 */
 	public void setColor() {
-
-		int decision = (int) Math.round(Math.random());
-		int g = ThreadLocalRandom.current().nextInt(27, 247 + 1);
-		int r = 0;
-		int b = 0;
-		if (decision == 0) {
-			r = 27;
-			b = 247;
-		} else {
-			r = 247;
-			b = 27;
-		}
-
+		Random rand = new Random();
+		float r = rand.nextFloat() / 2f;
+		float g = rand.nextFloat();
+		float b = rand.nextFloat() / 2f;
+		
 		Color randomColor = new Color(r, g, b);
-		this.color = randomColor;
+		color = randomColor;
 	}
 
 	/**

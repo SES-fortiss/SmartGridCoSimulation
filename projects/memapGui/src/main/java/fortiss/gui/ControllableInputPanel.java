@@ -17,6 +17,7 @@ import fortiss.gui.listeners.textfield.CPEfficiencyListener;
 import fortiss.gui.listeners.textfield.CPMaxPowerListener;
 import fortiss.gui.listeners.textfield.CPMinPowerListener;
 import fortiss.gui.listeners.textfield.CPNameListener;
+import fortiss.gui.listeners.textfield.ComponentFieldListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
 import fortiss.gui.style.StyleGenerator;
@@ -100,8 +101,9 @@ public class ControllableInputPanel extends InformationPanel{
 		add(lbCPName);
 
 		txtCPName = new JTextField();
-		txtCPName.addKeyListener(new CPNameListener());
-		txtCPName.addFocusListener(new CPNameListener());
+		ComponentFieldListener nameListener = new CPNameListener();
+		txtCPName.addKeyListener(nameListener);
+		txtCPName.addFocusListener(nameListener);
 		txtCPName.setColumns(10);
 		add(txtCPName, "growx");
 
@@ -112,16 +114,18 @@ public class ControllableInputPanel extends InformationPanel{
 		sCPNetworkType.setFocusTraversalKeysEnabled(false);
 		sCPNetworkType.setFocusable(false);
 		sCPNetworkType.setModel(new DefaultComboBoxModel<String>(new String[] { "Heat", "Electricity" }));
-		sCPNetworkType.addItemListener(new CPNetworkTypeListener());
-		sCPNetworkType.addMouseListener(new CPNetworkTypeListener());
+		CPNetworkTypeListener networkTypeListener = new CPNetworkTypeListener();
+		sCPNetworkType.addItemListener(networkTypeListener);
+		sCPNetworkType.addMouseListener(networkTypeListener);
 		add(sCPNetworkType, "growx");
 
 		lbCPMinimumPower = new JLabel("Minimum power [kW]");
 		add(lbCPMinimumPower);
 
 		txtCPMinimumPower = new JTextField();
-		txtCPMinimumPower.addKeyListener(new CPMinPowerListener());
-		txtCPMinimumPower.addFocusListener(new CPMinPowerListener());
+		ComponentFieldListener minPowerListener = new CPMinPowerListener();
+		txtCPMinimumPower.addKeyListener(minPowerListener);
+		txtCPMinimumPower.addFocusListener(minPowerListener);
 		txtCPMinimumPower.setColumns(10);
 		add(txtCPMinimumPower, "growx");
 
@@ -129,8 +133,9 @@ public class ControllableInputPanel extends InformationPanel{
 		add(lbCPMaximumPower);
 
 		txtCPMaximumPower = new JTextField();
-		txtCPMaximumPower.addKeyListener(new CPMaxPowerListener());
-		txtCPMaximumPower.addFocusListener(new CPMaxPowerListener());
+		ComponentFieldListener maxPowerListener = new CPMaxPowerListener();
+		txtCPMaximumPower.addKeyListener(maxPowerListener);
+		txtCPMaximumPower.addFocusListener(maxPowerListener);
 		txtCPMaximumPower.setColumns(10);
 		add(txtCPMaximumPower, "growx");
 
@@ -138,8 +143,9 @@ public class ControllableInputPanel extends InformationPanel{
 		add(lbCPEfficiency);
 
 		txtCPEfficiency = new JTextField();
-		txtCPEfficiency.addKeyListener(new CPEfficiencyListener());
-		txtCPEfficiency.addFocusListener(new CPEfficiencyListener());
+		ComponentFieldListener efficiencyListener = new CPEfficiencyListener();
+		txtCPEfficiency.addKeyListener(efficiencyListener);
+		txtCPEfficiency.addFocusListener(efficiencyListener);
 		txtCPEfficiency.setColumns(10);
 		add(txtCPEfficiency, "growx");
 
@@ -147,8 +153,9 @@ public class ControllableInputPanel extends InformationPanel{
 		add(lbCPCost);
 
 		txtCPCost = new JTextField();
-		txtCPCost.addKeyListener(new CPCostListener());
-		txtCPCost.addFocusListener(new CPCostListener());
+		ComponentFieldListener costListener = new CPCostListener();
+		txtCPCost.addKeyListener(costListener);
+		txtCPCost.addFocusListener(costListener);
 		txtCPCost.setColumns(10);
 		add(txtCPCost, "growx");
 
@@ -156,8 +163,9 @@ public class ControllableInputPanel extends InformationPanel{
 		add(lbCPCOEmission);
 
 		txtCPCOEmission = new JTextField();
-		txtCPCOEmission.addKeyListener(new CPCOEmissionListener());
-		txtCPCOEmission.addFocusListener(new CPCOEmissionListener());
+		ComponentFieldListener emissionsListener = new CPCOEmissionListener();
+		txtCPCOEmission.addKeyListener(emissionsListener);
+		txtCPCOEmission.addFocusListener(emissionsListener);
 		txtCPCOEmission.setColumns(10);
 		add(txtCPCOEmission, "growx");
 	}

@@ -145,7 +145,8 @@ public class JettyStart {
 					OptHierarchy.BUILDING, 
 					Optimizer.MILP,
 					OptimizationCriteria.EUR, 
-					ToolUsage.SERVER, MEMAPLogging.ALL
+					ToolUsage.SERVER, 
+					MEMAPLogging.ALL
 					);
 		}
 		

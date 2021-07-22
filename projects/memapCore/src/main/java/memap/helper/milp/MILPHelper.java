@@ -56,8 +56,8 @@ public abstract class MILPHelper {
 		
 		for (int i = 0; i < nStepsMPC; i++) {			
 			int index = i + 1 + addon;
-			String string1 = storageMessage.name+"Discharge_T" + i;
-			String string2 = storageMessage.name+"Charge_T" + i;
+			String string1 = storageMessage.name+"_Discharge_T" + i;
+			String string2 = storageMessage.name+"_Charge_T" + i;
 			problem.setColName(index, string1);
 			problem.setColName(index + nStepsMPC, string2);
 		}		
