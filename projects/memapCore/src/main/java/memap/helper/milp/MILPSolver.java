@@ -192,6 +192,11 @@ public class MILPSolver {
 			optResult.resultMap.put(str, values);
 		}
 
+		/** TASK ONE 1/2 - creation of OPC UA Interface from results
+		
+		
+		
+		
 		// Memory is cleaned up in the child classes  
 		
 		
