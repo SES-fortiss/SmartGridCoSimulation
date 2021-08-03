@@ -39,7 +39,7 @@ public abstract class ExampleLoader {
 		TopologyController topologyController = new TopologyController("MemapExample", OptHierarchy.MEMAP,
 				Optimizer.MILP, OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.RESULTS_ONLY);
 		TopologyConfig.getInstance().init(nrStepsMPC, 96, 7, 4880, 0);
-		EnergyPrices.getInstance().init(new ElectricityPrice(0.285, nrStepsMPC),
+		EnergyPrices.getInstance().init(new ElectricityPrice(9999, nrStepsMPC), new ElectricityPrice(0.285, nrStepsMPC),
 				new ElectricityPrice(0.285, nrStepsMPC), new HeatPrice(0.285, nrStepsMPC));
 		try {
 
@@ -105,7 +105,7 @@ public abstract class ExampleLoader {
 		final int PORT_UNDEFINED = 0;
 		int nrStepsMPC = 5;
 		TopologyConfig.getInstance().init(nrStepsMPC, 96, 7, 0, 4880);
-		EnergyPrices.getInstance().init(new ElectricityPrice(0.285, nrStepsMPC),
+		EnergyPrices.getInstance().init(new ElectricityPrice(9999, nrStepsMPC), new ElectricityPrice(0.285, nrStepsMPC),
 				new ElectricityPrice("ELECTRICITYPRICEEXAMPLE"), new HeatPrice(0.285, nrStepsMPC));
 		TopologyController topologyController = new TopologyController("MemapExample", OptHierarchy.BUILDING,
 				Optimizer.MILP, OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.RESULTS_ONLY);

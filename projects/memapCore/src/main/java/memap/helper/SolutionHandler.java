@@ -146,7 +146,7 @@ public class SolutionHandler {
 		double[] result = new double[demand.length / nStepsMPC];
 
 		for (int i = 0; i < result.length; i++) {
-			result[i] = demand[i * nStepsMPC];
+			result[i] = -demand[i * nStepsMPC];
 		}
 		
 		return result;

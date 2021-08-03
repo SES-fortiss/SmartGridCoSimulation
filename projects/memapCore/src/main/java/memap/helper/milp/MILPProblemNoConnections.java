@@ -111,6 +111,8 @@ public class MILPProblemNoConnections extends MILPProblem {
 			}
 
 			problem.addConstraint(rowHEAT, LpSolve.EQ, demand[i]);
+//			System.out.println("Adding Constraint at i = " + i + ", --> rowHEAT: " + Arrays.toString(rowHEAT)
+//			+ " EQ: " + demand[i]);
 		}
 
 		/* second ELEC componentes */
@@ -121,6 +123,7 @@ public class MILPProblemNoConnections extends MILPProblem {
 			int couplerHandled = 0;
 			int storageHandled = 0;
 
+			
 			double[] rowELEC = new double[nCols + 1];
 
 			for (ProducerMessage pm : buildingMessage.controllableProducerList) {
@@ -155,20 +158,20 @@ public class MILPProblemNoConnections extends MILPProblem {
 					rowELEC[index + nStepsMPC] = 1;
 				}
 				storageHandled++;
+				
 			}
 
 			// ADD Markets (at last position)
 
 			int index = countTimeStep + 1 + nStepsMPC
 					* ((controllableHandled * 2) + volatileHandled + (couplerHandled * 2) + (storageHandled * 2));
-
 			rowELEC[index] = -1;
 			rowELEC[index + nStepsMPC] = 1;
-
+			
 			problem.addConstraint(rowELEC, LpSolve.EQ, demand[i]);
 
-			// System.out.println("Adding markets --> rowELEC: " + Arrays.toString(rowELEC)
-			// + " EQ: " + demand[i]);
+//			System.out.println("Adding markets --> rowELEC: " + Arrays.toString(rowELEC)
+//			+ " EQ: " + demand[i]);
 			countTimeStep++;
 		}
 
@@ -177,6 +180,10 @@ public class MILPProblemNoConnections extends MILPProblem {
 
 	public LpSolve createComponentBoundaries(LpSolve problem, BuildingMessage buildingMessage) throws LpSolveException {
 
+		int cts = currentTimeStep;
+		double[] networkBuyCap = new double[nStepsMPC];
+    	Arrays.fill(networkBuyCap, 99999.0); // fill with 99999 kWh -> (no) upper limit.
+    	
 		for (int i = 0; i < nStepsMPC; i++) {
 			MILPIndexHelper ih = new MILPIndexHelper(nStepsMPC);
 
@@ -263,6 +270,34 @@ public class MILPProblemNoConnections extends MILPProblem {
 
 				ih.storageHandled++;
 			}
+			
+			// ADD Market Constraints
+
+        	int index = i + 1 + nStepsMPC * ((ih.controllableHandled * 2) + ih.volatileHandled
+					+ (ih.couplerHandled * 2) + (ih.storageHandled * 2));
+        		
+        	/* 
+        	This routine takes the minimum Electricity Buy Cap from all houses to be overtaken by memap
+        	This solution has to be revised. Maybe an addition would be better.
+        	
+        	It would also be possible to set this globally and load through: energyPrices.getElecBuyCap(i); 
+        	*/
+        	double[] rowN = new double[nCols + 1];
+        	
+        	for (DemandMessage dm : buildingMessage.demandList) {		     	
+        		
+        		if ((dm.networkType == NetworkType.ELECTRICITY) && (dm.varNetworkBuyCap != null)) {
+        			if ( (dm.varNetworkBuyCap[i] < networkBuyCap[i])) {
+        				networkBuyCap[i] = dm.varNetworkBuyCap[i]*energyPrices.getMaxBuyLimit(cts + i);	
+        				if (energyPrices.getMaxBuyLimit(cts + i) == 0) networkBuyCap[i] = 9999.0;
+        			}
+       			}
+//        		if (dm.networkType == NetworkType.ELECTRICITY && i == 0) System.out.println("ElecBuy for " + buildingMessage.name + " limited to " + networkBuyCap[0]);
+        	}
+        	rowN[index] = 1;
+        	
+        	problem.addConstraint(rowN, LpSolve.LE, networkBuyCap[i]);
+//			System.out.println(Arrays.toString(rowN) + ": ElecBuy for " + buildingMessage.name + " limited to " + networkBuyCap[i] + " at index " + index );		
 
 		}
 		return problem;
@@ -315,7 +350,7 @@ public class MILPProblemNoConnections extends MILPProblem {
     			}
                 
     			// Add the factor vectors to the problem as constraint:
-    			problem.addConstraint(rowDISCHARGE, LpSolve.LE, (SOC_perc * Math.pow(alpha, i+1)));
+    			problem.addConstraint(rowDISCHARGE, LpSolve.LE, (SOC_perc * Math.pow(alpha, i+1)) - 0.1);
     			problem.addConstraint(rowCHARGE, LpSolve.LE, (1-(SOC_perc * Math.pow(alpha, i+1))));
             }
             
@@ -448,6 +483,7 @@ public class MILPProblemNoConnections extends MILPProblem {
         	Arrays.fill(bestBuyPrice, 100.0); // fill with 100 €/kWh
         	double[] bestSellPrice = new double[nStepsMPC];
         	Arrays.fill(bestSellPrice, 0.0); // fill with 0 €/kWh
+
         	
         	for (DemandMessage dm : buildingMessage.demandList) {		
         		if (dm.networkType == NetworkType.ELECTRICITY) {
@@ -471,6 +507,7 @@ public class MILPProblemNoConnections extends MILPProblem {
             	// sell
             	colno[counter] = index+nStepsMPC;
             	row[counter++] = -energyPrices.getElecSellingPrice(cts+i);
+
 			}
         	
         	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {

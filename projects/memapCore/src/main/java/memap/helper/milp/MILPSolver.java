@@ -222,12 +222,14 @@ public class MILPSolver {
 		double[] currentStep = { currentTimeStep };
 		
 		String[] energyPricesNames = { 
+					Strings.maxBuyLimitAndUnit, 
 					Strings.elecBuyingPriceAndUnit, 
 					Strings.elecSellingPriceAndUnit,
 					Strings.heatBuyingPriceAndUnit 
 				};
 		
 		double[] currentEnergyPrices = { 
+					energyPrices.getMaxBuyLimit(currentTimeStep),
 					energyPrices.getElecBuyingPrice(currentTimeStep),
 					energyPrices.getElecSellingPrice(currentTimeStep),
 					energyPrices.getHeatBuyingPrice(currentTimeStep) 
