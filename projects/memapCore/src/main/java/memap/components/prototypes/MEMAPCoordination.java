@@ -167,12 +167,11 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 
 	@Override
 	public AnswerContent returnAnswerContentToSend() {
-		
 		if (currentTimeStep == 0) { 
 			// Save topology as json for usage in planning tool:
 			JsonExportHelper.exportMemapTopology(topologyController, answerListReceived);
 			if (topologyController.getToolUsage() == ToolUsage.SERVER && port != 0 && optResult != null) {
-				this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult), port);
+				this.mServer = new MemapOpcServerStarter(false, gson.toJson(optResult.resultMap), port);
 				try {
 					this.mServer.start();
 				} catch (Exception e) {
@@ -185,13 +184,7 @@ public class MEMAPCoordination extends BehaviorModel implements CurrentTimeStepS
 		if (topologyController.getToolUsage() == ToolUsage.SERVER)  {			
 			if(port != 0 && optResult != null) {
 				try {
-					try (Writer writer = new FileWriter("Update.json")) {
-					    Gson gson1 = new GsonBuilder().create();
-					    gson1.toJson(optResult, writer);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-					this.mServer.update(gson.toJson(optResult));
+					this.mServer.update(gson.toJson(optResult.resultMap));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

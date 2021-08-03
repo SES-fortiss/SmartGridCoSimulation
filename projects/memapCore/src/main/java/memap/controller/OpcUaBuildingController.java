@@ -252,8 +252,10 @@ public class OpcUaBuildingController implements BuildingController {
 								double lossesPer100m = ((Number) connectionConfig.get("losses")).doubleValue();
 								double q_max = ((Number) connectionConfig.get("maxTransportCapacity")).doubleValue();
 								System.out.println("Connection is considered from " + sourceBuilding + " to " + connectedBuilding);
+								NodeId transferSpFw = NodeId.parse((String) info.get("SPHeatFrwd"));
+								NodeId transferSpBk = NodeId.parse((String) info.get("SPHeatBack"));
 							
-								ClientEMSconnection ems = new ClientEMSconnection(client, topologyController, name, triggerId, sourceBuilding, connectedBuilding, pipeLengthInMeter, lossesPer100m, q_max, 0);
+								ClientEMSconnection ems = new ClientEMSconnection(client, topologyController, name, triggerId, sourceBuilding, connectedBuilding, pipeLengthInMeter, lossesPer100m, q_max, transferSpFw, transferSpBk, 0);
 								attach(ems);
 								ems.setTopologyController(topologyController);
 			

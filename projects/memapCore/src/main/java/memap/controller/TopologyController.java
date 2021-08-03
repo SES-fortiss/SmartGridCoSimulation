@@ -99,7 +99,6 @@ public class TopologyController implements Runnable {
 //      Building building = new Building(this, topologyConfig.getPortUndefined());
 			Building building = new Building(this, 0);
 			building.setElecBuylimit(managedBuilding.getElecBuyLimit());
-			System.out.println("Building " + buildingName + " new ElecLimit = " + building.getElecBuylimit()[0]);
 
 			ActorTopology buildingHead = new ActorTopology(buildingName);
 			buildingHead.addActor(buildingName, ActorFactory.createDevice(building));

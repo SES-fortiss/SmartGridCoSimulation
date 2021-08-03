@@ -1,7 +1,0 @@
-Datenpunkte von Wärmemengenzählern:
-End point URL:opc.tcp://10.10.10.52:48040
-Gebaüde 1:Display Name:OBJ01_DZMW_UA_02_B108VL_aktDataValue{value=Variant{value=null}, status=StatusCode{name=Bad_NodeIdUnknown, value=0x80340000, quality=bad}, sourceTime=DateTime{utcTime=0, javaDate=Mon Jan 01 01:00:00 CET 1601}, serverTime=DateTime{utcTime=0, javaDate=Mon Jan 01 01:00:00 CET 1601}}
-Gebaüde 2:Display Name:OBJ02_DZMW_UA_02_B108VL_aktDataValue{value=Variant{value=0.0}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=0, javaDate=Mon Jan 01 01:00:00 CET 1601}, serverTime=DateTime{utcTime=0, javaDate=Mon Jan 01 01:00:00 CET 1601}}
-Gebaüde 3:Display Name:OBJ03_DZMW_UA_02_B108VL_aktDataValue{value=Variant{value=0.0}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=0, javaDate=Mon Jan 01 01:00:00 CET 1601}, serverTime=DateTime{utcTime=0, javaDate=Mon Jan 01 01:00:00 CET 1601}}
-Gebaüde 4:Display Name:OBJ04_DZMW_UA_02_B108VL_aktDataValue{value=Variant{value=41.238434}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=0, javaDate=Mon Jan 01 01:00:00 CET 1601}, serverTime=DateTime{utcTime=0, javaDate=Mon Jan 01 01:00:00 CET 1601}}
-Gebaüde 5:Display Name:OBJ05_DZMW_UA_02_B108VL_aktDataValue{value=Variant{value=20.76528}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=0, javaDate=Mon Jan 01 01:00:00 CET 1601}, serverTime=DateTime{utcTime=0, javaDate=Mon Jan 01 01:00:00 CET 1601}}

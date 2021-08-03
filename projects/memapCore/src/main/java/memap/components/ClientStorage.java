@@ -162,7 +162,7 @@ public class ClientStorage extends Storage {
 		if (requestContentReceived instanceof OptimizationResultMessage) {
 			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
 			for (String key : optResult.resultMap.keySet()) {
-				if (key.equals(actorName + "Charge")) {
+				if (key.equals(actorName + "_Charge")) {
 					optimizationAdviceInput = optResult.resultMap.get(key);
 					DataValue singlevalueInputSetpoint = new DataValue(new Variant(optimizationAdviceInput[0]), null, null);
 					client.writeValue(inputSetpointId, singlevalueInputSetpoint);
@@ -175,7 +175,7 @@ public class ClientStorage extends Storage {
 						e.printStackTrace();
 					}		
 				}
-				if (key.equals(actorName + "Discharge")) {
+				if (key.equals(actorName + "_Discharge")) {
 					optimizationAdviceOutput = optResult.resultMap.get(key);
 					DataValue singlevalueOutputSetpoint = new DataValue(new Variant(optimizationAdviceOutput[0]), null, null);
 					client.writeValue(outputSetpointId, singlevalueOutputSetpoint);
@@ -204,7 +204,7 @@ public class ClientStorage extends Storage {
 			
 			// update the SOC based on the just written setpoints for the storage
 			double SOC_perc_updated = this.stateOfCharge * alpha + beta_to * optimizationAdviceInput[0] - beta_fm * optimizationAdviceOutput[0];
-			
+			System.out.println("!: " + SOC_perc_updated + " = " + (this.stateOfCharge * alpha) + " + " + beta_to + " * " + optimizationAdviceInput[0] + " - " + beta_fm + " * " + optimizationAdviceOutput[0]);
 			// feed the updated SOC back into the original format and value (workaround, should be updated)
 			this.stateOfCharge =  SOC_perc_updated;
 			// use the updating/communication procedure used below (just copied)

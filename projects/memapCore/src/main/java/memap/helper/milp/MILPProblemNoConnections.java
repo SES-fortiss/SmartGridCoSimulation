@@ -271,17 +271,12 @@ public class MILPProblemNoConnections extends MILPProblem {
 				ih.storageHandled++;
 			}
 			
-			// ADD Market Constraints
-
-        	int index = i + 1 + nStepsMPC * ((ih.controllableHandled * 2) + ih.volatileHandled
+			// Market Constraints:
+        	// takes the minimum Electricity Buy Cap from all houses to be overtaken by Memap
+        	// and multiplies it by the time-dependent function for the MaxBuyLimit, if defined in the global simulation settings.
+			
+			int index = i + 1 + nStepsMPC * ((ih.controllableHandled * 2) + ih.volatileHandled
 					+ (ih.couplerHandled * 2) + (ih.storageHandled * 2));
-        		
-        	/* 
-        	This routine takes the minimum Electricity Buy Cap from all houses to be overtaken by memap
-        	This solution has to be revised. Maybe an addition would be better.
-        	
-        	It would also be possible to set this globally and load through: energyPrices.getElecBuyCap(i); 
-        	*/
         	double[] rowN = new double[nCols + 1];
         	
         	for (DemandMessage dm : buildingMessage.demandList) {		     	
@@ -319,12 +314,12 @@ public class MILPProblemNoConnections extends MILPProblem {
 			double standbyLosses = sm.storageLosses;
 			
 			// check and enforce that SOC is between 0 and 1, due to numerical issues.
-			if (SOC_perc >= 1) {
-				SOC_perc = 1;
-			}
-			if (SOC_perc <= 0) {
-				SOC_perc = 0;
-			}		
+//			if (SOC_perc >= 1) {
+//				SOC_perc = 1;
+//			}
+//			if (SOC_perc <= 0) {
+//				SOC_perc = 0;
+//			}		
 			
 			// New for SOC within 0 and 1 and standby loss consideration:
 			// helper parameters, only depend on time step length and storage parameters
@@ -350,8 +345,14 @@ public class MILPProblemNoConnections extends MILPProblem {
     			}
                 
     			// Add the factor vectors to the problem as constraint:
-    			problem.addConstraint(rowDISCHARGE, LpSolve.LE, (SOC_perc * Math.pow(alpha, i+1)) - 0.1);
     			problem.addConstraint(rowCHARGE, LpSolve.LE, (1-(SOC_perc * Math.pow(alpha, i+1))));
+    			// for the last timestep in the horizon, the discharge limit is set to be 10%
+    			if (i < (nStepsMPC-1)) {
+    				problem.addConstraint(rowDISCHARGE, LpSolve.LE, (SOC_perc * Math.pow(alpha, i+1)));
+    			} else {
+    				problem.addConstraint(rowDISCHARGE, LpSolve.LE, 0.1);
+    			}
+    			
             }
             
 			storageHandled++;
