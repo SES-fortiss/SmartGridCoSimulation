@@ -41,7 +41,7 @@ public abstract class MILPHelper {
 		for (int i = 0; i < nStepsMPC; i++) {			
 			int index = i + 1 + addon;
 			String string1 = couplerMessage.name + "_T" + i;
-			String string2 = couplerMessage.name + "OFF_T" + i;
+			String string2 = couplerMessage.name + "_OFF_T" + i;
 			// TODO: Implement check for duplicated names
 			// NOTE: it should be everywhere checked then
 			problem.setColName(index, string1);
@@ -56,8 +56,8 @@ public abstract class MILPHelper {
 		
 		for (int i = 0; i < nStepsMPC; i++) {			
 			int index = i + 1 + addon;
-			String string1 = storageMessage.name+"Discharge_T" + i;
-			String string2 = storageMessage.name+"Charge_T" + i;
+			String string1 = storageMessage.name+"_Discharge_T" + i;
+			String string2 = storageMessage.name+"_Charge_T" + i;
 			problem.setColName(index, string1);
 			problem.setColName(index + nStepsMPC, string2);
 		}		

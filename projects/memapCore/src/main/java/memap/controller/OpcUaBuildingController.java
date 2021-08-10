@@ -62,6 +62,7 @@ public class OpcUaBuildingController implements BuildingController {
 	protected Gson gson = new Gson();
 
 	public String name;
+	public double[] elecBuylimit;
 	private String endpointURL;
 	private int endpointDescriptor;
 	private Set<Device> devices = new HashSet<Device>();
@@ -251,8 +252,10 @@ public class OpcUaBuildingController implements BuildingController {
 								double lossesPer100m = ((Number) connectionConfig.get("losses")).doubleValue();
 								double q_max = ((Number) connectionConfig.get("maxTransportCapacity")).doubleValue();
 								System.out.println("Connection is considered from " + sourceBuilding + " to " + connectedBuilding);
+								NodeId transferSpFw = NodeId.parse((String) info.get("SPHeatFrwd"));
+								NodeId transferSpBk = NodeId.parse((String) info.get("SPHeatBack"));
 							
-								ClientEMSconnection ems = new ClientEMSconnection(client, topologyController, name, triggerId, sourceBuilding, connectedBuilding, pipeLengthInMeter, lossesPer100m, q_max, 0);
+								ClientEMSconnection ems = new ClientEMSconnection(client, topologyController, name, triggerId, sourceBuilding, connectedBuilding, pipeLengthInMeter, lossesPer100m, q_max, transferSpFw, transferSpBk, 0);
 								attach(ems);
 								ems.setTopologyController(topologyController);
 			
@@ -416,9 +419,12 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId outputSetpointId = NodeId.parse((String) strge.get("SPDisChrg"));
 								NodeId outputSetpointsId = NodeId.parse((String) strge.get("SPDisChrgAr"));
 //								NodeId outputSetpointsId = null;
+								
+								NodeId minimumSocId = null;
+								if (strge.containsKey("SOCminHOR")) minimumSocId = NodeId.parse((String) strge.get("SOCminHOR"));
 	
 								String storageName = EMSkey + "_STRGE" + String.format("%02d",  i+1);
-								ClientStorage cs = new ClientStorage(client, storageName, capacityId, stateOfChargeId, calculatedSocId,
+								ClientStorage cs = new ClientStorage(client, storageName, capacityId, stateOfChargeId, calculatedSocId, minimumSocId,
 										maxChargingId, maxDischargingId, effInId, effOutId, storageLossId, primarySectId,
 										opCostId, costCO2Id, inputSetpointsId, outputSetpointsId, inputSetpointId, outputSetpointId, 0);
 								attach(cs);
@@ -438,5 +444,10 @@ public class OpcUaBuildingController implements BuildingController {
 
 	private static String getNextId() {
 		return Integer.toString(nextId.incrementAndGet());
+	}
+
+	@Override
+	public double[] getElecBuyLimit() {
+		return this.elecBuylimit;
 	}
 }

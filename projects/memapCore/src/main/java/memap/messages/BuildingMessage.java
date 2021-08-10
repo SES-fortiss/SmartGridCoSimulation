@@ -22,6 +22,8 @@ public class BuildingMessage implements AnswerContent {
 	public String name;
 	/** Unique id of the sender */
 	public String id;
+	/**  Maximum to buy from the grid per timestep */
+	public double[] varNetworkBuyCap;
 
 	// Place holders for OPC UA interface
 	public ArrayList<CurrentSetPoints> currentSetPointList = new ArrayList<CurrentSetPoints>();

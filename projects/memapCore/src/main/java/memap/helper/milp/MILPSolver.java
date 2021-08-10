@@ -192,6 +192,11 @@ public class MILPSolver {
 			optResult.resultMap.put(str, values);
 		}
 
+		/** TASK ONE 1/2 - creation of OPC UA Interface from results
+		
+		
+		
+		
 		// Memory is cleaned up in the child classes  
 		
 		
@@ -217,12 +222,14 @@ public class MILPSolver {
 		double[] currentStep = { currentTimeStep };
 		
 		String[] energyPricesNames = { 
+					Strings.maxBuyLimitAndUnit, 
 					Strings.elecBuyingPriceAndUnit, 
 					Strings.elecSellingPriceAndUnit,
 					Strings.heatBuyingPriceAndUnit 
 				};
 		
 		double[] currentEnergyPrices = { 
+					energyPrices.getMaxBuyLimit(currentTimeStep),
 					energyPrices.getElecBuyingPrice(currentTimeStep),
 					energyPrices.getElecSellingPrice(currentTimeStep),
 					energyPrices.getHeatBuyingPrice(currentTimeStep) 

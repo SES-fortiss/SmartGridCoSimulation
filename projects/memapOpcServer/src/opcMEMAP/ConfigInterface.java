@@ -4,7 +4,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import opcMEMAP.serverConfigurationClassesJSON.MyFolderNode;
 import opcMEMAP.serverConfigurationClassesJSON.MyVariableNode;
 
@@ -12,8 +11,8 @@ public class ConfigInterface {
 
   // private String host = "localhost";
   private String host;
-  private int port = 4880;
-  private String uri = "urn:fortiss:opc:sever:memap" + UUID.randomUUID();
+  private int port = 7013;
+  private String uri = "urn:fortiss:opc:sever:memap";
   private String namespace = "sessim";
   private double minSamplingInterval = 499;
   private ServerConfigurationImpl serverReference = null;

@@ -275,7 +275,10 @@ public class MILPProblemWithConnections extends MILPProblem {
 
 	public LpSolve createComponentBoundaries(LpSolve problem, ArrayList<BuildingMessage> buildingMessages) throws LpSolveException {
 		
-	     for (int i = 0; i < nStepsMPC; i++) {
+		double[] networkBuyCap = new double[nStepsMPC];
+    	Arrays.fill(networkBuyCap, 99999.0); // fill with 99999 kWh -> (no) upper limit. 
+		
+		for (int i = 0; i < nStepsMPC; i++) {
 
 	    	for (BuildingMessage bm : buildingMessages) {
 	            int controllableHandled = 0;
@@ -356,7 +359,28 @@ public class MILPProblemWithConnections extends MILPProblem {
 	            	//System.out.println("Adding max charging --> row2: " + Arrays.toString(row2) + " <= " + sm.maxLoad);
 	        		        		
 	         		storageHandled++;
-	 			}	        	
+	 			}	
+	        	
+	        	// Market Constraints:
+	        	// Takes the minimum Electricity Buy Cap from all houses to be overtaken by Memap
+	        	// and multiplies it by the time-dependent function for the MaxBuyLimit, if defined in the global simulation settings.
+	        	
+	        	int index = i + indexBuilding + 1 + nStepsMPC * ((controllableHandled * 2) + volatileHandled + (couplerHandled * 2) + (storageHandled * 2)  );
+	        	
+	        	double[] row = new double[nCols+1];
+	        	
+	        	for (DemandMessage dm : bm.demandList) {		     	
+	        		
+	        		if ((dm.networkType == NetworkType.ELECTRICITY) && (dm.varNetworkBuyCap != null)) {
+	        			if ( (dm.varNetworkBuyCap[i] < networkBuyCap[i])) {
+	        				networkBuyCap[i] = dm.varNetworkBuyCap[i]*energyPrices.getMaxBuyLimit(currentTimeStep + i);	
+	        				if (energyPrices.getMaxBuyLimit(currentTimeStep + i) == 0) networkBuyCap[i] = 9999.0;
+	        			}
+	       			}
+//	        		if (dm.networkType == NetworkType.ELECTRICITY && i == 0) System.out.println("ElecBuy for " + buildingMessage.name + " limited to " + networkBuyCap[0]);
+	        	}
+	        	row[index] = 1;
+	   
 	    	}	// end of BuildingMessage Loop
 	    }	// end of nStepsLoop
 
@@ -419,13 +443,13 @@ public class MILPProblemWithConnections extends MILPProblem {
 	            double SOC_perc = sm.stateOfCharge;
 				double standbyLosses = sm.storageLosses;
 				
-				if (SOC_perc >= 1) {
-					SOC_perc = 1;
-				}
-				
-				if (SOC_perc <= 0) {
-					SOC_perc = 0;
-				}
+//				if (SOC_perc >= 1) {
+//					SOC_perc = 1;
+//				}
+//				
+//				if (SOC_perc <= 0) {
+//					SOC_perc = 0;
+//				}
 				
 				// New for SOC within 0 and 1 and standby loss consideration:
 				// helper parameters, only depend on time step length and storage parameters
@@ -450,8 +474,14 @@ public class MILPProblemWithConnections extends MILPProblem {
 	    			}
 	                
 	    			// Add the factor vectors to the problem as constraint:
-	    			problem.addConstraint(rowDISCHARGE, LpSolve.LE, (SOC_perc * Math.pow(alpha, i+1)));
-	    			problem.addConstraint(rowCHARGE, LpSolve.LE, (1-(SOC_perc * Math.pow(alpha, i+1))));		        	
+	    			problem.addConstraint(rowCHARGE, LpSolve.LE, (1-(SOC_perc * Math.pow(alpha, i+1))));
+	    			// for the last timestep in the horizon, the discharge limit is set to be 10%
+	    			if (i == (nStepsMPC-1) && (Double) sm.minimumSOC != null) {
+	    				problem.addConstraint(rowDISCHARGE, LpSolve.LE, sm.minimumSOC);
+	    			} else {
+	    				problem.addConstraint(rowDISCHARGE, LpSolve.LE, (SOC_perc * Math.pow(alpha, i+1)));
+	    			}
+	    			
 				}
 		        
 		        storageHandled++;

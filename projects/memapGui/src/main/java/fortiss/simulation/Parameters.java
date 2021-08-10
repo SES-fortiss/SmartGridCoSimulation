@@ -8,6 +8,7 @@ import fortiss.gui.DesignerPanel;
 import fortiss.gui.listeners.helper.CO2Emission;
 import fortiss.gui.listeners.helper.ElectricityPrice;
 import fortiss.gui.listeners.helper.HeatPrice;
+import fortiss.gui.listeners.helper.MaxBuyLimit;
 import fortiss.gui.listeners.helper.Price;
 import fortiss.media.IconStore;
 
@@ -65,6 +66,9 @@ public class Parameters {
 	/** loggingMode a String. loggingMode: {allLogs, fileLogs, resultLogs} */
 	@Expose
 	private String loggingMode;
+	
+	@Expose
+	private Price maxBuyLimit;
 	@Expose
 	private Price elecSellingPrice;
 	@Expose
@@ -86,7 +90,7 @@ public class Parameters {
 		setOptimizer(optimizerOptions.get(0));
 		setOptCriteria(criteriaOptions.get(0));
 		setLoggingMode(loggingOptions.get(0));
-
+		setMaxBuyLimit(new MaxBuyLimit(9999, mpcHorizon));
 		setElecBuyingPrice(new ElectricityPrice(0.3, mpcHorizon));
 		setElecSellingPrice(new ElectricityPrice(0.08, mpcHorizon));
 		setHeatBuyingPrice(new HeatPrice(0.13, mpcHorizon));
@@ -94,7 +98,7 @@ public class Parameters {
 	}
 
 	public Parameters(int simulationSteps, int mpcHorizon, int days, String optCriteria,
-			String optimizer, String loggingMode, Price elecBuyingPrice, Price elecSellingPrice,
+			String optimizer, String loggingMode, Price maxBuyLimit, Price elecBuyingPrice, Price elecSellingPrice,
 			Price heatBuyingPrice, Price co2Emissions) {
 		setSimulationName("InteractiveMEMAP");
 		setStepsPerDay(simulationSteps);
@@ -104,6 +108,7 @@ public class Parameters {
 		setOptimizer(optimizer);
 		setOptCriteria(optCriteria);
 		setLoggingMode(loggingMode);
+		setMaxBuyLimit(maxBuyLimit);
 		setElecBuyingPrice(elecBuyingPrice);
 		setElecSellingPrice(elecSellingPrice);
 		setHeatBuyingPrice(heatBuyingPrice);
@@ -137,6 +142,7 @@ public class Parameters {
 
 	public void setMPCHorizon(int mpcHorizon) {
 		this.mpcHorizon = mpcHorizon;
+		maxBuyLimit.updateMPCHorizon(mpcHorizon);
 		elecBuyingPrice.updateMPCHorizon(mpcHorizon);
 		elecSellingPrice.updateMPCHorizon(mpcHorizon);
 		heatBuyingPrice.updateMPCHorizon(mpcHorizon);
@@ -215,6 +221,14 @@ public class Parameters {
 		}
 	}
 
+	public Price getMaxBuyLimit() {
+		return maxBuyLimit;
+	}
+
+	public void setMaxBuyLimit(Price maxBuyLimit) {
+		this.maxBuyLimit = maxBuyLimit;
+	}
+	
 	public Price getElecSellingPrice() {
 		return elecSellingPrice;
 	}

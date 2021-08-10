@@ -100,7 +100,7 @@ public class JettyStart {
 					Optimizer.MILPwithConnections,
 					OptimizationCriteria.EUR, 
 					ToolUsage.SERVER, 
-					MEMAPLogging.ALL
+					MEMAPLogging.RESULTS_ONLY
 					);	
 		} else {
 			
@@ -111,7 +111,7 @@ public class JettyStart {
 					Optimizer.MILP,
 					OptimizationCriteria.EUR, 
 					ToolUsage.SERVER, 
-					MEMAPLogging.ALL
+					MEMAPLogging.RESULTS_ONLY
 					);	
 		}
 		
@@ -126,6 +126,7 @@ public class JettyStart {
 		// Global EnergyPrices: Import can be designed similar to connection (see planning tool), 
 		// but is not necessary, if buildings provide price values via OPC UA.
 		EnergyPrices.getInstance().init(
+				new ElectricityPrice(9999, Simulation.N_STEPS_MPC),				 //global buying limit
 				new ElectricityPrice(0.285, Simulation.N_STEPS_MPC), //global buying price
 				new ElectricityPrice(0.08, Simulation.N_STEPS_MPC),  //global selling price
 				new HeatPrice(0.13, Simulation.N_STEPS_MPC) 		 //global heat price
@@ -138,7 +139,8 @@ public class JettyStart {
 					OptHierarchy.BUILDING, 
 					Optimizer.MILP,
 					OptimizationCriteria.EUR, 
-					ToolUsage.SERVER, MEMAPLogging.ALL
+					ToolUsage.SERVER, 
+					MEMAPLogging.ALL
 					);
 		}
 		

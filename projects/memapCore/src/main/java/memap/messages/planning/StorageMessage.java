@@ -16,6 +16,7 @@ public class StorageMessage implements AnswerContent {
 	public double capacity;
 	public double stateOfCharge;
 	public double storageEnergyContent;
+	public double minimumSOC;
 	
 	public double maxLoad;
 	public double maxDischarge;
