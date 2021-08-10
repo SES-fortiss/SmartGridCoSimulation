@@ -347,10 +347,10 @@ public class MILPProblemNoConnections extends MILPProblem {
     			// Add the factor vectors to the problem as constraint:
     			problem.addConstraint(rowCHARGE, LpSolve.LE, (1-(SOC_perc * Math.pow(alpha, i+1))));
     			// for the last timestep in the horizon, the discharge limit is set to be 10%
-    			if (i < (nStepsMPC-1)) {
-    				problem.addConstraint(rowDISCHARGE, LpSolve.LE, (SOC_perc * Math.pow(alpha, i+1)));
+    			if (i == (nStepsMPC-1) && (Double) sm.minimumSOC != null) {
+    				problem.addConstraint(rowDISCHARGE, LpSolve.LE, sm.minimumSOC);
     			} else {
-    				problem.addConstraint(rowDISCHARGE, LpSolve.LE, 0.1);
+    				problem.addConstraint(rowDISCHARGE, LpSolve.LE, (SOC_perc * Math.pow(alpha, i+1)));
     			}
     			
             }

@@ -106,9 +106,12 @@ public class ClientEMSconnection extends Connection {
 				if (key.equals(this.actorName + "Frwd_withEfficiency")) {
 
 					try {
+						optAdviceHeatPurchase = optResult.resultMap.get(key);
 						if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, setpointsHeatFwrd).getValue().getValue().getClass().isArray()) {
-							optAdviceHeatPurchase = optResult.resultMap.get(key);
 							DataValue data = new DataValue(new Variant(optAdviceHeatPurchase), null, null);
+							client.writeValue(setpointsHeatFwrd, data);
+						} else {
+							DataValue data = new DataValue(new Variant(optAdviceHeatPurchase[0]), null, null);
 							client.writeValue(setpointsHeatFwrd, data);
 						}
 					} catch (InterruptedException | ExecutionException e) {
@@ -118,9 +121,12 @@ public class ClientEMSconnection extends Connection {
 				if (key.equals(this.actorName + "Back_withEfficiency")) {
 
 					try {
+						optAdviceHeatDelivery = optResult.resultMap.get(key);
 						if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, setpointsHeatBack).getValue().getValue().getClass().isArray()) {
-							optAdviceHeatDelivery = optResult.resultMap.get(key);
 							DataValue data = new DataValue(new Variant(optAdviceHeatDelivery), null, null);
+							client.writeValue(setpointsHeatBack, data);
+						} else {
+							DataValue data = new DataValue(new Variant(optAdviceHeatDelivery[0]), null, null);
 							client.writeValue(setpointsHeatBack, data);
 						}
 					} catch (InterruptedException | ExecutionException e) {

@@ -419,9 +419,12 @@ public class OpcUaBuildingController implements BuildingController {
 								NodeId outputSetpointId = NodeId.parse((String) strge.get("SPDisChrg"));
 								NodeId outputSetpointsId = NodeId.parse((String) strge.get("SPDisChrgAr"));
 //								NodeId outputSetpointsId = null;
+								
+								NodeId minimumSocId = null;
+								if (strge.containsKey("SOCminHOR")) minimumSocId = NodeId.parse((String) strge.get("SOCminHOR"));
 	
 								String storageName = EMSkey + "_STRGE" + String.format("%02d",  i+1);
-								ClientStorage cs = new ClientStorage(client, storageName, capacityId, stateOfChargeId, calculatedSocId,
+								ClientStorage cs = new ClientStorage(client, storageName, capacityId, stateOfChargeId, calculatedSocId, minimumSocId,
 										maxChargingId, maxDischargingId, effInId, effOutId, storageLossId, primarySectId,
 										opCostId, costCO2Id, inputSetpointsId, outputSetpointsId, inputSetpointId, outputSetpointId, 0);
 								attach(cs);
