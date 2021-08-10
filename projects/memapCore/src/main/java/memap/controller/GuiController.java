@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,6 +24,7 @@ import memap.components.CSVProducer;
 import memap.components.CSVStorage;
 import memap.components.CSVVolatileProducer;
 import memap.components.prototypes.Connection;
+import memap.helper.MaxBuyLimit;
 import memap.helper.ElectricityPrice;
 import memap.helper.EnergyPrices;
 import memap.helper.HeatPrice;
@@ -110,10 +112,16 @@ public class GuiController {
 		// Must come before prices are set!
 		topologyConfig.init(mpcHorizon, timeStepsPerDay, nrDays, 0, 0);
 		
+		JsonObject maxBuyLimitObj = jObject.get("maxBuyLimit").getAsJsonObject();
+		
 		JsonObject elecBuyingPriceObj = jObject.get("elecBuyingPrice").getAsJsonObject();
 		JsonObject elecSellingPriceObj = jObject.get("elecSellingPrice").getAsJsonObject();
 		JsonObject heatBuyingPriceObj = jObject.get("heatBuyingPrice").getAsJsonObject();
 
+		Price maxBuyLimit = new MaxBuyLimit(maxBuyLimitObj.get("fixed").getAsBoolean(),
+				maxBuyLimitObj.get("price").getAsDouble(), maxBuyLimitObj.get("priceFilePath").getAsString(),
+				mpcHorizon);
+		
 		Price elecBuyingPrice = new ElectricityPrice(elecBuyingPriceObj.get("fixed").getAsBoolean(),
 				elecBuyingPriceObj.get("price").getAsDouble(), elecBuyingPriceObj.get("priceFilePath").getAsString(),
 				mpcHorizon);
@@ -125,7 +133,7 @@ public class GuiController {
 				mpcHorizon);
 
 		EnergyPrices energyPrices = EnergyPrices.getInstance();
-		energyPrices.init(elecBuyingPrice, elecSellingPrice, heatBuyingPrice);
+		energyPrices.init(maxBuyLimit, elecBuyingPrice, elecSellingPrice, heatBuyingPrice);
 
 		Optimizer optimizer = null;
 		String optimizerType = jObject.get("optimizer").getAsString();
@@ -204,10 +212,13 @@ public class GuiController {
 			JsonObject jObject = (JsonObject) jsonElement;
 
 			// Creating the building
-			BuildingController building;
+			CSVBuildingController building;
 			
 			try {
 				building = new CSVBuildingController(jObject.get("formattedName").getAsString());
+				double[] elecBuyLimit = new double[TopologyConfig.getInstance().getNrStepsMPC()];			
+				Arrays.fill(elecBuyLimit,(int) jObject.get("max_buy_limit").getAsDouble());
+				building.setElecBuylimit(elecBuyLimit);
 			} catch (Exception e) {
 				building = new CSVBuildingController(jObject.get("name").getAsString());
 			}

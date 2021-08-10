@@ -15,6 +15,7 @@ import com.google.gson.JsonSerializer;
 import fortiss.gui.listeners.helper.CO2Emission;
 import fortiss.gui.listeners.helper.ElectricityPrice;
 import fortiss.gui.listeners.helper.HeatPrice;
+import fortiss.gui.listeners.helper.MaxBuyLimit;
 import fortiss.gui.listeners.helper.Price;
 import fortiss.simulation.Parameters;
 
@@ -33,9 +34,16 @@ public class ParametersTypeAdapter implements JsonSerializer<Parameters>, JsonDe
 		String optimizer = obj.get("optimizer").getAsString();
 		String loggingMode = obj.get("loggingMode").getAsString();
 
+		JsonObject maxBuyLimitObj = obj.get("maxBuyLimit").getAsJsonObject();
+		
 		JsonObject elecBuyingPriceObj = obj.get("elecBuyingPrice").getAsJsonObject();
 		JsonObject elecSellingPriceObj = obj.get("elecSellingPrice").getAsJsonObject();
 		JsonObject heatBuyingPriceObj = obj.get("heatBuyingPrice").getAsJsonObject();
+
+		
+		Price maxBuyLimit = new MaxBuyLimit(maxBuyLimitObj.get("fixed").getAsBoolean(),
+				maxBuyLimitObj.get("price").getAsDouble(), maxBuyLimitObj.get("priceFilePath").getAsString(),
+				mpcHorizon);
 
 		Price elecBuyingPrice = new ElectricityPrice(elecBuyingPriceObj.get("fixed").getAsBoolean(),
 				elecBuyingPriceObj.get("price").getAsDouble(), elecBuyingPriceObj.get("priceFilePath").getAsString(),
@@ -48,18 +56,19 @@ public class ParametersTypeAdapter implements JsonSerializer<Parameters>, JsonDe
 				mpcHorizon);
 
 		JsonObject co2EmissionsObj = obj.get("co2Emissions").getAsJsonObject();
-
+		
 		Price co2Emissions = new CO2Emission(co2EmissionsObj.get("fixed").getAsBoolean(),
 				co2EmissionsObj.get("price").getAsDouble(), co2EmissionsObj.get("priceFilePath").getAsString(),
 				mpcHorizon);
 
+		maxBuyLimit.loadFromFile(mpcHorizon);
 		elecBuyingPrice.loadFromFile(mpcHorizon);
 		elecSellingPrice.loadFromFile(mpcHorizon);
 		heatBuyingPrice.loadFromFile(mpcHorizon);
 		co2Emissions.loadFromFile(mpcHorizon);
 
 		Parameters parameters = new Parameters(simulationSteps, mpcHorizon, days, optCriteria, optimizer, loggingMode,
-				elecBuyingPrice, elecSellingPrice, heatBuyingPrice, co2Emissions);
+				maxBuyLimit, elecBuyingPrice, elecSellingPrice, heatBuyingPrice, co2Emissions);
 
 		return parameters;
 	}

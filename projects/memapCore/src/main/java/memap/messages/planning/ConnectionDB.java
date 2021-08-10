@@ -42,7 +42,7 @@ public class ConnectionDB {
 		switch(Hierarchy) {
 			
 		case MEMAP:
-			tablename = "MEMAP";
+			tablename = "MEMAP_CoSES";
 			
 			String columns = "";
 			String list = "";

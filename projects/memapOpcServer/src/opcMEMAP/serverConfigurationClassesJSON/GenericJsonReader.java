@@ -1,11 +1,15 @@
 package opcMEMAP.serverConfigurationClassesJSON;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.Writer;
 import java.util.List;
 import java.util.Stack;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
@@ -23,7 +27,13 @@ import opcMEMAP.ConfigInterface;
 public class GenericJsonReader {
 	
 	public static ConfigInterface createConfigFromString(String in) throws IOException {
-		JsonReader reader = new JsonReader(new StringReader(in));		
+		JsonReader reader = new JsonReader(new StringReader(in));
+		try (Writer writer = new FileWriter("UpdateJsonReader.json")) {
+		    Gson gson1 = new GsonBuilder().create();
+		    gson1.toJson(reader, writer);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		return createConfig(reader);
 	}
 	
@@ -100,7 +110,7 @@ public class GenericJsonReader {
                 lastFolderNode.nodeID = buffer;                
                 
                 folderNodeList.add(lastFolderNode);                
-                //System.out.println("new Folder: " + buffer + "/");                
+//                System.out.println("new Folder: " + buffer + "/");                
                 
                 arrayStack.push(false);
                 break;
@@ -110,7 +120,7 @@ public class GenericJsonReader {
                 nameStack.pop();
                 parentStack.pop();
                 arrayStack.pop();
-                //System.out.println("END OBJECT");
+//                System.out.println("END OBJECT");
                 break;
             
             case BEGIN_ARRAY:
@@ -134,7 +144,7 @@ public class GenericJsonReader {
 				lastFolderNode.nodeID = bufferArray;
 				               
 				folderNodeList.add(lastFolderNode);
-				//System.out.println("new Folder: " + bufferArray + "/");
+//				System.out.println("new Folder: " + bufferArray + "/");
 				
                 break;
                 
@@ -149,7 +159,7 @@ public class GenericJsonReader {
             case NAME:
             	String nextName = reader.nextName();
                 nameStack.push(nextName);
-                //System.out.println("new name: " + nextName);
+//                System.out.println("new name: " + nextName);
                 break;
                 
             case STRING:
@@ -177,7 +187,7 @@ public class GenericJsonReader {
 		            variableNode = configRemainingOfNode(result, variableNode, nameString, parentStack.peek());
 		            	
 		            variableNodeList.add(variableNode);
-		            //System.out.println("new Variable: " + nameString + " = " + stringValue);
+//		            System.out.println("new Variable: " + nameString + " = " + stringValue);
                 }
                 
                 break;
@@ -207,7 +217,7 @@ public class GenericJsonReader {
 		            variableNode = configRemainingOfNode(result, variableNode, name, parentStack.peek());
 		            	
 		            variableNodeList.add(variableNode);
-		            //System.out.println("new Variable: " + name + " = " + number);
+//		            System.out.println("new Variable: " + name + " = " + number);
                 }
                 break;
                 
@@ -262,8 +272,6 @@ public class GenericJsonReader {
 		variableNode.parentFolder = parent;
 		variableNode.samplingInterval = result.getMinSamplingInterval();
 		variableNode.userAccessLevel = "READ_WRITE";
-		
-		//System.out.println(variableNode.samplingInterval);
 		
 		String test = name.replace(parent, "");
 		variableNode.description = test;

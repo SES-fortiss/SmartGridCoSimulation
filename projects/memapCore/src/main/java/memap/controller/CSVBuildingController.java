@@ -8,6 +8,7 @@ import memap.components.prototypes.Device;
 public class CSVBuildingController implements BuildingController {
 
 	public String name;
+	public double[] elecBuylimit;
 	private Set<Device> devices = new HashSet<Device>();
 
 	public CSVBuildingController(String name) {
@@ -27,6 +28,15 @@ public class CSVBuildingController implements BuildingController {
 	@Override
 	public void attach(Device device) {
 		this.devices.add(device);
+	}
+
+	@Override
+	public double[] getElecBuyLimit() {
+		return elecBuylimit;
+	}
+	
+	public void setElecBuylimit(double[] elecBuylimit) {
+		this.elecBuylimit = elecBuylimit;
 	}
 
 }
