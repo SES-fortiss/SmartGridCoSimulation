@@ -309,7 +309,7 @@ public class GuiController {
 			JsonObject jObject = (JsonObject) jsonElement;
 			String networkT = jObject.get("networkType").getAsString();
 
-			NetworkType networkType = (networkT.equals("Heat")) ? networkType = NetworkType.HEAT
+			NetworkType networkType = (networkT.equals("Heat") || networkT.equals("HEAT") ) ? networkType = NetworkType.HEAT
 					: NetworkType.ELECTRICITY;
 			
 			CSVProducer producer; 
