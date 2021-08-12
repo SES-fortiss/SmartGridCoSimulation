@@ -13,6 +13,9 @@ public class PricesPanel extends InformationPanel {
 	private PriceBoard elecBuyingPriceBoard;
 	private PriceBoard elecSellingPriceBoard;
 	private PriceBoard heatBuyingPriceBoard;
+		
+	private PriceBoard co2EmissionsBoard;
+	private PriceBoard maxBuyElecBoard;
 
 	public PricesPanel() {
 		StyleGenerator.setupStyle();
@@ -30,6 +33,12 @@ public class PricesPanel extends InformationPanel {
 
 		elecSellingPriceBoard = new PriceBoard("Electricity (selling price)");
 		add(elecSellingPriceBoard, "growx");
+		
+		co2EmissionsBoard = new PriceBoard("CO2 Emissions");
+		add(co2EmissionsBoard, "growx");
+		
+		maxBuyElecBoard = new PriceBoard("Electricity Buy Limit (scaling factor)");
+		add(maxBuyElecBoard, "growx");
 
 		heatBuyingPriceBoard = new PriceBoard("Heat (buying price)");
 		add(heatBuyingPriceBoard, "growx");
@@ -41,18 +50,7 @@ public class PricesPanel extends InformationPanel {
 		elecBuyingPriceBoard.setPrice(pars.getElecBuyingPrice());;
 		elecSellingPriceBoard.setPrice(pars.getElecSellingPrice());
 		heatBuyingPriceBoard.setPrice(pars.getHeatBuyingPrice());
+		maxBuyElecBoard.setPrice(pars.getMaxBuyLimit());;
+		co2EmissionsBoard.setPrice(pars.getCO2Emissions());;
 	}
-
-	public void plotElecBuyingPrice() {
-		elecBuyingPriceBoard.plot();
-	}
-
-	public void plotElecSellingPrice() {
-		elecSellingPriceBoard.plot();
-	}
-
-	public void plotHeatBuyingPrice() {
-		heatBuyingPriceBoard.plot();
-	}
-
 }

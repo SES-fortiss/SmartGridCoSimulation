@@ -4,7 +4,7 @@ public class MaxBuyLimit extends Price {
 
 	private static final String DEFAULT_FILE = "HLZFEXAMPLE";
 	private static final double DEFAULT_PRICE = 1.0;
-	static final String [] labels = { "Factor for MEMAP" };
+	static final String [] labels = { "Maximum Limit for MEMAP" };
 	private static final String units = "";
 
 	public MaxBuyLimit(double price, int mpcHorizon) {
