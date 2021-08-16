@@ -63,11 +63,15 @@ public class ActionPanel extends JPanel {
 		lblLoad.addMouseListener(new HoverMouseListener());
 		add(lblLoad);
 
+		String toolTipText = "<html>Load from BIM Server*<br><br>"
+				+ "*Note, to use this MEMAP feature, an<br>"
+				+ "allplan/bimplus user account is required.</html>";
+		
 		// Add load button
 		JLabel lblConfigureBIMSession = new JLabel("");
 		lblConfigureBIMSession.setBorder(new EmptyBorder(3, 3, 3, 3));
 		lblConfigureBIMSession.setIcon(IconStore.openBim);
-		lblConfigureBIMSession.setToolTipText("Load from BIM Server");
+		lblConfigureBIMSession.setToolTipText(toolTipText);
 		lblConfigureBIMSession.addMouseListener(new ButtonListener(new ConfigureBIMSession()));
 		lblConfigureBIMSession.addMouseListener(new HoverMouseListener());
 		add(lblConfigureBIMSession);

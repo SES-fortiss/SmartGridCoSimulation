@@ -74,9 +74,7 @@ public class ParameterInputPanel extends InformationPanel {
 	/** label for logging Mode */
 	private JLabel lbLoggingMode;
 
-	private MaxBuyPanel maxBuyPanel;
 	private PricesPanel pricesPanel;
-	private EmissionsPanel emissionsPanel;	
 	
 
 	/** Necessary for dark mode on/off implementation */
@@ -197,16 +195,9 @@ public class ParameterInputPanel extends InformationPanel {
 		lbLoggingMode2.setIcon(IconStore.resultLogs);
 		lbLoggingMode2.addMouseListener(new LoggingModeListener());
 		innerPanel.add(lbLoggingMode2);
-
-		maxBuyPanel = new MaxBuyPanel();
-		innerPanel.add(maxBuyPanel, "spanx, growx, growy");
 		
 		pricesPanel = new PricesPanel();
-		innerPanel.add(pricesPanel, "spanx, growx, growy");
-		
-		emissionsPanel = new EmissionsPanel();
-		innerPanel.add(emissionsPanel, "spanx, growx, growy");
-		
+		innerPanel.add(pricesPanel, "spanx, growx, growy");		
 		
 		scrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -246,9 +237,7 @@ public class ParameterInputPanel extends InformationPanel {
 		if (pars.getOptimizer().equals("milp"))
 			lbOptimizer2.setIcon(IconStore.milp);
 		
-		maxBuyPanel.update();
 		pricesPanel.update();
-		emissionsPanel.update();
 	}
 
 }

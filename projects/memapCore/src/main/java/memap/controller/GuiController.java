@@ -119,7 +119,7 @@ public class GuiController {
 		JsonObject heatBuyingPriceObj = jObject.get("heatBuyingPrice").getAsJsonObject();
 
 		Price maxBuyLimit = new MaxBuyLimit(maxBuyLimitObj.get("fixed").getAsBoolean(),
-				maxBuyLimitObj.get("price").getAsDouble(), maxBuyLimitObj.get("priceFilePath").getAsString(),
+				maxBuyLimitObj.get("limit").getAsDouble(), maxBuyLimitObj.get("limitFilePath").getAsString(),
 				mpcHorizon);
 		
 		Price elecBuyingPrice = new ElectricityPrice(elecBuyingPriceObj.get("fixed").getAsBoolean(),
@@ -309,7 +309,7 @@ public class GuiController {
 			JsonObject jObject = (JsonObject) jsonElement;
 			String networkT = jObject.get("networkType").getAsString();
 
-			NetworkType networkType = (networkT.equals("Heat")) ? networkType = NetworkType.HEAT
+			NetworkType networkType = (networkT.equals("Heat") || networkT.equals("HEAT") ) ? networkType = NetworkType.HEAT
 					: NetworkType.ELECTRICITY;
 			
 			CSVProducer producer; 

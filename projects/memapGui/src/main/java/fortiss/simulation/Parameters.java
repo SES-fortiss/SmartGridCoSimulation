@@ -68,7 +68,7 @@ public class Parameters {
 	private String loggingMode;
 	
 	@Expose
-	private Price maxBuyLimit;
+	private MaxBuyLimit maxBuyLimit;
 	@Expose
 	private Price elecSellingPrice;
 	@Expose
@@ -98,7 +98,7 @@ public class Parameters {
 	}
 
 	public Parameters(int simulationSteps, int mpcHorizon, int days, String optCriteria,
-			String optimizer, String loggingMode, Price maxBuyLimit, Price elecBuyingPrice, Price elecSellingPrice,
+			String optimizer, String loggingMode, MaxBuyLimit maxBuyLimit, Price elecBuyingPrice, Price elecSellingPrice,
 			Price heatBuyingPrice, Price co2Emissions) {
 		setSimulationName("InteractiveMEMAP");
 		setStepsPerDay(simulationSteps);
@@ -221,11 +221,11 @@ public class Parameters {
 		}
 	}
 
-	public Price getMaxBuyLimit() {
+	public MaxBuyLimit getMaxBuyLimit() {
 		return maxBuyLimit;
 	}
 
-	public void setMaxBuyLimit(Price maxBuyLimit) {
+	public void setMaxBuyLimit(MaxBuyLimit maxBuyLimit) {
 		this.maxBuyLimit = maxBuyLimit;
 	}
 	

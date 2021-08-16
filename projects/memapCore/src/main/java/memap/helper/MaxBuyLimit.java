@@ -3,7 +3,7 @@ package memap.helper;
 public class MaxBuyLimit extends Price {
 
 	private static final String DEFAULT_FILE = "HLZFEXAMPLE";
-	private static final String [] labels = { "Factor for Max Buy Limit" };
+	private static final String [] labels = { "Max Buy Limit" };
 	private static final String units = "";
 
 	public MaxBuyLimit(double price, int mpcHorizon) {
