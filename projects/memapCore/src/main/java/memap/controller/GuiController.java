@@ -119,7 +119,7 @@ public class GuiController {
 		JsonObject heatBuyingPriceObj = jObject.get("heatBuyingPrice").getAsJsonObject();
 
 		Price maxBuyLimit = new MaxBuyLimit(maxBuyLimitObj.get("fixed").getAsBoolean(),
-				maxBuyLimitObj.get("price").getAsDouble(), maxBuyLimitObj.get("priceFilePath").getAsString(),
+				maxBuyLimitObj.get("limit").getAsDouble(), maxBuyLimitObj.get("limitFilePath").getAsString(),
 				mpcHorizon);
 		
 		Price elecBuyingPrice = new ElectricityPrice(elecBuyingPriceObj.get("fixed").getAsBoolean(),

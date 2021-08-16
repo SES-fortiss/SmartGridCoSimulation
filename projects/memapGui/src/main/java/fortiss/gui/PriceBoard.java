@@ -34,19 +34,19 @@ public class PriceBoard extends JPanel implements OptionObserver {
 	private static final long serialVersionUID = 1L;
 	
 	private Price price;
-	private JTextField txtPriceFile;
-	private JTextField txtPrice;
-	private JLabel lbPrice;
-	private JLabel lbPriceFileInstruction;
+	protected JTextField txtPriceFile;
+	protected JTextField txtPrice;
+	protected JLabel lbPrice;
+	protected JLabel lbPriceFileInstruction;
 	
-	private OptionLabel lbPriceType2;
+	protected OptionLabel lbPriceType2;
 	
-	private JLabel btDataPlot;
-	private JLabel btDataBrowse;
-	private JLabel btReload;
+	protected JLabel btDataPlot;
+	protected JLabel btDataBrowse;
+	protected JLabel btReload;
 
 	
-	private PlotPanel plotPanel;
+	protected PlotPanel plotPanel;
 	
 	public PriceBoard(String title) {
 		StyleGenerator.setupStyle();
@@ -68,7 +68,7 @@ public class PriceBoard extends JPanel implements OptionObserver {
 		lbPriceType2.addMouseListener(new PriceTypeListener());
 		add(lbPriceType2, "spanx 4");
 		
-		lbPrice = new JLabel("Price ");
+		lbPrice = new JLabel("Price");
 		add(lbPrice, "hidemode 3");
 		
 		txtPrice = new JTextField("");
@@ -78,7 +78,7 @@ public class PriceBoard extends JPanel implements OptionObserver {
 		txtPrice.addKeyListener(priceListener);
 		txtPrice.addFocusListener(priceListener);
 		txtPrice.setColumns(10);
-		add(txtPrice, " hidemode 3");
+		add(txtPrice, "hidemode 3");
 		
 		lbPriceFileInstruction = new JLabel("Select a file");
 		add(lbPriceFileInstruction, "hidemode 3");
@@ -169,7 +169,7 @@ public class PriceBoard extends JPanel implements OptionObserver {
 		}
 	}
 	
-	private void resetPlotPanel() {
+	protected void resetPlotPanel() {
 		plotPanel.setVisible(false);
 		plotPanel.setPlotted(false);
 		plotPanel.clearSeries();

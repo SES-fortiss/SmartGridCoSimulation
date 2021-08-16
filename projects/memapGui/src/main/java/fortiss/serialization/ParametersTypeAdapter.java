@@ -34,16 +34,10 @@ public class ParametersTypeAdapter implements JsonSerializer<Parameters>, JsonDe
 		String optimizer = obj.get("optimizer").getAsString();
 		String loggingMode = obj.get("loggingMode").getAsString();
 
-		JsonObject maxBuyLimitObj = obj.get("maxBuyLimit").getAsJsonObject();
-		
+	
 		JsonObject elecBuyingPriceObj = obj.get("elecBuyingPrice").getAsJsonObject();
 		JsonObject elecSellingPriceObj = obj.get("elecSellingPrice").getAsJsonObject();
 		JsonObject heatBuyingPriceObj = obj.get("heatBuyingPrice").getAsJsonObject();
-
-		
-		Price maxBuyLimit = new MaxBuyLimit(maxBuyLimitObj.get("fixed").getAsBoolean(),
-				maxBuyLimitObj.get("price").getAsDouble(), maxBuyLimitObj.get("priceFilePath").getAsString(),
-				mpcHorizon);
 
 		Price elecBuyingPrice = new ElectricityPrice(elecBuyingPriceObj.get("fixed").getAsBoolean(),
 				elecBuyingPriceObj.get("price").getAsDouble(), elecBuyingPriceObj.get("priceFilePath").getAsString(),
@@ -53,6 +47,13 @@ public class ParametersTypeAdapter implements JsonSerializer<Parameters>, JsonDe
 				mpcHorizon);
 		Price heatBuyingPrice = new HeatPrice(heatBuyingPriceObj.get("fixed").getAsBoolean(),
 				heatBuyingPriceObj.get("price").getAsDouble(), heatBuyingPriceObj.get("priceFilePath").getAsString(),
+				mpcHorizon);
+		
+		JsonObject maxBuyLimitObj = obj.get("maxBuyLimit").getAsJsonObject();			
+		MaxBuyLimit maxBuyLimit = new MaxBuyLimit(
+				maxBuyLimitObj.get("fixed").getAsBoolean(),
+				maxBuyLimitObj.get("limit").getAsDouble(), 
+				maxBuyLimitObj.get("limitFilePath").getAsString(),
 				mpcHorizon);
 
 		JsonObject co2EmissionsObj = obj.get("co2Emissions").getAsJsonObject();
