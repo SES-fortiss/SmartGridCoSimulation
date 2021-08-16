@@ -75,6 +75,12 @@ public class RemoteConnectionPanel extends InformationPanel {
 		btnLoadFromServer.addMouseListener(new ButtonListener(new LoadFromServerCommand()));
 		add(btnLoadFromServer, "center, span, gaptop 10");
 		btnLoadFromServer.setVisible(false);
+		
+		JLabel description = new JLabel("<html>Note, the BIM feature requires an account for the BIMplus system of allplan.<br>"
+				+ "This feature has been added to show the possibility of integration in MEMAP.<br>"
+				+ "You can contact the developers for further information.</html>");
+		add(description, "newline, spanx 2, gaptop 30");
+
 	}
 
 	@Override
