@@ -30,7 +30,10 @@ public class BimStorageTypeAdapter implements JsonDeserializer<Storage> {
 		String buildingNameRaw = others.get("ebene").getAsString();
 		String buildingName = buildingNameRaw.replace("Ebene: ", "").replaceAll("-", "").replaceAll("_", "").replaceAll("\\.", "");
 		String networkType = (others.get("network type_wärme").getAsInt() == 1) ? "Heat" : "Electricity";
-		double capacity = others.get("installed capacity").getAsDouble() / 1000;
+		double capacity = others.get("installed capacity").getAsDouble() / 1000 / 38750.0775;
+		
+		capacity = Math.round(capacity*100) / 100;
+		
 		double soc = others.get("state of charge").getAsDouble() / 100;
 		double losses = 0.01;
 		double maxCharging = others.get("max. charge rate").getAsDouble() / 1000;
@@ -38,19 +41,21 @@ public class BimStorageTypeAdapter implements JsonDeserializer<Storage> {
 		double effIN = others.get("charge efficiency").getAsDouble();
 		double effOUT = others.get("discharge efficiency").getAsDouble();
 
-		boolean buildingExist = DesignerPanel.buildings.containsKey(buildingName);
-
 		Building building;
-		if (!buildingExist) {
-			double maximumCoordinate = 90.0;
-			Point2D position = new Point2D.Double(maximumCoordinate * new Random().nextDouble(), maximumCoordinate * new Random().nextDouble());
-			building = new Building(buildingName, 0, position);
-			DesignerPanel.buildings.put(buildingName, building);
-
-		} else {
-			building = DesignerPanel.buildings.get(buildingName);
+		synchronized (DesignerPanel.buildings) {
+		
+			boolean buildingExist = DesignerPanel.buildings.containsKey(buildingName);
+			
+			if (!buildingExist) {
+				double maximumCoordinate = 90.0;
+				Point2D position = new Point2D.Double(maximumCoordinate * new Random().nextDouble(), maximumCoordinate * new Random().nextDouble());
+				building = new Building(buildingName, 0, position);
+				DesignerPanel.buildings.put(buildingName, building);
+			} else {
+				building = DesignerPanel.buildings.get(buildingName);
+			}
 		}
-
+			
 		Storage storage = new Storage(building, componentName, networkType, capacity, soc, losses, maxCharging,
 				maxDischarging, effIN, effOUT);
 

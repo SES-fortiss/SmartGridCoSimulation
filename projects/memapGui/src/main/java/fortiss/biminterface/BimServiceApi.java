@@ -26,27 +26,46 @@ public interface BimServiceApi {
 	Call<BimLogin> authorize(@Body UserCredential userCredential);
 
 	@GET("/v2/{team}/objects/{projectId}/attributes/{API-Komponententyp-ID}")
-	Call<LinkedTreeMap<String, String>> getComponentList(@Header("authorization") String authorization,
-			@Header("Content-Type") String contentType, @Path("team") String team, @Path("projectId") String projectId,
-			@Path("API-Komponententyp-ID") String componentTypeID, @Query("children") boolean withChildren);
+	Call<LinkedTreeMap<String, String>> getComponentList(
+			@Header("authorization") String authorization,
+			@Header("Content-Type") String contentType, 
+			@Path("team") String team, 
+			@Path("projectId") String projectId,
+			@Path("API-Komponententyp-ID") String componentTypeID, 
+			@Query("children") boolean withChildren);
 	
 	@GET("v2/{team}/objects/{objectId}")
-	Call<Demand> getDemand (@Header("authorization") String authorization,
-			@Header("Content-Type") String contentType, @Path("team") String team, @Path("objectId") String objectId);
+	Call<Demand> getDemand (
+			@Header("authorization") String authorization,
+			@Header("Content-Type") String contentType, 
+			@Path("team") String team, 
+			@Path("objectId") String objectId);
 	
 	@GET("v2/{team}/objects/{objectId}")
-	Call<Storage> getStorage (@Header("authorization") String authorization,
-			@Header("Content-Type") String contentType, @Path("team") String team, @Path("objectId") String objectId);
+	Call<Storage> getStorage (
+			@Header("authorization") String authorization,
+			@Header("Content-Type") String contentType, 
+			@Path("team") String team, 
+			@Path("objectId") String objectId);
 	
 	@GET("v2/{team}/objects/{objectId}")
-	Call<Controllable> getControllable (@Header("authorization") String authorization,
-			@Header("Content-Type") String contentType, @Path("team") String team, @Path("objectId") String objectId);
+	Call<Controllable> getControllable (
+			@Header("authorization") String authorization,
+			@Header("Content-Type") String contentType, 
+			@Path("team") String team, 
+			@Path("objectId") String objectId);
 	
 	@GET("v2/{team}/objects/{objectId}")
-	Call<Volatile> getVolatile (@Header("authorization") String authorization,
-			@Header("Content-Type") String contentType, @Path("team") String team, @Path("objectId") String objectId);
+	Call<Volatile> getVolatile (
+			@Header("authorization") String authorization,
+			@Header("Content-Type") String contentType, 
+			@Path("team") String team, 
+			@Path("objectId") String objectId);
 	
 	@GET("v2/{team}/objects/{objectId}")
-	Call<Coupler> getCoupler (@Header("authorization") String authorization,
-			@Header("Content-Type") String contentType, @Path("team") String team, @Path("objectId") String objectId);
+	Call<Coupler> getCoupler (
+			@Header("authorization") String authorization,
+			@Header("Content-Type") String contentType, 
+			@Path("team") String team, 
+			@Path("objectId") String objectId);
 }
