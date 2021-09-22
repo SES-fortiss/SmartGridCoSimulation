@@ -656,7 +656,7 @@ public abstract class Metrics {
 		HashMap<String, ArrayList<Double>> heatDischargedByStorageInTime = new HashMap<String, ArrayList<Double>>();
 		for (Storage storage : building.getStorage()) {
 			heatDischargedByStorageInTime.put(building.getName() + " - " + storage.getName(),
-					getHeatContributedBy(context, storage.getFormattedName() + "Discharge"));
+					getHeatContributedBy(context, storage.getFormattedName() + "_Discharge"));
 		}
 		return heatDischargedByStorageInTime;
 	}
@@ -677,7 +677,7 @@ public abstract class Metrics {
 		HashMap<String, ArrayList<Double>> electricityDischargedByStorageInTime = new HashMap<String, ArrayList<Double>>();
 		for (Storage storage : building.getStorage()) {
 			electricityDischargedByStorageInTime.put(building.getName() + " - " + storage.getName(),
-					getElectricityContributedBy(context, storage.getFormattedName() + "Discharge"));
+					getElectricityContributedBy(context, storage.getFormattedName() + "_Discharge"));
 		}
 		return electricityDischargedByStorageInTime;
 	}
@@ -697,7 +697,7 @@ public abstract class Metrics {
 		HashMap<String, ArrayList<Double>> heatChargedByStorageInTime = new HashMap<String, ArrayList<Double>>();
 		for (Storage storage : building.getStorage()) {
 			heatChargedByStorageInTime.put(building.getName() + " - " + storage.getName(),
-					getHeatContributedBy(context, storage.getFormattedName() + "Charge"));
+					getHeatContributedBy(context, storage.getFormattedName() + "_Charge"));
 		}
 		return heatChargedByStorageInTime;
 	}
@@ -718,7 +718,7 @@ public abstract class Metrics {
 		HashMap<String, ArrayList<Double>> electricityChargedByStorageInTime = new HashMap<String, ArrayList<Double>>();
 		for (Storage storage : building.getStorage()) {
 			electricityChargedByStorageInTime.put(building.getName() + " - " + storage.getName(),
-					getElectricityContributedBy(context, storage.getFormattedName() + "Charge"));
+					getElectricityContributedBy(context, storage.getFormattedName() + "_Charge"));
 		}
 		return electricityChargedByStorageInTime;
 	}
