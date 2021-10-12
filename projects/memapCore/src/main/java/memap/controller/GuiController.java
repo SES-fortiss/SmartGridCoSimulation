@@ -23,6 +23,7 @@ import memap.components.CSVProducer;
 import memap.components.CSVStorage;
 import memap.components.CSVVolatileProducer;
 import memap.components.prototypes.Connection;
+import memap.helper.CO2Emission;
 import memap.helper.ElectricityPrice;
 import memap.helper.EnergyPrices;
 import memap.helper.HeatPrice;
@@ -113,6 +114,7 @@ public class GuiController {
 		JsonObject elecBuyingPriceObj = jObject.get("elecBuyingPrice").getAsJsonObject();
 		JsonObject elecSellingPriceObj = jObject.get("elecSellingPrice").getAsJsonObject();
 		JsonObject heatBuyingPriceObj = jObject.get("heatBuyingPrice").getAsJsonObject();
+		JsonObject co2EmissionPriceObj = jObject.get("co2Emissions").getAsJsonObject();
 
 		Price elecBuyingPrice = new ElectricityPrice(elecBuyingPriceObj.get("fixed").getAsBoolean(),
 				elecBuyingPriceObj.get("price").getAsDouble(), elecBuyingPriceObj.get("priceFilePath").getAsString(),
@@ -123,9 +125,14 @@ public class GuiController {
 		Price heatBuyingPrice = new HeatPrice(heatBuyingPriceObj.get("fixed").getAsBoolean(),
 				heatBuyingPriceObj.get("price").getAsDouble(), heatBuyingPriceObj.get("priceFilePath").getAsString(),
 				mpcHorizon);
+		Price co2EmissionPrice = new CO2Emission(co2EmissionPriceObj.get("fixed").getAsBoolean(),
+				co2EmissionPriceObj.get("price").getAsDouble(), co2EmissionPriceObj.get("priceFilePath").getAsString(),
+				mpcHorizon);
+		
+		System.out.println(">>>>CO2PriceFromGUI = " + co2EmissionPriceObj.get("price").getAsDouble());
 
 		EnergyPrices energyPrices = EnergyPrices.getInstance();
-		energyPrices.init(elecBuyingPrice, elecSellingPrice, heatBuyingPrice);
+		energyPrices.init(elecBuyingPrice, elecSellingPrice, heatBuyingPrice, co2EmissionPrice);
 
 		Optimizer optimizer = null;
 		String optimizerType = jObject.get("optimizer").getAsString();

@@ -22,6 +22,7 @@ import memap.controller.BuildingController;
 import memap.controller.CSVBuildingController;
 import memap.controller.OpcUaBuildingController;
 import memap.controller.TopologyController;
+import memap.helper.CO2Emission;
 import memap.helper.ElectricityPrice;
 import memap.helper.EnergyPrices;
 import memap.helper.HeatPrice;
@@ -40,7 +41,7 @@ public abstract class ExampleLoader {
 				Optimizer.MILP, OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.RESULTS_ONLY);
 		TopologyConfig.getInstance().init(nrStepsMPC, 96, 7, 4880, 0);
 		EnergyPrices.getInstance().init(new ElectricityPrice(0.285, nrStepsMPC),
-				new ElectricityPrice(0.285, nrStepsMPC), new HeatPrice(0.285, nrStepsMPC));
+				new ElectricityPrice(0.285, nrStepsMPC), new HeatPrice(0.285, nrStepsMPC), new CO2Emission(0.540, nrStepsMPC));
 		try {
 
 //			FileReader endpoint1 = new FileReader(("src/main/resources/examples/FortissBuilding1Endpoint.json"));
@@ -106,7 +107,7 @@ public abstract class ExampleLoader {
 		int nrStepsMPC = 5;
 		TopologyConfig.getInstance().init(nrStepsMPC, 96, 7, 0, 4880);
 		EnergyPrices.getInstance().init(new ElectricityPrice(0.285, nrStepsMPC),
-				new ElectricityPrice("ELECTRICITYPRICEEXAMPLE"), new HeatPrice(0.285, nrStepsMPC));
+				new ElectricityPrice("ELECTRICITYPRICEEXAMPLE"), new HeatPrice(0.285, nrStepsMPC), new CO2Emission(0.540, nrStepsMPC));
 		TopologyController topologyController = new TopologyController("MemapExample", OptHierarchy.BUILDING,
 				Optimizer.MILP, OptimizationCriteria.EUR, ToolUsage.PLANNING, MEMAPLogging.RESULTS_ONLY);
 

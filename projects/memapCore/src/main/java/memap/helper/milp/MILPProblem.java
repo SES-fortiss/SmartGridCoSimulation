@@ -80,12 +80,10 @@ public class MILPProblem {
 
 	protected void updateLambdaCO2Market() {
 		/* Markets */
+		int cts = currentTimeStep;
 		for (int i = 0; i < nStepsMPC; i++) {
 			int index = nCols - 2 * nStepsMPC + i;
-			lambdaCO2[index] = 0.540; // buying --> TODO improve maybe later, for Stefans Work, normally 0.474						
-			lambdaCO2[index + nStepsMPC] = -0.540; // TODO selling (same as for LP)
-			
-			lambdaCO2[index] = 0.474; // buying --> TODO improve maybe later, for Stefans Work, normally 0.474						
+			lambdaCO2[index] = energyPrices.getCO2EmissionFactor(cts + i);					
 			lambdaCO2[index + nStepsMPC] = 0; // TODO selling (same as for LP)
 		}
 	}
