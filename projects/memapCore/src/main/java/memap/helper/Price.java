@@ -1,6 +1,7 @@
 package memap.helper;
 
 import java.io.BufferedReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -59,13 +60,22 @@ public abstract class Price {
 				prices = read(mgr.readFromResources(examples.getFile(priceFilePath)));
 			} else {
 				prices = read(mgr.readFromSource(priceFilePath));
+				// write:
+				FileWriter writer = new FileWriter("prices.txt"); 
+				for(int i = 0; i < prices.size(); i++) {
+				  writer.write(String.valueOf(prices.get(i)) + System.lineSeparator());
+				}
+				writer.close();
+			       
 			}
 		} catch (IOException | ParseException e) {
 			SimulationProgress.getInstance().setStatus(Status.ERROR, "Error parsing or reading price file");
 		}
+
 	}
 
 	public double getPriceForTimeStep(int timeStep) {
+		System.out.println("size: " + prices.size() + ", timeStep: " + timeStep);
 		return prices.get(timeStep % prices.size());
 	}
 
@@ -106,7 +116,7 @@ public abstract class Price {
 		double[] x = new double[originalValues.size()];
 		double[] y = new double[originalValues.size()];
 		for (int i = 0; i < originalValues.size(); i++) {
-			x[i] = i / 4.0;
+			x[i] = i; // THIS IS DEPENDENT ON THE INPOUT DATA!
 			y[i] = originalValues.get(i);
 		}
 

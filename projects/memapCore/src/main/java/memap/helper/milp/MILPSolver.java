@@ -141,8 +141,7 @@ public class MILPSolver {
 
 	// FIXME - this method is doing two independent tasks, 
 	private void workWithResults(double[] optSolution, String[] names, double[] lambda, double[] lambdaCO2) {
-		
-		System.out.println("LAMBDA last Entry = " + lambdaCO2[lambdaCO2.length-nStepsMPC-1]);
+
 		/** TASK ONE - creation of optResult Map (the MPC set-points) */
 		
 		

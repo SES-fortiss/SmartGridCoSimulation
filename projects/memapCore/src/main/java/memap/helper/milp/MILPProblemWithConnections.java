@@ -560,6 +560,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 	    		}
 	        	
 	        	for (StorageMessage sm : bm.storageList) {
+	        		// PROBLEM HERE WITH INDEX!
 	        		
 	        		double chargingCosts = 0;
 					double dischargingCosts = 0;
@@ -572,12 +573,12 @@ public class MILPProblemWithConnections extends MILPProblem {
 	            	
 	            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
 	            		dischargingCosts = sm.operationalCostCO2;
-	            		chargingCosts = -0.0001;  // TODO hardcoded heuristic as discussed in Github
+	            		chargingCosts = -0.0001;  // TODO hardcoded heuristic as discussed in Github 
+	            		// This is assigned to a producer: -0.0001 Oelkessel1H23_OFF_T3
 	            	}
 
-					int index = i + 1 + nStepsMPC
-							* ((controllableHandled * 2) + volatileHandled + (couplerHandled * 2) + (storageHandled * 2));
-					colno[counter] = index;
+	            	int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  	
+	            	colno[counter] = index;
 					row[counter++] = dischargingCosts; // x_fm
 					colno[counter] = index + nStepsMPC;
 					row[counter++] = chargingCosts; // x_to

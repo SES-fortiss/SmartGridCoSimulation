@@ -128,8 +128,6 @@ public class GuiController {
 		Price co2EmissionPrice = new CO2Emission(co2EmissionPriceObj.get("fixed").getAsBoolean(),
 				co2EmissionPriceObj.get("price").getAsDouble(), co2EmissionPriceObj.get("priceFilePath").getAsString(),
 				mpcHorizon);
-		
-		System.out.println(">>>>CO2PriceFromGUI = " + co2EmissionPriceObj.get("price").getAsDouble());
 
 		EnergyPrices energyPrices = EnergyPrices.getInstance();
 		energyPrices.init(elecBuyingPrice, elecSellingPrice, heatBuyingPrice, co2EmissionPrice);
