@@ -75,7 +75,6 @@ public abstract class Price {
 	}
 
 	public double getPriceForTimeStep(int timeStep) {
-		System.out.println("size: " + prices.size() + ", timeStep: " + timeStep);
 		return prices.get(timeStep % prices.size());
 	}
 
