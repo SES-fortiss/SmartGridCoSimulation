@@ -23,7 +23,7 @@ public class StorageMessage implements AnswerContent {
 	public double efficiencyCharge;
 	public double efficiencyDischarge;
 	
-	public double storageLosses;
+	public double[] storageLosses;
 	public STORAGELOSS_UNITS storageLossUnit;
 	
 	public NetworkType networkType;

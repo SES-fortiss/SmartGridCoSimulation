@@ -79,7 +79,7 @@ public class ClientStorage extends Storage {
 				client.readFinalDoubleValue(maxDischargingId),
 				client.readFinalDoubleValue(effInId), 
 				client.readFinalDoubleValue(effOutId), 
-				client.readFinalDoubleValue(storageLossId), 
+				client.readFinalDoubleArrayValue(storageLossId), 
 				port);
 		this.client = client;
 		// setpoints as scalar and array
@@ -194,11 +194,11 @@ public class ClientStorage extends Storage {
 			// the value for storageLoss is read from the OpcUa server (see line 60).
 			
 			double delta_time = 24.0 / topologyConfig.getTimeStepsPerDay(); // = 0.25 (for 96 steps/day)
-			double standbyLosses = storageLoss; // in percent for hour -> Example: 0.021 corresponds to 2.1 [%/h]
+			double[] standbyLosses = storageLoss; // in percent for hour -> Example: 0.021 corresponds to 2.1 [%/h]
 			
 			// Alphas and betas have to be calculated here as well. 
 			// helper parameters, only depend on time step length and storage parameters
-			double alpha = 1 - standbyLosses * delta_time;
+			double alpha = 1 - standbyLosses[0] * delta_time;
 			double beta_to = (delta_time/ this.capacity) * this.effIN;
 			double beta_fm = delta_time/(this.capacity * this.effOUT);
 			

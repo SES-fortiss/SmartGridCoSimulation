@@ -280,7 +280,7 @@ public class MILPProblemNoConnections extends MILPProblem {
 		for (StorageMessage sm : buildingMessage.storageList) {
 
 			double SOC_perc = sm.stateOfCharge;
-			double standbyLosses = sm.storageLosses;
+			double[] standbyLosses = sm.storageLosses;
 			
 			// check and enforce that SOC is between 0 and 1, due to numerical issues.
 			if (SOC_perc >= 1) {
@@ -292,7 +292,11 @@ public class MILPProblemNoConnections extends MILPProblem {
 			
 			// New for SOC within 0 and 1 and standby loss consideration:
 			// helper parameters, only depend on time step length and storage parameters
-			double alpha = 1 - standbyLosses * delta_time_factor; // Units [-] 
+			double alpha = 1 - standbyLosses[0] * delta_time_factor; // Units [-] 
+			double[] alpha2 = new double[nStepsMPC];
+			for (int m=0; m<nStepsMPC; m++) {
+				  alpha2[m] = 1- standbyLosses[m] * delta_time_factor;
+				}
 			double beta_to = delta_time_factor/sm.capacity * sm.efficiencyCharge; // Units [h/kWh]
 			double beta_fm = delta_time_factor/(sm.capacity * sm.efficiencyDischarge); // Units [h/kWh]				
 
@@ -303,14 +307,21 @@ public class MILPProblemNoConnections extends MILPProblem {
             	double[] rowCHARGE = new double[nCols+1];
     			double[] rowDISCHARGE = new double[nCols+1];
     			
-    			for (int k = 0; k <= i; k++) {
+    			for (int k = 0; k < i; k++) {
     				// First add the factor for the discharge decision variable (x_fm)
-    				rowCHARGE[index + k] = - beta_fm * Math.pow(alpha, i-k);
-    				rowDISCHARGE[index + k] = beta_fm * Math.pow(alpha, i-k);
+    				
+    				//rowCHARGE[index + k] = - beta_fm * Math.pow(alpha, i-k);
+    				double alphaProduct = 1;
+    				for (int j = k+1; j < i-1; j++) {
+    					alphaProduct *= alpha2[j];
+    				}
+    				System.out.println("ALPHAPRODUCT = " + alphaProduct);
+    				rowCHARGE[index + k] = - beta_fm * alphaProduct;
+    				rowDISCHARGE[index + k] = beta_fm * alphaProduct;
     	        	
     				// Now add the factor for the charging decision variable (x_to):
-    				rowCHARGE[index + k + nStepsMPC] = beta_to * Math.pow(alpha, i-k);
-    				rowDISCHARGE[index + k + nStepsMPC] = - beta_to * Math.pow(alpha, i-k);
+    				rowCHARGE[index + k + nStepsMPC] = beta_to * alphaProduct;
+    				rowDISCHARGE[index + k + nStepsMPC] = - beta_to * alphaProduct;
     			}
                 
     			// Add the factor vectors to the problem as constraint:

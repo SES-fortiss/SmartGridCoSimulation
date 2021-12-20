@@ -24,7 +24,7 @@ public class CSVStorage extends Storage {
 	 * @param port
 	 */
 	public CSVStorage(String name, double capacity, double stateOfCharge, double max_charging, double max_discharging,
-			double effIN, double effOUT, NetworkType networkType, double opCost, double costCO2, double storageLoss, int port) {
+			double effIN, double effOUT, NetworkType networkType, double opCost, double costCO2, double[] storageLoss, int port) {
 		super(name, capacity, stateOfCharge, max_charging, max_discharging, effIN, effOUT, storageLoss, port);
 		
 		this.networkType = networkType;
@@ -80,11 +80,11 @@ public class CSVStorage extends Storage {
 				double soc_alt = stateOfCharge;
 				double leistung = storageChargeRequest[0] * effIN - storageDischargeRequest[0] * 1 / effOUT;
 				// Linear equation (beta values not used since SOC is not in percent but in kWh):
-				stateOfCharge = soc_alt * (1 - this.storageLoss * stepLengthInHours) + leistung * stepLengthInHours;
+				stateOfCharge = soc_alt * (1 - this.storageLoss[0] * stepLengthInHours) + leistung * stepLengthInHours;
 				
 				// TODO adaptations by DENIS
 				double storageEnergyContent_alt = storageEnergyContent;
-				storageEnergyContent = storageEnergyContent_alt * (1 - this.storageLoss * stepLengthInHours) + leistung * stepLengthInHours;
+				storageEnergyContent = storageEnergyContent_alt * (1 - this.storageLoss[0] * stepLengthInHours) + leistung * stepLengthInHours;
 				stateOfCharge = storageEnergyContent / capacity;
 				
 				// Exponential equation works:

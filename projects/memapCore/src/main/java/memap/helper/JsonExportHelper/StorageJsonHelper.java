@@ -48,7 +48,7 @@ public class StorageJsonHelper {
 		setNetworkType(storageMessage.networkType);
 		setCapacity(storageMessage.capacity);
 		setSoc(storageMessage.stateOfCharge);
-		setLosses(storageMessage.storageLosses);
+		setLosses(storageMessage.storageLosses[0]);
 		setMaxCharging(storageMessage.maxLoad);
 		setMaxDischarging(storageMessage.maxDischarge);
 		setEffIN(storageMessage.efficiencyCharge);

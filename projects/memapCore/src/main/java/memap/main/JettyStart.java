@@ -158,17 +158,17 @@ public class JettyStart {
 			String nameNodeA = null;
 			JsonObject thisBuildingConnection = null;
 			
-			for (int j = 0; j < connections.size(); j++) {
-				JsonObject jsonConnection = (JsonObject) connections.get(j);
-				nameNodeA = (String) jsonConnection.get("nameNodeA");		
-				if (nameNodeA.equals(endpointName)) {
-					thisBuildingConnection = jsonConnection;
-					System.out.println(">> Heat connection found for Building " + (i + 1) + ":");
-					System.out.println(thisBuildingConnection.toString());
-				
-				}
-				
-			}
+//			for (int j = 0; j < connections.size(); j++) {
+//				JsonObject jsonConnection = (JsonObject) connections.get(j);
+//				nameNodeA = (String) jsonConnection.get("nameNodeA");		
+//				if (nameNodeA.equals(endpointName)) {
+//					thisBuildingConnection = jsonConnection;
+//					System.out.println(">> Heat connection found for Building " + (i + 1) + ":");
+//					System.out.println(thisBuildingConnection.toString());
+//				
+//				}
+//				
+//			}
 			
 			try {
 

@@ -18,7 +18,7 @@ public abstract class Storage extends Device {
 	/** NEW Stuff */
 	public double stateOfCharge;
 	public double storageEnergyContent;
-	public double storageLoss; 
+	public double[] storageLoss; 
 	public STORAGELOSS_UNITS storageLossUnit = STORAGELOSS_UNITS.PERCENT_HOUR; // Unit [%/h] Example 0.021 represents 2.1%/h
 
 	public StorageMessage storageMessage = new StorageMessage();
@@ -29,7 +29,7 @@ public abstract class Storage extends Device {
 	public double[] storageDischargeRequest;
 
 	public Storage(String name, double capacity, double stateOfCharge, double max_charging, double max_discharging,
-			double effIN, double effOUT, double storageLoss,int port) {
+			double effIN, double effOUT, double[] storageLoss,int port) {
 		super(name, port);
 		this.capacity = capacity;
 		this.stateOfCharge = stateOfCharge;

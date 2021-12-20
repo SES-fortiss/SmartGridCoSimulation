@@ -416,7 +416,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 	        for (StorageMessage sm : bm.storageList) {	        
 	            
 	            double SOC_perc = sm.stateOfCharge;
-				double standbyLosses = sm.storageLosses;
+				double[] standbyLosses = sm.storageLosses;
 				
 				if (SOC_perc >= 1) {
 					SOC_perc = 1;
@@ -428,7 +428,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 				
 				// New for SOC within 0 and 1 and standby loss consideration:
 				// helper parameters, only depend on time step length and storage parameters
-				double alpha = 1 - standbyLosses * delta_time_factor; // Units [-] 
+				double alpha = 1 - standbyLosses[0] * delta_time_factor; // Units [-] 
 				double beta_to = delta_time_factor/sm.capacity * sm.efficiencyCharge; // Units [h/kWh]
 				double beta_fm = delta_time_factor/(sm.capacity * sm.efficiencyDischarge); // Units [h/kWh]	
 				
