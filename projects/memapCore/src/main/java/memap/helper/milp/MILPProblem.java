@@ -84,7 +84,7 @@ public class MILPProblem {
 		for (int i = 0; i < nStepsMPC; i++) {
 			int index = nCols - 2 * nStepsMPC + i;
 			lambdaCO2[index] = energyPrices.getCO2EmissionFactor(cts + i);					
-			lambdaCO2[index + nStepsMPC] = 0; // TODO selling (same as for LP)
+			lambdaCO2[index + nStepsMPC] = -energyPrices.getCO2EmissionFactor(cts + i); // selling and avoiding emissions
 		}
 	}
 
@@ -143,10 +143,7 @@ public class MILPProblem {
 		for (int i = 0; i < nStepsMPC; i++) {
 			int index = nCols - 2 * nStepsMPC + i;
 			lambdaEUR[index] = energyPrices.getElecBuyingPrice(cts + i);
-			// TODO be carefull, for Stefans Work hardcoded to 0.1069
 			lambdaEUR[index + nStepsMPC] = -energyPrices.getElecSellingPrice(cts + i);
-			// TODO
-			// lambdaEUR[index + nStepsMPC] = -0.1069;
 		}
 	}
 
