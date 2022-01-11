@@ -4,7 +4,6 @@ import java.util.Arrays;
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
 import memap.controller.TopologyController;
-import memap.helper.CO2profiles;
 import memap.helper.configurationOptions.OptimizationCriteria;
 import memap.helper.configurationOptions.ToolUsage;
 import memap.messages.BuildingMessage;
@@ -514,7 +513,7 @@ public class MILPProblemNoConnections extends MILPProblem {
         	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
         		// buy
             	colno[counter] = index;
-            	row[counter++] = CO2profiles.getCO2emissions(cts+i);
+            	row[counter++] = energyPrices.getCO2EmissionFactor(cts+i);
             	// sell, no compensation for selling
             	colno[counter] = index+nStepsMPC;
             	row[counter++] = 0;
@@ -537,7 +536,7 @@ public class MILPProblemNoConnections extends MILPProblem {
 	    		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
 	    			// buy
 	            	colno[counter] = index;
-	            	row[counter++] = CO2profiles.getCO2emissions(cts+i);
+	            	row[counter++] = energyPrices.getCO2EmissionFactor(cts+i);
 	            	// sell, no compensation for selling
 	            	colno[counter] = index+nStepsMPC;
 	            	row[counter++] = 0;

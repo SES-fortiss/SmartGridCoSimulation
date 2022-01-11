@@ -119,8 +119,8 @@ public class SolutionHandler {
 
 		for (int i = 0; i < lambda.length / nStepsMPC; i++) {
 			result += lambda[(i * nStepsMPC)] * optSolution[(i * nStepsMPC)] * topConfig.getStepLengthInHours();
+			
 		}
-
 		return result;
 	}
 

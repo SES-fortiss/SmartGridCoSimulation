@@ -7,7 +7,6 @@ import java.util.HashMap;
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
 import memap.controller.TopologyController;
-import memap.helper.CO2profiles;
 import memap.helper.MEMAPLogging;
 import memap.helper.configurationOptions.OptimizationCriteria;
 import memap.helper.configurationOptions.ToolUsage;
@@ -591,6 +590,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 	    		}
 	        	
 	        	for (StorageMessage sm : bm.storageList) {
+	        		// PROBLEM HERE WITH INDEX!
 	        		
 	        		double chargingCosts = 0;
 					double dischargingCosts = 0;
@@ -603,12 +603,12 @@ public class MILPProblemWithConnections extends MILPProblem {
 	            	
 	            	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
 	            		dischargingCosts = sm.operationalCostCO2;
-	            		chargingCosts = -0.0001;  // TODO hardcoded heuristic as discussed in Github
+	            		chargingCosts = -0.0001;  // TODO hardcoded heuristic as discussed in Github 
+	            		// This is assigned to a producer: -0.0001 Oelkessel1H23_OFF_T3
 	            	}
 
-					int index = i + 1 + nStepsMPC
-							* ((controllableHandled * 2) + volatileHandled + (couplerHandled * 2) + (storageHandled * 2));
-					colno[counter] = index;
+	            	int index = i + indexBuilding + nStepsMPC * ((controllableHandled * 2)  + volatileHandled + (couplerHandled*2)+ (storageHandled*2)  );  	
+	            	colno[counter] = index;
 					row[counter++] = dischargingCosts; // x_fm
 					colno[counter] = index + nStepsMPC;
 					row[counter++] = chargingCosts; // x_to
@@ -644,7 +644,7 @@ public class MILPProblemWithConnections extends MILPProblem {
         	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
         		// buy
             	colno[counter] = index;
-            	row[counter++] = CO2profiles.getCO2emissions(cts+i);
+            	row[counter++] = energyPrices.getCO2EmissionFactor(cts+i);
             	// sell, no compensation for selling
             	colno[counter] = index+nStepsMPC;
             	row[counter++] = 0;
@@ -668,7 +668,7 @@ public class MILPProblemWithConnections extends MILPProblem {
 	    		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
 	    			// buy
 	            	colno[counter] = index;
-	            	row[counter++] = CO2profiles.getCO2emissions(cts+i);
+	            	row[counter++] = energyPrices.getCO2EmissionFactor(cts+i);
 	            	// sell, no compensation for selling
 	            	colno[counter] = index+nStepsMPC;
 	            	row[counter++] = 0;

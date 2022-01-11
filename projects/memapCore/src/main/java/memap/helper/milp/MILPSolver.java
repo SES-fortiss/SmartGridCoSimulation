@@ -141,7 +141,7 @@ public class MILPSolver {
 
 	// FIXME - this method is doing two independent tasks, 
 	private void workWithResults(double[] optSolution, String[] names, double[] lambda, double[] lambdaCO2) {
-		
+
 		/** TASK ONE - creation of optResult Map (the MPC set-points) */
 		
 		
@@ -206,6 +206,7 @@ public class MILPSolver {
 		double buildingCO2PerTimestep = 0;
 		buildingCostPerTimestep = milpSolHandler.calculateTimeStepCosts(optSolution, lambda);
 		buildingCO2PerTimestep = milpSolHandler.calculateTimeStepCosts(optSolution, lambdaCO2);
+		
 		buildingStepCostsMILP[currentTimeStep] = buildingCostPerTimestep;
 		buildingStepCO2MILP[currentTimeStep] = buildingCO2PerTimestep;
 		
