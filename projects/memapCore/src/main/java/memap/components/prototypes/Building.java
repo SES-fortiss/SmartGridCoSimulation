@@ -20,6 +20,8 @@ import memap.messages.BuildingMessage;
 import memap.messages.BuildingMessageHandler;
 import memap.messages.OptimizationResultMessage;
 import memap.messages.extension.ChildSpecification;
+import memap.messages.extension.NetworkType;
+import memap.messages.planning.DemandMessage;
 import opcMEMAP.MemapOpcServerStarter;
 
 public class Building extends BehaviorModel implements CurrentTimeStepSubscriber {
@@ -36,6 +38,7 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 	private BuildingMessageHandler buildingMessageHandler = new BuildingMessageHandler();
 
 	// some long term values
+	double[] networkBuyCapFC;
 	double[] totalEURVector;
 	double[] totalCO2Vector;
 	double[][] solutionPerTimeStep;
@@ -60,6 +63,8 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 		nStepsMPC = topologyConfig.getNrStepsMPC();
 		lpSolHandler = new SolutionHandler(nStepsMPC, topologyConfig);
 		milpSolHandler = new SolutionHandler(nStepsMPC, topologyConfig);
+		networkBuyCapFC = new double[nStepsMPC];
+  
 	}
 
 	@Override
@@ -68,6 +73,7 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 		buildingMessage = new BuildingMessage();
 		buildingMessage.id = this.fullActorPath;
 		buildingMessage.name = this.actorName;
+		buildingMessage.varNetworkBuyCap = this.networkBuyCapFC;
 
 		this.actor.getContext().getChildren().forEach(child -> buildingMessage.childrenList
 				.add(new ChildSpecification(this.fullActorPath + "/" + child.path().name())));
@@ -75,10 +81,15 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 		buildingMessage = buildingMessageHandler.aggregateBuildingMessages(buildingMessage, answerListReceived);
 		buildingMessage = buildingMessageHandler.refactorDemandList(buildingMessage);
 
+		// set upper limit for electricity purchase from building to demand
+		for (DemandMessage demand : buildingMessage.demandList) {
+			if (demand.networkType != NetworkType.HEAT) demand.setElecCapVector(buildingMessage.varNetworkBuyCap);
+		}
+		
 		if (topologyController.getOptimizationHierarchy() == OptHierarchy.BUILDING) {
 			optimizeBuilding();
 		}
-
+		
 		buildingMessage = buildingMessageHandler.addMetering(buildingMessage, this.fullActorPath);
 	}
 
@@ -176,4 +187,11 @@ public class Building extends BehaviorModel implements CurrentTimeStepSubscriber
 		this.currentTimeStep = currentTimeStep;
 	}
 
+	public double[] getElecBuylimit() {
+		return this.networkBuyCapFC;
+	}
+
+	public void setElecBuylimit(double[] max_buy_limit) {
+		this.networkBuyCapFC = max_buy_limit;
+	}
 }

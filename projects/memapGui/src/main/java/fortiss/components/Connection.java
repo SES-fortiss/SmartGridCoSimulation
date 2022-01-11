@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 import com.google.gson.annotations.Expose;
 
 import fortiss.gui.icons.BuildingIcon;
+import fortiss.simulation.PlanningTool;
 import fortiss.simulation.helper.PositionManager;
 
 /**
@@ -87,6 +88,7 @@ public class Connection {
 	 */
 	public void setNodeA(BuildingIcon nodeA) {
 		this.nodeA = nodeA;
+		PlanningTool.getInstance().setSaved(false);
 	}
 
 	/**
@@ -103,6 +105,7 @@ public class Connection {
 	 */
 	public void setNodeB(BuildingIcon nodeB) {
 		this.nodeB = nodeB;
+		PlanningTool.getInstance().setSaved(false);
 	}
 
 	/**
@@ -119,6 +122,7 @@ public class Connection {
 	 */
 	public void setLength(double length) {
 		this.length = length;
+		PlanningTool.getInstance().setSaved(false);
 	}
 
 	/**
@@ -137,6 +141,7 @@ public class Connection {
 	 */
 	public void setLosses(double losses) {
 		this.losses = losses / 100;
+		PlanningTool.getInstance().setSaved(false);
 	}
 
 	public double getMaxTransportCapacity() {
@@ -145,6 +150,7 @@ public class Connection {
 
 	public void setMaxTransportCapacity(double maxTransportCapacity) {
 		this.maxTransportCapacity = maxTransportCapacity;
+		PlanningTool.getInstance().setSaved(false);
 	}
 
 	/**
@@ -171,6 +177,7 @@ public class Connection {
 	 */
 	public void setLn() {
 		ln = new Line2D.Double(nodeA.getCentralPosition(), nodeB.getCentralPosition());
+		PlanningTool.getInstance().setSaved(false);
 	}
 
 	/**

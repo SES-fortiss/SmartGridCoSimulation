@@ -11,17 +11,27 @@ public class EnergyPrices {
 	 */
 	private static EnergyPrices instance = new EnergyPrices();
 
+	// Hochlastzeitfenster
+	private Price maxBuyLimit;
+	
 	private Price elecBuyingPrice;
 	private Price elecSellingPrice;
 	private Price heatBuyingPrices;
+	private Price co2EmissionPrice;
 
 	
-	public void init(Price elecBuyingPrice2, Price elecSellingPrice2, Price heatBuyingPrice) {
+	public void init(Price maxBuyLimit, Price elecBuyingPrice2, Price elecSellingPrice2, Price heatBuyingPrice, Price co2EmissionPrice) {
+		this.maxBuyLimit = maxBuyLimit;
 		this.elecBuyingPrice = elecBuyingPrice2;
 		this.elecSellingPrice = elecSellingPrice2;
 		this.heatBuyingPrices = heatBuyingPrice;
+		this.co2EmissionPrice = co2EmissionPrice;
 	}
 
+	public double getMaxBuyLimit(int timestep) {
+		return maxBuyLimit.getPriceForTimeStep(timestep);
+	}
+	
 	public double getElecBuyingPrice(int timestep) {
 		return elecBuyingPrice.getPriceForTimeStep(timestep);
 	}
@@ -32,6 +42,10 @@ public class EnergyPrices {
 
 	public double getHeatBuyingPrice(int timestep) {
 		return heatBuyingPrices.getPriceForTimeStep(timestep);
+	}
+	
+	public double getCO2EmissionFactor(int timestep) {
+		return co2EmissionPrice.getPriceForTimeStep(timestep);
 	}
 
 	/**

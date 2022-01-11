@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import memap.controller.BuildingController;
 import memap.controller.OpcUaBuildingController;
 import memap.controller.TopologyController;
+import memap.helper.CO2Emission;
 import memap.helper.ElectricityPrice;
 import memap.helper.EnergyPrices;
 import memap.helper.HeatPrice;
@@ -132,9 +133,11 @@ public class JettyStart {
 		// Global EnergyPrices: Import can be designed similar to connection (see planning tool), 
 		// but is not necessary, if buildings provide price values via OPC UA.
 		EnergyPrices.getInstance().init(
+				new ElectricityPrice(9999, Simulation.N_STEPS_MPC),				 //global buying limit
 				new ElectricityPrice(0.285, Simulation.N_STEPS_MPC), //global buying price
 				new ElectricityPrice(0.08, Simulation.N_STEPS_MPC),  //global selling price
-				new HeatPrice(0.13, Simulation.N_STEPS_MPC) 		 //global heat price
+				new HeatPrice(0.13, Simulation.N_STEPS_MPC), //global heat price
+				new CO2Emission(0.540, Simulation.N_STEPS_MPC) // co2 grid-Emission factor // nach Stefan's Master Arbeit - als Vergleich für Riemerling
 				);
 		
 		// Starts additional simulation threads on the building level if doubleSim = true.

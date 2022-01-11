@@ -52,8 +52,6 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 	
 	public double[] optimizationAdviceBuy;
 	public double[] optimizationAdviceSell;
-	public double[] optAdviceHeatPurchase; //from whom?
-	public double[] optAdviceHeatDelivery; //to whom?
 
 	public List<UaMonitoredItem> itemsDemand;
 
@@ -350,11 +348,6 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 					} catch (InterruptedException | ExecutionException e) {
 						e.printStackTrace();
 					}
-				}
-				if ((key.equals("connection_FromCoSES_H1_ToCoSES_H2Frwd")) && (this.networkType == NetworkType.HEAT)) {
-					optAdviceHeatPurchase = optResult.resultMap.get(key);
-					// Write heat transfer setpoint here
-					System.out.println("HEAT Transfer between buildings (setpoint): " + optAdviceHeatPurchase[0]);
 				}
 			}
 		}

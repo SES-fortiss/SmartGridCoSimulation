@@ -152,6 +152,11 @@ public class ModelInitHelper {
 
 		// Export parameters
 		Parameters pars = PlanningTool.getInstance().getParameters();
+		
+		if (pars == null) {
+			PlanningTool.getInstance().setParameters(new Parameters());
+			pars = PlanningTool.getInstance().getParameters();
+		}
 
 		String fileName = Paths.get(topologyFilePath).getFileName().toString().replaceAll(".json", "");
 		pars.setSimulationName(fileName);

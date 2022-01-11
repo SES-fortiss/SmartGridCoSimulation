@@ -13,12 +13,12 @@ abstract public class IconStore {
 	private static String fortissLogoPath = "/fortissLogo.png";
 	private static String tumLogoPath = "/tumLogo.png";
 	private static String memapLogoPath = "/memap.png";
-	private static String bimLogoPath = "/bimLogo.png";
 
 	private static String costReductionPath = "/costReduction.png";
 	private static String emissionsReductionPath = "/emissionsReduction.png";
 	private static String loadingPath = "/loading.gif";
 	private static String openPath = "/open.png";
+	private static String openBimPath = "/openBim.png";
 	private static String resetPath = "/reset.png";
 	private static String savePath = "/save.png";
 	private static String saveAsPath = "/saveAs.png";
@@ -71,12 +71,6 @@ abstract public class IconStore {
 
 	public static ImageIcon smallTumLogo = new ImageIcon(new ImageIcon(IconStore.class.getResource(tumLogoPath))
 			.getImage().getScaledInstance(60, 30, Image.SCALE_SMOOTH));
-
-	public static ImageIcon bimLogo = new ImageIcon(new ImageIcon(IconStore.class.getResource(bimLogoPath)).getImage()
-			.getScaledInstance(180, 180, Image.SCALE_SMOOTH));
-	
-	public static ImageIcon smallBimLogo = new ImageIcon(new ImageIcon(IconStore.class.getResource(bimLogoPath)).getImage()
-			.getScaledInstance(28, 28, Image.SCALE_SMOOTH));
 	
 	public static ImageIcon memapLogo = new ImageIcon(new ImageIcon(IconStore.class.getResource(memapLogoPath))
 			.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH));
@@ -94,29 +88,27 @@ abstract public class IconStore {
 			.getScaledInstance(1150, 450, Image.SCALE_DEFAULT));
 
 	public static ImageIcon open = new ImageIcon(new ImageIcon(IconStore.class.getResource(openPath)).getImage()
-			.getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+			.getScaledInstance(43, 40, Image.SCALE_SMOOTH));
+	public static ImageIcon openBim = new ImageIcon(new ImageIcon(IconStore.class.getResource(openBimPath)).getImage()
+			.getScaledInstance(42, 40, Image.SCALE_SMOOTH));
 	public static ImageIcon reset = new ImageIcon(new ImageIcon(IconStore.class.getResource(resetPath)).getImage()
-			.getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+			.getScaledInstance(35, 35, Image.SCALE_SMOOTH));
 	public static ImageIcon save = new ImageIcon(new ImageIcon(IconStore.class.getResource(savePath)).getImage()
-			.getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+			.getScaledInstance(35, 35, Image.SCALE_SMOOTH));
 	public static ImageIcon saveAs = new ImageIcon(new ImageIcon(IconStore.class.getResource(saveAsPath)).getImage()
-			.getScaledInstance(28, 28, Image.SCALE_SMOOTH));
+			.getScaledInstance(35, 35, Image.SCALE_SMOOTH));
 	public static ImageIcon run = new ImageIcon(new ImageIcon(IconStore.class.getResource(runPath)).getImage()
-			.getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+			.getScaledInstance(35, 35, Image.SCALE_SMOOTH));
 	public static ImageIcon onDarkMode = new ImageIcon(new ImageIcon(IconStore.class.getResource(onDarkModePath))
 			.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 	public static ImageIcon offDarkMode = new ImageIcon(new ImageIcon(IconStore.class.getResource(offDarkModePath))
 			.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 	public static ImageIcon visualize = new ImageIcon(new ImageIcon(IconStore.class.getResource(visualizePath))
-			.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+			.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH));
 	public static ImageIcon csvFormatDEMAND = new ImageIcon(
-			new ImageIcon(IconStore.class.getResource(csvFormatDEMANDPath)).getImage()
-	// .getScaledInstance(100, 100, Image.SCALE_SMOOTH)
-	);
+			new ImageIcon(IconStore.class.getResource(csvFormatDEMANDPath)).getImage());
 	public static ImageIcon csvFormatVALUES = new ImageIcon(
-			new ImageIcon(IconStore.class.getResource(csvFormatVALUESPath)).getImage()
-	// .getScaledInstance(100, 100, Image.SCALE_SMOOTH)
-	);
+			new ImageIcon(IconStore.class.getResource(csvFormatVALUESPath)).getImage());
 
 	public static ImageIcon uDemandMenu = new ImageIcon(new ImageIcon(IconStore.class.getResource(uDemandPath))
 			.getImage().getScaledInstance(25, 35, Image.SCALE_SMOOTH));

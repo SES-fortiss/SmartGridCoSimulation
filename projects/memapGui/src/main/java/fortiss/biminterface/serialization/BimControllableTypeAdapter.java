@@ -36,17 +36,19 @@ public class BimControllableTypeAdapter implements JsonDeserializer<Controllable
 		double cost = others.get("cost").getAsDouble();
 		double coEmission = others.get("co2 emissions").getAsDouble();
 
-		boolean buildingExist = DesignerPanel.buildings.containsKey(buildingName);
-
 		Building building;
-		if (!buildingExist) {
-			double maximumCoordinate = 90.0;
-			Point2D position = new Point2D.Double(maximumCoordinate * new Random().nextDouble(), maximumCoordinate * new Random().nextDouble());
-			building = new Building(buildingName, 0, position);
-			DesignerPanel.buildings.put(buildingName, building);
-
-		} else {
-			building = DesignerPanel.buildings.get(buildingName);
+		synchronized (DesignerPanel.buildings) {
+		
+			boolean buildingExist = DesignerPanel.buildings.containsKey(buildingName);
+			
+			if (!buildingExist) {
+				double maximumCoordinate = 90.0;
+				Point2D position = new Point2D.Double(maximumCoordinate * new Random().nextDouble(), maximumCoordinate * new Random().nextDouble());
+				building = new Building(buildingName, 0, position);
+				DesignerPanel.buildings.put(buildingName, building);
+			} else {
+				building = DesignerPanel.buildings.get(buildingName);
+			}
 		}
 
 		Controllable controllable = new Controllable(building, componentName, networkType, minimumPower, maximumPower,

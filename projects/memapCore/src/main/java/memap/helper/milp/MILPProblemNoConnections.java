@@ -4,7 +4,6 @@ import java.util.Arrays;
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
 import memap.controller.TopologyController;
-import memap.helper.CO2profiles;
 import memap.helper.configurationOptions.OptimizationCriteria;
 import memap.helper.configurationOptions.ToolUsage;
 import memap.messages.BuildingMessage;
@@ -111,6 +110,8 @@ public class MILPProblemNoConnections extends MILPProblem {
 			}
 
 			problem.addConstraint(rowHEAT, LpSolve.EQ, demand[i]);
+//			System.out.println("Adding Constraint at i = " + i + ", --> rowHEAT: " + Arrays.toString(rowHEAT)
+//			+ " EQ: " + demand[i]);
 		}
 
 		/* second ELEC componentes */
@@ -121,6 +122,7 @@ public class MILPProblemNoConnections extends MILPProblem {
 			int couplerHandled = 0;
 			int storageHandled = 0;
 
+			
 			double[] rowELEC = new double[nCols + 1];
 
 			for (ProducerMessage pm : buildingMessage.controllableProducerList) {
@@ -155,20 +157,20 @@ public class MILPProblemNoConnections extends MILPProblem {
 					rowELEC[index + nStepsMPC] = 1;
 				}
 				storageHandled++;
+				
 			}
 
 			// ADD Markets (at last position)
 
 			int index = countTimeStep + 1 + nStepsMPC
 					* ((controllableHandled * 2) + volatileHandled + (couplerHandled * 2) + (storageHandled * 2));
-
 			rowELEC[index] = -1;
 			rowELEC[index + nStepsMPC] = 1;
-
+			
 			problem.addConstraint(rowELEC, LpSolve.EQ, demand[i]);
 
-			// System.out.println("Adding markets --> rowELEC: " + Arrays.toString(rowELEC)
-			// + " EQ: " + demand[i]);
+//			System.out.println("Adding markets --> rowELEC: " + Arrays.toString(rowELEC)
+//			+ " EQ: " + demand[i]);
 			countTimeStep++;
 		}
 
@@ -177,6 +179,10 @@ public class MILPProblemNoConnections extends MILPProblem {
 
 	public LpSolve createComponentBoundaries(LpSolve problem, BuildingMessage buildingMessage) throws LpSolveException {
 
+		int cts = currentTimeStep;
+		double[] networkBuyCap = new double[nStepsMPC];
+    	Arrays.fill(networkBuyCap, 99999.0); // fill with 99999 kWh -> (no) upper limit.
+    	
 		for (int i = 0; i < nStepsMPC; i++) {
 			MILPIndexHelper ih = new MILPIndexHelper(nStepsMPC);
 
@@ -263,6 +269,29 @@ public class MILPProblemNoConnections extends MILPProblem {
 
 				ih.storageHandled++;
 			}
+			
+			// Market Constraints:
+        	// takes the minimum Electricity Buy Cap from all houses to be overtaken by Memap
+        	// and multiplies it by the time-dependent function for the MaxBuyLimit, if defined in the global simulation settings.
+			
+			int index = i + 1 + nStepsMPC * ((ih.controllableHandled * 2) + ih.volatileHandled
+					+ (ih.couplerHandled * 2) + (ih.storageHandled * 2));
+        	double[] rowN = new double[nCols + 1];
+        	
+        	for (DemandMessage dm : buildingMessage.demandList) {		     	
+        		
+        		if ((dm.networkType == NetworkType.ELECTRICITY) && (dm.varNetworkBuyCap != null)) {
+        			if ( (dm.varNetworkBuyCap[i] < networkBuyCap[i])) {
+        				networkBuyCap[i] = dm.varNetworkBuyCap[i]*energyPrices.getMaxBuyLimit(cts + i);	
+        				if (energyPrices.getMaxBuyLimit(cts + i) == 0) networkBuyCap[i] = 9999.0;
+        			}
+       			}
+//        		if (dm.networkType == NetworkType.ELECTRICITY && i == 0) System.out.println("ElecBuy for " + buildingMessage.name + " limited to " + networkBuyCap[0]);
+        	}
+        	rowN[index] = 1;
+        	
+        	problem.addConstraint(rowN, LpSolve.LE, networkBuyCap[i]);
+//			System.out.println(Arrays.toString(rowN) + ": ElecBuy for " + buildingMessage.name + " limited to " + networkBuyCap[i] + " at index " + index );		
 
 		}
 		return problem;
@@ -284,12 +313,12 @@ public class MILPProblemNoConnections extends MILPProblem {
 			double standbyLosses = sm.storageLosses;
 			
 			// check and enforce that SOC is between 0 and 1, due to numerical issues.
-			if (SOC_perc >= 1) {
-				SOC_perc = 1;
-			}
-			if (SOC_perc <= 0) {
-				SOC_perc = 0;
-			}		
+//			if (SOC_perc >= 1) {
+//				SOC_perc = 1;
+//			}
+//			if (SOC_perc <= 0) {
+//				SOC_perc = 0;
+//			}		
 			
 			// New for SOC within 0 and 1 and standby loss consideration:
 			// helper parameters, only depend on time step length and storage parameters
@@ -315,8 +344,14 @@ public class MILPProblemNoConnections extends MILPProblem {
     			}
                 
     			// Add the factor vectors to the problem as constraint:
-    			problem.addConstraint(rowDISCHARGE, LpSolve.LE, (SOC_perc * Math.pow(alpha, i+1)));
     			problem.addConstraint(rowCHARGE, LpSolve.LE, (1-(SOC_perc * Math.pow(alpha, i+1))));
+    			// for the last timestep in the horizon, the discharge limit is set to be 10%
+    			if (i == (nStepsMPC-1) && (Double) sm.minimumSOC != null) {
+    				problem.addConstraint(rowDISCHARGE, LpSolve.LE, ((SOC_perc * Math.pow(alpha, i+1)) - sm.minimumSOC));
+    			} else {
+    				problem.addConstraint(rowDISCHARGE, LpSolve.LE, (SOC_perc * Math.pow(alpha, i+1)));
+    			}
+    			
             }
             
 			storageHandled++;
@@ -448,6 +483,7 @@ public class MILPProblemNoConnections extends MILPProblem {
         	Arrays.fill(bestBuyPrice, 100.0); // fill with 100 €/kWh
         	double[] bestSellPrice = new double[nStepsMPC];
         	Arrays.fill(bestSellPrice, 0.0); // fill with 0 €/kWh
+
         	
         	for (DemandMessage dm : buildingMessage.demandList) {		
         		if (dm.networkType == NetworkType.ELECTRICITY) {
@@ -475,12 +511,13 @@ public class MILPProblemNoConnections extends MILPProblem {
             	// sell
             	colno[counter] = index+nStepsMPC;
             	row[counter++] = -energyPrices.getElecSellingPrice(cts+i);
+
 			}
         	
         	if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
         		// buy
             	colno[counter] = index;
-            	row[counter++] = CO2profiles.getCO2emissions(cts+i);
+            	row[counter++] = energyPrices.getCO2EmissionFactor(cts+i);
             	// sell, no compensation for selling
             	colno[counter] = index+nStepsMPC;
             	row[counter++] = 0;
@@ -503,7 +540,7 @@ public class MILPProblemNoConnections extends MILPProblem {
 	    		if (topologyController.getOptimizationCriteria() == OptimizationCriteria.CO2) {
 	    			// buy
 	            	colno[counter] = index;
-	            	row[counter++] = CO2profiles.getCO2emissions(cts+i);
+	            	row[counter++] = energyPrices.getCO2EmissionFactor(cts+i);
 	            	// sell, no compensation for selling
 	            	colno[counter] = index+nStepsMPC;
 	            	row[counter++] = 0;

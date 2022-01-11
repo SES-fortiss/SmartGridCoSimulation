@@ -141,7 +141,7 @@ public class MILPSolver {
 
 	// FIXME - this method is doing two independent tasks, 
 	private void workWithResults(double[] optSolution, String[] names, double[] lambda, double[] lambdaCO2) {
-		
+
 		/** TASK ONE - creation of optResult Map (the MPC set-points) */
 		
 		
@@ -206,6 +206,7 @@ public class MILPSolver {
 		double buildingCO2PerTimestep = 0;
 		buildingCostPerTimestep = milpSolHandler.calculateTimeStepCosts(optSolution, lambda);
 		buildingCO2PerTimestep = milpSolHandler.calculateTimeStepCosts(optSolution, lambdaCO2);
+		
 		buildingStepCostsMILP[currentTimeStep] = buildingCostPerTimestep;
 		buildingStepCO2MILP[currentTimeStep] = buildingCO2PerTimestep;
 		
@@ -222,12 +223,14 @@ public class MILPSolver {
 		double[] currentStep = { currentTimeStep };
 		
 		String[] energyPricesNames = { 
+					Strings.maxBuyLimitAndUnit, 
 					Strings.elecBuyingPriceAndUnit, 
 					Strings.elecSellingPriceAndUnit,
 					Strings.heatBuyingPriceAndUnit 
 				};
 		
 		double[] currentEnergyPrices = { 
+					energyPrices.getMaxBuyLimit(currentTimeStep),
 					energyPrices.getElecBuyingPrice(currentTimeStep),
 					energyPrices.getElecSellingPrice(currentTimeStep),
 					energyPrices.getHeatBuyingPrice(currentTimeStep) 
@@ -326,11 +329,7 @@ public class MILPSolver {
 		}
 		
 		if (topologyController.getToolUsage() == ToolUsage.SERVER) {
-			ConnectionDB.addResults(topologyController.getOptimizationHierarchy(),currentTimeStep, namesResult_this_TimeStep, currentStep, currentDemand, currentOptVector, currentSOC,
-				currentEnergyPrices, totalCostsEUR, totalCO2emissions, nrOfBuildings);
-			
-			
-			
+			ConnectionDB.addResults(topologyController.getOptimizationHierarchy(), currentTimeStep, namesResult_this_TimeStep, vectorResult_this_TimeStep , nrOfBuildings);
 		}		
 
 		// Format results vector for printing

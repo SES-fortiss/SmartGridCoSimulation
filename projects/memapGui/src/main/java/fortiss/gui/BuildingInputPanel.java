@@ -9,7 +9,6 @@ import javax.swing.border.TitledBorder;
 
 import fortiss.components.Building;
 import fortiss.gui.listeners.textfield.BNameListener;
-import fortiss.gui.listeners.textfield.BPortListener;
 import fortiss.gui.listeners.textfield.ComponentFieldListener;
 import fortiss.gui.style.Colors;
 import fortiss.gui.style.Fonts;
@@ -23,14 +22,10 @@ public class BuildingInputPanel extends InformationPanel {
 
 	/** Building name */
 	public JTextField txtBName;
-	/** Building port number */
-	public JTextField txtBPort;
 	/** Building area title label */
 	private JLabel lblBuilding;
 	/** Building name label */
 	private JLabel lb_id;
-	/** Building port label */
-	private JLabel lb_port;
 
 	private static final long serialVersionUID = 1L;
 
@@ -41,7 +36,6 @@ public class BuildingInputPanel extends InformationPanel {
 		setBackground(Colors.background);
 		setForeground(Colors.normal);
 		lb_id.setForeground(Colors.normal);
-		lb_port.setForeground(Colors.normal);
 		lblBuilding.setForeground(Colors.title);
 	}
 
@@ -75,22 +69,12 @@ public class BuildingInputPanel extends InformationPanel {
 		txtBName.addFocusListener(bnameListener);
 		txtBName.setColumns(10);
 		add(txtBName, "growx");
-
-		lb_port = new JLabel("Port number");
-		add(lb_port);
-		txtBPort = new JTextField();// integerFormat);
-		txtBPort.setColumns(10);
-		ComponentFieldListener bPortListener = new BPortListener();
-		txtBPort.addKeyListener(bPortListener);
-		txtBPort.addFocusListener(bPortListener);
-		add(txtBPort, "growx");
 	}
 
 	@Override
 	public void update() {
 		Building building = DesignerPanel.selectedBuilding;
 		txtBName.setText(building.getName());
-		txtBPort.setText(String.valueOf(building.getPort()));
 	}
 
 }

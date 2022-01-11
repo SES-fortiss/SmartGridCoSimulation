@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,6 +24,8 @@ import memap.components.CSVProducer;
 import memap.components.CSVStorage;
 import memap.components.CSVVolatileProducer;
 import memap.components.prototypes.Connection;
+import memap.helper.CO2Emission;
+import memap.helper.MaxBuyLimit;
 import memap.helper.ElectricityPrice;
 import memap.helper.EnergyPrices;
 import memap.helper.HeatPrice;
@@ -110,10 +113,17 @@ public class GuiController {
 		// Must come before prices are set!
 		topologyConfig.init(mpcHorizon, timeStepsPerDay, nrDays, 0, 0);
 		
+		JsonObject maxBuyLimitObj = jObject.get("maxBuyLimit").getAsJsonObject();
+		
 		JsonObject elecBuyingPriceObj = jObject.get("elecBuyingPrice").getAsJsonObject();
 		JsonObject elecSellingPriceObj = jObject.get("elecSellingPrice").getAsJsonObject();
 		JsonObject heatBuyingPriceObj = jObject.get("heatBuyingPrice").getAsJsonObject();
+		JsonObject co2EmissionPriceObj = jObject.get("co2Emissions").getAsJsonObject();
 
+		Price maxBuyLimit = new MaxBuyLimit(maxBuyLimitObj.get("fixed").getAsBoolean(),
+				maxBuyLimitObj.get("limit").getAsDouble(), maxBuyLimitObj.get("limitFilePath").getAsString(),
+				mpcHorizon);
+		
 		Price elecBuyingPrice = new ElectricityPrice(elecBuyingPriceObj.get("fixed").getAsBoolean(),
 				elecBuyingPriceObj.get("price").getAsDouble(), elecBuyingPriceObj.get("priceFilePath").getAsString(),
 				mpcHorizon);
@@ -123,9 +133,13 @@ public class GuiController {
 		Price heatBuyingPrice = new HeatPrice(heatBuyingPriceObj.get("fixed").getAsBoolean(),
 				heatBuyingPriceObj.get("price").getAsDouble(), heatBuyingPriceObj.get("priceFilePath").getAsString(),
 				mpcHorizon);
+		Price co2EmissionPrice = new CO2Emission(co2EmissionPriceObj.get("fixed").getAsBoolean(),
+				co2EmissionPriceObj.get("price").getAsDouble(), co2EmissionPriceObj.get("priceFilePath").getAsString(),
+				mpcHorizon);
 
 		EnergyPrices energyPrices = EnergyPrices.getInstance();
-		energyPrices.init(elecBuyingPrice, elecSellingPrice, heatBuyingPrice);
+
+		energyPrices.init(maxBuyLimit, elecBuyingPrice, elecSellingPrice, heatBuyingPrice, co2EmissionPrice);
 
 		Optimizer optimizer = null;
 		String optimizerType = jObject.get("optimizer").getAsString();
@@ -204,10 +218,13 @@ public class GuiController {
 			JsonObject jObject = (JsonObject) jsonElement;
 
 			// Creating the building
-			BuildingController building;
+			CSVBuildingController building;
 			
 			try {
 				building = new CSVBuildingController(jObject.get("formattedName").getAsString());
+				double[] elecBuyLimit = new double[TopologyConfig.getInstance().getNrStepsMPC()];			
+				Arrays.fill(elecBuyLimit,(int) jObject.get("max_buy_limit").getAsDouble());
+				building.setElecBuylimit(elecBuyLimit);
 			} catch (Exception e) {
 				building = new CSVBuildingController(jObject.get("name").getAsString());
 			}
@@ -298,7 +315,7 @@ public class GuiController {
 			JsonObject jObject = (JsonObject) jsonElement;
 			String networkT = jObject.get("networkType").getAsString();
 
-			NetworkType networkType = (networkT.equals("Heat")) ? networkType = NetworkType.HEAT
+			NetworkType networkType = (networkT.equals("Heat") || networkT.equals("HEAT") ) ? networkType = NetworkType.HEAT
 					: NetworkType.ELECTRICITY;
 			
 			CSVProducer producer; 

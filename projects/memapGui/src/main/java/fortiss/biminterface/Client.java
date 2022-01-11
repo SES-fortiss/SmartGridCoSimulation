@@ -79,8 +79,12 @@ public class Client {
 	 * Loads the MEMAP topology in BIM
 	 */
 	public void loadTopology() {
-		final Call<LinkedTreeMap<String, String>> call = bimService.getComponentList(bimSession.getAccessToken(),
-				bimSession.getContentType(), bimSession.getTeam(), bimSession.getProjectId(),
+		
+		final Call<LinkedTreeMap<String, String>> call = bimService.getComponentList(
+				bimSession.getAccessToken(),
+				bimSession.getContentType(), 
+				bimSession.getTeam(), 
+				bimSession.getProjectId(),
 				bimSession.getComponentTypeID(), true);
 		call.enqueue(new Callback<LinkedTreeMap<String, String>>() {
 
@@ -88,6 +92,7 @@ public class Client {
 			public void onResponse(Call<LinkedTreeMap<String, String>> call,
 					Response<LinkedTreeMap<String, String>> response) {
 				if (response.body() != null) {
+					// when topology data arrives, the components are parsed individually
 					LinkedTreeMap<String, String> componentList = response.body();
 					for (Entry<String, String> item : componentList.entrySet()) {
 						parseComponent(item.getKey(), item.getValue());
@@ -109,25 +114,29 @@ public class Client {
 	 */
 	private void parseComponent(String componentId, String componentType) {
 		switch (componentType) {
-		case "Demand":
-			parseDemand(componentId);
-			break;
-		case "Storage":
-			parseStorage(componentId);
-			break;
-		case "Controllable production":
-			parseControllable(componentId);
-			break;
-		default:
-			Logger.getInstance().writeInfo("Unknown component type");
-			break;
+			case "Demand":
+				parseDemand(componentId);
+				break;
+			case "Storage":
+				parseStorage(componentId);
+				break;
+			case "Controllable production":
+				parseControllable(componentId);
+				break;
+			default:
+				Logger.getInstance().writeInfo("Unknown component type");
+				break;
 		}
-		// Note: VolatileProduction and Coupler are not included yet because they are not in the model.
+		// Note: VolatileProduction and Coupler are not included yet because they are not in the BIM model.
 	}
 
 	private void parseDemand(String componentId) {
-		final Call<Demand> call = bimService.getDemand(bimSession.getAccessToken(), bimSession.getContentType(),
-				bimSession.getTeam(), componentId);
+		final Call<Demand> call = bimService.getDemand(
+				bimSession.getAccessToken(), 
+				bimSession.getContentType(),
+				bimSession.getTeam(), 
+				componentId);
+		
 		call.enqueue(new Callback<Demand>() {
 
 			@Override
