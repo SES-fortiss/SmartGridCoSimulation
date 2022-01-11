@@ -49,6 +49,10 @@ public class BuildingTypeAdapter implements JsonSerializer<Building>, JsonDeseri
 		}
 
 		building.setIcon(new BuildingIcon(building, position));
+		
+		if(building.getMax_buy_limit() == 0) {
+			building.setMax_buy_limit(9999);
+		}
 
 		return building;
 	}

@@ -47,4 +47,10 @@ public interface BuildingController {
 	 */
 	public void attach(Device device);
 	
+	/**
+	 * For the use case 'Hochlastzeitfenster' a time dependent limit can be set.
+	 * 
+	 * @return building imit for electricity purchase from the grid
+	 */
+	public double[] getElecBuyLimit();
 }

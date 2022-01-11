@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import cern.colt.Arrays;
 import memap.helper.lp.LPOptimizationProblem;
 import memap.main.TopologyConfig;
 import memap.media.Strings;
@@ -146,7 +147,7 @@ public class SolutionHandler {
 		double[] result = new double[demand.length / nStepsMPC];
 
 		for (int i = 0; i < result.length; i++) {
-			result[i] = demand[i * nStepsMPC];
+			result[i] = -demand[i * nStepsMPC];
 		}
 		
 		return result;
@@ -316,9 +317,11 @@ public class SolutionHandler {
 	public ArrayList<String> createNamesForCorrEfficiency(BuildingMessage singleBuildingMessage, String[] names) {
 		ArrayList<String> additionalNames = new ArrayList<>();
 		
+		System.out.println(SolutionHandler.class + ": " + Arrays.toString(names));
+		
 		for (ProducerMessage producerMessage : singleBuildingMessage.controllableProducerList) {
 			for (int i = 0; i < names.length; i++) {
-				if(names[i].contains(producerMessage.name + "_T")) {
+				if( names[i] != null && names[i].contains(producerMessage.name + "_T")) {
 					additionalNames.add(names[i] + "_withEfficiency");
 				}
 			}
@@ -344,7 +347,7 @@ public class SolutionHandler {
 		
 		for (ProducerMessage producerMessage : singleBuildingMessage.controllableProducerList) {			
 			for (int i = 0; i < names.length; i++) {
-				if(names[i].contains(producerMessage.name + "_T")) {
+				if(names[i] != null && names[i].contains(producerMessage.name + "_T")) {
 					additionalValues.add(optSolution[i]*producerMessage.efficiency);				
 				}
 			}

@@ -30,17 +30,19 @@ public class BimDemandTypeAdapter implements JsonDeserializer<Demand> {
 		String buildingNameRaw = others.get("ebene").getAsString();
 		String buildingName = buildingNameRaw.replace("Ebene: ", "").replaceAll("-", "").replaceAll("_", "").replaceAll("\\.", "");
 		
-		boolean buildingExist = DesignerPanel.buildings.containsKey(buildingName);
-		
 		Building building;
-		if(!buildingExist) {
-			double maximumCoordinate = 90.0;
-			Point2D position = new Point2D.Double(maximumCoordinate * new Random().nextDouble(), maximumCoordinate * new Random().nextDouble());
-			building = new Building(buildingName, 0, position);
-			DesignerPanel.buildings.put(buildingName, building);
+		synchronized (DesignerPanel.buildings) {
+		
+			boolean buildingExist = DesignerPanel.buildings.containsKey(buildingName);
 			
-		} else {
-			building = DesignerPanel.buildings.get(buildingName);
+			if (!buildingExist) {
+				double maximumCoordinate = 90.0;
+				Point2D position = new Point2D.Double(maximumCoordinate * new Random().nextDouble(), maximumCoordinate * new Random().nextDouble());
+				building = new Building(buildingName, 0, position);
+				DesignerPanel.buildings.put(buildingName, building);
+			} else {
+				building = DesignerPanel.buildings.get(buildingName);
+			}
 		}
 		
 		Demand demand = new Demand(building, componentName, "");

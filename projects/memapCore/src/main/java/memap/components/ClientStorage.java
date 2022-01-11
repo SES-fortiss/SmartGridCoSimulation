@@ -31,6 +31,7 @@ public class ClientStorage extends Storage {
 	NetworkType networkType;
 	double opCost;
 	double costCO2;
+	double minimumSoc;
 	public BasicClient client;
 	public NodeId calculatedSocId;
 	public NodeId inputSetpointId;
@@ -59,6 +60,7 @@ public class ClientStorage extends Storage {
 			NodeId capacityId, 
 			NodeId stateOfCharge, 
 			NodeId calculatedSocId, 
+			NodeId minimumSocId, 
 			NodeId maxChargingId,
 			NodeId maxDischargingId, 
 			NodeId effInId, 
@@ -91,6 +93,7 @@ public class ClientStorage extends Storage {
 		this.opCost = client.readFinalDoubleValue(opCostId);
 		this.costCO2 = client.readFinalDoubleValue(costCO2Id);
 		this.calculatedSocId = calculatedSocId;
+		if (minimumSocId != null) this.minimumSoc = client.readFinalDoubleValue(minimumSocId);
 		
 //		System.out.println("Initial SOC = " + this.stateOfCharge);
 		
@@ -148,6 +151,7 @@ public class ClientStorage extends Storage {
 		storageMessage.operationalCostCO2 = costCO2;
 		storageMessage.capacity = capacity;
 		storageMessage.stateOfCharge = stateOfCharge;
+		storageMessage.minimumSOC = minimumSoc;
 		storageMessage.storageEnergyContent = stateOfCharge * capacity;
 		storageMessage.maxLoad = max_charging;
 		storageMessage.maxDischarge = max_discharging;
@@ -162,7 +166,7 @@ public class ClientStorage extends Storage {
 		if (requestContentReceived instanceof OptimizationResultMessage) {
 			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
 			for (String key : optResult.resultMap.keySet()) {
-				if (key.equals(actorName + "Charge")) {
+				if (key.equals(actorName + "_Charge")) {
 					optimizationAdviceInput = optResult.resultMap.get(key);
 					DataValue singlevalueInputSetpoint = new DataValue(new Variant(optimizationAdviceInput[0]), null, null);
 					client.writeValue(inputSetpointId, singlevalueInputSetpoint);
@@ -175,7 +179,7 @@ public class ClientStorage extends Storage {
 						e.printStackTrace();
 					}		
 				}
-				if (key.equals(actorName + "Discharge")) {
+				if (key.equals(actorName + "_Discharge")) {
 					optimizationAdviceOutput = optResult.resultMap.get(key);
 					DataValue singlevalueOutputSetpoint = new DataValue(new Variant(optimizationAdviceOutput[0]), null, null);
 					client.writeValue(outputSetpointId, singlevalueOutputSetpoint);
@@ -204,6 +208,7 @@ public class ClientStorage extends Storage {
 			
 			// update the SOC based on the just written setpoints for the storage
 			double SOC_perc_updated = this.stateOfCharge * alpha + beta_to * optimizationAdviceInput[0] - beta_fm * optimizationAdviceOutput[0];
+			// System.out.println("!: " + SOC_perc_updated + " = " + (this.stateOfCharge * alpha) + " + " + beta_to + " * " + optimizationAdviceInput[0] + " - " + beta_fm + " * " + optimizationAdviceOutput[0]);
 			
 			// feed the updated SOC back into the original format and value (workaround, should be updated)
 			this.stateOfCharge =  SOC_perc_updated;

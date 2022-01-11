@@ -11,4 +11,7 @@ public class OptimizationResultMessage implements RequestContent {
 	public SortedMap<String, double[]> resultMap = new TreeMap<String, double[]>();
 	/** Stores the metrics presented as results overview using the name as key */
 	public SortedMap<String, double[]> metricsMap = new TreeMap<String, double[]>();
+	
+	/** Stores the results for OPC UA Server */
+	public SortedMap<String, double[]> dataMap = new TreeMap<String, double[]>();
 }
