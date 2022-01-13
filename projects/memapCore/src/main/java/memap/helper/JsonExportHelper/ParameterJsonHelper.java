@@ -29,6 +29,8 @@ public class ParameterJsonHelper {
 	@Expose
 	private String loggingMode;
 	@Expose
+	private PriceJsonHelper maxBuyLimit;
+	@Expose
 	private PriceJsonHelper elecSellingPrice;
 	@Expose
 	private PriceJsonHelper elecBuyingPrice;
@@ -39,7 +41,7 @@ public class ParameterJsonHelper {
 
 	
 	public ParameterJsonHelper(int simulationSteps, int mpcHorizon, int days, String optCriteria,
-			String optimizer, String loggingMode, PriceJsonHelper elecBuyingPrice, PriceJsonHelper elecSellingPrice,
+			String optimizer, String loggingMode, PriceJsonHelper maxBuyLimit, PriceJsonHelper elecBuyingPrice, PriceJsonHelper elecSellingPrice,
 			PriceJsonHelper heatBuyingPrice, PriceJsonHelper co2Emissions) {
 		setSimulationName("ImportFromMEMAPServer");
 		setStepsPerDay(simulationSteps);
@@ -48,6 +50,7 @@ public class ParameterJsonHelper {
 		setOptimizer(optimizer);
 		setOptCriteria(optCriteria);
 		setLoggingMode(loggingMode);
+		setMaxBuyLimit(maxBuyLimit);
 		setElecBuyingPrice(elecBuyingPrice);
 		setElecSellingPrice(elecSellingPrice);
 		setHeatBuyingPrice(heatBuyingPrice);
@@ -110,6 +113,14 @@ public class ParameterJsonHelper {
 		this.loggingMode = loggingMode;
 	}
 
+	public PriceJsonHelper getMaxBuyLimit() {
+		return maxBuyLimit;
+	}
+
+	public void setMaxBuyLimit(PriceJsonHelper maxBuyLimit) {
+		this.maxBuyLimit = maxBuyLimit;
+	}
+	
 	public PriceJsonHelper getElecSellingPrice() {
 		return elecSellingPrice;
 	}

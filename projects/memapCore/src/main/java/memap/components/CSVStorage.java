@@ -61,8 +61,6 @@ public class CSVStorage extends Storage {
 	@Override
 	public void handleRequest() {
 		
-		System.out.println(" ===> OLD SOC: " + stateOfCharge);
-		
 		if (requestContentReceived instanceof OptimizationResultMessage) {
 			
 			double stepLengthInHours = topologyConfig.getStepLengthInHours();
@@ -79,7 +77,6 @@ public class CSVStorage extends Storage {
 			}
 			
 			if (storageChargeRequest!= null && storageDischargeRequest!= null) {
-				System.out.println(" ===> SOC is changing.");
 				
 				double soc_alt = stateOfCharge;
 				double leistung = storageChargeRequest[0] * effIN - storageDischargeRequest[0] * 1 / effOUT;
@@ -96,7 +93,6 @@ public class CSVStorage extends Storage {
 				
 			}
 		}
-		System.out.println(" ===> NEW SOC: " + stateOfCharge);
 	}
 	
 	

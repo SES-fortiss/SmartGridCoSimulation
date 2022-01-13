@@ -85,7 +85,7 @@ public class Parameters {
 		setSimulationName("default");
 		setStepsPerDay(24);
 		// Initially setter is not called, so that the prices are not updated
-		this.mpcHorizon = 2;
+		this.mpcHorizon = 5;
 		setDays(1);
 		setOptimizer(optimizerOptions.get(0));
 		setOptCriteria(criteriaOptions.get(0));
@@ -146,6 +146,7 @@ public class Parameters {
 		elecBuyingPrice.updateMPCHorizon(mpcHorizon);
 		elecSellingPrice.updateMPCHorizon(mpcHorizon);
 		heatBuyingPrice.updateMPCHorizon(mpcHorizon);
+		co2Emissions.updateMPCHorizon(mpcHorizon);
 		setSaved(false);
 	}
 

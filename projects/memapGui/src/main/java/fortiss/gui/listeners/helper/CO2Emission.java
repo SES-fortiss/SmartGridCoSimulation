@@ -2,7 +2,7 @@ package fortiss.gui.listeners.helper;
 
 public class CO2Emission extends Price {
 
-	private static final String DEFAULT_FILE = "HEATPRICEEXAMPLE";
+	private static final String DEFAULT_FILE = "CO2PRICEEXAMPLE";
 	private static final double DEFAULT_PRICE = 0.139;
 	static final String [] labels = { "Emissions [kg CO2]" };
 	private static final String units = "[kg CO2]";
