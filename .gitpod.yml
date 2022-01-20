@@ -26,7 +26,7 @@ tasks:
       
   - init: echo 'Starting two Mock-Up Bulding EMS-Server, using the MEMAP OPC UA data model'
     command: |
-      python -m pip install opcua
+      python -m pip install opcua numpy time json random
       cd OPC-UA-MockupBuildings/CoSES/02_Interface_Server/
       python House1/CoSES_Server_Haus1.py
       python House2/CoSES_Server_Haus2.py
