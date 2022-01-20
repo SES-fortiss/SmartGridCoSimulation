@@ -2,7 +2,7 @@
 tasks:
   - name: StartMEMAP
     before: echo 'starting MEMAP simulation environment'
-    command: java /projects/memapCore/scr/main/java/main/memap/Simulation.java jetty 5 15
+#   command: java /projects/memapCore/scr/main/java/main/memap/Simulation.java jetty 5 15
 #    openMode: split-right
 #  - init: echo 'Starting Mock-Up Bulding 1 with EMS-Server, using the MEMAP OPC UA data model'
 #    command: python /OPC-UA-MockupBuildings/CoSES/02_Interface_Server/House1/CoSES_Server_Haus1.py
