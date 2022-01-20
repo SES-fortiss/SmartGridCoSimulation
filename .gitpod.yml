@@ -7,7 +7,7 @@ tasks:
     command: echo 'start script'
   - name: StartMEMAP
     init: echo 'starting MEMAP simulation environment'
-    command: java /projects/memapCore/scr/main/java/main/memap/main/Simulation.java jetty 5 15
+    command: java /projects/memapCore/scr/main/java/memap/main/Simulation.java jetty 5 15
 
 # List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
 ports:
