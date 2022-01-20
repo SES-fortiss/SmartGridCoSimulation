@@ -14,8 +14,8 @@ tasks:
       mkdir artifacts
       cp projects/memapGui/target/*jar-with-dependencies.jar artifacts/memapPlanungsTool.jar
       cp projects/memapCore/target/*jar-with-dependencies.jar artifacts/memapServer.jar
-      cp projects/memapCore/src/main/resources/libs/lpsolve55.dll lpsolve55.dll
-      cp projects/memapCore/src/main/resources/libs/lpsolve55j.dll lpsolve55j.dll
+      cp projects/memapCore/src/main/resources/libs/lpsolve55.dll artifacts/lpsolve55.dll
+      cp projects/memapCore/src/main/resources/libs/lpsolve55j.dll artifacts/lpsolve55j.dll
     command: |
       echo ' > starting MEMAP simulation environment'
       java -jar artifacts/memapServer.jar jetty 5 15
