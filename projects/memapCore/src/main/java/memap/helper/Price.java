@@ -60,13 +60,6 @@ public abstract class Price {
 				prices = read(mgr.readFromResources(examples.getFile(priceFilePath)));
 			} else {
 				prices = read(mgr.readFromSource(priceFilePath));
-				// write:
-				FileWriter writer = new FileWriter("prices.txt"); 
-				for(int i = 0; i < prices.size(); i++) {
-				  writer.write(String.valueOf(prices.get(i)) + System.lineSeparator());
-				}
-				writer.close();
-			       
 			}
 		} catch (IOException | ParseException e) {
 			SimulationProgress.getInstance().setStatus(Status.ERROR, "Error parsing or reading price file");
@@ -115,7 +108,7 @@ public abstract class Price {
 		double[] x = new double[originalValues.size()];
 		double[] y = new double[originalValues.size()];
 		for (int i = 0; i < originalValues.size(); i++) {
-			x[i] = i; // THIS IS DEPENDENT ON THE INPOUT DATA!
+			x[i] = i / 4.0;
 			y[i] = originalValues.get(i);
 		}
 

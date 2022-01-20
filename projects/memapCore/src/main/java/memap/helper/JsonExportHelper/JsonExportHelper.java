@@ -72,10 +72,11 @@ public class JsonExportHelper {
 				topologyController.getOptimizationCriteria().toString(),
 				topologyController.getOptimizer().toString(),
 				topologyController.getLogging().toString(),
-				new PriceJsonHelper(true, EnergyPrices.getInstance().getElecBuyingPrice(0), "", Simulation.N_STEPS_MPC),   // elecBuyingPrice
-				new PriceJsonHelper(true, EnergyPrices.getInstance().getElecSellingPrice(0), "", Simulation.N_STEPS_MPC),  // elecSellingPrice
-				new PriceJsonHelper(true, EnergyPrices.getInstance().getHeatBuyingPrice(0), "", Simulation.N_STEPS_MPC),  // heatBuyingPrice
-				new PriceJsonHelper(true, 0.404, "", Simulation.N_STEPS_MPC)  // co2Emissions
+				new PriceJsonHelper(true, EnergyPrices.getInstance().getMaxBuyLimit(0), "HLZFEXAMPLE", Simulation.N_STEPS_MPC),   // maxBuyLimit
+				new PriceJsonHelper(true, EnergyPrices.getInstance().getElecBuyingPrice(0), "ELECTRICITYPRICEEXAMPLE", Simulation.N_STEPS_MPC),   // elecBuyingPrice
+				new PriceJsonHelper(true, EnergyPrices.getInstance().getElecSellingPrice(0), "ELECTRICITYPRICEEXAMPLE", Simulation.N_STEPS_MPC),  // elecSellingPrice
+				new PriceJsonHelper(true, EnergyPrices.getInstance().getHeatBuyingPrice(0), "HEATPRICEEXAMPLE", Simulation.N_STEPS_MPC),  // heatBuyingPrice
+				new PriceJsonHelper(true, EnergyPrices.getInstance().getCO2EmissionFactor(0), "CO2PRICEEXAMPLE", Simulation.N_STEPS_MPC)  // co2Emissions
 				);
 		parameterSet.add(paramjh);
 		

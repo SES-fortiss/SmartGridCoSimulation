@@ -66,17 +66,18 @@ public class CSVStorage extends Storage {
 			double stepLengthInHours = topologyConfig.getStepLengthInHours();
 			OptimizationResultMessage optResult = ((OptimizationResultMessage) requestContentReceived);
 
-			String dataKey = actorName + "Discharge";			
+			String dataKey = actorName + "_Discharge";			
 			if (optResult.resultMap.containsKey(dataKey)) {
 				storageDischargeRequest = optResult.resultMap.get(dataKey);
 			}
 			
-			dataKey = actorName + "Charge";			
+			dataKey = actorName + "_Charge";			
 			if (optResult.resultMap.containsKey(dataKey)) {
 				storageChargeRequest = optResult.resultMap.get(dataKey);
 			}
 			
 			if (storageChargeRequest!= null && storageDischargeRequest!= null) {
+				
 				double soc_alt = stateOfCharge;
 				double leistung = storageChargeRequest[0] * effIN - storageDischargeRequest[0] * 1 / effOUT;
 				// Linear equation (beta values not used since SOC is not in percent but in kWh):
@@ -89,6 +90,7 @@ public class CSVStorage extends Storage {
 				
 				// Exponential equation works:
 				//stateOfCharge = soc_alt * Math.pow(1-storageLoss, stepLengthInHours) + leistung * stepLengthInHours;
+				
 			}
 		}
 	}

@@ -18,6 +18,7 @@ public class ExampleFiles {
 		exampleFiles.put("ELECTRICITYPRICEEXAMPLE", "electricityPriceExample.csv");
 		exampleFiles.put("HEATPRICEEXAMPLE", "heatPriceExample.csv");
 		exampleFiles.put("HLZFEXAMPLE", "hlzfExample.csv");
+		exampleFiles.put("CO2PRICEEXAMPLE", "co2PriceExample.csv");
 	}
 
 	public String getFile(String example) {
