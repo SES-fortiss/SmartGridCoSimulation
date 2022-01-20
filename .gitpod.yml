@@ -1,0 +1,12 @@
+# List the start up tasks. Learn more https://www.gitpod.io/docs/config-start-tasks/
+tasks:
+  - init: echo 'init script' # runs during prebuild
+    command: echo 'start script'
+  - name: StartMEMAP
+    init: echo 'starting MEMAP simulation environment'
+#    command: java /projects/memapCore/scr/main/java/main/memap/Simulation.java jetty 5 15
+
+# List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
+ports:
+  - port: 8013
+    onOpen: open-preview
