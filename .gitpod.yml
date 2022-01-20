@@ -27,7 +27,7 @@ tasks:
   - init: echo 'Starting two Mock-Up Bulding EMS-Server, using the MEMAP OPC UA data model'
     command: |
       /home/gitpod/.pyenv/versions/3.8.12/bin/python -m pip install --upgrade pip
-      python3 -m pip install opcua numpy
+      python3 -m pip install opcua numpy scipi matplotlib
       cd OPC-UA-MockupBuildings/CoSES/02_Interface_Server/
       python3 House1/CoSES_Server_Haus1.py
       python3 House2/CoSES_Server_Haus2.py
