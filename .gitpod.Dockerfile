@@ -1,5 +1,15 @@
-FROM: gitpod/workspace-postgres
+FROM gitpod/workspace-full-vnc
 
-RUN bash -c ". /home/gitpod/.sdkman/bin/sdkman-init.sh
-              && sdk install java 12.0.1.j9-adpt 
-              && sdk ..."
+RUN apt-get update \
+  && apt-get install -y wget \
+  && apt-get install -y lp-solve liblpsolve55-dev \
+  && cd /opt \
+  && wget https://sourceforge.net/projects/lpsolve/files/lpsolve/5.5.0.15/lp_solve_5.5.0.15_java.zip \
+  && unzip lp_solve_5.5.0.15_java.zip && rm lp_solve_5.5.0.15_java.zip \
+  && apt-get remove --purge -y wget \
+  && apt-get autoremove -y \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN cd /opt \
+  && cp lp_solve_5.5_java/lib/ux64/liblpsolve55j.so /usr/lib/lp_solve \
+  && chmod 755 /usr/lib/lp_solve/liblpsolve55j.so
