@@ -16,7 +16,7 @@ public class TwoBuildingExample {
 		
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
 		
-		String file = "src/main/resources/examples/2HOUSES_COSES_wConn.json";
+		String file = "projects/memapCore/src/main/resources/examples/2HOUSES_COSES_wConn.json";
 		String json = null;
 		try {
 			json = readFileAsString(file);
