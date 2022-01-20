@@ -22,7 +22,6 @@ tasks:
       gp await-port 8013
       gp await-port 4851
       gp await-port 4852
-      # When everything is ready: Send the CoSES configuration to the Server:
       java -cp artifacts/memapServer.jar memap.websocket.TwoBuildingExample
       
   - init: echo 'Starting two Mock-Up Bulding EMS-Server, using the MEMAP OPC UA data model'
@@ -36,7 +35,7 @@ ports:
   - port: 8013
     onOpen: notify
   - port: 7013
-    onOpen: igore
+    onOpen: ignore
   - port: 3000
     onOpen: ignore
   - port: 4851
