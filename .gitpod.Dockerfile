@@ -4,8 +4,9 @@ RUN apt-get update \
   && apt-get install -y wget \
   && apt-get install -y lp-solve liblpsolve55-dev \
   && cd /opt \
-  && wget https://sourceforge.net/projects/lpsolve/files/lpsolve/5.5.0.15/lp_solve_5.5.0.15_java.zip \
-  && unzip lp_solve_5.5.0.15_java.zip && rm lp_solve_5.5.0.15_java.zip \
+  && wget https://sourceforge.net/projects/lpsolve/files/lpsolve/5.5.2.11/lp_solve_5.5.2.11_java.zip \
+  && sleep 10s
+  && unzip lp_solve_5.5.2.11_java.zip && rm lp_solve_5.5.2.11_java.zip \
   && apt-get remove --purge -y wget \
   && apt-get autoremove -y \
   && rm -rf /var/lib/apt/lists/*
