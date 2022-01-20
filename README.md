@@ -1,3 +1,6 @@
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/SES-fortiss/SmartGridCoSimulation/edit/feat-gitpodExample)
+
 <img align="left" src="https://github.com/SES-fortiss/SmartGridCoSimulation/blob/development/MEMAP-Logo.png" alt="MEMAP" width="150"/>
 
 Welcome to the **Multi energy management and aggregation platform (MEMAP)** project!
