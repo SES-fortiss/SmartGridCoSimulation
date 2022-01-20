@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.fortiss.memap</groupId>
 	<artifactId>memapPlanungstool</artifactId>
-	<version>0.6.0</version>
+	<version>0.7.0</version>
 	<packaging>jar</packaging>
 
 	<name>memapGui</name>
