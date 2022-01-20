@@ -54,3 +54,5 @@ ports:
     onOpen: ignore
   - port: 4852
     onOpen: ignore
+  - port: 6080
+    onOpen: open-preview
