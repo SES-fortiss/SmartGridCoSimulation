@@ -1,17 +1,9 @@
 # gitPod Configuration to start all Memap Services
-
-#image:
-#  file: .gitpod.Dockerfile
-  
 tasks:
   - name: StartMEMAP
     init: echo 'starting MEMAP simulation environment'
     command: java /projects/memapCore/scr/main/java/main/memap/Simulation.java jetty 5 15
     openMode: split-right
-    
- # - name: Start PostGreSQL
- #   command: pg_start
-    
   - init: echo 'Starting Mock-Up Bulding 1 with EMS-Server, using the MEMAP OPC UA data model'
     command: python /OPC-UA-MockupBuildings/CoSES/02_Interface_Server/House1/CoSES_Server_Haus1.py
   - init: echo 'Starting Mock-Up Bulding 2 with EMS-Server, using the MEMAP OPC UA data model'
@@ -22,7 +14,6 @@ tasks:
       echo 'Port 4851: Building 1 is now availible.'
       gp await-port 4852
       echo 'Port 4852: Building 2 is now availible.'
-      
   - init: echo 'Onboarding of local EMS and start of simulation'
     command: java /projects/memapCore/scr/main/java/main/memap/websocket/TwoBuildingExample.java
 
@@ -38,5 +29,3 @@ ports:
     onOpen: ignore
   - port: 4852
     onOpen: ignore
-    
-
