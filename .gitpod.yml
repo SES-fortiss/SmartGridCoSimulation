@@ -26,8 +26,8 @@ tasks:
       
   - init: echo 'Starting two Mock-Up Bulding EMS-Server, using the MEMAP OPC UA data model'
     command: |
-      python OPC-UA-MockupBuildings/CoSES/02_Interface_Server/House1/CoSES_Server_Haus1.py
-      python OPC-UA-MockupBuildings/CoSES/02_Interface_Server/House2/CoSES_Server_Haus2.py
+      python3 OPC-UA-MockupBuildings/CoSES/02_Interface_Server/House1/CoSES_Server_Haus1.py
+      python3 OPC-UA-MockupBuildings/CoSES/02_Interface_Server/House2/CoSES_Server_Haus2.py
 
 
 # List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
