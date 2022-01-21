@@ -15,5 +15,7 @@ RUN apt-get update \
 RUN cd /opt \
   && cp lp_solve_5.5_java/lib/ux64/liblpsolve55j.so /usr/lib/lp_solve/liblpsolve55j.so \
   && chmod 777 /usr/lib/lp_solve/liblpsolve55j.so
+  
+ENV LD_LIBRARY_PATH /usr/lib/lp_solve
 
 USER 1001
