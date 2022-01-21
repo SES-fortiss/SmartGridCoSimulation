@@ -44,4 +44,8 @@ RUN echo export JAVA_TOOL_OPTIONS=\"\$JAVA_TOOL_OPTIONS -Dsun.java2d.xrender=fal
   
 ENV LD_LIBRARY_PATH /usr/lib/lp_solve
 
+RUN apt-get install grafana
+
 USER 1001
+
+
