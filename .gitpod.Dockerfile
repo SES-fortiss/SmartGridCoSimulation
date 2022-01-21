@@ -1,6 +1,7 @@
 FROM gitpod/workspace-full-vnc
 
 RUN apt-get update \
+  && sudo apt-get install unzip
   && cd /opt \
   && wget https://sourceforge.net/projects/lpsolve/files/lpsolve/5.5.2.11/lp_solve_5.5.2.11_java.zip \
   && sleep 8s
