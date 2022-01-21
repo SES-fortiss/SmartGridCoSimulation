@@ -43,10 +43,11 @@ tasks:
       python3 CoSES_Server_Haus2.py
     
   - init: echo 'Launch plannung tool'
-    command: java -jar artifacts/memapPlanungsTool.jar
+    command: |
+      cd artifacts/
+      java -jar memapPlanungsTool.jar
 
-
-# List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
+# List the ports to expose.
 ports:
   - port: 8013
     onOpen: notify
