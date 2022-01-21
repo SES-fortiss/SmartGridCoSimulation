@@ -4,6 +4,8 @@ image:
   
 tasks:
   - init: | 
+      mkdir profiles
+      cp projects/memapCore/src/main/resources/profile/. profiles/
       echo 'maven build'
       mvn -f projects/memapOpcServer/pom.xml clean compile install -Dmaven.test.skip=true 
       mvn -f core/cim15/pom.xml clean compile install -Dmaven.test.skip=true
@@ -16,8 +18,6 @@ tasks:
       cp projects/memapCore/target/*jar-with-dependencies.jar artifacts/memapServer.jar
       cp projects/memapCore/src/main/resources/libs/liblpsolve55.so artifacts/liblpsolve55.so
       cp projects/memapCore/src/main/resources/libs/liblpsolve55j.so artifacts/liblpsolve55j.so
-      mkdir profiles
-      cp projects/memapCore/src/main/resources/profile/. profiles/
     command: |
       echo ' > starting MEMAP simulation environment'
       java -jar artifacts/memapServer.jar jetty 5 15
@@ -26,11 +26,9 @@ tasks:
     command: |
       gp await-port 4851
       gp await-port 4852
-      echo ' ========================== '
-      for file in /usr/lib/lp_solve/*; do
-        echo "${file##*/}"
-      done
-      echo ' ========================== '
+      pg_start
+      service grafana-server start
+      gp await-port 5432
       gp await-port 8013
       java -cp artifacts/memapServer.jar memap.websocket.TwoBuildingExample
     openMode: split-right
@@ -62,12 +60,12 @@ ports:
   - port: 7013
     onOpen: ignore
   - port: 3000
-    onOpen: ignore
+    onOpen: open-preview
   - port: 4851
     onOpen: ignore
   - port: 4852
     onOpen: ignore
   - port: 6080
-    onOpen: open-preview
+    onOpen: open-browser
   - port: 5432
     onOpen: ignore
