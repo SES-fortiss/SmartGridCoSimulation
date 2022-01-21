@@ -44,7 +44,9 @@ RUN echo export JAVA_TOOL_OPTIONS=\"\$JAVA_TOOL_OPTIONS -Dsun.java2d.xrender=fal
   
 ENV LD_LIBRARY_PATH /usr/lib/lp_solve
 
-RUN apt-get install grafana
+RUN apt-get install -y adduser libfontconfig1 \
+  && wget https://dl.grafana.com/enterprise/release/grafana-enterprise_8.3.4_amd64.deb
+  dpkg -i grafana-enterprise_8.3.4_amd64.deb
 
 USER 1001
 
