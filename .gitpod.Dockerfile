@@ -14,6 +14,10 @@ RUN apt-get update \
 
 RUN cd /opt \
   && cp lp_solve_5.5_java/lib/ux64/liblpsolve55j.so /usr/lib/lp_solve/liblpsolve55j.so \
-  && chmod 777 /usr/lib/lp_solve/liblpsolve55j.so
+  && chmod 755 /usr/lib/lp_solve/liblpsolve55j.so
+  
+RUN echo export JAVA_TOOL_OPTIONS=\"\$JAVA_TOOL_OPTIONS -Dsun.java2d.xrender=false\" >> /home/gitpod/.bashrc
+  
+ENV LD_LIBRARY_PATH /usr/lib/lp_solve
 
 USER 1001

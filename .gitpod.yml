@@ -25,7 +25,7 @@ tasks:
       gp await-port 4851
       gp await-port 4852
       echo ' ========================== '
-      for file in /usr/lib/*; do
+      for file in /usr/lib/lp_solve/*; do
         echo "${file##*/}"
       done
       echo ' ========================== '
