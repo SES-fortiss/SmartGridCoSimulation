@@ -26,6 +26,7 @@ tasks:
       gp await-port 4851
       gp await-port 4852
       java -cp artifacts/memapServer.jar memap.websocket.TwoBuildingExample
+    openMode: split-right
       
   - init: |
       echo 'Starting MockUp EMS-Server 1'
@@ -40,6 +41,9 @@ tasks:
     command: |
       cd OPC-UA-MockupBuildings/CoSES/02_Interface_Server/House2/
       python3 CoSES_Server_Haus2.py
+    
+  - init: echo 'Launch plannung tool'
+    command: java -jar artifacts/memapPlanungsTool.jar
 
 
 # List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
