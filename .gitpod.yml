@@ -51,7 +51,7 @@ tasks:
     command: |
       gp await-port 8013
       cd artifacts/
-      java -jar memapPlanungsTool.jar
+      java -jar memapPlanungsTool.jar -Dsun.java2d.xrender=false
 
 # List the ports to expose.
 ports:
