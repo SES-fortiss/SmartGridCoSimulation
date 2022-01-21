@@ -3,6 +3,8 @@ FROM gitpod/workspace-full-vnc
 USER root
 
 RUN apt-get update \
+  && apt-get install -y wget \
+  && apt-get install -y lp-solve liblpsolve55-dev \
   && cd /opt \
   && wget https://sourceforge.net/projects/lpsolve/files/lpsolve/5.5.2.11/lp_solve_5.5.2.11_java.zip \
   && sleep 8s \
