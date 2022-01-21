@@ -13,7 +13,7 @@ RUN apt-get update \
   && apt-get autoremove -y
 
 RUN cd /opt \
-  && cp lp_solve_5.5_java/lib/ux64/liblpsolve55j.so /usr/lib/liblpsolve55j.so \
-  && chmod 777 /usr/lib/liblpsolve55j.so
+  && cp lp_solve_5.5_java/lib/ux64/liblpsolve55j.so /usr/lib/lp_solve/liblpsolve55j.so \
+  && chmod 777 /usr/lib/lp_solve/liblpsolve55j.so
 
 USER 1001
