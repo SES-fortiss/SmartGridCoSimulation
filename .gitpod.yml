@@ -22,9 +22,14 @@ tasks:
       
   - init: echo 'Onboarding of Buildings'
     command: |
-      gp await-port 8013
       gp await-port 4851
       gp await-port 4852
+      echo ' ========================== '
+      for file in /usr/lib/*; do
+        echo "${file##*/}"
+      done
+      echo ' ========================== '
+      gp await-port 8013
       java -cp artifacts/memapServer.jar memap.websocket.TwoBuildingExample
     openMode: split-right
       
