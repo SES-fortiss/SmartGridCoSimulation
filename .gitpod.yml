@@ -1,0 +1,73 @@
+# List the start up tasks.
+image:
+  file: .gitpod.Dockerfile
+  
+tasks:
+  - init: | 
+      mkdir profiles
+      cp projects/memapCore/src/main/resources/profile/. profiles/
+      echo 'maven build'
+      mvn -f projects/memapOpcServer/pom.xml clean compile install -Dmaven.test.skip=true 
+      mvn -f core/cim15/pom.xml clean compile install -Dmaven.test.skip=true
+      mvn -f core/powerflow/pom.xml clean compile install -Dmaven.test.skip=true 
+      mvn -f core/gridarchitect/pom.xml clean compile install -Dmaven.test.skip=true
+      mvn -f projects/memapCore/pom.xml clean compile install -Dmaven.test.skip=true
+      mvn -f projects/memapGui/pom.xml clean compile install -Dmaven.test.skip=true
+      mkdir artifacts
+      cp projects/memapGui/target/*jar-with-dependencies.jar artifacts/memapPlanungsTool.jar
+      cp projects/memapCore/target/*jar-with-dependencies.jar artifacts/memapServer.jar
+      cp projects/memapCore/src/main/resources/libs/liblpsolve55.so artifacts/liblpsolve55.so
+      cp projects/memapCore/src/main/resources/libs/liblpsolve55j.so artifacts/liblpsolve55j.so
+    command: |
+      echo ' > starting MEMAP simulation environment'
+      java -jar artifacts/memapServer.jar jetty 5 15
+      
+  - init: echo 'Onboarding of Buildings'
+    command: |
+      gp await-port 4851
+      gp await-port 4852
+      echo ' ========================== '
+      for file in /usr/lib/lp_solve/*; do
+        echo "${file##*/}"
+      done
+      echo ' ========================== '
+      gp await-port 8013
+      java -cp artifacts/memapServer.jar memap.websocket.TwoBuildingExample
+    openMode: split-right
+      
+  - init: |
+      echo 'Starting MockUp EMS-Server 1'
+      /home/gitpod/.pyenv/versions/3.8.12/bin/python -m pip install --upgrade pip
+      python3 -m pip install opcua numpy scipy matplotlib
+    command: |
+      cd OPC-UA-MockupBuildings/CoSES/02_Interface_Server/House1/
+      python3 CoSES_Server_Haus1.py
+  - init: | 
+      echo 'Starting MockUp EMS-Server 2'
+      gp await-port 4851
+    command: |
+      cd OPC-UA-MockupBuildings/CoSES/02_Interface_Server/House2/
+      python3 CoSES_Server_Haus2.py
+    
+  - init: echo 'Launch plannung tool'
+    command: |
+      gp await-port 8013
+      cd artifacts/
+      java -jar memapPlanungsTool.jar
+
+# List the ports to expose.
+ports:
+  - port: 8013
+    onOpen: notify
+  - port: 7013
+    onOpen: ignore
+  - port: 3000
+    onOpen: ignore
+  - port: 4851
+    onOpen: ignore
+  - port: 4852
+    onOpen: ignore
+  - port: 6080
+    onOpen: open-preview
+  - port: 5432
+    onOpen: ignore

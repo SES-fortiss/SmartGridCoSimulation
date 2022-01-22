@@ -1,0 +1,3 @@
+[submodule "OPC-UA-MockupBuildings"]
+	path = OPC-UA-MockupBuildings
+	url = https://github.com/SES-fortiss/OPC-UA-MockupBuildings
