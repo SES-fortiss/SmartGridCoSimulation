@@ -14,7 +14,7 @@ git clone https://github.com/SES-fortiss/SmartGridCoSimulation.git
 
 ...or start directly with our online DEMO in GitPod:
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/SES-fortiss/SmartGridCoSimulation/edit/feat-gitpodExample)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/SES-fortiss/SmartGridCoSimulation)
 
 
 
