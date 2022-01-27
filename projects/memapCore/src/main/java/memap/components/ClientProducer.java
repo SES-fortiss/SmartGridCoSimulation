@@ -32,7 +32,7 @@ public class ClientProducer extends Producer {
 	
 	NetworkType networkType;
 	public double opCost;
-	public Double opCostFC[];
+	public Double opCostFC[] = new Double[topologyConfig.getNrStepsMPC()];
 	public double costCO2;
 	public double[] costCO2Array = new double[topologyConfig.getNrStepsMPC()];
 	
@@ -74,7 +74,13 @@ public class ClientProducer extends Producer {
 		this.client = client;		
 		this.setpointId = setpointId;
 		this.setpointsId = setpointsId;
-		this.networkType = this.setNetworkType(client, nodeIdSector);
+		
+		if (nodeIdSector.equals(nodeIdSector)) {
+			networkType = NetworkType.HEAT;
+		} else {
+			networkType = setNetworkType(client, nodeIdSector);
+		}
+//		this.networkType = this.setNetworkType(client, nodeIdSector);
 		
 		if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, costCO2Id).getValue().getValue().getClass().isArray()) {
 			this.costCO2Array = client.readFinalDoubleArrayValue(costCO2Id);
@@ -88,7 +94,7 @@ public class ClientProducer extends Producer {
 		// subscription if array with price forecast is available at the EMS 
 		if (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, priceFCId).getValue().getValue().getClass().isArray()) {
 			
-			System.out.println("Producer price is forecast array.");
+			System.out.println("   . Producer price is forecast array.");
 			
 			// Subscription to variable primary energy costs
 			opCostFC = new Double[topologyConfig.getNrStepsMPC()];
@@ -117,7 +123,7 @@ public class ClientProducer extends Producer {
 				if (var.getValue() instanceof Number[]) {
 					opCostFC = (Double[]) var.getValue();
 				} else {
-					System.out.println("Value " + value + " is not in Number[] format");
+					System.out.println("   . ERR: Value " + value + " is not in Number[] format");
 				}
 			};
 

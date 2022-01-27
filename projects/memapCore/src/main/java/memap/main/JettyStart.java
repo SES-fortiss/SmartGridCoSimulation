@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.google.gson.Gson;
-
 import memap.controller.BuildingController;
 import memap.controller.OpcUaBuildingController;
 import memap.controller.TopologyController;
@@ -18,6 +17,7 @@ import memap.helper.CO2Emission;
 import memap.helper.ElectricityPrice;
 import memap.helper.EnergyPrices;
 import memap.helper.HeatPrice;
+import memap.helper.HelperUnnestingJSON;
 import memap.helper.MEMAPLogging;
 import memap.helper.configurationOptions.OptHierarchy;
 import memap.helper.configurationOptions.OptimizationCriteria;
@@ -88,6 +88,10 @@ public class JettyStart {
 			e1.printStackTrace();
 		}
 		
+		// Check if one endpoint contains multiple buildings (as for the test site Riemerling): 
+		endpoints = HelperUnnestingJSON.checkForMultipleBuildingEndpoints(endpoints);
+		
+		
 		// ****************************
 		// TODO: Further distinguish here between MILP/LP optimizer and between EUR/CO2 criteria
 		//
@@ -120,7 +124,9 @@ public class JettyStart {
 		
 		// MPC input through start of the simulation environment. For MPC as an input parameter, 
 		// probably the global variable Simulation.N_STEPS_MPC has to be changed here.
-		System.out.println(">> MPC set to " + Simulation.N_STEPS_MPC);
+		// TODO: Second init() method without int timeStepsPerDay, int nrDays input
+		System.out.println(">> MPC set to " + Simulation.N_STEPS_MPC + "\n");
+		System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n");
 		TopologyConfig.getInstance().init(Simulation.N_STEPS_MPC, 96, 30, 7020, 0);
 		
 		
@@ -135,6 +141,7 @@ public class JettyStart {
 				);
 		
 		// Starts additional simulation threads on the building level if doubleSim = true.
+		// boolean can also be input through parameter Key ?
 		if (doubleSim) {
 			topologyMemapOff = new TopologyController(
 					"MemapOff", 
@@ -148,10 +155,11 @@ public class JettyStart {
 		
 		
 		setNumofBuildings(endpoints.size());
-		System.out.println(">> Number of buildings: " + endpoints.size());
+//		System.out.println(">> Number of buildings: " + endpoints.size() + "\n");
 
 		for (int i = 0; i < endpoints.size(); i++) {
 
+			
 			JsonObject jsonEndpoint = (JsonObject) endpoints.get(i);
 			JsonObject configNodes = null;
 
@@ -160,16 +168,17 @@ public class JettyStart {
 			String nameNodeA = null;
 			JsonObject thisBuildingConnection = null;
 			
-			for (int j = 0; j < connections.size(); j++) {
+			if (project.toJson().contains("connections")){
+				for (int j = 0; j < connections.size(); j++) {
 				JsonObject jsonConnection = (JsonObject) connections.get(j);
 				nameNodeA = (String) jsonConnection.get("nameNodeA");		
-				if (nameNodeA.equals(endpointName)) {
-					thisBuildingConnection = jsonConnection;
-					System.out.println(">> Heat connection found for Building " + (i + 1) + ":");
-					System.out.println(thisBuildingConnection.toString());
-				
-				}
-				
+					if (nameNodeA.equals(endpointName)) {
+						thisBuildingConnection = jsonConnection;
+						System.out.println(">> Heat connection found for Building " + (i + 1) + ":");
+						System.out.println(thisBuildingConnection.toString());
+					
+					}
+				}	
 			}
 			
 			try {
@@ -184,7 +193,7 @@ public class JettyStart {
 					topologyMemapOff.attach(sampleBuilding.getName(), sampleBuilding);
 				}
 				errorCode.put(endpointName, 0);
-				System.out.println(">> Building " + (i + 1) + " (" + endpointName + ") was added...");
+				System.out.println(">> Building " + (i + 1) + " (" + endpointName + ") was added... \n");
 
 			} catch (IllegalStateException e2) {
 				System.err.println(">> WARNING: Failed to create Client. Building has not been initialised");

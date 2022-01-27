@@ -48,6 +48,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 	public Double consumptionProfile[];
 	public Double networkBuyCostFC[] = new Double[topologyConfig.getNrStepsMPC()];
 	public Double networkSellCostFC[] = new Double[topologyConfig.getNrStepsMPC()];
+	public Double networkBuyCapFC[] = new Double[topologyConfig.getNrStepsMPC()];
 	
 	public double[] optimizationAdviceBuy;
 	public double[] optimizationAdviceSell;
@@ -55,6 +56,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 	public List<UaMonitoredItem> itemsDemand;
 
 	boolean priceIsArray = false;
+	boolean forecastIsArray = false;
 	
 	
 	/**
@@ -82,12 +84,15 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		super(name, port);
 		
 		this.client = client;
-		this.setpointsGridBuyId = setpointsGridBuyId; 
 		this.setpointGridBuyId = setpointGridBuyId;
-		this.setpointsGridSellId = setpointsGridSellId;
 		this.setpointGridSellId = setpointGridSellId;
-
-		networkType = setNetworkType(client, nodeIdSector);
+		
+		if (nodeIdSector.equals(nodeIdSector)) {
+			networkType = NetworkType.HEAT;
+		} else {
+			networkType = setNetworkType(client, nodeIdSector);
+		}
+		
 		// nodeIdConsumption (= current demand) is not needed at the moment
 		// (because it is assumed that forecast is perfect). 
 		
@@ -100,7 +105,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 			if ((client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, buyPriceId).getValue().getValue().getClass().isArray()) 
 			&& (client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, sellPriceId).getValue().getValue().getClass().isArray())) {
 				priceIsArray = true;
-				System.out.println("Price for network " + this.networkType + " is an Array.");
+				System.out.println("   . Price for network " + this.networkType + " is an Array.");
 			}
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
@@ -131,7 +136,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 				if (var.getValue() instanceof Number[]) {
 					networkBuyCostFC = (Double[]) var.getValue();
 				} else {
-					System.out.println("Value " + value + " is not in Number[] format");
+					System.out.println("   . ERR: Value " + value + " is not in Number[] format");
 				}
 			};
 			
@@ -175,7 +180,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 				if (var.getValue() instanceof Number[]) {
 					networkSellCostFC = (Double[]) var.getValue();
 				} else {
-					System.out.println("Value " + value + " is not in Number[] format");
+					System.out.println("   . ERR: Value " + value + " is not in Number[] format");
 				}
 			};
 	
@@ -198,7 +203,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 			this.sellPrice = networkSellCostFC[0];
 		
 		} else {
-			System.out.println("Price for network " + this.networkType + " is single value.");
+			System.out.println("   . Price for network " + this.networkType + " is single value.");
 			
 			try {
 				buyPrice = client.readFinalDoubleValue(buyPriceId);
@@ -219,6 +224,19 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		
 		// Subscription for Demand
 
+		try {
+			if ((client.readValue(Integer.MAX_VALUE, TimestampsToReturn.Neither, arrayDemandForecastId).getValue().getValue().getClass().isArray()))
+				forecastIsArray = true;
+				System.out.println("   . Forecast " + this.networkType + " is no Array.");
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (ExecutionException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+
 		consumptionProfile = new Double[topologyConfig.getNrStepsMPC()];
 		Arrays.fill(consumptionProfile, 0.0);
 		
@@ -238,6 +256,9 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 			Variant var = value.getValue();
 			if (var.getValue() instanceof Number[]) {
 				consumptionProfile = (Double[]) var.getValue();
+			} else if (!forecastIsArray) {
+				// If only a single value is provided the "forecast" is assumed to be constant
+				Arrays.fill(consumptionProfile, (Double) var.getValue());
 			} else {
 				System.out.println("Value " + value + " is not in Number[] format");
 			}
@@ -261,7 +282,6 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 		
 		
 	}
-
 
 	@Override
 	public void makeDecision() {
@@ -315,6 +335,7 @@ public class ClientDemand extends Consumer implements CurrentTimeStepSubscriber 
 						e.printStackTrace();
 					}		
 				}
+				
 				if ((key.equals("ElecSell")) && (this.networkType == NetworkType.ELECTRICITY)) {
 					optimizationAdviceSell = optResult.resultMap.get(key);
 					DataValue singlevalueSellSetpoint = new DataValue(new Variant(optimizationAdviceSell[0]), null, null);

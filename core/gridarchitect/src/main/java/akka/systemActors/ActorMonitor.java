@@ -290,9 +290,9 @@ public class ActorMonitor extends AbstractActor {
 			this.realTimeMode = true;
 
 			LocalDate ld = message.referenceDay;
-			System.out.println(ld);
+//			System.out.println(ld);
 			LocalTime t = LocalTime.now();
-			System.out.println(t);
+//			System.out.println(t);
 
 			globalTime.setCurrentTime(LocalDateTime.of(ld, t));
 			globalTime.setPeriod(message.timeInterval);

@@ -42,7 +42,8 @@ public class Simulation {
 		// Show help screen by default
 		String arg = "help";
 
-
+		disableWarning();
+		
 		if (args.length != 0) {
 			arg = args[0];
 			if (args.length > 2 ) {
@@ -128,5 +129,11 @@ public class Simulation {
 				+ "    help  : show the help screen \n";
 		return help;
 	}
+	
+	public static void disableWarning() {
+	    System.err.close();
+	    System.setErr(System.out);
+	}
+
 
 }

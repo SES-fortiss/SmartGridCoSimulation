@@ -5,8 +5,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import com.github.cliftonlabs.json_simple.JsonArray;
+import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsoner;
 import com.google.gson.Gson;
+
+import memap.helper.JsonExportHelper.EndpointJsonHelper;
 
 public class HelperUnnestingJSON {
 
@@ -17,7 +21,7 @@ public class HelperUnnestingJSON {
 	 * @param int deviceNumber 
 	 * @param JsonObject device
 	 * 
-	 * @author Jan.Mayer
+	 * @author JanAxelMayer
 	 *
 	 */
 	
@@ -38,7 +42,7 @@ public class HelperUnnestingJSON {
 		return new JsonObject(allnodes);
 	}
 	
-public static JsonObject unnestJsonAry(JsonArray readDevice) {
+	public static JsonObject unnestJsonAry(JsonArray readDevice) {
 		
 		Map<String, Object> allnodes = new HashMap<String, Object>(); // to collect all buried NodeIDs
 		goThroughArray(allnodes, readDevice);
@@ -75,5 +79,31 @@ public static JsonObject unnestJsonAry(JsonArray readDevice) {
     	}
     	return;
     }
+    
+    public static JsonArray checkForMultipleBuildingEndpoints(JsonArray endpoints) {
+    	
+		for (int i = 0; i < endpoints.size(); i++) {
+			JsonObject oldEndpoint = (JsonObject) endpoints.get(i);
+			JsonObject configTest = (JsonObject) oldEndpoint.get("config");
+			if (configTest.size() > 1) {
+				System.out.println(">> " + configTest.size() + " EMS found under endpoint " + oldEndpoint.get("url"));
+				int k = 0;
+				for ( String EMSkey : configTest.keySet()) {
+					EndpointJsonHelper ejh = new EndpointJsonHelper(k++, oldEndpoint, EMSkey, (JsonObject) configTest.get(EMSkey));
+					try {
+						JsonObject newEndpoint = (JsonObject) Jsoner.deserialize(gson.toJson(ejh));
+						endpoints.add(newEndpoint);
+					} catch (JsonException e) {
+						e.printStackTrace();
+					}
+					
+				}
+				endpoints.remove(i);
+			}	
+		}
+    	
+    	return endpoints;
+    }
+    
     
 }
